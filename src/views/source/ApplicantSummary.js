@@ -302,7 +302,7 @@ const ApplicantSummary = () => {
   const handleMoveIn = () => {
     setMoveinLoader(true);
     try {
-      navigate(`/${admin}/RentRollLeaseing/${applicantLeaseData?.lease_id}`);
+      navigate(`/${admin}/RentRollLeaseing/${applicantLeaseData?.lease_id}/${id}`);
     } catch (error) {
       console.error("Error: ", error.message);
     } finally {
@@ -404,7 +404,7 @@ const ApplicantSummary = () => {
                   </DropdownMenu>
                 </Dropdown>
 
-                {/* <LoadingButton
+                <LoadingButton
                   variant="contained"
                   loading={moveinLoader}
                   style={{
@@ -423,7 +423,7 @@ const ApplicantSummary = () => {
                   disabled={applicantData && applicantData.isMovedin === true}
                 >
                   Move in
-                </LoadingButton> */}
+                </LoadingButton>
               </div>
               <Row>
                 <Col>
@@ -1143,347 +1143,331 @@ const ApplicantSummary = () => {
                                     </div>
                                   </section>
                                 ) : ( */}
-                                  {/* <> */}
-                                    <div className="applicant-info mt-3">
-                                      <div className="d-flex">
-                                        <h2>Rental history</h2>
-                                        <Link
-                                          to={`/${admin}/applicant-form/${id}`}
-                                          target="_blank"
-                                          className="btn btn-secondary ml-sm-3 mt-3 mt-sm-0"
-                                          style={{
-                                            borderRadius: "10px",
-                                            transition:
-                                              "border-color 0.3s ease-in-out, background-color 0.3s ease-in-out",
-                                          }}
-                                        >
-                                          Edit
-                                        </Link>
-                                      </div>
-                                      <hr
-                                        style={{
-                                          border: "1px solid black",
-                                          marginTop: "5px",
-                                        }}
-                                      />
-                                      <table>
-                                        <tbody>
-                                          <tr>
-                                            <td>APPLICANT NAME:</td>
-                                            <td>
-                                              <strong>
-                                                {`${
-                                                  applicantData?.applicant_firstName
-                                                } ${" "} ${
-                                                  applicantData?.applicant_lastName
-                                                }`}
-                                              </strong>
-                                            </td>
-                                          </tr>
+                                {/* <> */}
+                                <div className="applicant-info mt-3">
+                                  <div className="d-flex">
+                                    <h2>Rental history</h2>
+                                    <Link
+                                      to={`/${admin}/applicant-form/${id}`}
+                                      target="_blank"
+                                      className="btn btn-secondary ml-sm-3 mt-3 mt-sm-0"
+                                      style={{
+                                        borderRadius: "10px",
+                                        transition:
+                                          "border-color 0.3s ease-in-out, background-color 0.3s ease-in-out",
+                                      }}
+                                    >
+                                      Edit
+                                    </Link>
+                                  </div>
+                                  <hr
+                                    style={{
+                                      border: "1px solid black",
+                                      marginTop: "5px",
+                                    }}
+                                  />
+                                  <table>
+                                    <tbody>
+                                      <tr>
+                                        <td>APPLICANT NAME:</td>
+                                        <td>
+                                          <strong>
+                                            {`${
+                                              applicantData?.applicant_firstName
+                                            } ${" "} ${
+                                              applicantData?.applicant_lastName
+                                            }`}
+                                          </strong>
+                                        </td>
+                                      </tr>
 
-                                          <tr>
-                                            <td>
-                                              APPLICANT SOCIAL SECURITY NUMBER:
-                                            </td>
-                                            <td>
-                                              <strong>
-                                                {
-                                                  applicantData?.applicant_socialSecurityNumber
-                                                }
-                                              </strong>
-                                            </td>
-                                          </tr>
-                                          <tr>
-                                            <td>APPLICANT BIRTH DATE:</td>
-                                            <td>
-                                              <strong>
-                                                {applicantData?.applicant_dob}
-                                              </strong>
-                                            </td>
-                                          </tr>
-                                          <tr>
-                                            <td>APPLICANT CURRENT ADDRESS:</td>
-                                            <td>
-                                              <strong>
-                                                {`${applicantData?.applicant_country}, ${applicantData?.applicant_adress}, ${applicantData?.applicant_city}, ${applicantData?.applicant_state}, ${applicantData?.applicant_zipcode}`}
-                                              </strong>
-                                            </td>
-                                          </tr>
-                                          <tr>
-                                            <td>APPLICANT EMAIL:</td>
-                                            <td>
-                                              <strong>
-                                                {
-                                                  applicantData?.applicant_email
-                                                }
-                                              </strong>
-                                            </td>
-                                          </tr>
-                                          <tr>
-                                            <td>APPLICANT CELL PHONE:</td>
-                                            <td>
-                                              <strong>
-                                                {
-                                                  applicantData?.applicant_cellPhone
-                                                }
-                                              </strong>
-                                            </td>
-                                          </tr>
-                                          <tr>
-                                            <td>APPLICANT HOME PHONE:</td>
-                                            <td>
-                                              <strong>
-                                                {
-                                                  applicantData?.applicant_homePhone
-                                                }
-                                              </strong>
-                                            </td>
-                                          </tr>
-                                          <tr>
-                                            <td>EMERGENCY CONTACT NAME:</td>
-                                            <td>
-                                              <strong>
-                                                {`${applicantData?.applicant_emergencyContact_firstName}, ${applicantData?.applicant_emergencyContact_lasttName}`}
-                                              </strong>
-                                            </td>
-                                          </tr>
-                                          <tr>
-                                            <td>
-                                              EMERGENCY CONTACT RELATIONSHIP:
-                                            </td>
-                                            <td>
-                                              <strong>
-                                                {
-                                                  applicantData?.applicant_emergencyContact_relationship
-                                                }
-                                              </strong>
-                                            </td>
-                                          </tr>
-                                          <tr>
-                                            <td>EMERGENCY CONTACT EMAIL:</td>
-                                            <td>
-                                              <strong>
-                                                {
-                                                  applicantData?.applicant_emergencyContact_email
-                                                }
-                                              </strong>
-                                            </td>
-                                          </tr>
-                                          <tr>
-                                            <td>EMERGENCY CONTACT PHONE:</td>
-                                            <td>
-                                              <strong>
-                                                {
-                                                  applicantData?.applicant_emergencyContact_phone
-                                                }
-                                              </strong>
-                                            </td>
-                                          </tr>
-                                        </tbody>
-                                      </table>
-                                    </div>
+                                      <tr>
+                                        <td>
+                                          APPLICANT SOCIAL SECURITY NUMBER:
+                                        </td>
+                                        <td>
+                                          <strong>
+                                            {
+                                              applicantData?.applicant_socialSecurityNumber
+                                            }
+                                          </strong>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>APPLICANT BIRTH DATE:</td>
+                                        <td>
+                                          <strong>
+                                            {applicantData?.applicant_dob}
+                                          </strong>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>APPLICANT CURRENT ADDRESS:</td>
+                                        <td>
+                                          <strong>
+                                            {`${applicantData?.applicant_country}, ${applicantData?.applicant_adress}, ${applicantData?.applicant_city}, ${applicantData?.applicant_state}, ${applicantData?.applicant_zipcode}`}
+                                          </strong>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>APPLICANT EMAIL:</td>
+                                        <td>
+                                          <strong>
+                                            {applicantData?.applicant_email}
+                                          </strong>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>APPLICANT CELL PHONE:</td>
+                                        <td>
+                                          <strong>
+                                            {applicantData?.applicant_cellPhone}
+                                          </strong>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>APPLICANT HOME PHONE:</td>
+                                        <td>
+                                          <strong>
+                                            {applicantData?.applicant_homePhone}
+                                          </strong>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>EMERGENCY CONTACT NAME:</td>
+                                        <td>
+                                          <strong>
+                                            {`${applicantData?.applicant_emergencyContact_firstName}, ${applicantData?.applicant_emergencyContact_lasttName}`}
+                                          </strong>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>EMERGENCY CONTACT RELATIONSHIP:</td>
+                                        <td>
+                                          <strong>
+                                            {
+                                              applicantData?.applicant_emergencyContact_relationship
+                                            }
+                                          </strong>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>EMERGENCY CONTACT EMAIL:</td>
+                                        <td>
+                                          <strong>
+                                            {
+                                              applicantData?.applicant_emergencyContact_email
+                                            }
+                                          </strong>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>EMERGENCY CONTACT PHONE:</td>
+                                        <td>
+                                          <strong>
+                                            {
+                                              applicantData?.applicant_emergencyContact_phone
+                                            }
+                                          </strong>
+                                        </td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
 
-                                    <div className="applicant-info mt-3">
-                                      <h2>Applicant Information</h2>
-                                      <hr
-                                        style={{
-                                          border: "1px solid black",
-                                          marginTop: "5px",
-                                        }}
-                                      />
-                                      <table>
-                                        <tbody>
-                                          <tr>
-                                            <td>RENTAL ADDRESS:</td>
-                                            <td>
-                                              <strong>
-                                                {`${applicantData?.rental_country}, ${applicantData?.rental_adress}, ${applicantData?.rental_city}, ${applicantData?.rental_state}, ${applicantData?.rental_zipcode}`}
-                                              </strong>
-                                            </td>
-                                          </tr>
+                                <div className="applicant-info mt-3">
+                                  <h2>Applicant Information</h2>
+                                  <hr
+                                    style={{
+                                      border: "1px solid black",
+                                      marginTop: "5px",
+                                    }}
+                                  />
+                                  <table>
+                                    <tbody>
+                                      <tr>
+                                        <td>RENTAL ADDRESS:</td>
+                                        <td>
+                                          <strong>
+                                            {`${applicantData?.rental_country}, ${applicantData?.rental_adress}, ${applicantData?.rental_city}, ${applicantData?.rental_state}, ${applicantData?.rental_zipcode}`}
+                                          </strong>
+                                        </td>
+                                      </tr>
 
-                                          <tr>
-                                            <td>RENTAL DATES:</td>
-                                            <td>
-                                              <strong>
-                                                {`${
-                                                  applicantData?.rental_data_from
-                                                } ${"-"} ${
-                                                  applicantData?.rental_date_to
-                                                }`}
-                                              </strong>
-                                            </td>
-                                          </tr>
+                                      <tr>
+                                        <td>RENTAL DATES:</td>
+                                        <td>
+                                          <strong>
+                                            {`${
+                                              applicantData?.rental_data_from
+                                            } ${"-"} ${
+                                              applicantData?.rental_date_to
+                                            }`}
+                                          </strong>
+                                        </td>
+                                      </tr>
 
-                                          <tr>
-                                            <td>MONTHLY RENT:</td>
-                                            <td>
-                                              <strong>
-                                                {
-                                                  applicantData?.rental_monthlyRent
-                                                }
-                                              </strong>
-                                            </td>
-                                          </tr>
+                                      <tr>
+                                        <td>MONTHLY RENT:</td>
+                                        <td>
+                                          <strong>
+                                            {applicantData?.rental_monthlyRent}
+                                          </strong>
+                                        </td>
+                                      </tr>
 
-                                          <tr>
-                                            <td>REASON FOR LEAVING:</td>
-                                            <td>
-                                              <strong>
-                                                {
-                                                  applicantData?.rental_resaonForLeaving
-                                                }
-                                              </strong>
-                                            </td>
-                                          </tr>
+                                      <tr>
+                                        <td>REASON FOR LEAVING:</td>
+                                        <td>
+                                          <strong>
+                                            {
+                                              applicantData?.rental_resaonForLeaving
+                                            }
+                                          </strong>
+                                        </td>
+                                      </tr>
 
-                                          <tr>
-                                            <td>LANDLORD NAME:</td>
-                                            <td>
-                                              <strong>
-                                                {`${
-                                                  applicantData?.rental_landlord_firstName
-                                                } ${"-"} ${
-                                                  applicantData?.rental_landlord_lasttName
-                                                }`}
-                                              </strong>
-                                            </td>
-                                          </tr>
+                                      <tr>
+                                        <td>LANDLORD NAME:</td>
+                                        <td>
+                                          <strong>
+                                            {`${
+                                              applicantData?.rental_landlord_firstName
+                                            } ${"-"} ${
+                                              applicantData?.rental_landlord_lasttName
+                                            }`}
+                                          </strong>
+                                        </td>
+                                      </tr>
 
-                                          <tr>
-                                            <td>LANDLORD PHONE NUMBER:</td>
-                                            <td>
-                                              <strong>
-                                                {
-                                                  applicantData?.rental_landlord_phoneNumber
-                                                }
-                                              </strong>
-                                            </td>
-                                          </tr>
-                                          <tr>
-                                            <td>LANDLORD EMAIL:</td>
-                                            <td>
-                                              <strong>
-                                                {
-                                                  applicantData?.rental_landlord_email
-                                                }
-                                              </strong>
-                                            </td>
-                                          </tr>
-                                        </tbody>
-                                      </table>
-                                    </div>
+                                      <tr>
+                                        <td>LANDLORD PHONE NUMBER:</td>
+                                        <td>
+                                          <strong>
+                                            {
+                                              applicantData?.rental_landlord_phoneNumber
+                                            }
+                                          </strong>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>LANDLORD EMAIL:</td>
+                                        <td>
+                                          <strong>
+                                            {
+                                              applicantData?.rental_landlord_email
+                                            }
+                                          </strong>
+                                        </td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
 
-                                    <div className="applicant-info mt-3">
-                                      <h2 className="hr">Employment</h2>
-                                      <hr
-                                        style={{
-                                          border: "1px solid black",
-                                          marginTop: "5px",
-                                        }}
-                                      />
-                                      <hr />
-                                      <table>
-                                        <tbody>
-                                          <tr>
-                                            <td>EMPLOYER NAME:</td>
-                                            <td>
-                                              <strong>
-                                                {
-                                                  applicantData?.employment_name
-                                                }
-                                              </strong>
-                                            </td>
-                                          </tr>
+                                <div className="applicant-info mt-3">
+                                  <h2 className="hr">Employment</h2>
+                                  <hr
+                                    style={{
+                                      border: "1px solid black",
+                                      marginTop: "5px",
+                                    }}
+                                  />
+                                  <hr />
+                                  <table>
+                                    <tbody>
+                                      <tr>
+                                        <td>EMPLOYER NAME:</td>
+                                        <td>
+                                          <strong>
+                                            {applicantData?.employment_name}
+                                          </strong>
+                                        </td>
+                                      </tr>
 
-                                          <tr>
-                                            <td>EMPLOYER ADDRESS:</td>
-                                            <td>
-                                              <strong>
-                                                {`${applicantData?.employment_country}, ${applicantData?.employment_adress}, ${applicantData?.employment_city}, ${applicantData?.employment_state}, ${applicantData?.employment_zipcode}`}
-                                              </strong>
-                                            </td>
-                                          </tr>
+                                      <tr>
+                                        <td>EMPLOYER ADDRESS:</td>
+                                        <td>
+                                          <strong>
+                                            {`${applicantData?.employment_country}, ${applicantData?.employment_adress}, ${applicantData?.employment_city}, ${applicantData?.employment_state}, ${applicantData?.employment_zipcode}`}
+                                          </strong>
+                                        </td>
+                                      </tr>
 
-                                          <tr>
-                                            <td>EMPLOYER PHONE NUMBER:</td>
-                                            <td>
-                                              <strong>
-                                                {
-                                                  applicantData?.employment_phoneNumber
-                                                }
-                                              </strong>
-                                            </td>
-                                          </tr>
+                                      <tr>
+                                        <td>EMPLOYER PHONE NUMBER:</td>
+                                        <td>
+                                          <strong>
+                                            {
+                                              applicantData?.employment_phoneNumber
+                                            }
+                                          </strong>
+                                        </td>
+                                      </tr>
 
-                                          <tr>
-                                            <td>EMPLOYER EMAIL:</td>
-                                            <td>
-                                              <strong>
-                                                {
-                                                  applicantData?.employment_email
-                                                }
-                                              </strong>
-                                            </td>
-                                          </tr>
-                                          <tr>
-                                            <td>POSITION HELD:</td>
-                                            <td>
-                                              <strong>
-                                                {
-                                                  applicantData?.employment_position
-                                                }
-                                              </strong>
-                                            </td>
-                                          </tr>
+                                      <tr>
+                                        <td>EMPLOYER EMAIL:</td>
+                                        <td>
+                                          <strong>
+                                            {applicantData?.employment_email}
+                                          </strong>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>POSITION HELD:</td>
+                                        <td>
+                                          <strong>
+                                            {applicantData?.employment_position}
+                                          </strong>
+                                        </td>
+                                      </tr>
 
-                                          <tr>
-                                            <td>EMPLOYMENT DATES:</td>
-                                            <td>
-                                              <strong>
-                                                {`${applicantData?.employment_date_from}, ${applicantData?.employment_date_to}`}
-                                              </strong>
-                                            </td>
-                                          </tr>
+                                      <tr>
+                                        <td>EMPLOYMENT DATES:</td>
+                                        <td>
+                                          <strong>
+                                            {`${applicantData?.employment_date_from}, ${applicantData?.employment_date_to}`}
+                                          </strong>
+                                        </td>
+                                      </tr>
 
-                                          <tr>
-                                            <td>MONTHLY GROSS SALARY:</td>
-                                            <td>
-                                              <strong>
-                                                {
-                                                  applicantData?.employment_monthlyGrossSalary
-                                                }
-                                              </strong>
-                                            </td>
-                                          </tr>
+                                      <tr>
+                                        <td>MONTHLY GROSS SALARY:</td>
+                                        <td>
+                                          <strong>
+                                            {
+                                              applicantData?.employment_monthlyGrossSalary
+                                            }
+                                          </strong>
+                                        </td>
+                                      </tr>
 
-                                          <tr>
-                                            <td>SUPERVISOR NAME:</td>
-                                            <td>
-                                              <strong>
-                                                {`${
-                                                  applicantData?.employment_supervisor_first
-                                                } ${" "} ${
-                                                  applicantData?.employment_supervisor_last
-                                                }`}
-                                              </strong>
-                                            </td>
-                                          </tr>
+                                      <tr>
+                                        <td>SUPERVISOR NAME:</td>
+                                        <td>
+                                          <strong>
+                                            {`${
+                                              applicantData?.employment_supervisor_first
+                                            } ${" "} ${
+                                              applicantData?.employment_supervisor_last
+                                            }`}
+                                          </strong>
+                                        </td>
+                                      </tr>
 
-                                          <tr>
-                                            <td>SUPERVISOR TITLE:</td>
-                                            <td>
-                                              <strong>
-                                                {
-                                                  applicantData?.employment_supervisor_title
-                                                }
-                                              </strong>
-                                            </td>
-                                          </tr>
-                                        </tbody>
-                                      </table>
-                                    </div>
-                                  {/* </>
+                                      <tr>
+                                        <td>SUPERVISOR TITLE:</td>
+                                        <td>
+                                          <strong>
+                                            {
+                                              applicantData?.employment_supervisor_title
+                                            }
+                                          </strong>
+                                        </td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                                {/* </>
                                 )} */}
                               </Box>
                             </Grid>
