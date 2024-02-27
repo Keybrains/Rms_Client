@@ -81,7 +81,7 @@ export const handleSubmit = async (
               const imageData = new FormData();
               imageData.append("files", image);
               const res = await axios.post(
-                `${imageUrl}/images/upload`,
+                `${baseUrl}/images/upload`,
                 imageData
               );
               if (res) {

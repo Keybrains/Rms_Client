@@ -55,7 +55,7 @@ const handleImageChange = async (event, rental_id) => {
   var image;
 
   try {
-    const result = await axios.post(`${imageUrl}/images/upload`, formData, {
+    const result = await axios.post(`${baseUrl}/images/upload`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

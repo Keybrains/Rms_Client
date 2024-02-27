@@ -347,7 +347,7 @@ const AddWorkorder = () => {
               const form = new FormData();
               form.append("files", fileItem);
 
-              const res = await axios.post(`${imageUrl}/images/upload`, form);
+              const res = await axios.post(`${baseUrl}/images/upload`, form);
 
               if (
                 res &&
@@ -587,7 +587,7 @@ const AddWorkorder = () => {
               const form = new FormData();
               form.append("files", fileItem);
 
-              const res = await axios.post(`${imageUrl}/images/upload`, form);
+              const res = await axios.post(`${baseUrl}/images/upload`, form);
 
               if (
                 res &&

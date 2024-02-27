@@ -229,7 +229,7 @@ const ApplicantSummary = () => {
           const form = new FormData();
           form.append("files", newFile);
 
-          const res = await axios.post(`${imageUrl}/images/upload`, form);
+          const res = await axios.post(`${baseUrl}/images/upload`, form);
 
           if (res && res.data && res.data.files && res.data.files.length > 0) {
             image = res.data.files[0].url;

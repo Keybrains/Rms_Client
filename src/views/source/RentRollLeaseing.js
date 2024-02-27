@@ -435,7 +435,7 @@ const RentRollLeaseing = () => {
               const form = new FormData();
               form.append("files", fileItem.upload_file);
 
-              const res = await axios.post(`${imageUrl}/images/upload`, form);
+              const res = await axios.post(`${baseUrl}/images/upload`, form);
 
               if (
                 res &&
@@ -565,7 +565,7 @@ const RentRollLeaseing = () => {
               const form = new FormData();
               form.append("files", fileItem.upload_file);
 
-              const res = await axios.post(`${imageUrl}/images/upload`, form);
+              const res = await axios.post(`${baseUrl}/images/upload`, form);
 
               if (
                 res &&

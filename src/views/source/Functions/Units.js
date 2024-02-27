@@ -107,7 +107,7 @@ const handleSubmit = async (rental_id, admin_id, object, file) => {
             const form = new FormData();
             form.append("files", fileItem);
 
-            const res = await axios.post(`${imageUrl}/images/upload`, form);
+            const res = await axios.post(`${baseUrl}/images/upload`, form);
 
             if (
               res &&
@@ -164,7 +164,7 @@ const handleUnitDetailsEdit = async (unit_id, object, file) => {
             const form = new FormData();
             form.append("files", fileItem);
 
-            const res = await axios.post(`${imageUrl}/images/upload`, form);
+            const res = await axios.post(`${baseUrl}/images/upload`, form);
 
             if (
               res &&
