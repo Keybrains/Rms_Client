@@ -303,7 +303,9 @@ const ApplicantSummary = () => {
   const handleMoveIn = () => {
     setMoveinLoader(true);
     try {
-      navigate(`/${admin}/RentRollLeaseing/${applicantLeaseData?.lease_id}/${id}`);
+      navigate(
+        `/${admin}/RentRollLeaseing/${applicantLeaseData?.lease_id}/${id}`
+      );
     } catch (error) {
       console.error("Error: ", error.message);
     } finally {
@@ -329,16 +331,17 @@ const ApplicantSummary = () => {
                   <h1 style={{ color: "white" }}>
                     Applicant:{" "}
                     {applicantData?.applicant_firstName &&
-                      applicantData?.applicant_lastName
+                    applicantData?.applicant_lastName
                       ? `${applicantData.applicant_firstName} ${applicantData.applicant_lastName}`
                       : "Unknown"}
                   </h1>
 
                   <h4 style={{ color: "white" }}>
                     {applicantLeaseData?.rental_adress &&
-                      `${applicantLeaseData?.rental_adress} ${applicantLeaseData?.rental_unit
-                        ? " - " + applicantLeaseData?.rental_unit
-                        : ""
+                      `${applicantLeaseData?.rental_adress} ${
+                        applicantLeaseData?.rental_unit
+                          ? " - " + applicantLeaseData?.rental_unit
+                          : ""
                       }`}
                   </h4>
                 </>
@@ -381,12 +384,12 @@ const ApplicantSummary = () => {
                 <Dropdown isOpen={isOpen} toggle={toggle}>
                   <DropdownToggle caret style={{ width: "100%" }}>
                     {applicantData &&
-                      applicantData.applicant_status &&
-                      applicantData?.applicant_status[0]?.status
+                    applicantData.applicant_status &&
+                    applicantData?.applicant_status[0]?.status
                       ? applicantData?.applicant_status[0]?.status
                       : selectedStatus
-                        ? selectedStatus
-                        : "Select"}
+                      ? selectedStatus
+                      : "Select"}
                   </DropdownToggle>
                   <DropdownMenu style={{ width: "100%" }} name="rent_cycle">
                     {dropdownList.map((item, index) => {
@@ -417,7 +420,6 @@ const ApplicantSummary = () => {
                   }}
                   color="success"
                   onClick={() => {
-                    // fetchDataAndPost();
                     handleMoveIn();
                   }}
                   disabled={applicantData && applicantData.isMovedin === true}
@@ -438,7 +440,7 @@ const ApplicantSummary = () => {
                           value="Summary"
                           style={{ textTransform: "none" }}
                         />
-                        <Tab
+                        {/* <Tab
                           label="Application"
                           value="Application"
                           style={{ textTransform: "none" }}
@@ -452,7 +454,7 @@ const ApplicantSummary = () => {
                           label="Rejected"
                           value="Rejected"
                           style={{ textTransform: "none" }}
-                        />
+                        /> */}
                       </TabList>
                     </Box>
 
@@ -897,7 +899,7 @@ const ApplicantSummary = () => {
                                 </>
                               )}
 
-                              <>
+                              {/* <>
                                 <Row
                                   className="w-100 my-3 "
                                   style={{
@@ -926,8 +928,8 @@ const ApplicantSummary = () => {
                                       <Col>
                                         {item?.status
                                           ? arrayOfStatus.find(
-                                            (x) => x.value === item.status
-                                          )?.label
+                                              (x) => x.value === item.status
+                                            )?.label
                                           : "N/A"}
                                       </Col>
                                       <Col>
@@ -938,7 +940,7 @@ const ApplicantSummary = () => {
                                     </Row>
                                   )
                                 )}
-                              </>
+                              </> */}
                             </Grid>
 
                             <Grid item xs="12" md="6" lg="4" xl="3">
@@ -1069,13 +1071,14 @@ const ApplicantSummary = () => {
                       </Row>
                     </TabPanel>
 
-                    <TabPanel value="Application">
+                    {/* working but all data is not get */}
+                    {/* <TabPanel value="Application">
                       <Row style={{ backgroundColor: "" }}>
                         <Col>
                           <Grid container spacing={3}>
                             <Grid item xs={12}>
                               <Box>
-                                {/* {isApplicantDataEmpty ? (
+                                {isApplicantDataEmpty ? (
                                   <section className="">
                                     <div className="row d-flex ">
                                       <div>
@@ -1142,417 +1145,604 @@ const ApplicantSummary = () => {
                                       </div>
                                     </div>
                                   </section>
-                                ) : ( */}
-                                {/* <> */}
-                                <div className="applicant-info mt-3">
-                                  <div className="d-flex">
-                                    <h2 style={{
-                                      fontSize: "22px",
-                                      textTransform: "capitalize",
-                                      color: "#5e72e4",
-                                      fontWeight: "600",
-
-                                    }}>Rental history</h2>
-                                    <Link
-                                      to={`/${admin}/applicant-form/${id}`}
-                                      target="_blank"
-                                      className="btn btn-secondary ml-sm-3 mt-3 mt-sm-0 mb-2"
-                                      style={{
-                                        borderRadius: "10px",
-                                        transition:
-                                          "border-color 0.3s ease-in-out, background-color 0.3s ease-in-out",
-                                      }}
-                                    >
-                                      Edit
-                                    </Link>
-                                  </div>
-                                  <hr
-                                    style={{
-                                      border: "1px solid #ddd",
-                                      marginTop: "5px",
-                                    }}
-                                  />
-                                  <Table
-                                    className="align-items-center table-flush"
-                                    responsive
-                                    style={{ width: "100%" }}
-                                  >
-
-                                    <div className="">
-                                      <Row
-                                        className=" mb-1"
+                                ) : (
+                                  <>
+                                    <div className="applicant-info mt-3">
+                                      <div className="d-flex">
+                                        <h2
+                                          style={{
+                                            fontSize: "22px",
+                                            textTransform: "capitalize",
+                                            color: "#5e72e4",
+                                            fontWeight: "600",
+                                          }}
+                                        >
+                                          Rental history
+                                        </h2>
+                                        <Link
+                                          to={`/${admin}/applicant-form/${id}`}
+                                          target="_blank"
+                                          className="btn btn-secondary ml-sm-3 mt-3 mt-sm-0 mb-2"
+                                          style={{
+                                            borderRadius: "10px",
+                                            transition:
+                                              "border-color 0.3s ease-in-out, background-color 0.3s ease-in-out",
+                                          }}
+                                        >
+                                          Edit
+                                        </Link>
+                                      </div>
+                                      <hr
                                         style={{
-                                          fontSize: "14px",
-                                          textTransform: "uppercase",
-                                          color: "#aaa",
-                                          width: "100%",
+                                          border: "1px solid #ddd",
+                                          marginTop: "5px",
                                         }}
+                                      />
+                                      <Table
+                                        className="align-items-center table-flush"
+                                        responsive
+                                        style={{ width: "100%" }}
                                       >
-                                        <Col lg="3" md="3">APPLICANT NAME</Col>
-                                        <Col lg="3" md="3">APPLICANT SOCIAL SECURITY NUMBER</Col>
-                                        <Col lg="3" md="3">APPLICANT BIRTH DATE</Col>
-                                        <Col lg="3" md="3">APPLICANT CURRENT ADDRESS</Col>
-
-                                      </Row>
-                                      <Row
-                                        className="w-100 mt-1 mb-5"
-                                        style={{
-                                          fontSize: "14px",
-                                          textTransform: "capitalize",
-                                          color: "#000",
-                                        }}
-                                      >
-                                        <Col lg="3" md="3"> {`${applicantData?.applicant_firstName
-                                          } ${" "} ${applicantData?.applicant_lastName
-                                          }`}</Col>
-                                        <Col lg="3" md="3">
-                                          {
-                                            applicantData?.applicant_socialSecurityNumber
-                                          }
-                                        </Col>
-                                        <Col lg="3" md="3">
-                                          {applicantData?.applicant_dob}
-                                        </Col>
-                                        <Col lg="3" md="3">
-                                          {`${applicantData?.applicant_country}, ${applicantData?.applicant_adress}, ${applicantData?.applicant_city}, ${applicantData?.applicant_state}, ${applicantData?.applicant_zipcode}`}
-                                        </Col>
-                                      </Row>
-                                      <Row
-                                        className=" mb-1"
-                                        style={{
-                                          fontSize: "14px",
-                                          textTransform: "uppercase",
-                                          color: "#aaa",
-                                          width: "100%",
-                                        }}
-                                      >
-                                        <Col lg="3" md="3">APPLICANT EMAIL</Col>
-                                        <Col lg="3" md="3">APPLICANT CELL PHONE</Col>
-                                        <Col lg="3" md="3">APPLICANT HOME PHONE</Col>
-                                        <Col lg="3" md="3">EMERGENCY CONTACT NAME</Col>
-
-                                      </Row>
-                                      <Row
-                                        className="w-100 mt-1 mb-5"
-                                        style={{
-                                          fontSize: "14px",
-                                          textTransform: "capitalize",
-                                          color: "#000",
-                                        }}
-                                      >
-                                        <Col lg="3" md="3">
-                                          {
-                                            applicantData?.applicant_email
-                                          }
-                                        </Col>
-                                        <Col lg="3" md="3">
-                                          {
-                                            applicantData?.applicant_cellPhone
-                                          }
-                                        </Col>
-                                        <Col lg="3" md="3">
-                                          {
-                                            applicantData?.applicant_homePhone
-                                          }
-                                        </Col>
-                                        <Col lg="3" md="3">
-                                          {`${applicantData?.applicant_emergencyContact_firstName}, ${applicantData?.applicant_emergencyContact_lasttName}`}
-                                        </Col>
-                                      </Row>
-                                      <Row
-                                        className=" mb-1"
-                                        style={{
-                                          fontSize: "14px",
-                                          textTransform: "uppercase",
-                                          color: "#aaa",
-                                          width: "100%",
-                                        }}
-                                      >
-                                        <Col lg="3" md="3">EMERGENCY CONTACT RELATIONSHIP</Col>
-                                        <Col lg="3" md="3">EMERGENCY CONTACT EMAIL</Col>
-                                        <Col lg="3" md="3">EMERGENCY CONTACT PHONE</Col>
-
-
-                                      </Row>
-                                      <Row
-                                        className="w-100 mt-1 mb-5"
-                                        style={{
-                                          fontSize: "14px",
-                                          textTransform: "capitalize",
-                                          color: "#000",
-                                        }}
-                                      >
-                                        <Col lg="3" md="3">
-                                          {
-                                            applicantData?.applicant_emergencyContact_relationship
-                                          }
-                                        </Col>
-                                        <Col lg="3" md="3">
-                                          {
-                                            applicantData?.applicant_emergencyContact_email
-                                          }
-                                        </Col>
-                                        <Col lg="3" md="3">
-                                          {
-                                            applicantData?.applicant_emergencyContact_phone
-                                          }
-                                        </Col>
-
-                                      </Row>
+                                        <div className="">
+                                          <Row
+                                            className=" mb-1"
+                                            style={{
+                                              fontSize: "14px",
+                                              textTransform: "uppercase",
+                                              color: "#aaa",
+                                              width: "100%",
+                                            }}
+                                          >
+                                            <Col lg="3" md="3">
+                                              APPLICANT NAME
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              APPLICANT SOCIAL SECURITY NUMBER
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              APPLICANT BIRTH DATE
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              APPLICANT CURRENT ADDRESS
+                                            </Col>
+                                          </Row>
+                                          <Row
+                                            className="w-100 mt-1 mb-5"
+                                            style={{
+                                              fontSize: "14px",
+                                              textTransform: "capitalize",
+                                              color: "#000",
+                                            }}
+                                          >
+                                            <Col lg="3" md="3">
+                                              {`${
+                                                applicantData?.applicant_firstName
+                                                  ? applicantData?.applicant_firstName
+                                                  : ""
+                                              } ${
+                                                applicantData?.applicant_lastName
+                                                  ? applicantData?.applicant_lastName
+                                                  : ""
+                                              }`}
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              {applicantData?.applicant_socialSecurityNumber
+                                                ? applicantData?.applicant_socialSecurityNumber
+                                                : ""}
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              {applicantData?.applicant_dob
+                                                ? applicantData?.applicant_dob
+                                                : ""}
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              {`${
+                                                applicantData?.applicant_country
+                                                  ? applicantData?.applicant_country +
+                                                    ", "
+                                                  : ""
+                                              } ${
+                                                applicantData?.applicant_adress
+                                                  ? applicantData?.applicant_adress +
+                                                    ", "
+                                                  : ""
+                                              } ${
+                                                applicantData?.applicant_city
+                                                  ? applicantData?.applicant_city +
+                                                    ", "
+                                                  : ""
+                                              } ${
+                                                applicantData?.applicant_state
+                                                  ? applicantData?.applicant_state +
+                                                    ", "
+                                                  : ""
+                                              } ${
+                                                applicantData?.applicant_zipcode
+                                                  ? applicantData?.applicant_zipcode
+                                                  : ""
+                                              }`}
+                                            </Col>
+                                          </Row>
+                                          <Row
+                                            className=" mb-1"
+                                            style={{
+                                              fontSize: "14px",
+                                              textTransform: "uppercase",
+                                              color: "#aaa",
+                                              width: "100%",
+                                            }}
+                                          >
+                                            <Col lg="3" md="3">
+                                              APPLICANT EMAIL
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              APPLICANT PHONE
+                                            </Col>
+                                          </Row>
+                                          <Row
+                                            className="w-100 mt-1 mb-5"
+                                            style={{
+                                              fontSize: "14px",
+                                              textTransform: "capitalize",
+                                              color: "#000",
+                                            }}
+                                          >
+                                            <Col lg="3" md="3">
+                                              {applicantData?.applicant_email
+                                                ? applicantData?.applicant_email
+                                                : ""}
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              {applicantData?.applicant_phoneNumber
+                                                ? applicantData?.applicant_phoneNumber
+                                                : ""}
+                                            </Col>
+                                          </Row>
+                                        </div>
+                                      </Table>
                                     </div>
-                                  </Table>
-                                </div>
 
-                                <div className="applicant-info mt-3">
-                                  <h2 style={{
-                                    fontSize: "22px",
-                                    textTransform: "capitalize",
-                                    color: "#5e72e4",
-                                    fontWeight: "600",
-
-                                  }}>Applicant Information</h2>
-                                  <hr
-                                    style={{
-                                      border: "1px solid #ddd",
-                                      marginTop: "5px",
-                                    }}
-                                  />
-                                  <Table
-                                    className="align-items-center table-flush"
-                                    responsive
-                                    style={{ width: "100%" }}
-                                  >
-
-                                    <div className="">
-                                      <Row
-                                        className=" mb-1"
+                                    <div className="applicant-info mt-3">
+                                      <h2
                                         style={{
-                                          fontSize: "14px",
-                                          textTransform: "uppercase",
-                                          color: "#aaa",
-                                          width: "100%",
-                                        }}
-                                      >
-                                        <Col lg="3" md="3">RENTAL ADDRESS</Col>
-                                        <Col lg="3" md="3">RENTAL DATES</Col>
-                                        <Col lg="3" md="3">MONTHLY RENT</Col>
-                                        <Col lg="3" md="3">REASON FOR LEAVING</Col>
-
-                                      </Row>
-                                      <Row
-                                        className="w-100 mt-1 mb-5"
-                                        style={{
-                                          fontSize: "14px",
+                                          fontSize: "22px",
                                           textTransform: "capitalize",
-                                          color: "#000",
+                                          color: "#5e72e4",
+                                          fontWeight: "600",
                                         }}
                                       >
-                                        <Col lg="3" md="3">  {`${applicantData?.rental_country}, ${applicantData?.rental_adress}, ${applicantData?.rental_city}, ${applicantData?.rental_state}, ${applicantData?.rental_zipcode}`}</Col>
-                                        <Col lg="3" md="3">
-                                          {`${applicantData?.rental_data_from
-                                            } ${"-"} ${applicantData?.rental_date_to
-                                            }`}
-                                        </Col>
-                                        <Col lg="3" md="3">
-                                          {
-                                            applicantData?.rental_monthlyRent
-                                          }
-                                        </Col>
-                                        <Col lg="3" md="3">
-                                          {
-                                            applicantData?.rental_resaonForLeaving
-                                          }
-                                        </Col>
-                                      </Row>
-                                      <Row
-                                        className=" mb-1"
+                                        Applicant Information
+                                      </h2>
+                                      <hr
                                         style={{
-                                          fontSize: "14px",
-                                          textTransform: "uppercase",
-                                          color: "#aaa",
-                                          width: "100%",
+                                          border: "1px solid #ddd",
+                                          marginTop: "5px",
                                         }}
+                                      />
+                                      <Table
+                                        className="align-items-center table-flush"
+                                        responsive
+                                        style={{ width: "100%" }}
                                       >
-                                        <Col lg="3" md="3">LANDLORD NAME</Col>
-                                        <Col lg="3" md="3">LANDLORD PHONE NUMBER</Col>
-                                        <Col lg="3" md="3">LANDLORD EMAIL</Col>
-
-
-                                      </Row>
-                                      <Row
-                                        className="w-100 mt-1 mb-5"
-                                        style={{
-                                          fontSize: "14px",
-                                          textTransform: "capitalize",
-                                          color: "#000",
-                                        }}
-                                      >
-                                        <Col lg="3" md="3">
-                                          {`${applicantData?.rental_landlord_firstName
-                                            } ${"-"} ${applicantData?.rental_landlord_lasttName
-                                            }`}
-                                        </Col>
-                                        <Col lg="3" md="3">
-                                          {
-                                            applicantData?.rental_landlord_phoneNumber
-                                          }
-                                        </Col>
-                                        <Col lg="3" md="3">
-                                          {
-                                            applicantData?.rental_landlord_email
-                                          }
-                                        </Col>
-
-                                      </Row>
-
+                                        <div className="">
+                                          <Row
+                                            className=" mb-1"
+                                            style={{
+                                              fontSize: "14px",
+                                              textTransform: "uppercase",
+                                              color: "#aaa",
+                                              width: "100%",
+                                            }}
+                                          >
+                                            <Col lg="3" md="3">
+                                              RENTAL ADDRESS
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              RENTAL DATES
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              MONTHLY RENT
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              REASON FOR LEAVING
+                                            </Col>
+                                          </Row>
+                                          <Row
+                                            className="w-100 mt-1 mb-5"
+                                            style={{
+                                              fontSize: "14px",
+                                              textTransform: "capitalize",
+                                              color: "#000",
+                                            }}
+                                          >
+                                            <Col lg="3" md="3">
+                                              {" "}
+                                              {`${
+                                                applicantData?.rental_country
+                                                  ? applicantData?.rental_country +
+                                                    ", "
+                                                  : ""
+                                              } ${
+                                                applicantData?.rental_adress
+                                                  ? applicantData?.rental_adress +
+                                                    ", "
+                                                  : ""
+                                              } ${
+                                                applicantData?.rental_city
+                                                  ? applicantData?.rental_city +
+                                                    ", "
+                                                  : ""
+                                              } ${
+                                                applicantData?.rental_state
+                                                  ? applicantData?.rental_state +
+                                                    ", "
+                                                  : ""
+                                              } ${
+                                                applicantData?.rental_zipcode
+                                                  ? applicantData?.rental_zipcode
+                                                  : ""
+                                              }`}
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              {`${
+                                                applicantData?.rental_data_from
+                                                  ? applicantData?.rental_data_from +
+                                                    "to "
+                                                  : ""
+                                              } ${
+                                                applicantData?.rental_date_to
+                                                  ? applicantData?.rental_date_to
+                                                  : ""
+                                              }`}
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              {applicantData?.rental_monthlyRent
+                                                ? applicantData?.rental_monthlyRent
+                                                : ""}
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              {applicantData?.rental_resaonForLeaving
+                                                ? applicantData?.rental_resaonForLeaving
+                                                : ""}
+                                            </Col>
+                                          </Row>
+                                          <Row
+                                            className=" mb-1"
+                                            style={{
+                                              fontSize: "14px",
+                                              textTransform: "uppercase",
+                                              color: "#aaa",
+                                              width: "100%",
+                                            }}
+                                          >
+                                            <Col lg="3" md="3">
+                                              RENTAL OWNER NAME
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              RENTAL OWNER PHONE NUMBER
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              RENTAL OWNER EMAIL
+                                            </Col>
+                                          </Row>
+                                          {console.log(applicantData)}
+                                          <Row
+                                            className="w-100 mt-1 mb-5"
+                                            style={{
+                                              fontSize: "14px",
+                                              textTransform: "capitalize",
+                                              color: "#000",
+                                            }}
+                                          >
+                                            <Col lg="3" md="3">
+                                              {`${
+                                                applicantData?.rental_landlord_firstName
+                                                  ? applicantData?.rental_landlord_firstName
+                                                  : ""
+                                              } ${
+                                                applicantData?.rental_landlord_lasttName
+                                                  ? applicantData?.rental_landlord_lasttName
+                                                  : ""
+                                              }`}
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              {applicantData?.rental_landlord_phoneNumber
+                                                ? applicantData?.rental_landlord_phoneNumber
+                                                : ""}
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              {applicantData?.rental_landlord_email
+                                                ? applicantData?.rental_landlord_email
+                                                : ""}
+                                            </Col>
+                                          </Row>
+                                        </div>
+                                      </Table>
                                     </div>
-                                  </Table>
-                              
-                                </div>
 
-                                <div className="applicant-info mt-3">
-                                  <h2 style={{
-                                    fontSize: "22px",
-                                    textTransform: "capitalize",
-                                    color: "#5e72e4",
-                                    fontWeight: "600",
-
-                                  }}>Employment</h2>
-                                  <hr
-                                    style={{
-                                      border: "1px solid #ddd",
-                                      marginTop: "5px",
-                                    }}
-                                  />
-                                 
-                                  <Table
-                                    className="align-items-center table-flush"
-                                    responsive
-                                    style={{ width: "100%" }}
-                                  >
-
-                                    <div className="">
-                                      <Row
-                                        className=" mb-1"
+                                    <div className="applicant-info mt-3">
+                                      <h2
                                         style={{
-                                          fontSize: "14px",
-                                          textTransform: "uppercase",
-                                          color: "#aaa",
-                                          width: "100%",
-                                        }}
-                                      >
-                                        <Col lg="3" md="3">EMPLOYER NAME</Col>
-                                        <Col lg="3" md="3">EMPLOYER ADDRESS</Col>
-                                        <Col lg="3" md="3">EMPLOYER PHONE NUMBER</Col>
-                                        <Col lg="3" md="3">EMPLOYER EMAIL</Col>
-
-                                      </Row>
-                                      <Row
-                                        className="w-100 mt-1 mb-5"
-                                        style={{
-                                          fontSize: "14px",
+                                          fontSize: "22px",
                                           textTransform: "capitalize",
-                                          color: "#000",
+                                          color: "#5e72e4",
+                                          fontWeight: "600",
                                         }}
                                       >
-                                        <Col lg="3" md="3"> {
-                                          applicantData?.employment_name
-                                        }</Col>
-                                        <Col lg="3" md="3">
-                                          {`${applicantData?.employment_country}, ${applicantData?.employment_adress}, ${applicantData?.employment_city}, ${applicantData?.employment_state}, ${applicantData?.employment_zipcode}`}
-                                        </Col>
-                                        <Col lg="3" md="3">
-                                          {
-                                            applicantData?.employment_phoneNumber
-                                          }
-                                        </Col>
-                                        <Col lg="3" md="3">
-                                          {
-                                            applicantData?.employment_email
-                                          }
-                                        </Col>
-                                      </Row>
-                                      <Row
-                                        className=" mb-1"
+                                        Emergency Contact Information
+                                      </h2>
+                                      <hr
                                         style={{
-                                          fontSize: "14px",
-                                          textTransform: "uppercase",
-                                          color: "#aaa",
-                                          width: "100%",
+                                          border: "1px solid #ddd",
+                                          marginTop: "5px",
                                         }}
+                                      />
+                                      <Table
+                                        className="align-items-center table-flush"
+                                        responsive
+                                        style={{ width: "100%" }}
                                       >
-                                        <Col lg="3" md="3">POSITION HELD</Col>
-                                        <Col lg="3" md="3">EMPLOYMENT DATES</Col>
-                                        <Col lg="3" md="3">MONTHLY GROSS SALARY</Col>
-                                        <Col lg="3" md="3">SUPERVISOR NAME</Col>
-
-                                      </Row>
-                                      <Row
-                                        className="w-100 mt-1 mb-5"
-                                        style={{
-                                          fontSize: "14px",
-                                          textTransform: "capitalize",
-                                          color: "#000",
-                                        }}
-                                      >
-                                        <Col lg="3" md="3">
-                                          {
-                                            applicantData?.employment_position
-                                          }
-                                        </Col>
-                                        <Col lg="3" md="3">
-                                          {`${applicantData?.employment_date_from}, ${applicantData?.employment_date_to}`}
-                                        </Col>
-                                        <Col lg="3" md="3">
-                                          {
-                                            applicantData?.employment_monthlyGrossSalary
-                                          }
-                                        </Col>
-                                        <Col lg="3" md="3">
-                                          {`${applicantData?.employment_supervisor_first
-                                            } ${" "} ${applicantData?.employment_supervisor_last
-                                            }`}
-                                        </Col>
-                                      </Row>
-                                      <Row
-                                        className=" mb-1"
-                                        style={{
-                                          fontSize: "14px",
-                                          textTransform: "uppercase",
-                                          color: "#aaa",
-                                          width: "100%",
-                                        }}
-                                      >
-                                        <Col lg="3" md="3">SUPERVISOR TITLE</Col>
-                                      </Row>
-                                      <Row
-                                        className="w-100 mt-1 mb-5"
-                                        style={{
-                                          fontSize: "14px",
-                                          textTransform: "capitalize",
-                                          color: "#000",
-                                        }}
-                                      >
-                                        <Col lg="3" md="3">
-                                          {
-                                            applicantData?.employment_supervisor_title
-                                          }
-                                        </Col>
-
-
-                                      </Row>
+                                        <div className="">
+                                          <Row
+                                            className=" mb-1"
+                                            style={{
+                                              fontSize: "14px",
+                                              textTransform: "uppercase",
+                                              color: "#aaa",
+                                              width: "100%",
+                                            }}
+                                          >
+                                            <Col lg="3" md="3">
+                                              EMERGENCY CONTACT NAME
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              EMERGENCY CONTACT RELATIONSHIP
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              EMERGENCY CONTACT EMAIL
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              EMERGENCY CONTACT PHONE
+                                            </Col>
+                                          </Row>
+                                          <Row
+                                            className="w-100 mt-1 mb-5"
+                                            style={{
+                                              fontSize: "14px",
+                                              textTransform: "capitalize",
+                                              color: "#000",
+                                            }}
+                                          >
+                                            <Col lg="3" md="3">
+                                              {`${
+                                                applicantData?.applicant_emergencyContact_firstName
+                                                  ? applicantData?.applicant_emergencyContact_firstName
+                                                  : ""
+                                              } ${
+                                                applicantData?.applicant_emergencyContact_lasttName
+                                                  ? applicantData?.applicant_emergencyContact_lasttName
+                                                  : ""
+                                              }`}
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              {applicantData?.applicant_emergencyContact_relationship
+                                                ? applicantData?.applicant_emergencyContact_relationship
+                                                : ""}
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              {applicantData?.applicant_emergencyContact_email
+                                                ? applicantData?.applicant_emergencyContact_email
+                                                : ""}
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              {applicantData?.applicant_emergencyContact_phone
+                                                ? applicantData?.applicant_emergencyContact_phone
+                                                : ""}
+                                            </Col>
+                                          </Row>
+                                        </div>
+                                      </Table>
                                     </div>
-                                  </Table>
-                                
-                                </div>
-                                {/* </>
-                                )} */}
+                                    <div className="applicant-info mt-3">
+                                      <h2
+                                        style={{
+                                          fontSize: "22px",
+                                          textTransform: "capitalize",
+                                          color: "#5e72e4",
+                                          fontWeight: "600",
+                                        }}
+                                      >
+                                        Employment
+                                      </h2>
+                                      <hr
+                                        style={{
+                                          border: "1px solid #ddd",
+                                          marginTop: "5px",
+                                        }}
+                                      />
+
+                                      <Table
+                                        className="align-items-center table-flush"
+                                        responsive
+                                        style={{ width: "100%" }}
+                                      >
+                                        <div className="">
+                                          <Row
+                                            className=" mb-1"
+                                            style={{
+                                              fontSize: "14px",
+                                              textTransform: "uppercase",
+                                              color: "#aaa",
+                                              width: "100%",
+                                            }}
+                                          >
+                                            <Col lg="3" md="3">
+                                              EMPLOYER NAME
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              EMPLOYER ADDRESS
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              EMPLOYER PHONE NUMBER
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              EMPLOYER EMAIL
+                                            </Col>
+                                          </Row>
+                                          <Row
+                                            className="w-100 mt-1 mb-5"
+                                            style={{
+                                              fontSize: "14px",
+                                              textTransform: "capitalize",
+                                              color: "#000",
+                                            }}
+                                          >
+                                            <Col lg="3" md="3">
+                                              {" "}
+                                              {applicantData?.employment_name
+                                                ? applicantData?.employment_name
+                                                : ""}
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              {`${
+                                                applicantData?.employment_country
+                                                  ? applicantData?.employment_country +
+                                                    ", "
+                                                  : ""
+                                              } ${
+                                                applicantData?.employment_adress
+                                                  ? applicantData?.employment_adress +
+                                                    ", "
+                                                  : ""
+                                              } ${
+                                                applicantData?.employment_city
+                                                  ? applicantData?.employment_city +
+                                                    ", "
+                                                  : ""
+                                              } ${
+                                                applicantData?.employment_state
+                                                  ? applicantData?.employment_state +
+                                                    ", "
+                                                  : ""
+                                              } ${
+                                                applicantData?.employment_zipcode
+                                                  ? applicantData?.employment_zipcode
+                                                  : ""
+                                              }`}
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              {applicantData?.employment_phoneNumber
+                                                ? applicantData?.employment_phoneNumber
+                                                : ""}
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              {applicantData?.employment_email
+                                                ? applicantData?.employment_email
+                                                : ""}
+                                            </Col>
+                                          </Row>
+                                          <Row
+                                            className=" mb-1"
+                                            style={{
+                                              fontSize: "14px",
+                                              textTransform: "uppercase",
+                                              color: "#aaa",
+                                              width: "100%",
+                                            }}
+                                          >
+                                            <Col lg="3" md="3">
+                                              POSITION HELD
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              EMPLOYMENT DATES
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              MONTHLY GROSS SALARY
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              SUPERVISOR NAME
+                                            </Col>
+                                          </Row>
+                                          <Row
+                                            className="w-100 mt-1 mb-5"
+                                            style={{
+                                              fontSize: "14px",
+                                              textTransform: "capitalize",
+                                              color: "#000",
+                                            }}
+                                          >
+                                            <Col lg="3" md="3">
+                                              {applicantData?.employment_position
+                                                ? applicantData?.employment_position
+                                                : ""}
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              {`${
+                                                applicantData?.employment_date_from
+                                                  ? applicantData?.employment_date_from +
+                                                    "to "
+                                                  : ""
+                                              } ${
+                                                applicantData?.employment_date_to
+                                                  ? applicantData?.employment_date_to
+                                                  : ""
+                                              }`}
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              {applicantData?.employment_monthlyGrossSalary
+                                                ? applicantData?.employment_monthlyGrossSalary
+                                                : ""}
+                                            </Col>
+                                            <Col lg="3" md="3">
+                                              {`${
+                                                applicantData?.employment_supervisor_first
+                                                  ? applicantData?.employment_supervisor_first
+                                                  : ""
+                                              } ${" "} ${
+                                                applicantData?.employment_supervisor_last
+                                                  ? applicantData?.employment_supervisor_last
+                                                  : ""
+                                              }`}
+                                            </Col>
+                                          </Row>
+                                          <Row
+                                            className=" mb-1"
+                                            style={{
+                                              fontSize: "14px",
+                                              textTransform: "uppercase",
+                                              color: "#aaa",
+                                              width: "100%",
+                                            }}
+                                          >
+                                            <Col lg="3" md="3">
+                                              SUPERVISOR TITLE
+                                            </Col>
+                                          </Row>
+                                          <Row
+                                            className="w-100 mt-1 mb-5"
+                                            style={{
+                                              fontSize: "14px",
+                                              textTransform: "capitalize",
+                                              color: "#000",
+                                            }}
+                                          >
+                                            <Col lg="3" md="3">
+                                              {applicantData?.employment_supervisor_title
+                                                ? applicantData?.employment_supervisor_title
+                                                : ""}
+                                            </Col>
+                                          </Row>
+                                        </div>
+                                      </Table>
+                                    </div>
+                                  </>
+                                )}
                               </Box>
                             </Grid>
                           </Grid>
                         </Col>
                       </Row>
-                    </TabPanel>
+                    </TabPanel> */}
 
                     {/* <TabPanel value="Approved">
                       <CardHeader className="border-0">
