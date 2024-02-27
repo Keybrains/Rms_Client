@@ -52,6 +52,7 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import { RotatingLines } from "react-loader-spinner";
 
 const Index = (props) => {
 
@@ -60,6 +61,8 @@ const Index = (props) => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
+  let [loader, setLoader] = React.useState(true);
+
   let navigate = useNavigate();
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
@@ -130,6 +133,7 @@ const Index = (props) => {
         const response4 = await axios.get(
           `${baseUrl}/staffmember/staff_count/${accessType.admin_id}`);
         console.log(response1, "firsti")
+        setLoader(false);
         const newData = {
           tenants: response1.data.count,
           rentals: response2.data.count,
@@ -150,176 +154,189 @@ const Index = (props) => {
     <>
       <Header />
       <Container className="mt--7" fluid>
-        <Row>
-          <Col
-            xl="3"
-            onClick={() => {
-              navigate("/" + admin + "/propertiesTable");
-            }}
-          >
-            <Card
-              className="shadow h-100 mx-2 mt-3 pt-3"
-              style={{ backgroundColor: "#d1e9fc", cursor: "pointer" }}
+        {loader ? (
+          <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+            <RotatingLines
+              strokeColor="grey"
+              strokeWidth="5"
+              animationDuration="0.75"
+              width="50"
+              visible={loader}
+            />
+          </div>
+        ) : (
+          <Row>
+            <Col
+              xl="3"
+              onClick={() => {
+                navigate("/" + admin + "/propertiesTable");
+              }}
             >
-              <CardBody className="d-flex flex-column justify-content-center  text-center">
-                <div className="d-flex align-items-center flex-column p-3">
+
+              <Card
+                className="shadow h-100 mx-2 mt-3 pt-3"
+                style={{ backgroundColor: "#d1e9fc", cursor: "pointer" }}
+              >
+                <CardBody className="d-flex flex-column justify-content-center  text-center">
+                  <div className="d-flex align-items-center flex-column p-3">
+                    <div
+                      className="d-flex justify-content-center align-items-center"
+                      style={{
+                        color: "#000080",
+                        width: "70px",
+                        height: "70px",
+                        fontSize: "30px",
+                        borderRadius: "50%",
+                        background:
+                          "linear-gradient(125deg, #fff 10%, #d1e9fc, #d1e9fc)",
+                      }}
+                    >
+                      <i className="ni ni-pin-3"></i>
+                    </div>
+                    <div style={{ color: "#000080", fontSize: "20px" }}>
+                      Properties
+                    </div>
+                  </div>
                   <div
-                    className="d-flex justify-content-center align-items-center"
                     style={{
                       color: "#000080",
-                      width: "70px",
-                      height: "70px",
-                      fontSize: "30px",
-                      borderRadius: "50%",
-                      background:
-                        "linear-gradient(125deg, #fff 10%, #d1e9fc, #d1e9fc)",
+                      fontSize: "22px",
+                      fontWeight: "bold",
                     }}
                   >
-                    <i className="ni ni-pin-3"></i>
+                    {data.rentals}
                   </div>
-                  <div style={{ color: "#000080", fontSize: "20px" }}>
-                    Properties
-                  </div>
-                </div>
-                <div
-                  style={{
-                    color: "#000080",
-                    fontSize: "22px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {data.rentals}
-                </div>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col
-            xl="3"
-            onClick={() => {
-              navigate("/" + admin + "/TenantsTable");
-            }}
-          >
-            <Card
-              className="shadow h-100 mx-2 mt-3 pt-3"
-              style={{ backgroundColor: "#000080", cursor: "pointer" }}
+                </CardBody>
+              </Card>
+            </Col>
+            <Col
+              xl="3"
+              onClick={() => {
+                navigate("/" + admin + "/TenantsTable");
+              }}
             >
-              <CardBody className="d-flex flex-column justify-content-center  text-center">
-                <div className="d-flex align-items-center flex-column p-3">
+              <Card
+                className="shadow h-100 mx-2 mt-3 pt-3"
+                style={{ backgroundColor: "#000080", cursor: "pointer" }}
+              >
+                <CardBody className="d-flex flex-column justify-content-center  text-center">
+                  <div className="d-flex align-items-center flex-column p-3">
+                    <div
+                      className="d-flex justify-content-center align-items-center"
+                      style={{
+                        color: "#d1e9fc",
+                        width: "70px",
+                        height: "70px",
+                        fontSize: "30px",
+                        borderRadius: "50%",
+                        background:
+                          "linear-gradient(125deg, #fff 10%, #000080, #000080)",
+                      }}
+                    >
+                      <i className="ni ni-single-02"></i>
+                    </div>
+                    <div style={{ color: "#d1e9fc", fontSize: "20px" }}>
+                      Tenants
+                    </div>
+                  </div>
                   <div
-                    className="d-flex justify-content-center align-items-center"
                     style={{
                       color: "#d1e9fc",
-                      width: "70px",
-                      height: "70px",
-                      fontSize: "30px",
-                      borderRadius: "50%",
-                      background:
-                        "linear-gradient(125deg, #fff 10%, #000080, #000080)",
+                      fontSize: "22px",
+                      fontWeight: "bold",
                     }}
                   >
-                    <i className="ni ni-single-02"></i>
+                    {data.tenants}
                   </div>
-                  <div style={{ color: "#d1e9fc", fontSize: "20px" }}>
-                    Tenants
-                  </div>
-                </div>
-                <div
-                  style={{
-                    color: "#d1e9fc",
-                    fontSize: "22px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {data.tenants}
-                </div>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col
-            xl="3"
-            onClick={() => {
-              navigate("/" + admin + "/RentalownerTable");
-            }}
-          >
-            <Card
-              className="shadow h-100 mx-2 mt-3 pt-3"
-              style={{ backgroundColor: "#d1e9fc", cursor: "pointer" }}
+                </CardBody>
+              </Card>
+            </Col>
+            <Col
+              xl="3"
+              onClick={() => {
+                navigate("/" + admin + "/RentalownerTable");
+              }}
             >
-              <CardBody className="d-flex flex-column justify-content-center  text-center">
-                <div className="d-flex align-items-center flex-column p-3">
+              <Card
+                className="shadow h-100 mx-2 mt-3 pt-3"
+                style={{ backgroundColor: "#d1e9fc", cursor: "pointer" }}
+              >
+                <CardBody className="d-flex flex-column justify-content-center  text-center">
+                  <div className="d-flex align-items-center flex-column p-3">
+                    <div
+                      className="d-flex justify-content-center align-items-center"
+                      style={{
+                        color: "#000080",
+                        width: "70px",
+                        height: "70px",
+                        fontSize: "30px",
+                        borderRadius: "50%",
+                        background:
+                          "linear-gradient(125deg, #fff 10%, #d1e9fc, #d1e9fc)",
+                      }}
+                    >
+                      <i className="ni ni-building"></i>
+                    </div>
+                    <div style={{ color: "#000080", fontSize: "20px" }}>
+                      Rental Owners
+                    </div>
+                  </div>
                   <div
-                    className="d-flex justify-content-center align-items-center"
                     style={{
                       color: "#000080",
-                      width: "70px",
-                      height: "70px",
-                      fontSize: "30px",
-                      borderRadius: "50%",
-                      background:
-                        "linear-gradient(125deg, #fff 10%, #d1e9fc, #d1e9fc)",
+                      fontSize: "22px",
+                      fontWeight: "bold",
                     }}
                   >
-                    <i className="ni ni-building"></i>
+                    {data.rentalowner}
                   </div>
-                  <div style={{ color: "#000080", fontSize: "20px" }}>
-                    Rental Owners
-                  </div>
-                </div>
-                <div
-                  style={{
-                    color: "#000080",
-                    fontSize: "22px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {data.rentalowner}
-                </div>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col
-            xl="3"
-            onClick={() => {
-              navigate("/" + admin + "/StaffMember");
-            }}
-          >
-            <Card
-              className="shadow h-100 mx-2 mt-3 pt-3"
-              style={{ backgroundColor: "#000080", cursor: "pointer" }}
+                </CardBody>
+              </Card>
+            </Col>
+            <Col
+              xl="3"
+              onClick={() => {
+                navigate("/" + admin + "/StaffMember");
+              }}
             >
-              <CardBody className="d-flex flex-column justify-content-center  text-center">
-                <div className="d-flex align-items-center flex-column p-3">
+              <Card
+                className="shadow h-100 mx-2 mt-3 pt-3"
+                style={{ backgroundColor: "#000080", cursor: "pointer" }}
+              >
+                <CardBody className="d-flex flex-column justify-content-center  text-center">
+                  <div className="d-flex align-items-center flex-column p-3">
+                    <div
+                      className="d-flex justify-content-center align-items-center"
+                      style={{
+                        color: "#d1e9fc",
+                        width: "70px",
+                        height: "70px",
+                        fontSize: "30px",
+                        borderRadius: "50%",
+                        background:
+                          "linear-gradient(125deg, #fff 10%, #000080, #000080)",
+                      }}
+                    >
+                      <i className="ni ni-badge"></i>
+                    </div>
+                    <div style={{ color: "#d1e9fc", fontSize: "20px" }}>
+                      Staff Members
+                    </div>
+                  </div>
                   <div
-                    className="d-flex justify-content-center align-items-center"
                     style={{
                       color: "#d1e9fc",
-                      width: "70px",
-                      height: "70px",
-                      fontSize: "30px",
-                      borderRadius: "50%",
-                      background:
-                        "linear-gradient(125deg, #fff 10%, #000080, #000080)",
+                      fontSize: "22px",
+                      fontWeight: "bold",
                     }}
                   >
-                    <i className="ni ni-badge"></i>
+                    {data.staff}
                   </div>
-                  <div style={{ color: "#d1e9fc", fontSize: "20px" }}>
-                    Staff Members
-                  </div>
-                </div>
-                <div
-                  style={{
-                    color: "#d1e9fc",
-                    fontSize: "22px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {data.staff}
-                </div>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        )}
       </Container>
     </>
   );

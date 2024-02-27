@@ -106,7 +106,7 @@ const TenantFinancial = () => {
       setLoader(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
-      setLoader(false);
+
     }
 
   };
@@ -493,7 +493,7 @@ const TenantFinancial = () => {
                           </Col>
                         </Row>
                       </CardHeader>
-                      {console.log("ledger",Ledger)}
+                      {console.log("ledger", Ledger)}
                       <Table
                         className="align-items-center table-flush"
                         responsive
@@ -507,7 +507,7 @@ const TenantFinancial = () => {
                               width="50"
                               visible={loader}
                             />
-                          </div> 
+                          </div>
                         ) : filterLedgerBySearch().length === 0 ? (
                           <>
                             <tbody>
@@ -575,13 +575,13 @@ const TenantFinancial = () => {
                                       ))
                                       : item.entry[0].memo}
                                   </td>
-
-                                  {item.type === "charge" ? (
+                                  {console.log(item, "yash")}
+                                  {item.type === "Charge" ? (
                                     <td> {item?.total_amount}</td>
                                   ) : (
                                     <td>-</td>
                                   )}
-                                  {item.type === "payment" ? (
+                                  {item.type === "Payment" ? (
                                     <td> {item?.total_amount}</td>
                                   ) : (
                                     <td>-</td>

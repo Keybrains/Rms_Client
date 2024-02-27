@@ -64,27 +64,6 @@ const TenantProfile = () => {
     getTenantData();
   }, [accessType]);
 
-  const getTenantData1 = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/tenant/tenant_summary/${cookie_id}`
-      );
-      setTenantDetails1(response.data.data);
-      // console.log(response.data.data);
-      // setLoading(false);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setError(error);
-      // setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getTenantData1();
-    // console.log(
-    //   `${baseUrl}/tenant/tenant_summary/${cookie_id}`
-    // );
-  }, [id]);
 
   function formatDateWithoutTime(dateString) {
     if (!dateString) return "";
