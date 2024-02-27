@@ -437,7 +437,7 @@ const AddCharge = () => {
       window.open(url, "_blank");
     } else {
       window.open(
-        `https://propertymanager.cloudpress.host/api/images/get-file/${item}`,
+        `http://192.168.1.10:4000/api/images/get-file/${item}`,
         "_blank"
       );
     }

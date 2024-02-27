@@ -209,7 +209,7 @@ const ApplicantSummary = () => {
   const [newNote, setNewNote] = useState("");
   const [newFile, setNewFile] = useState({});
   const openFileInBrowser = () => {
-    const fileURL = `https://propertymanager.cloudpress.host/api/images/get-file/2024-02-23-08-52-50-ProjectReportMansi.pdf`;
+    const fileURL = `http://192.168.1.10:4000/api/images/get-file/2024-02-23-08-52-50-ProjectReportMansi.pdf`;
     window.open(fileURL, "_blank");
   };
 

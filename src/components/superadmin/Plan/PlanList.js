@@ -83,6 +83,8 @@ function Rows(props) {
   const { row, handleClick, isItemSelected, labelId, seletedEditData } = props;
   const [open, setOpen] = React.useState(false);
 
+  const navigate = useNavigate()
+
   return (
     <React.Fragment>
       <TableRow
@@ -140,15 +142,17 @@ function Rows(props) {
           )}
         </TableCell> */}
         <TableCell align="center">
-          {new Date(row.createdAt).toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "2-digit",
-          })}
+          {moment(row.createdAt).format("DD-MM-YYYY")}
         </TableCell>
 
         {/* <TableCell align="center">
-          <button class="btn " onClick={() => seletedEditData(row)}>
+          <button
+            class="btn "
+            onClick={() => {
+              navigate(`/superadmin/addplan/${row.plan_id}`)
+              // seletedEditData(row);
+            }}
+          >
             <EditIcon />
           </button>
         </TableCell> */}
