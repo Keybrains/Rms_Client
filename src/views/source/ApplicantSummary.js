@@ -1069,13 +1069,13 @@ const ApplicantSummary = () => {
                       </Row>
                     </TabPanel>
 
-                    {/* <TabPanel value="Application">
+                    <TabPanel value="Application">
                       <Row style={{ backgroundColor: "" }}>
                         <Col>
                           <Grid container spacing={3}>
                             <Grid item xs={12}>
                               <Box>
-                                {isApplicantDataEmpty ? (
+                                {/* {isApplicantDataEmpty ? (
                                   <section className="">
                                     <div className="row d-flex ">
                                       <div>
@@ -1142,13 +1142,13 @@ const ApplicantSummary = () => {
                                       </div>
                                     </div>
                                   </section>
-                                ) : (
-                                  <>
+                                ) : ( */}
+                                  {/* <> */}
                                     <div className="applicant-info mt-3">
                                       <div className="d-flex">
                                         <h2>Rental history</h2>
                                         <Link
-                                          to={`/admin/applicant-form/${id}`}
+                                          to={`/${admin}/applicant-form/${id}`}
                                           target="_blank"
                                           className="btn btn-secondary ml-sm-3 mt-3 mt-sm-0"
                                           style={{
@@ -1173,9 +1173,9 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {`${
-                                                  applicantDatas?.applicant_firstName
+                                                  applicantData?.applicant_firstName
                                                 } ${" "} ${
-                                                  applicantDatas?.applicant_lastName
+                                                  applicantData?.applicant_lastName
                                                 }`}
                                               </strong>
                                             </td>
@@ -1188,7 +1188,7 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {
-                                                  applicantDatas?.applicant_socialSecurityNumber
+                                                  applicantData?.applicant_socialSecurityNumber
                                                 }
                                               </strong>
                                             </td>
@@ -1197,7 +1197,7 @@ const ApplicantSummary = () => {
                                             <td>APPLICANT BIRTH DATE:</td>
                                             <td>
                                               <strong>
-                                                {applicantDatas?.applicant_dob}
+                                                {applicantData?.applicant_dob}
                                               </strong>
                                             </td>
                                           </tr>
@@ -1205,7 +1205,7 @@ const ApplicantSummary = () => {
                                             <td>APPLICANT CURRENT ADDRESS:</td>
                                             <td>
                                               <strong>
-                                                {`${applicantDatas?.applicant_country}, ${applicantDatas?.applicant_adress}, ${applicantDatas?.applicant_city}, ${applicantDatas?.applicant_state}, ${applicantDatas?.applicant_zipcode}`}
+                                                {`${applicantData?.applicant_country}, ${applicantData?.applicant_adress}, ${applicantData?.applicant_city}, ${applicantData?.applicant_state}, ${applicantData?.applicant_zipcode}`}
                                               </strong>
                                             </td>
                                           </tr>
@@ -1214,7 +1214,7 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {
-                                                  applicantDatas?.applicant_email
+                                                  applicantData?.applicant_email
                                                 }
                                               </strong>
                                             </td>
@@ -1224,7 +1224,7 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {
-                                                  applicantDatas?.applicant_cellPhone
+                                                  applicantData?.applicant_cellPhone
                                                 }
                                               </strong>
                                             </td>
@@ -1234,7 +1234,7 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {
-                                                  applicantDatas?.applicant_homePhone
+                                                  applicantData?.applicant_homePhone
                                                 }
                                               </strong>
                                             </td>
@@ -1243,7 +1243,7 @@ const ApplicantSummary = () => {
                                             <td>EMERGENCY CONTACT NAME:</td>
                                             <td>
                                               <strong>
-                                                {`${applicantDatas?.applicant_emergencyContact_firstName}, ${applicantDatas?.applicant_emergencyContact_lasttName}`}
+                                                {`${applicantData?.applicant_emergencyContact_firstName}, ${applicantData?.applicant_emergencyContact_lasttName}`}
                                               </strong>
                                             </td>
                                           </tr>
@@ -1254,7 +1254,7 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {
-                                                  applicantDatas?.applicant_emergencyContact_relationship
+                                                  applicantData?.applicant_emergencyContact_relationship
                                                 }
                                               </strong>
                                             </td>
@@ -1264,7 +1264,7 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {
-                                                  applicantDatas?.applicant_emergencyContact_email
+                                                  applicantData?.applicant_emergencyContact_email
                                                 }
                                               </strong>
                                             </td>
@@ -1274,7 +1274,7 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {
-                                                  applicantDatas?.applicant_emergencyContact_phone
+                                                  applicantData?.applicant_emergencyContact_phone
                                                 }
                                               </strong>
                                             </td>
@@ -1297,7 +1297,7 @@ const ApplicantSummary = () => {
                                             <td>RENTAL ADDRESS:</td>
                                             <td>
                                               <strong>
-                                                {`${applicantDatas?.rental_country}, ${applicantDatas?.rental_adress}, ${applicantDatas?.rental_city}, ${applicantDatas?.rental_state}, ${applicantDatas?.rental_zipcode}`}
+                                                {`${applicantData?.rental_country}, ${applicantData?.rental_adress}, ${applicantData?.rental_city}, ${applicantData?.rental_state}, ${applicantData?.rental_zipcode}`}
                                               </strong>
                                             </td>
                                           </tr>
@@ -1307,9 +1307,9 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {`${
-                                                  applicantDatas?.rental_data_from
+                                                  applicantData?.rental_data_from
                                                 } ${"-"} ${
-                                                  applicantDatas?.rental_date_to
+                                                  applicantData?.rental_date_to
                                                 }`}
                                               </strong>
                                             </td>
@@ -1320,7 +1320,7 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {
-                                                  applicantDatas?.rental_monthlyRent
+                                                  applicantData?.rental_monthlyRent
                                                 }
                                               </strong>
                                             </td>
@@ -1331,7 +1331,7 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {
-                                                  applicantDatas?.rental_resaonForLeaving
+                                                  applicantData?.rental_resaonForLeaving
                                                 }
                                               </strong>
                                             </td>
@@ -1342,9 +1342,9 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {`${
-                                                  applicantDatas?.rental_landlord_firstName
+                                                  applicantData?.rental_landlord_firstName
                                                 } ${"-"} ${
-                                                  applicantDatas?.rental_landlord_lasttName
+                                                  applicantData?.rental_landlord_lasttName
                                                 }`}
                                               </strong>
                                             </td>
@@ -1355,7 +1355,7 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {
-                                                  applicantDatas?.rental_landlord_phoneNumber
+                                                  applicantData?.rental_landlord_phoneNumber
                                                 }
                                               </strong>
                                             </td>
@@ -1365,7 +1365,7 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {
-                                                  applicantDatas?.rental_landlord_email
+                                                  applicantData?.rental_landlord_email
                                                 }
                                               </strong>
                                             </td>
@@ -1390,7 +1390,7 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {
-                                                  applicantDatas?.employment_name
+                                                  applicantData?.employment_name
                                                 }
                                               </strong>
                                             </td>
@@ -1400,7 +1400,7 @@ const ApplicantSummary = () => {
                                             <td>EMPLOYER ADDRESS:</td>
                                             <td>
                                               <strong>
-                                                {`${applicantDatas?.employment_country}, ${applicantDatas?.employment_adress}, ${applicantDatas?.employment_city}, ${applicantDatas?.employment_state}, ${applicantDatas?.employment_zipcode}`}
+                                                {`${applicantData?.employment_country}, ${applicantData?.employment_adress}, ${applicantData?.employment_city}, ${applicantData?.employment_state}, ${applicantData?.employment_zipcode}`}
                                               </strong>
                                             </td>
                                           </tr>
@@ -1410,7 +1410,7 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {
-                                                  applicantDatas?.employment_phoneNumber
+                                                  applicantData?.employment_phoneNumber
                                                 }
                                               </strong>
                                             </td>
@@ -1421,7 +1421,7 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {
-                                                  applicantDatas?.employment_email
+                                                  applicantData?.employment_email
                                                 }
                                               </strong>
                                             </td>
@@ -1431,7 +1431,7 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {
-                                                  applicantDatas?.employment_position
+                                                  applicantData?.employment_position
                                                 }
                                               </strong>
                                             </td>
@@ -1441,7 +1441,7 @@ const ApplicantSummary = () => {
                                             <td>EMPLOYMENT DATES:</td>
                                             <td>
                                               <strong>
-                                                {`${applicantDatas?.employment_date_from}, ${applicantDatas?.employment_date_to}`}
+                                                {`${applicantData?.employment_date_from}, ${applicantData?.employment_date_to}`}
                                               </strong>
                                             </td>
                                           </tr>
@@ -1451,7 +1451,7 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {
-                                                  applicantDatas?.employment_monthlyGrossSalary
+                                                  applicantData?.employment_monthlyGrossSalary
                                                 }
                                               </strong>
                                             </td>
@@ -1462,9 +1462,9 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {`${
-                                                  applicantDatas?.employment_supervisor_first
+                                                  applicantData?.employment_supervisor_first
                                                 } ${" "} ${
-                                                  applicantDatas?.employment_supervisor_last
+                                                  applicantData?.employment_supervisor_last
                                                 }`}
                                               </strong>
                                             </td>
@@ -1475,7 +1475,7 @@ const ApplicantSummary = () => {
                                             <td>
                                               <strong>
                                                 {
-                                                  applicantDatas?.employment_supervisor_title
+                                                  applicantData?.employment_supervisor_title
                                                 }
                                               </strong>
                                             </td>
@@ -1483,14 +1483,14 @@ const ApplicantSummary = () => {
                                         </tbody>
                                       </table>
                                     </div>
-                                  </>
-                                )}
+                                  {/* </>
+                                )} */}
                               </Box>
                             </Grid>
                           </Grid>
                         </Col>
                       </Row>
-                    </TabPanel> */}
+                    </TabPanel>
 
                     {/* <TabPanel value="Approved">
                       <CardHeader className="border-0">

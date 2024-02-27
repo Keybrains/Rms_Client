@@ -508,14 +508,6 @@ const TenantFinancial = () => {
                               visible={loader}
                             />
                           </div> 
-                        ) : filterLedgerBySearch().length === 0 ? (
-                          <>
-                            <tbody>
-                              <tr className="text-center">
-                                <td colSpan="8" style={{ fontSize: "15px" }}>No Ledger Added</td>
-                              </tr>
-                            </tbody>
-                          </>
                         ) : (
                           <>
                             <thead className="thead-light">

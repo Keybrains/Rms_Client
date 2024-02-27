@@ -95,7 +95,7 @@ const RentRollDetail = () => {
   };
 
   const [tenantDetails, setTenantDetails] = useState([]);
-  const [tenantId, setTenantId] = useState('');
+  const [tenantId, setTenantId] = useState("");
   const fetchTenantsData = async () => {
     setLoading(true);
     try {
@@ -199,9 +199,10 @@ const RentRollDetail = () => {
 
   const fetchData = async (id) => {
     try {
-      const response = await axios.get(
+      const response = await axios
+        .get
         // `${baseUrl}/payment_charge/get_entry/${id}`
-      );
+        ();
       if (response.data.statusCode === 200) {
         // setFile(response.data.data.charges_attachment);
         // setResponseData(response.data.data);
@@ -272,6 +273,27 @@ const RentRollDetail = () => {
       return "EXPIRED";
     } else {
       return "-";
+    }
+  };
+
+  const [expandedRows, setExpandedRows] = useState([]);
+  const [expandedData, setExpandedData] = useState([]);
+  const openAccount = (ledger, i) => {
+    const isExpanded = expandedRows.includes(i);
+
+    if (!isExpanded) {
+      setExpandedRows([...expandedRows, i]);
+      setExpandedData((prevExpandedData) => ({
+        ...prevExpandedData,
+        [i]: ledger?.entry,
+      }));
+    } else {
+      setExpandedRows(expandedRows.filter((row) => row !== i));
+      setExpandedData((prevExpandedData) => {
+        const newData = { ...prevExpandedData };
+        delete newData[i];
+        return newData;
+      });
     }
   };
 
@@ -676,7 +698,7 @@ const RentRollDetail = () => {
                           xs="12"
                           sm="6"
                         >
-                           <Button
+                          <Button
                             color="primary"
                             onClick={() => openCardForm()}
                             style={{
@@ -782,29 +804,37 @@ const RentRollDetail = () => {
                                 </thead>
                                 <tbody>
                                   {financialData &&
-                                    financialData?.map((generalledger) => (
-                                      <>
-                                        <tr
-                                          key={`${
-                                            generalledger?.payment_id ||
-                                            generalledger?.charge_id
-                                          }`}
-                                        >
-                                          <td>
-                                            {generalledger?.entry[0]?.date ||
-                                              "-"}
-                                          </td>
-                                          <td>{generalledger?.type || "-"}</td>
-                                          <td
+                                    financialData?.map(
+                                      (generalledger, index) => (
+                                        <>
+                                          <tr
+                                            key={`${
+                                              generalledger?.payment_id ||
+                                              generalledger?.charge_id
+                                            }`}
+                                          >
+                                            <td>
+                                              {generalledger?.entry[0]?.date ||
+                                                "-"}
+                                            </td>
+                                            <td>
+                                              {generalledger?.type || "-"}
+                                            </td>
+                                            <td
                                               style={{
                                                 color:
-                                                 ( generalledger.type ===
-                                                  "Payment" && generalledger.response === "SUCCESS")
+                                                  generalledger.type ===
+                                                    "Payment" &&
+                                                  generalledger.response ===
+                                                    "SUCCESS"
                                                     ? "#50975E"
-                                                    :  ( generalledger.type ===
-                                                      "Refund" && generalledger.response === "SUCCESS")
+                                                    : generalledger.type ===
+                                                        "Refund" &&
+                                                      generalledger.response ===
+                                                        "SUCCESS"
                                                     ? "#ffc40c"
-                                                    :  (generalledger.response === "FAILURE")
+                                                    : generalledger.response ===
+                                                      "FAILURE"
                                                     ? "#AA3322"
                                                     : "inherit",
                                                 fontWeight: "bold",
@@ -819,39 +849,65 @@ const RentRollDetail = () => {
                                                 : ""}
                                             </td>
 
-                                          <td>
-                                            {generalledger.entry?.map(
-                                              (item) => (
-                                                <>
-                                                  {item.account}
-                                                  <br />
-                                                </>
-                                              )
-                                            ) || "-"}
-                                          </td>
-                                     
-                                          <td>
+                                            <td
+                                              style={{
+                                                cursor:
+                                                  generalledger?.entry?.length >
+                                                  1
+                                                    ? "pointer"
+                                                    : "",
+                                              }}
+                                              onClick={() => {
+                                                if (
+                                                  generalledger?.entry?.length >
+                                                  1
+                                                ) {
+                                                  openAccount(
+                                                    generalledger,
+                                                    index
+                                                  );
+                                                }
+                                              }}
+                                            >
+                                              {generalledger.entry?.map(
+                                                (item) => (
+                                                  <>
+                                                    {item.account}
+                                                    <br />
+                                                  </>
+                                                )
+                                              ) || "-"}
+                                            </td>
+
+                                            <td>
                                               {generalledger.type ===
                                                 "Charge" ||
                                               generalledger.type === "Refund"
-                                                ? "$" + generalledger.total_amount
+                                                ? "$" +
+                                                  generalledger.total_amount
                                                 : "-"}
                                             </td>
-                                          <td>
-                                            {generalledger.type === "Payment"
-                                              ? "$" + generalledger.total_amount
-                                              : "-"}
-                                          </td>
-                                          <td>
-                                            {generalledger.balance !== undefined
-                                              ? generalledger.balance >= 0
-                                                ? `$${generalledger.balance.toFixed(2)}`
-                                                : `$(${Math.abs(
-                                                    generalledger.balance.toFixed(2)
-                                                  )})`
-                                              : "0"}
-                                          </td>
-                                          {/* <td>
+                                            <td>
+                                              {generalledger.type === "Payment"
+                                                ? "$" +
+                                                  generalledger.total_amount
+                                                : "-"}
+                                            </td>
+                                            <td>
+                                              {generalledger.balance !==
+                                              undefined
+                                                ? generalledger.balance >= 0
+                                                  ? `$${generalledger.balance.toFixed(
+                                                      2
+                                                    )}`
+                                                  : `$(${Math.abs(
+                                                      generalledger.balance.toFixed(
+                                                        2
+                                                      )
+                                                    )})`
+                                                : "0"}
+                                            </td>
+                                            {/* <td>
                                             <div
                                               style={{
                                                 display: "flex",
@@ -908,7 +964,7 @@ const RentRollDetail = () => {
                                               )}
                                             </div>
                                           </td> */}
-                                           <td>
+                                            <td>
                                               <div
                                                 style={{
                                                   display: "flex",
@@ -973,28 +1029,35 @@ const RentRollDetail = () => {
                                                               Refund
                                                             </DropdownItem>
                                                           )}
-                                                            {(generalledger?.response === "PENDING" ||
-                                                              generalledger?.payment_type === "Cash" ||
-                                                              generalledger?.payment_type === "Check" ||
-                                                              generalledger?.type === "Charge") && (
-                                                              <DropdownItem
-                                                                tag="div"
-                                                                onClick={(e) => {
-                                                                  e.stopPropagation();
-                                                                  if (generalledger?.type === "Charge") {
-                                                                    navigate(
-                                                                      `/${admin}/AddCharge/${lease_id}/${generalledger.charge_id}`
-                                                                    );
-                                                                  } else {
-                                                                    // navigate(
-                                                                    //   `/${admin}/AddPayment/${lease_id}/${generalledger.payment_id}`
-                                                                    // );
-                                                                  }
-                                                                }}
-                                                              >
-                                                                Edit
-                                                              </DropdownItem>
-                                                            )}
+                                                          {(generalledger?.response ===
+                                                            "PENDING" ||
+                                                            generalledger?.payment_type ===
+                                                              "Cash" ||
+                                                            generalledger?.payment_type ===
+                                                              "Check" ||
+                                                            generalledger?.type ===
+                                                              "Charge") && (
+                                                            <DropdownItem
+                                                              tag="div"
+                                                              onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                if (
+                                                                  generalledger?.type ===
+                                                                  "Charge"
+                                                                ) {
+                                                                  navigate(
+                                                                    `/${admin}/AddCharge/${lease_id}/${generalledger.charge_id}`
+                                                                  );
+                                                                } else {
+                                                                  // navigate(
+                                                                  //   `/${admin}/AddPayment/${lease_id}/${generalledger.payment_id}`
+                                                                  // );
+                                                                }
+                                                              }}
+                                                            >
+                                                              Edit
+                                                            </DropdownItem>
+                                                          )}
                                                         </div>
                                                       )}
                                                     </DropdownMenu>
@@ -1012,9 +1075,60 @@ const RentRollDetail = () => {
                                                 )}
                                               </div>
                                             </td>
-                                        </tr>
-                                      </>
-                                    ))}
+                                          </tr>
+                                          {expandedRows.includes(index) && (
+                                            <tr key={`expanded_${index}`}>
+                                              <td colSpan="3"></td>
+                                              <td className="text-left">
+                                                {expandedData[index].map(
+                                                  (item, subIndex) => (
+                                                    <span
+                                                      key={`expanded_${index}_${subIndex}`}
+                                                    >
+                                                      {item?.account}
+                                                      <br />
+                                                    </span>
+                                                  )
+                                                )}
+                                              </td>
+                                              <td>
+                                                {expandedData[index].map(
+                                                  (data, subIndex) => (
+                                                    <>
+                                                      {financialData[index]
+                                                        ?.type === "Charge" ||
+                                                      financialData[index]
+                                                        ?.type === "Refund"
+                                                        ? "$" + data?.amount
+                                                        : "-"}
+                                                      <br />
+                                                    </>
+                                                  )
+                                                )}
+                                              </td>
+                                              <td>
+                                                {expandedData[index].map(
+                                                  (data, subIndex) => (
+                                                    <>
+                                                      {financialData[index]
+                                                        ?.type === "Payment"
+                                                        ? "$" + data?.amount
+                                                        : "-"}
+                                                      <br />
+                                                    </>
+                                                  )
+                                                )}
+                                              </td>
+                                              <td colSpan="2"></td>
+                                              {console.log(
+                                                expandedData[index],
+                                                "yash"
+                                              )}
+                                            </tr>
+                                          )}
+                                        </>
+                                      )
+                                    )}
                                 </tbody>
                               </Table>
                             </Card>
