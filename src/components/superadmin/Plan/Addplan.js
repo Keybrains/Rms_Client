@@ -100,6 +100,27 @@ const AddPlanForm = () => {
     }
   };
 
+
+  const [plan, setPlan] = useState([])
+  console.log(plan, plan)
+  const getPlan = async () => {
+    try {
+      const newResponse = await axios.get(
+        `${baseUrl}/plans/plan_get/1707996973319`
+      );
+      setPlan(newResponse.data.data[0]);
+    } catch (error) {
+      console.error("Error: ", error.message);
+    }
+  };
+
+  useEffect(() => {
+    getPlan();
+  }, []);
+
+
+
+
   return (
     <div>
       <SuperAdminHeader />

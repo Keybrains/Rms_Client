@@ -5,12 +5,12 @@ import { Table, Container, Row, Card, CardHeader } from "reactstrap";
 import StaffHeader from "../../components/Headers/StaffHeader";
 import { FormGroup, Col, Button } from "reactstrap";
 import { jwtDecode } from "jwt-decode";
-import PropImage from "../../assets/img/icons/common/pexels-binyamin-mellish-186077.jpg";
 
 import Cookies from "universal-cookie";
 
 const StaffPropertyDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const imageGetUrl = process.env.REACT_APP_IMAGE_GET_URL;
   const { rental_id } = useParams();
   const [propertyDetails, setPropertyDetails] = useState([]);
   const navigate = useNavigate();
@@ -88,16 +88,14 @@ const StaffPropertyDetail = () => {
                                 <img
                                   className="mt-2 mb-2"
                                   src={
-                                    propertyDetails?.rental_data?.prop_image ||
-                                    PropImage
+                                    propertyDetails?.rental_image ? `${imageGetUrl}/${propertyDetails?.rental_image}` : ""
                                   }
-                                  // src={PropImage}
                                   alt="Property Details"
                                   style={{ maxWidth: "8rem" }}
                                 />
                               </div>
                             </div>
-                          </div>
+                          </div>{console.log(propertyDetails, "yash")}
                           <Row
                             className="w-100 my-3 "
                             style={{

@@ -17,8 +17,8 @@ import {
   Label,
   Table,
 } from "reactstrap";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useState } from "react";
 import axios from "axios";
 import { useFormik } from "formik";
@@ -70,7 +70,7 @@ const VendorAddWork = () => {
   const [propertyData, setPropertyData] = useState([]);
   const [staffData, setstaffData] = useState([]);
   const [tableData, setTableData] = useState([]);
-  const [workOrderImage, setWorkOrderImage] = useState([])
+  const [workOrderImage, setWorkOrderImage] = useState([]);
 
   const [formData, setFormData] = useState({
     part_qty: "",
@@ -90,7 +90,7 @@ const VendorAddWork = () => {
     setSelectedProp(property);
     WorkFormik.values.rental_adress = property;
 
-    setSelectedUnit(""); 
+    setSelectedUnit("");
     try {
       const units = await fetchUnitsByProperty(property.rental_adress);
       setUnitData(units);
@@ -129,7 +129,7 @@ const VendorAddWork = () => {
           const response = await axios.get(
             `${baseUrl}/workorder/workorder_summary/${id}`
           );
-          setImageDetails(response.data.data.workOrderImage)
+          setImageDetails(response.data.data.workOrderImage);
           const vendorData = response.data.data;
           setWorkOrderData(vendorData);
 
@@ -233,10 +233,9 @@ const VendorAddWork = () => {
   let cookie_id = localStorage.getItem("Vendor ID");
 
   const [accessType, setAccessType] = useState(null);
-  console.log(accessType, "accessType")
+  console.log(accessType, "accessType");
   // const [vendorDetails, setVendorDetails] = useState({});
   const [vendorname, setVendorname] = useState("");
-
 
   const getVendorDetails = async () => {
     try {
@@ -258,12 +257,12 @@ const VendorAddWork = () => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt.accessType);
-      console.log(jwt.accessType, "jwt.accessType")
+      console.log(jwt.accessType, "jwt.accessType");
     } else {
       navigate("/auth/login");
     }
   }, [navigate]);
-  
+
   let navigate = useNavigate();
   const handleCloseButtonClick = () => {
     navigate("../VendorWorkTable");
@@ -350,8 +349,8 @@ const VendorAddWork = () => {
   const [workOrderData, setWorkOrderData] = useState(null);
 
   useEffect(() => {
-    getVendorDetails()
-    getOutstandData()
+    getVendorDetails();
+    getOutstandData();
     fetch(`${baseUrl}/addaccount/find_accountname`)
       .then((response) => response.json())
       .then((data) => {
@@ -456,11 +455,9 @@ const VendorAddWork = () => {
         // Create the work order
         const workOrderRes = await axios.post(
           `${baseUrl}/workorder/workorder`,
-          {...values,
-          statusUpdatedBy:vendorname,
-          }
+          { ...values, statusUpdatedBy: vendorname }
         );
-          
+
         // Check if the work order was created successfully
         if (workOrderRes.status === 200) {
           const notificationRes = await axios.post(
@@ -482,7 +479,6 @@ const VendorAddWork = () => {
         } else {
           console.error("Work Order Error:", workOrderRes.data);
         }
-
       } else {
         const editUrl = `${baseUrl}/workorder/workorder/${id}`;
         const res = await axios.put(editUrl, values);
@@ -504,21 +500,20 @@ const VendorAddWork = () => {
         } else {
           console.error("Work Order Error:", res.data);
         }
-        
+
         await axios
-        .put(`${baseUrl}/workorder/workorder/${outstandDetails._id}/status`, {
-          statusUpdatedBy: vendorname + "(Vendor)",
-          status:
-            selectedStatus,
-          // updateAt: updatedAt,
-        })
-        .then((res) => {
-          console.log(res.data, "the status put");
-          // getOutstandData();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+          .put(`${baseUrl}/workorder/workorder/${outstandDetails._id}/status`, {
+            statusUpdatedBy: vendorname + "(Vendor)",
+            status: selectedStatus,
+            // updateAt: updatedAt,
+          })
+          .then((res) => {
+            console.log(res.data, "the status put");
+            // getOutstandData();
+          })
+          .catch((err) => {
+            console.log(err);
+          });
         //console.log("ID", id);
         //console.log("Workorderid", workorder_id);
       }
@@ -530,20 +525,23 @@ const VendorAddWork = () => {
     }
   }
 
- 
   function handleResponse(response) {
     if (response.data.statusCode === 200) {
       navigate("/vendor/vendorworktable");
 
-
-      toast.success(id ? "Workeorder  Updated successfully" : "Workeorder  Added successfully", {
-        position: 'top-center',
-        autoClose: 1000,
-      });
+      toast.success(
+        id
+          ? "Workeorder  Updated successfully"
+          : "Workeorder  Added successfully",
+        {
+          position: "top-center",
+          autoClose: 1000,
+        }
+      );
     } else {
       // Show an error toast
       toast.error(response.data.message, {
-        position: 'top-center',
+        position: "top-center",
         autoClose: 1000,
       });
     }
@@ -567,7 +565,7 @@ const VendorAddWork = () => {
       due_date: "",
       priority: "",
       final_total_amount: "",
-      workOrderImage:[],
+      workOrderImage: [],
 
       entries: [
         {
@@ -588,19 +586,15 @@ const VendorAddWork = () => {
   });
 
   const clearSelectedPhoto = (image) => {
-
     const filteredImage = workOrderImage.filter((item) => {
       return item !== image;
     });
     // console.log(filteredImage, "filteredImage");
     // setResidentialImage(filteredImage);
-    setWorkOrderImage([
-      ...filteredImage,
-    ]);
+    setWorkOrderImage([...filteredImage]);
 
     WorkFormik.setFieldValue("workOrderImage", filteredImage);
- 
-};
+  };
 
   React.useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
@@ -642,7 +636,7 @@ const VendorAddWork = () => {
     //setImgLoader(true);
     const allData = [];
     const axiosRequests = [];
-    console.log(file,'file after adding')
+    console.log(file, "file after adding");
 
     for (let i = 0; i < file.length; i++) {
       // setImgLoader(true);
@@ -670,20 +664,17 @@ const VendorAddWork = () => {
           })
       );
     }
-    console.log(allData,'allData')
+    console.log(allData, "allData");
 
     // Wait for all Axios requests to complete before logging the data
     await Promise.all(axiosRequests);
-     
-      if (workOrderImage && workOrderImage.length>0) {
-        setWorkOrderImage([
-          ...workOrderImage,
-          ...allData,
-        ]);
-      } else {
-        setWorkOrderImage([...allData]);
-      }
-    
+
+    if (workOrderImage && workOrderImage.length > 0) {
+      setWorkOrderImage([...workOrderImage, ...allData]);
+    } else {
+      setWorkOrderImage([...allData]);
+    }
+
     // console.log(allData, "allData");
     // console.log(residentialImage, "residentialImage");
     // console.log(commercialImage, "commercialImage");
@@ -797,22 +788,21 @@ const VendorAddWork = () => {
                       </Col>
                     </Row>
                     <Row>
-                    <Col>
-                      {imagedetails >0 ? (
-     
-                      <FormGroup
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "column",
-                                        }}
-                                      >
-                                        <label
-                                          className="form-control-label"
-                                          htmlFor="input-unitadd"
-                                        >
-                                          Photo
-                                        </label>
-                                        {/* <span
+                      <Col>
+                        {imagedetails > 0 ? (
+                          <FormGroup
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                            }}
+                          >
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-unitadd"
+                            >
+                              Photo
+                            </label>
+                            {/* <span
                                           // onClick={workOrderDialog}
                                           style={{
                                             cursor: "pointer",
@@ -893,52 +883,52 @@ const VendorAddWork = () => {
                                             Add
                                           </label>
                                         </span> */}
-                                      </FormGroup>
-                                       ) : null}
-                                        </Col>
-                                      </Row>
-                                      <FormGroup
-                                        style={{
-                                          display: "flex",
-                                          flexWrap: "wrap",
-                                          paddingLeft: "10px",
-                                        }}
-                                      >
-                                        <div
-                                          className="mt-3 d-flex"
-                                          style={{
-                                            justifyContent: "center",
-                                            flexWrap: "wrap",
-                                          }}
-                                        >
-                                          {workOrderImage.map((image, index) => (
-                                              <div
-                                                key={index}
-                                                style={{
-                                                  position: "relative",
-                                                  width: "100px",
-                                                  height: "100px",
-                                                  margin: "10px",
-                                                  display: "flex",
-                                                  flexDirection: "column",
-                                                }}
-                                              >
-                                                <img
-                                                  src={image}
-                                                  alt=""
-                                                  style={{
-                                                    width: "100px",
-                                                    height: "100px",
-                                                    maxHeight: "100%",
-                                                    maxWidth: "100%",
-                                                    borderRadius: "10px",
-                                                  }}
-                                                  onClick={() => {
-                                                    setSelectedImage(image);
-                                                    setOpen(true);
-                                                  }}
-                                                />
-                                                {/* <ClearIcon
+                          </FormGroup>
+                        ) : null}
+                      </Col>
+                    </Row>
+                    <FormGroup
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        paddingLeft: "10px",
+                      }}
+                    >
+                      <div
+                        className="mt-3 d-flex"
+                        style={{
+                          justifyContent: "center",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        {workOrderImage.map((image, index) => (
+                          <div
+                            key={index}
+                            style={{
+                              position: "relative",
+                              width: "100px",
+                              height: "100px",
+                              margin: "10px",
+                              display: "flex",
+                              flexDirection: "column",
+                            }}
+                          >
+                            <img
+                              src={image}
+                              alt=""
+                              style={{
+                                width: "100px",
+                                height: "100px",
+                                maxHeight: "100%",
+                                maxWidth: "100%",
+                                borderRadius: "10px",
+                              }}
+                              onClick={() => {
+                                setSelectedImage(image);
+                                setOpen(true);
+                              }}
+                            />
+                            {/* <ClearIcon
                                                   style={{
                                                     cursor: "pointer",
                                                     alignSelf: "flex-start",
@@ -954,16 +944,17 @@ const VendorAddWork = () => {
                                                   }
                                                   
                                                 /> */}
-                                            
-                                              </div>
-                                            ))}
-                                          <OpenImageDialog 
-                                            open={open}
-                                            setOpen={setOpen}
-                                            selectedImage={selectedImage}
-                                          />
-                                        </div>
-                                      </FormGroup>
+                          </div>
+                        ))}
+                        {open && (
+                          <OpenImageDialog
+                            open={open}
+                            setOpen={setOpen}
+                            selectedImage={selectedImage}
+                          />
+                        )}
+                      </div>
+                    </FormGroup>
                     <br />
                   </div>
                   <div className="pl-lg-4">
@@ -1014,11 +1005,11 @@ const VendorAddWork = () => {
                           </FormGroup>
                         </FormGroup>
                       </Col>
-                  
+
                       <Col lg="4">
                         <Row>
-                        {console.log(unitData, "mj")}
-                        
+                          {console.log(unitData, "mj")}
+
                           {selectedProp &&
                             unitData &&
                             unitData[0] &&
@@ -1031,8 +1022,8 @@ const VendorAddWork = () => {
                                 >
                                   Unit *
                                 </label>
-                                <br/>
-                                <br/>
+                                <br />
+                                <br />
                                 <FormGroup style={{ marginLeft: "15px" }}>
                                   <Dropdown
                                     isOpen={unitDropdownOpen}
@@ -1992,17 +1983,17 @@ const VendorAddWork = () => {
                     >
                       Loading...
                     </button>
-                   ) : id ? (
-                  <button
-                    type="submit"
-                    onSubmit={{ handleSubmit }}
-                    className="btn btn-primary ml-4"
-                    style={{ background: "green" }}
-                  >
-                    Save Work Order
-                  </button>
-                    ) : (
-                      <button
+                  ) : id ? (
+                    <button
+                      type="submit"
+                      onSubmit={{ handleSubmit }}
+                      className="btn btn-primary ml-4"
+                      style={{ background: "green" }}
+                    >
+                      Save Work Order
+                    </button>
+                  ) : (
+                    <button
                       type="submit"
                       onSubmit={{ handleSubmit }}
                       className="btn btn-primary ml-4"
@@ -2010,10 +2001,10 @@ const VendorAddWork = () => {
                     >
                       Add Work Order
                     </button>
-                    )}
+                  )}
                   <button
                     color="primary"
-                   //  href="#rms"
+                    //  href="#rms"
                     className="btn btn-primary"
                     onClick={handleCloseButtonClick}
                     size="sm"

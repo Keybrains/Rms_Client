@@ -45,6 +45,7 @@ import { useNavigate } from "react-router-dom";
 import ProfileIcon from "../Images/profile.png";
 import { jwtDecode } from "jwt-decode";
 import { useEffect } from "react";
+import LoginIcon from "@mui/icons-material/Login";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
@@ -70,6 +71,9 @@ const headCells = [
   {
     label: "Plan Name",
   },
+  {
+    label: "Action",
+  },
 ];
 
 function Rows(props) {
@@ -80,7 +84,7 @@ function Rows(props) {
   const handleLoginButtonClick = async () => {
     try {
       // Make an HTTP request to your API endpoint with the adminId
-      await axios.get(`${baseUrl}/test/${row.admin_id}`);
+      await axios.get(`${baseUrl}/login/${row.admin_id}`);
       console.log("API called successfully");
     } catch (error) {
       console.error("Error occurred while calling API:", error);
@@ -92,8 +96,8 @@ function Rows(props) {
       <TableRow
         hover
         onClick={(event) => {
-          // handleClick(event, row.admin_id);
-          navigate(`/superadmin/staffmember/${row?.admin_id}`);
+          handleClick(event, row.admin_id);
+          // navigate(`/superadmin/staffmember/${row?.admin_id}`);
         }}
         style={{ cursor: "pointer" }}
         role="checkbox"
@@ -144,7 +148,25 @@ function Rows(props) {
           {row?.subscription.status === "active" ? "Paid" : "Free"}
         </TableCell>
 
-        <TableCell align="left">
+        <TableCell align="center">
+          <div className="d-flex">
+            <div onClick={() => seletedEditData(row)} title="Edit">
+              <EditIcon />
+            </div>
+            <div
+              className="ml-1"
+              onClick={(event) => {
+                event.stopPropagation();
+                handleLoginButtonClick();
+              }}
+              title="Login"
+            >
+              <LoginIcon />
+            </div>
+          </div>
+        </TableCell>
+
+        {/* <TableCell align="left">
           <Button
             onClick={(event) => {
               event.stopPropagation();
@@ -153,7 +175,7 @@ function Rows(props) {
           >
             Login
           </Button>
-        </TableCell>
+        </TableCell> */}
 
         {/* <TableCell align="left">
           <button onClick={handleLoginClick}>Login</button>
@@ -339,7 +361,7 @@ export default function Admin() {
     handleSubmit = async (values) => {
       try {
         const response = await axios.put(
-          `${baseUrl}/plans/plans/${id}`, // Use template literals to include the id
+          `${baseUrl}/admin/admin_edit/${id}`, // Use template literals to include the id
           values
         );
 
@@ -366,7 +388,7 @@ export default function Admin() {
   //   auto form fill up in edit
   let seletedEditData = async (datas) => {
     setModalShowForPopupForm(true);
-    setId(datas._id);
+    setId(datas.admin_id);
     setEditData(datas);
   };
 
@@ -501,7 +523,7 @@ export default function Admin() {
                             return (
                               <TableCell
                                 style={{ fontWeight: "bold" }}
-                                key={id}
+                                key={headCell.id}
                                 className="fw-bold"
                                 align="left"
                               >

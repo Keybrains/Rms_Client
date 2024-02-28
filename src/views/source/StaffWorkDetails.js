@@ -24,6 +24,7 @@ import { Grid } from "@mui/material";
 
 const StaffWorkDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const imageGetUrl = process.env.REACT_APP_IMAGE_GET_URL;
   const { workorder_id } = useParams();
   const [outstandDetails, setoutstandDetails] = useState({});
   const [showTenantTable, setShowTenantTable] = useState(false);
@@ -751,7 +752,35 @@ const StaffWorkDetails = () => {
                                   Property
                                 </h3>
                               </Box>
-
+                              {outstandDetails?.property_data?.rental_image ? (
+                                <Box
+                                  style={{
+                                    width: "100%",
+                                    padding: "16px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <Box
+                                    width="100%"
+                                    style={{
+                                      minWidth: "100%",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    <img
+                                      src={`${imageGetUrl}/${outstandDetails?.property_data.rental_image}`}
+                                      alt="property"
+                                      style={{
+                                        maxWidth: "80%",
+                                        maxHeight: "100%",
+                                        borderRadius: "8px",
+                                        border: "1px solid #ccc",
+                                      }}
+                                    />
+                                  </Box>
+                                </Box>
+                              ) : null}
                               <Box
                                 style={{
                                   width: "100%",
@@ -1073,10 +1102,11 @@ const StaffWorkDetails = () => {
                                         }}
                                       >
                                         <img
-                                          src={imageUrl}
+                                          src={`${imageGetUrl}/${imageUrl}`}
                                           alt={`property ${index}`}
                                           style={{
                                             width: "100%",
+                                            height: "100%",
                                             borderRadius: "8px",
                                             border: "1px solid #ccc",
                                           }}

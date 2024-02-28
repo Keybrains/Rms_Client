@@ -51,10 +51,10 @@ const TenantProfile = () => {
         `${baseUrl}/tenants/tenant_profile/${accessType?.tenant_id}`
       );
       setTenantDetails(response.data.data);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
       setError(error);
+    } finally {
       setLoading(false);
     }
   };
@@ -155,7 +155,6 @@ const TenantProfile = () => {
                               </Row>
                             </div>
                           ) : (
-                            // ))
                             <tr>
                               <td>Loading Tenant details...</td>
                             </tr>

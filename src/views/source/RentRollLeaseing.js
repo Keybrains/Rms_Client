@@ -54,7 +54,8 @@ import { RotatingLines } from "react-loader-spinner";
 
 const RentRollLeaseing = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const imageUrl = process.env.REACT_APP_IMAGE_URL;
+  const imageUrl = process.env.REACT_APP_IMAGE_POST_URL;
+  const imageGetUrl = process.env.REACT_APP_IMAGE_GET_URL;
   const { lease_id, applicant_id, admin } = useParams();
   const navigate = useNavigate();
 
@@ -413,27 +414,17 @@ const RentRollLeaseing = () => {
     },
   });
 
-  console.log(
-    leaseFormik.errors,
-    rentChargeFormik.errors,
-    securityChargeFormik.errors,
-    recurringFormink.errors,
-    oneTimeFormik.errors,
-    tenantFormik.errors,
-    cosignerFormik.errors,
-    "yash"
-  );
-
   //update lease
   const updateLease = async () => {
     setLoader(true);
+    const fileUrl = [];
     if (file) {
       try {
         const uploadPromises = file.map(async (fileItem, i) => {
-          if (fileItem.upload_file instanceof File) {
+          if (fileItem instanceof File) {
             try {
               const form = new FormData();
-              form.append("files", fileItem.upload_file);
+              form.append("files", fileItem);
 
               const res = await axios.post(`${imageUrl}/images/upload`, form);
 
@@ -443,14 +434,16 @@ const RentRollLeaseing = () => {
                 res.data.files &&
                 res.data.files.length > 0
               ) {
-                fileItem.upload_file = res.data.files[0].url;
-                fileItem.upload_link = res.data.files[0].url;
+                fileUrl.push(res.data.files[0].filename);
+                fileItem = res.data.files[0].filename;
               } else {
                 console.error("Unexpected response format:", res);
               }
             } catch (error) {
               console.error("Error uploading file:", error);
             }
+          } else {
+            fileUrl.push(fileItem);
           }
         });
 
@@ -528,7 +521,7 @@ const RentRollLeaseing = () => {
           ...leaseFormik.values,
           entry: entryData,
           admin_id: accessType.admin_id,
-          uploaded_file: file,
+          uploaded_file: fileUrl,
           lease_id: lease_id,
         },
         tenantData: { ...tenantFormik.values, admin_id: accessType.admin_id },
@@ -557,13 +550,14 @@ const RentRollLeaseing = () => {
 
   const addLease = async () => {
     setLoader(true);
+    const fileUrl = [];
     if (file) {
       try {
         const uploadPromises = file.map(async (fileItem, i) => {
-          if (fileItem.upload_file instanceof File) {
+          if (fileItem instanceof File) {
             try {
               const form = new FormData();
-              form.append("files", fileItem.upload_file);
+              form.append("files", fileItem);
 
               const res = await axios.post(`${imageUrl}/images/upload`, form);
 
@@ -573,14 +567,16 @@ const RentRollLeaseing = () => {
                 res.data.files &&
                 res.data.files.length > 0
               ) {
-                fileItem.upload_file = res.data.files[0].url;
-                fileItem.upload_link = res.data.files[0].url;
+                fileUrl.push(res.data.files[0].filename);
+                fileItem = res.data.files[0].filename;
               } else {
                 console.error("Unexpected response format:", res);
               }
             } catch (error) {
               console.error("Error uploading file:", error);
             }
+          } else {
+            fileUrl.push(fileItem);
           }
         });
 
@@ -654,7 +650,7 @@ const RentRollLeaseing = () => {
         ...leaseFormik.values,
         entry: entryData,
         admin_id: accessType.admin_id,
-        uploaded_file: file,
+        uploaded_file: fileUrl,
       },
       tenantData: { ...tenantFormik.values, admin_id: accessType.admin_id },
       cosignerData: { ...cosignerFormik.values, admin_id: accessType.admin_id },
@@ -671,7 +667,15 @@ const RentRollLeaseing = () => {
         if (applicant_id) {
           const res2 = await axios.put(
             `${baseUrl}/applicant/applicant/${applicant_id}`,
-            { isMovedin: true }
+            {
+              isMovedin: true,
+              applicant_status: [
+                {
+                  status: "Approved",
+                  statusUpdatedBy: "Admin",
+                },
+              ],
+            }
           );
           if (res2.data.statusCode === 200) {
             toast.success("Lease Added Successfully", {
@@ -680,6 +684,12 @@ const RentRollLeaseing = () => {
             });
             navigate(`/${admin}/RentRoll`);
           }
+        } else {
+          toast.success("Lease Added Successfully", {
+            position: "top-center",
+            autoClose: 1000,
+          });
+          navigate(`/${admin}/RentRoll`);
         }
       }
     } catch (error) {
@@ -1081,10 +1091,12 @@ const RentRollLeaseing = () => {
             await handlePropertyTypeSelect(property);
           }
         }
-
+        setFile(leases?.uploaded_file);
         // Handle unit selection
         handleUnitSelect(unit_data);
-        setDisplay(true);
+        if (applicant_id) {
+          setDisplay(true);
+        }
       }
     } catch (error) {
       console.error("Error:", error.message);
@@ -1114,15 +1126,7 @@ const RentRollLeaseing = () => {
       const finalArray = [];
 
       for (let i = 0; i < filesArray.length; i++) {
-        const object = {
-          upload_file: filesArray[i],
-          upload_date: moment().format("YYYY-MM-DD"),
-          upload_time: moment().format("HH:mm:ss"),
-          upload_by: accessType.first_name + " " + accessType.last_name,
-          file_name: filesArray[i].name,
-          upload_link: URL.createObjectURL(filesArray[i]),
-        };
-        finalArray.push(object);
+        finalArray.push(filesArray[i]);
       }
 
       setFile([...finalArray]);
@@ -1136,15 +1140,7 @@ const RentRollLeaseing = () => {
       const finalArray = [];
 
       for (let i = 0; i < filesArray.length; i++) {
-        const object = {
-          upload_file: filesArray[i],
-          upload_date: moment().format("YYYY-MM-DD"),
-          upload_time: moment().format("HH:mm:ss"),
-          upload_by: accessType.first_name + " " + accessType.last_name,
-          file_name: filesArray[i].name,
-          upload_link: URL.createObjectURL(filesArray[i]),
-        };
-        finalArray.push(object);
+        finalArray.push(filesArray[i]);
       }
 
       setFile([...file, ...finalArray]);
@@ -1159,7 +1155,7 @@ const RentRollLeaseing = () => {
 
   return (
     <>
-      <LeaseHeader id={lease_id} />
+      <LeaseHeader id={lease_id} id2={applicant_id} />
 
       <Container className="mt--7" fluid>
         <Row>
@@ -1182,7 +1178,11 @@ const RentRollLeaseing = () => {
                   <Row className="align-items-center">
                     <Col xs="8">
                       <h3 className="mb-0">
-                        {lease_id ? "Edit Lease" : "New Lease"}
+                        {lease_id && applicant_id
+                          ? "Add Lease"
+                          : lease_id
+                          ? "Add Lease Lease"
+                          : "Add Lease"}
                       </h3>
                     </Col>
                   </Row>
@@ -3865,6 +3865,7 @@ const RentRollLeaseing = () => {
                         </label>
                       </div>
                       <div className="d-flex ">
+                        {console.log(file, applicant_id, "yash")}
                         {file.length > 0 &&
                           file?.map((singleFile, index) => (
                             <div
@@ -3877,32 +3878,30 @@ const RentRollLeaseing = () => {
                               {!lease_id ? (
                                 <p
                                   onClick={() => {
+                                    if (singleFile) {
+                                    }
                                     window.open(
-                                      singleFile.upload_file,
+                                      URL.createObjectURL(singleFile),
                                       "_blank"
                                     );
                                   }}
                                   style={{ cursor: "pointer" }}
                                 >
-                                  {singleFile?.file_name?.substr(0, 5)}
-                                  {singleFile?.file_name?.length > 5
-                                    ? "..."
-                                    : null}
+                                  {singleFile?.name?.substr(0, 5)}
+                                  {singleFile?.name?.length > 5 ? "..." : null}
                                 </p>
                               ) : (
                                 <p
                                   onClick={() => {
                                     window.open(
-                                      singleFile.upload_file,
+                                      `${imageGetUrl}/${singleFile}`,
                                       "_blank"
                                     );
                                   }}
                                   style={{ cursor: "pointer" }}
                                 >
-                                  {singleFile.file_name?.substr(0, 5)}
-                                  {singleFile.file_name?.length > 5
-                                    ? "..."
-                                    : null}
+                                  {singleFile.substr(0, 5)}
+                                  {singleFile.length > 5 ? "..." : null}
                                 </p>
                               )}
                               <CloseIcon
@@ -4098,7 +4097,7 @@ const RentRollLeaseing = () => {
                         >
                           Loading...
                         </button>
-                      ) : lease_id ? (
+                      ) : lease_id && !applicant_id ? (
                         <button
                           type="submit"
                           className="btn btn-primary"

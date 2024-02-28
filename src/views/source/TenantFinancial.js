@@ -69,6 +69,8 @@ const TenantFinancial = () => {
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
   const [loader, setLoader] = React.useState(true);
+  const [financialData, setFinancialData] = useState([]);
+
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
@@ -99,20 +101,21 @@ const TenantFinancial = () => {
   const fetchLedger = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/payment/tenant_financial/${accessType?.tenant_id}`
+        `${baseUrl}/payment/tenant_financial/${"1708683886820"}`
       );
+      console.log(response, "yashu");
       setLedger(response.data.data);
       setLoader(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
       setLoader(false);
     }
-
   };
+
   useEffect(() => {
     fetchLedger();
   }, [accessType]);
-
+  console.log(Ledger, "yashu")
   const fetchUnitsByProperty = async (propertyType) => {
     try {
       const response = await fetch(
@@ -426,6 +429,27 @@ const TenantFinancial = () => {
 
     return filteredData;
   };
+  
+  const [expandedRows, setExpandedRows] = useState([]);
+  const [expandedData, setExpandedData] = useState([]);
+  const openAccount = (ledger, i) => {
+    const isExpanded = expandedRows.includes(i);
+
+    if (!isExpanded) {
+      setExpandedRows([...expandedRows, i]);
+      setExpandedData((prevExpandedData) => ({
+        ...prevExpandedData,
+        [i]: ledger?.entry,
+      }));
+    } else {
+      setExpandedRows(expandedRows.filter((row) => row !== i));
+      setExpandedData((prevExpandedData) => {
+        const newData = { ...prevExpandedData };
+        delete newData[i];
+        return newData;
+      });
+    }
+  };
 
   console.log(paymentId ? paymentId : "");
   return (
@@ -508,7 +532,7 @@ const TenantFinancial = () => {
 
                           <tbody>
                             {filterLedgerBySearch()?.length > 0 ? (
-                              filterLedgerBySearch().map((item, index) => (
+                              filterLedgerBySearch().map((item, index) => (<>
                                 <tr
                                   key={index}
                                   style={{ cursor: "pointer" }}
@@ -522,7 +546,7 @@ const TenantFinancial = () => {
 
                                   <td>{item?.type || "N/A"}</td>
 
-                                  <td>
+                                  {/* <td>
                                     {item?.entry?.map((data, i) => (
                                       <>
                                         <div className="d-flex">
@@ -534,22 +558,51 @@ const TenantFinancial = () => {
                                         </div>
                                       </>
                                     ))}
+                                  </td> */}
+                                  <td
+                                    style={{
+                                      cursor:
+                                        item?.entry?.length >
+                                          1
+                                          ? "pointer"
+                                          : "",
+                                    }}
+                                    onClick={() => {
+                                      if (
+                                        item?.entry?.length >
+                                        1
+                                      ) {
+                                        openAccount(
+                                          item,
+                                          index
+                                        );
+                                      }
+                                    }}
+                                  >
+                                    {item?.entry?.map(
+                                      (data) => (
+                                        <>
+                                          {data?.account}
+                                          <br />
+                                        </>
+                                      )
+                                    ) || "-"}
                                   </td>
 
                                   <td>
                                     {" "}
                                     {item.is_leaseAdded === true
                                       ? item.entry.map((data, i) => (
-                                          <>
-                                            <div className="d-flex ">
-                                              <div>
-                                                {i + 1}
-                                                {". "}
-                                              </div>
-                                              <div>{data.memo}</div>
+                                        <>
+                                          <div className="d-flex ">
+                                            <div>
+                                              {i + 1}
+                                              {". "}
                                             </div>
-                                          </>
-                                        ))
+                                            <div>{data.memo}</div>
+                                          </div>
+                                        </>
+                                      ))
                                       : item.entry[0].memo}
                                   </td>
 
@@ -565,6 +618,67 @@ const TenantFinancial = () => {
                                   )}
                                   <td>{item?.balance}</td>
                                 </tr>
+                                {expandedRows.includes(index) && (
+                                  <tr style={{ border: '0', backgroundColor: "#f6f9fc" }} key={`expanded_${index}`}>
+                                    <td scope="col" style={{ border: '0' }} colSpan="2"></td>
+                                    <td scope="col" style={{ border: '0' }} colSpan="2" className="text-left">
+                                      <b>Accounts</b><br />
+                                      {expandedData[index].map(
+                                        (item, subIndex) => (
+                                          <span
+                                            key={`expanded_${index}_${subIndex}`}
+                                          >
+                                            {item?.account}
+                                            <br />
+                                          </span>
+                                        )
+                                      )}
+                                    </td>
+                                    <td scope="col" style={{ border: '0' }}>
+                                      {Ledger[index]
+                                        ?.type === "Charge" ||
+                                        Ledger[index]
+                                          ?.type === "Refund"
+                                        ? (<><b>Amount</b><br /></>) : ""}
+                                      {expandedData[index].map(
+                                        (data, subIndex) => (
+                                          <>
+                                            {Ledger[index]
+                                              ?.type === "Charge" ||
+                                              Ledger[index]
+                                                ?.type === "Refund"
+                                              ? "$" + data?.amount
+                                              : ""}
+                                            <br />
+                                          </>
+                                        )
+                                      )}
+                                    </td>
+                                    <td scope="col" style={{ border: '0' }}>
+                                      {Ledger[index]
+                                        ?.type === "Payment"
+                                        ? (<><b>Amount</b><br /></>) : ""}
+                                      {expandedData[index].map(
+                                        (data, subIndex) => (
+                                          <>
+                                            {Ledger[index]
+                                              ?.type === "Payment"
+                                              ? "$" + data?.amount
+                                              : ""}
+                                            <br />
+                                          </>
+                                        )
+                                      )}
+                                    </td>
+                                    <td scope="col" style={{ border: '0' }} ></td>
+                                    <td></td>
+                                    {console.log(
+                                      expandedData[index],
+                                      "yash"
+                                    )}
+                                  </tr>
+                                )}
+                              </>
                               ))
                             ) : (
                               <tr>
