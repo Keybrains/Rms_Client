@@ -5,18 +5,11 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  FormLabel,
-  RadioGroup,
-  Radio,
-  FormControlLabel,
-  Checkbox,
-  Grid,
 } from "@mui/material";
 import SuperAdminHeader from "../Headers/SuperAdminHeader";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Button } from "react-bootstrap";
-
 import { ToastContainer, toast } from "react-toastify";
 import {
   Card,
@@ -35,7 +28,6 @@ const EmailForm = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
   const [accessType, setAccessType] = useState();
-  console.log(accessType, 'accessType')
   useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
@@ -135,8 +127,8 @@ const EmailForm = () => {
                       from_email: Yup.string().required("Required"),
                     })}
                     onSubmit={(values, { resetForm }) => {
-                      handleSubmit(values);
                       console.log(values, "===========================");
+                      handleSubmit(values);
                       resetForm();
                     }}
                   >
