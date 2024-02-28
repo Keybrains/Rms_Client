@@ -2,7 +2,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const baseUrl = process.env.REACT_APP_BASE_URL;
-const imageUrl = process.env.REACT_APP_IMAGE_URL;
+const imageUrl = process.env.REACT_APP_IMAGE_POST_URL;
 
 export const dialogPaperStyles = {
   maxWidth: "lg",
@@ -81,11 +81,11 @@ export const handleSubmit = async (
               const imageData = new FormData();
               imageData.append("files", image);
               const res = await axios.post(
-                `${baseUrl}/images/upload`,
+                `${imageUrl}/images/upload`,
                 imageData
               );
               if (res) {
-                images[file].push(res.data.files[0].url);
+                images[file].push(res.data.files[0].filename);
               }
             } catch (error) {
               console.error("Error: ", error.message);

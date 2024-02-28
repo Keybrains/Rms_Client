@@ -2,7 +2,7 @@ import axios from "axios";
 import moment from "moment";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
-const imageUrl = process.env.REACT_APP_IMAGE_URL;
+const imageUrl = process.env.REACT_APP_IMAGE_POST_URL;
 
 const financialTypeArray = ["Month to date", "Three months to date", "All"];
 
@@ -55,14 +55,14 @@ const handleImageChange = async (event, rental_id) => {
   var image;
 
   try {
-    const result = await axios.post(`${baseUrl}/images/upload`, formData, {
+    const result = await axios.post(`${imageUrl}/images/upload`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
 
     image = {
-      rental_image: result.data.files[0].url,
+      rental_image: result.data.files[0].filename,
     };
 
     const response = await axios.put(`${baseUrl}/rentals/proparty_image/${rental_id}`, image);

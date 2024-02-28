@@ -313,6 +313,13 @@ var routes = [
     layout: "/admin",
   },
   {
+    path: "/RentRollLeaseing/:lease_id",
+    name: "Rent Roll Leaseing",
+    icon: "ni ni-home-3 text-orange",
+    component: <RentRollLeaseing />,
+    layout: "/admin",
+  },
+  {
     path: "/tenantdashboard",
     name: "DashBoard",
     icon: "ni ni-tv-2 text-primary",
@@ -706,12 +713,6 @@ var routes = [
   {
     path: "/addplan",
     name: "Addplans",
-    component: <SuperAdminAddplan />,
-    layout: "/superadmin",
-  },
-  {
-    path: "/addplan/:plan_id",
-    name: "EditPlan",
     component: <SuperAdminAddplan />,
     layout: "/superadmin",
   },

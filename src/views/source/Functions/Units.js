@@ -8,7 +8,8 @@ import { OpenImageDialog } from "components/OpenImageDialog";
 import { Autocomplete, TextField } from "@mui/material";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
-const imageUrl = process.env.REACT_APP_IMAGE_URL;
+const imageUrl = process.env.REACT_APP_IMAGE_POST_URL;
+const imageGetUrl = process.env.REACT_APP_IMAGE_GET_URL;
 
 const roomsArray = [
   "1 Bed",
@@ -62,38 +63,30 @@ const handleListingEdit = async (id, addUnitFormik) => {
 
 //delete unit
 const handleDeleteUnit = (id) => {
-  swal({
-    title: "Are you sure?",
-    text: "Once deleted, you will not be able to recover this applicants!",
-    icon: "warning",
-    buttons: ["Cancel", "Delete"],
-    dangerMode: true,
-  }).then((willDelete) => {
-    if (willDelete) {
-      axios
-        .delete(`${baseUrl}/unit/unit/` + id)
-        .then((response) => {
-          if (response.data.statusCode === 200) {
-            toast.success(response.data.message, {
-              position: "top-center",
-              autoClose: 500,
-            });
-          }
-          if (response.data.statusCode === 201) {
-            toast.warning(response.data.message, {
-              position: "top-center",
-              autoClose: 500,
-            });
-          }
-        })
-        .catch((err) => {
-          console.log(err);
+  return new Promise((resolve, reject) => {
+    swal({
+      title: "Are you sure?",
+      text: "Once deleted, you will not be able to recover this applicants!",
+      icon: "warning",
+      buttons: ["Cancel", "Delete"],
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        axios
+          .delete(`${baseUrl}/unit/unit/` + id)
+          .then((response) => {
+            resolve(response.data); // Resolve with response data
+          })
+          .catch((err) => {
+            reject(err); // Reject with error
+          });
+      } else {
+        toast.success("your data is safe", {
+          position: "top-center",
         });
-    } else {
-      toast.success("your data is safe", {
-        position: "top-center",
-      });
-    }
+        reject(new Error("Deletion cancelled")); // Reject with cancellation error
+      }
+    });
   });
 };
 
@@ -107,7 +100,7 @@ const handleSubmit = async (rental_id, admin_id, object, file) => {
             const form = new FormData();
             form.append("files", fileItem);
 
-            const res = await axios.post(`${baseUrl}/images/upload`, form);
+            const res = await axios.post(`${imageUrl}/images/upload`, form);
 
             if (
               res &&
@@ -115,8 +108,8 @@ const handleSubmit = async (rental_id, admin_id, object, file) => {
               res.data.files &&
               res.data.files.length > 0
             ) {
-              file[i] = res.data.files[0].url;
-              object.rental_images[i] = res.data.files[0].url;
+              file[i] = res.data.files[0].filename;
+              object.rental_images[i] = res.data.files[0].filename;
             } else {
               console.error("Unexpected response format:", res);
             }
@@ -164,7 +157,7 @@ const handleUnitDetailsEdit = async (unit_id, object, file) => {
             const form = new FormData();
             form.append("files", fileItem);
 
-            const res = await axios.post(`${baseUrl}/images/upload`, form);
+            const res = await axios.post(`${imageUrl}/images/upload`, form);
 
             if (
               res &&
@@ -172,8 +165,8 @@ const handleUnitDetailsEdit = async (unit_id, object, file) => {
               res.data.files &&
               res.data.files.length > 0
             ) {
-              file[i] = res.data.files[0].url;
-              object.rental_images[i] = res.data.files[0].url;
+              file[i] = res.data.files[0].filename;
+              object.rental_images[i] = res.data.files[0].filename;
             } else {
               console.error("Unexpected response format:", res);
             }
@@ -534,7 +527,7 @@ const UnitEdite = ({
                                 src={
                                   unitImg instanceof File
                                     ? URL.createObjectURL(unitImg)
-                                    : unitImg
+                                    : `${imageGetUrl}/${unitImg}`
                                 }
                                 alt=""
                                 style={{
@@ -566,11 +559,13 @@ const UnitEdite = ({
                               />
                             </div>
                           ))}
-                        <OpenImageDialog
-                          open={open}
-                          setOpen={setOpen}
-                          selectedFiles={selectedFiles}
-                        />
+                        {open && (
+                          <OpenImageDialog
+                            open={open}
+                            setOpen={setOpen}
+                            selectedFiles={selectedFiles}
+                          />
+                        )}
                       </div>
                     </FormGroup>
                   </div>

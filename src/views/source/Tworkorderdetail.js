@@ -37,6 +37,7 @@ import { useFormik } from "formik";
 
 const TWorkOrderDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const imageGetUrl = process.env.REACT_APP_IMAGE_GET_URL;
   const { id } = useParams();
   console.log(id);
   const [outstandDetails, setoutstandDetails] = useState({});
@@ -174,8 +175,8 @@ const TWorkOrderDetails = () => {
     handleDialogClose();
     const formatedDate = updateWorkorderFormik.values.due_date
       ? new Date(updateWorkorderFormik.values.due_date)
-        .toISOString()
-        .split("T")[0]
+          .toISOString()
+          .split("T")[0]
       : "";
     await axios
       .put(`${baseUrl}/workorder/updateworkorder/${outstandDetails._id}`, {
@@ -425,8 +426,12 @@ const TWorkOrderDetails = () => {
                                     {outstandDetails.work_subject || "N/A"}
                                   </h2>
                                   <span>
-                                    {outstandDetails.property_data.rental_adress || "N/A"} {outstandDetails?.unit_data?.rental_unit ? " - " + outstandDetails?.unit_data?.rental_unit : null}
-
+                                    {outstandDetails.property_data
+                                      .rental_adress || "N/A"}{" "}
+                                    {outstandDetails?.unit_data?.rental_unit
+                                      ? " - " +
+                                        outstandDetails?.unit_data?.rental_unit
+                                      : null}
                                   </span>
                                 </Box>
                               </Box>
@@ -480,7 +485,9 @@ const TWorkOrderDetails = () => {
                                         marginTop: "5px",
                                       }}
                                     >
-                                      {outstandDetails?.entry_allowed ? "Yes" : "No"}
+                                      {outstandDetails?.entry_allowed
+                                        ? "Yes"
+                                        : "No"}
                                     </span>
                                   </FormGroup>
                                   <FormGroup marginBottom="20px">
@@ -536,9 +543,7 @@ const TWorkOrderDetails = () => {
                                     <Col style={{ padding: "0 8px" }}>
                                       <SmallSummaryCard
                                         label="Due Date"
-                                        value={
-                                          outstandDetails.date || "N/A"
-                                        }
+                                        value={outstandDetails.date || "N/A"}
                                         textTruncate // add this prop to enable text truncation
                                       />
                                     </Col>
@@ -555,8 +560,8 @@ const TWorkOrderDetails = () => {
                                       <SmallSummaryCard
                                         label="Assignees"
                                         value={
-                                          outstandDetails?.staff_data?.staffmember_name ||
-                                          "N/A"
+                                          outstandDetails?.staff_data
+                                            ?.staffmember_name || "N/A"
                                         }
                                         textTruncate // add this prop to enable text truncation
                                       />
@@ -566,7 +571,7 @@ const TWorkOrderDetails = () => {
                               </Box>
                             </Box>
                             {outstandDetails?.partsandcharge_data?.length > 0 &&
-                              outstandDetails?.partsandcharge_data ? (
+                            outstandDetails?.partsandcharge_data ? (
                               <Box
                                 border="1px solid #ccc"
                                 borderRadius="8px"
@@ -729,12 +734,12 @@ const TWorkOrderDetails = () => {
                                         {!Object.keys(item).includes(
                                           "status"
                                         ) ||
-                                          Object.keys(item).includes(
-                                            "due_date"
-                                          ) ||
-                                          item.status !== (" " || "") ||
-                                          item.due_date !== (" " || "") ||
-                                          item.staffmember_name !==
+                                        Object.keys(item).includes(
+                                          "due_date"
+                                        ) ||
+                                        item.status !== (" " || "") ||
+                                        item.due_date !== (" " || "") ||
+                                        item.staffmember_name !==
                                           (" " || "") ? (
                                           <>
                                             <Grid
@@ -744,7 +749,7 @@ const TWorkOrderDetails = () => {
                                                 !Object.keys(item).includes(
                                                   "status"
                                                 ) ||
-                                                  item.status === (" " || null)
+                                                item.status === (" " || null)
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
@@ -758,7 +763,7 @@ const TWorkOrderDetails = () => {
                                                 !Object.keys(item).includes(
                                                   "due_date"
                                                 ) ||
-                                                  item.due_date === (" " || null)
+                                                item.due_date === (" " || null)
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
@@ -771,7 +776,7 @@ const TWorkOrderDetails = () => {
                                               style={{
                                                 display:
                                                   item.staffmember_name &&
-                                                    item.staffmember_name.trim() !==
+                                                  item.staffmember_name.trim() !==
                                                     ""
                                                     ? "block"
                                                     : "none",
@@ -847,12 +852,13 @@ const TWorkOrderDetails = () => {
                               >
                                 <span style={detailstyle}>Vendor</span> <br />
                                 <span>
-                                  {outstandDetails?.vendor_data?.vendor_name || "N/A"}
+                                  {outstandDetails?.vendor_data?.vendor_name ||
+                                    "N/A"}
                                 </span>
                               </Box>
                             </Box>
                             {outstandDetails?.tenant_data &&
-                              typeof outstandDetails?.tenant_data === "object" ? (
+                            typeof outstandDetails?.tenant_data === "object" ? (
                               <Box
                                 style={{
                                   display: "flex",
@@ -882,10 +888,17 @@ const TWorkOrderDetails = () => {
                                 >
                                   <span style={detailstyle}>Tenant</span> <br />
                                   <span>
-                                    {outstandDetails?.tenant_data?.tenant_firstName ? (
+                                    {outstandDetails?.tenant_data
+                                      ?.tenant_firstName ? (
                                       <>
-                                        {outstandDetails?.tenant_data?.tenant_firstName}{" "}
-                                        {outstandDetails?.tenant_data?.tenant_lastName}
+                                        {
+                                          outstandDetails?.tenant_data
+                                            ?.tenant_firstName
+                                        }{" "}
+                                        {
+                                          outstandDetails?.tenant_data
+                                            ?.tenant_lastName
+                                        }
                                       </>
                                     ) : (
                                       ""
@@ -923,10 +936,7 @@ const TWorkOrderDetails = () => {
                                   Property
                                 </h2>
                               </Box>
-                              {Array.isArray(
-                                outstandDetails?.property_data?.propertyres_image
-                              ) ||
-                                Array.isArray(outstandDetails?.property_data?.property_image) ? (
+                              {outstandDetails?.property_data?.rental_image ? (
                                 <Box
                                   style={{
                                     width: "100%",
@@ -942,40 +952,16 @@ const TWorkOrderDetails = () => {
                                       textAlign: "center",
                                     }}
                                   >
-                                    {outstandDetails?.property_data?.propertyres_image &&
-                                      outstandDetails?.property_data
-                                        ?.propertyres_image[0]?.[0] ? (
-                                      <img
-                                        src={
-                                          outstandDetails?.property_data
-                                            .propertyres_image[0][0]
-                                        }
-                                        alt="property"
-                                        style={{
-                                          maxWidth: "80%",
-                                          maxHeight: "100%",
-                                          borderRadius: "8px",
-                                          border: "1px solid #ccc",
-                                        }}
-                                      />
-                                    ) : outstandDetails?.property_data?.property_image &&
-                                      outstandDetails?.property_data
-                                        ?.property_image[0]?.[0] ? (
-                                      <img
-                                        src={
-                                          outstandDetails?.property_data.property_image[0][0]
-                                        }
-                                        alt="property"
-                                        style={{
-                                          maxWidth: "80%",
-                                          maxHeight: "100%",
-                                          borderRadius: "8px",
-                                          border: "1px solid #ccc",
-                                        }}
-                                      />
-                                    ) : (
-                                      <span>No Image Found</span>
-                                    )}
+                                    <img
+                                      src={`${imageGetUrl}/${outstandDetails?.property_data.rental_image}`}
+                                      alt="property"
+                                      style={{
+                                        maxWidth: "80%",
+                                        maxHeight: "100%",
+                                        borderRadius: "8px",
+                                        border: "1px solid #ccc",
+                                      }}
+                                    />
                                   </Box>
                                 </Box>
                               ) : null}
@@ -1002,9 +988,12 @@ const TWorkOrderDetails = () => {
                                   }
                                 >
                                   <span>
-                                    {outstandDetails?.property_data?.rental_adress || "N/A"}
+                                    {outstandDetails?.property_data
+                                      ?.rental_adress || "N/A"}
                                     {outstandDetails?.unit_data?.rental_unit ? (
-                                      " (" + outstandDetails?.unit_data?.rental_unit + ")"
+                                      " (" +
+                                      outstandDetails?.unit_data?.rental_unit +
+                                      ")"
                                     ) : (
                                       <></>
                                     )}
@@ -1027,26 +1016,54 @@ const TWorkOrderDetails = () => {
                                   }}
                                 >
                                   <span>
-                                    {outstandDetails?.property_data?.rental_city ? (
-                                      <>{outstandDetails?.property_data?.rental_city},</>
+                                    {outstandDetails?.property_data
+                                      ?.rental_city ? (
+                                      <>
+                                        {
+                                          outstandDetails?.property_data
+                                            ?.rental_city
+                                        }
+                                        ,
+                                      </>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {outstandDetails?.property_data?.rental_state ? (
-                                      <>{outstandDetails?.property_data?.rental_state},</>
+                                    {outstandDetails?.property_data
+                                      ?.rental_state ? (
+                                      <>
+                                        {
+                                          outstandDetails?.property_data
+                                            ?.rental_state
+                                        }
+                                        ,
+                                      </>
                                     ) : (
                                       ""
                                     )}{" "}
-
-                                  </span><br />
+                                  </span>
+                                  <br />
                                   <span>
-                                    {outstandDetails?.property_data?.rental_country ? (
-                                      <>{outstandDetails?.property_data?.rental_country},</>
+                                    {outstandDetails?.property_data
+                                      ?.rental_country ? (
+                                      <>
+                                        {
+                                          outstandDetails?.property_data
+                                            ?.rental_country
+                                        }
+                                        ,
+                                      </>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {outstandDetails?.property_data?.rental_postcode ? (
-                                      <>{outstandDetails?.property_data?.rental_postcode}.</>
+                                    {outstandDetails?.property_data
+                                      ?.rental_postcode ? (
+                                      <>
+                                        {
+                                          outstandDetails?.property_data
+                                            ?.rental_postcode
+                                        }
+                                        .
+                                      </>
                                     ) : (
                                       ""
                                     )}
@@ -1297,10 +1314,10 @@ const TWorkOrderDetails = () => {
                                     outstandDetails.priority === "High"
                                       ? "red"
                                       : outstandDetails.priority === "Medium"
-                                        ? "green"
-                                        : outstandDetails.priority === "Low"
-                                          ? "#FFD700"
-                                          : "inherit",
+                                      ? "green"
+                                      : outstandDetails.priority === "Low"
+                                      ? "#FFD700"
+                                      : "inherit",
                                   borderRadius: "15px",
                                   padding: "2px",
                                   fontSize: "15px",
@@ -1308,10 +1325,10 @@ const TWorkOrderDetails = () => {
                                     outstandDetails.priority === "High"
                                       ? "red"
                                       : outstandDetails.priority === "Medium"
-                                        ? "green"
-                                        : outstandDetails.priority === "Low"
-                                          ? "#FFD700"
-                                          : "inherit",
+                                      ? "green"
+                                      : outstandDetails.priority === "Low"
+                                      ? "#FFD700"
+                                      : "inherit",
                                 }}
                               >
                                 &nbsp;{outstandDetails.priority}&nbsp;
@@ -1324,7 +1341,12 @@ const TWorkOrderDetails = () => {
                               </h2>
 
                               <span className="">
-                                {outstandDetails.property_data.rental_adress || "N/A"} {outstandDetails?.unit_data?.rental_unit ? " - " + outstandDetails?.unit_data?.rental_unit : null}
+                                {outstandDetails.property_data.rental_adress ||
+                                  "N/A"}{" "}
+                                {outstandDetails?.unit_data?.rental_unit
+                                  ? " - " +
+                                    outstandDetails?.unit_data?.rental_unit
+                                  : null}
                               </span>
                             </Col>
                           </Row>
@@ -1389,7 +1411,8 @@ const TWorkOrderDetails = () => {
                                 </label>
                                 <br />
                                 <span style={{ fontSize: "13px" }}>
-                                  {outstandDetails?.staff_data?.staffmember_name || "N/A"}
+                                  {outstandDetails?.staff_data
+                                    ?.staffmember_name || "N/A"}
                                 </span>
                               </FormGroup>
                             </Col>
@@ -1403,7 +1426,9 @@ const TWorkOrderDetails = () => {
                                 </label>
                                 <br />
                                 <span style={{ fontSize: "13px" }}>
-                                  {outstandDetails?.entry_allowed ? "Yes" : "No"}
+                                  {outstandDetails?.entry_allowed
+                                    ? "Yes"
+                                    : "No"}
                                 </span>
                               </FormGroup>
                             </Col>
@@ -1440,7 +1465,6 @@ const TWorkOrderDetails = () => {
                                   color: "#5e72e4",
                                 }}
                               >
-
                                 <h2
                                   className="text"
                                   style={{ color: "#263238" }}
@@ -1449,7 +1473,8 @@ const TWorkOrderDetails = () => {
                                 </h2>
                               </Box>
 
-                              {outstandDetails?.workOrder_images && outstandDetails?.workOrder_images?.length > 0 ? (
+                              {outstandDetails?.workOrder_images &&
+                              outstandDetails?.workOrder_images?.length > 0 ? (
                                 <Box
                                   style={{
                                     width: "100%",
@@ -1460,23 +1485,29 @@ const TWorkOrderDetails = () => {
                                     justifyContent: "center",
                                   }}
                                 >
-                                  {outstandDetails?.workOrder_images?.map((imageUrl, index) => (
-                                    <Box
-                                      key={index}
-                                      width="48%"
-                                      style={{ minWidth: "48%", margin: "1%" }}
-                                    >
-                                      <img
-                                        src={imageUrl}
-                                        alt={`property ${index}`}
+                                  {outstandDetails?.workOrder_images?.map(
+                                    (imageUrl, index) => (
+                                      <Box
+                                        key={index}
+                                        width="48%"
                                         style={{
-                                          width: "100%",
-                                          borderRadius: "8px",
-                                          border: "1px solid #ccc",
+                                          minWidth: "48%",
+                                          margin: "1%",
                                         }}
-                                      />
-                                    </Box>
-                                  ))}
+                                      >
+                                        <img
+                                          src={`${imageGetUrl}/${imageUrl}`}
+                                          alt={`property ${index}`}
+                                          style={{
+                                            width: "100%",
+                                            height: "100%",
+                                            borderRadius: "8px",
+                                            border: "1px solid #ccc",
+                                          }}
+                                        />
+                                      </Box>
+                                    )
+                                  )}
                                 </Box>
                               ) : (
                                 "No Images Attached"
@@ -1505,10 +1536,14 @@ const TWorkOrderDetails = () => {
                                   }
                                 >
                                   <span>
-                                    {outstandDetails?.property_data?.rental_adress || "N/A"} (
-                                    {outstandDetails?.unit_data?.rental_unit ? outstandDetails?.unit_data?.rental_unit : "N/A"})
+                                    {outstandDetails?.property_data
+                                      ?.rental_adress || "N/A"}{" "}
+                                    (
+                                    {outstandDetails?.unit_data?.rental_unit
+                                      ? outstandDetails?.unit_data?.rental_unit
+                                      : "N/A"}
+                                    )
                                   </span>
-
                                 </Box>
                               </Box>
                               <Box
@@ -1527,23 +1562,51 @@ const TWorkOrderDetails = () => {
                                   }}
                                 >
                                   <span>
-                                    {outstandDetails?.property_data?.rental_city ? (
-                                      <>{outstandDetails?.property_data?.rental_city},</>
+                                    {outstandDetails?.property_data
+                                      ?.rental_city ? (
+                                      <>
+                                        {
+                                          outstandDetails?.property_data
+                                            ?.rental_city
+                                        }
+                                        ,
+                                      </>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {outstandDetails?.property_data?.rental_state ? (
-                                      <>{outstandDetails?.property_data?.rental_state},</>
+                                    {outstandDetails?.property_data
+                                      ?.rental_state ? (
+                                      <>
+                                        {
+                                          outstandDetails?.property_data
+                                            ?.rental_state
+                                        }
+                                        ,
+                                      </>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {outstandDetails?.property_data?.rental_country ? (
-                                      <>{outstandDetails?.property_data?.rental_country},</>
+                                    {outstandDetails?.property_data
+                                      ?.rental_country ? (
+                                      <>
+                                        {
+                                          outstandDetails?.property_data
+                                            ?.rental_country
+                                        }
+                                        ,
+                                      </>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {outstandDetails?.property_data?.rental_postcode ? (
-                                      <>{outstandDetails?.property_data?.rental_postcode}.</>
+                                    {outstandDetails?.property_data
+                                      ?.rental_postcode ? (
+                                      <>
+                                        {
+                                          outstandDetails?.property_data
+                                            ?.rental_postcode
+                                        }
+                                        .
+                                      </>
                                     ) : (
                                       ""
                                     )}

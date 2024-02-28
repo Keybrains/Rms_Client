@@ -5,12 +5,12 @@ import { Table, Container, Row, Card, CardHeader } from "reactstrap";
 import TenantsHeader from "components/Headers/TenantsHeader";
 import { FormGroup, Col, Button } from "reactstrap";
 import { jwtDecode } from "jwt-decode";
-import PropImage from "../../assets/img/icons/common/pexels-binyamin-mellish-186077.jpg";
 import { RotatingLines } from "react-loader-spinner";
 
 const TenantPropertyDetail = () => {
   const { lease_id } = useParams();
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const imageGetUrl = process.env.REACT_APP_IMAGE_GET_URL;
   const navigate = useNavigate();
   let [loader, setLoader] = React.useState(true);
 
@@ -29,7 +29,6 @@ const TenantPropertyDetail = () => {
     try {
       const res = await axios.get(
         `${baseUrl}/leases/lease_summary/${lease_id}`
-
       );
       setPropertyDetails(res.data.data);
       setLoader(false);
@@ -46,7 +45,6 @@ const TenantPropertyDetail = () => {
     <>
       <TenantsHeader />
       <Container className="mt--8" fluid>
-
         <Row>
           <Col xs="12" sm="6">
             <FormGroup className="">
@@ -100,10 +98,13 @@ const TenantPropertyDetail = () => {
                               <div class="card mb-3 col-md-2">
                                 <div className="row g-0">
                                   <div className="col-md-4">
+                                    {console.log(propertyDetails)}
                                     <img
                                       className="mt-2 mb-2"
                                       src={
-                                        propertyDetails?.prop_image || PropImage
+                                        propertyDetails?.rental_image
+                                          ? `${imageGetUrl}/${propertyDetails?.rental_image}`
+                                          : ""
                                       }
                                       // src={PropImage}
                                       alt="Property Details"
@@ -173,11 +174,15 @@ const TenantPropertyDetail = () => {
                                     </tr>
 
                                     <tr className="body">
-                                      <td>{propertyDetails?.propertysub_type}</td>
+                                      <td>
+                                        {propertyDetails?.propertysub_type}
+                                      </td>
                                       <td>{propertyDetails?.rental_adress}</td>
                                       <td>{propertyDetails?.rental_city}</td>
                                       <td>{propertyDetails?.rental_country}</td>
-                                      <td>{propertyDetails?.rental_postcode}</td>
+                                      <td>
+                                        {propertyDetails?.rental_postcode}
+                                      </td>
                                     </tr>
                                   </tbody>
                                 </Table>
@@ -226,7 +231,9 @@ const TenantPropertyDetail = () => {
                                         {propertyDetails?.rentalOwner_lastName}
                                       </td>
                                       <td>
-                                        {propertyDetails?.rentalOwner_companyName}
+                                        {
+                                          propertyDetails?.rentalOwner_companyName
+                                        }
                                       </td>
                                       <td>
                                         {
@@ -234,7 +241,9 @@ const TenantPropertyDetail = () => {
                                         }
                                       </td>
                                       <td>
-                                        {propertyDetails?.rentalOwner_phoneNumber}
+                                        {
+                                          propertyDetails?.rentalOwner_phoneNumber
+                                        }
                                       </td>
                                     </tr>
                                   </tbody>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Button,
   Card,
@@ -35,17 +35,18 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const TAddWork = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const imageUrl = process.env.REACT_APP_IMAGE_URL;
+  const imageUrl = process.env.REACT_APP_IMAGE_POST_URL;
+  const imageGetUrl = process.env.REACT_APP_IMAGE_GET_URL;
   const [workOrderData, setWorkOrderData] = useState(null);
   const { id } = useParams();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
-  const [propdropdownOpen, setpropdropdownOpen] = React.useState(false);
-  const [categorydropdownOpen, setcategorydropdownOpen] = React.useState(false);
-  const [vendordropdownOpen, setvendordropdownOpen] = React.useState(false);
-  const [entrydropdownOpen, setentrydropdownOpen] = React.useState(false);
-  const [userdropdownOpen, setuserdropdownOpen] = React.useState(false);
-  const [statusdropdownOpen, setstatusdropdownOpen] = React.useState(false);
+  const [propdropdownOpen, setpropdropdownOpen] = useState(false);
+  const [categorydropdownOpen, setcategorydropdownOpen] = useState(false);
+  const [vendordropdownOpen, setvendordropdownOpen] = useState(false);
+  const [entrydropdownOpen, setentrydropdownOpen] = useState(false);
+  const [userdropdownOpen, setuserdropdownOpen] = useState(false);
+  const [statusdropdownOpen, setstatusdropdownOpen] = useState(false);
   const [unitData, setUnitData] = useState([]);
   const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
   const toggle11 = () => {
@@ -187,7 +188,7 @@ const TAddWork = () => {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -196,7 +197,6 @@ const TAddWork = () => {
         let getWorkData = response.data.data;
         setGetData(getWorkData);
         setVid(getWorkData[0]._id);
-        console.log("empty", response.data.data);
         WorkFormik.setValues({
           work_subject: getWorkData[0].work_subject || "",
           rental_adress: getWorkData[0].rental_adress || "",
@@ -210,7 +210,7 @@ const TAddWork = () => {
         setSelectedProp(getWorkData[0].rental_adress);
         setSelectedEntry(getWorkData[0].entry_allowed);
         setSelectedCategory(getWorkData[0].work_category);
-        setWorkOrderImage(getWorkData[0].workOrderImage || []);
+        setSelectedFiles(getWorkData[0].workOrderImage || []);
       } catch (error) {
         console.log(error, "aaa");
       }
@@ -227,28 +227,28 @@ const TAddWork = () => {
   const handleSubmit = async (values) => {
     setLoader(true);
     var image;
-    const imageData = new FormData();
-    for (let index = 0; index < selectedFiles.length; index++) {
-      const element = selectedFiles[index];
-      imageData.append(`files`, element);
+    if (selectedFiles) {
+      const imageData = new FormData();
+      for (let index = 0; index < selectedFiles.length; index++) {
+        const element = selectedFiles[index];
+        imageData.append(`files`, element);
+      }
+
+      const url = `${imageUrl}/images/upload`;
+      try {
+        const result = await axios.post(url, imageData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        image = result.data.files.map((data, index) => {
+          return data.filename;
+        });
+      } catch (error) {
+        console.error(error);
+      }
     }
 
-    const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
-    try {
-      const result = await axios.post(url, imageData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      image = {
-        prop_image: result.data.files.map((data, index) => {
-          return data.url;
-        }),
-      };
-      console.log(image, "imgs");
-    } catch (error) {
-      console.error(error);
-    }
     try {
       values["rental_adress"] = selectedProp;
       values["rental_units"] = selectedUnit;
@@ -257,7 +257,7 @@ const TAddWork = () => {
         : selectedCategory;
       values["vendor"] = selectedVendor;
       values["entry_allowed"] = selectedEntry;
-      values["workOrderImage"] = image.prop_image;
+      values["workOrderImage"] = image;
 
       const workorder_id = uuidv4();
       values["workorder_id"] = workorder_id;
@@ -315,22 +315,23 @@ const TAddWork = () => {
     }
   };
 
-  
   function handleResponse(response) {
-    const successMessage = id ? "Workorder updated successfully" : "Workorder added successfully";
+    const successMessage = id
+      ? "Workorder updated successfully"
+      : "Workorder added successfully";
     const errorMessage = response.data.message;
-  
+
     if (response.data.statusCode === 200) {
       // Show success toast
       toast.success(successMessage, {
-        position: 'top-center',
+        position: "top-center",
         autoClose: 1000,
         onClose: () => navigate("/tenant/tenantwork"),
       });
     } else {
       // Show an error toast
       toast.error(errorMessage, {
-        position: 'top-center',
+        position: "top-center",
         autoClose: 1000,
       });
     }
@@ -366,7 +367,7 @@ const TAddWork = () => {
   const [accessType, setAccessType] = useState(null);
   let cookie_id = localStorage.getItem("Tenant ID");
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt);
@@ -375,7 +376,7 @@ const TAddWork = () => {
     }
   }, [navigate]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
     fetch(`${baseUrl}/tenant/rental-address/${cookie_id}`)
       .then((response) => {
@@ -396,7 +397,7 @@ const TAddWork = () => {
       });
   }, [cookie_id]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
     fetch(`${baseUrl}/addstaffmember/find_staffmember`)
       .then((response) => response.json())
@@ -414,33 +415,19 @@ const TAddWork = () => {
       });
   }, []);
 
-  const [workOrderImage, setWorkOrderImage] = useState([]);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState([]);
 
   const clearSelectedPhoto = (index, name) => {
-    if (name === "propertyres_image") {
-      const filteredImage = workOrderImage.filter((item, i) => i !== index);
-      const filteredImage2 = selectedFiles.filter((item, i) => i !== index);
-      setSelectedFiles(filteredImage2);
-      setWorkOrderImage(filteredImage);
-    }
+    const filteredImage2 = selectedFiles.filter((item, i) => i !== index);
+    setSelectedFiles(filteredImage2);
   };
 
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const fileData = (e, type) => {
-    // Use the correct state-setting function for setSelectedFiles
+  const fileData = (e) => {
     setSelectedFiles((prevSelectedFiles) => [
       ...prevSelectedFiles,
       ...e.target.files,
     ]);
-
-    const newFiles = [
-      ...workOrderImage,
-      ...Array.from(e.target.files).map((file) => URL.createObjectURL(file)),
-    ];
-
-    // Update the state with the new files
-    setWorkOrderImage(newFiles);
   };
 
   const editworkorder = async (vid) => {
@@ -449,11 +436,6 @@ const TAddWork = () => {
       const response = await axios.put(
         `${baseUrl}/workorder/updateworkorder/${vid}`,
         {
-          // work_subject: response.data.data[0].work_subject,
-          // rental_adress: selectedProp,
-          // work_performed: response.data.data[0].work_performed ,
-          // entry_allowed: selectedEntry,
-          // work_category: selectedCategory,
           work_subject: WorkFormik.values.work_subject,
           rental_adress: selectedProp,
           rental_units: WorkFormik.values.rental_units,
@@ -547,7 +529,6 @@ const TAddWork = () => {
                             Photo
                           </label>
                           <span
-                            // onClick={workOrderDialog}
                             style={{
                               cursor: "pointer",
                               fontSize: "14px",
@@ -555,7 +536,6 @@ const TAddWork = () => {
                               color: "blue",
                             }}
                           >
-                            {" "}
                             <br />
                             <input
                               type="file"
@@ -569,7 +549,6 @@ const TAddWork = () => {
                             <label htmlFor={`workOrderImage`}>
                               <b style={{ fontSize: "20px" }}>+</b> Add
                             </label>
-                            {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
                           </span>
                         </FormGroup>
                       </Col>
@@ -589,11 +568,12 @@ const TAddWork = () => {
                         }}
                       >
                         <div className="d-flex">
-                          {workOrderImage &&
-                            workOrderImage.length > 0 &&
-                            workOrderImage.map((unitImg, index) => (
+                          {console.log(selectedFiles, "yash")}
+                          {selectedFiles &&
+                            selectedFiles.length > 0 &&
+                            selectedFiles.map((unitImg, index) => (
                               <div
-                                key={index} // Use a unique identifier, such as index or image URL
+                                key={index}
                                 style={{
                                   position: "relative",
                                   width: "100px",
@@ -604,7 +584,11 @@ const TAddWork = () => {
                                 }}
                               >
                                 <img
-                                  src={unitImg}
+                                  src={
+                                    typeof unitImg === "string"
+                                      ? `${imageGetUrl}/${unitImg}`
+                                      : URL.createObjectURL(unitImg)
+                                  }
                                   alt=""
                                   style={{
                                     width: "100px",
@@ -626,26 +610,18 @@ const TAddWork = () => {
                                     top: "-12px",
                                     right: "-12px",
                                   }}
-                                  onClick={() =>
-                                    clearSelectedPhoto(
-                                      index,
-                                      "propertyres_image"
-                                    )
-                                  }
+                                  onClick={() => clearSelectedPhoto(index)}
                                 />
                               </div>
                             ))}
+                        </div>
+                        {open && (
                           <OpenImageDialog
                             open={open}
                             setOpen={setOpen}
                             selectedImage={selectedImage}
                           />
-                        </div>
-                        <OpenImageDialog
-                          open={open}
-                          setOpen={setOpen}
-                          selectedImage={selectedImage}
-                        />
+                        )}
                       </div>
                     </FormGroup>
                     <br />

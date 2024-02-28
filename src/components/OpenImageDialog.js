@@ -30,6 +30,11 @@ const style = {
 export const OpenImageDialog = (props) => {
   //   const handleOpen = () => props.setOpen(true);
   const handleClose = () => props.setOpen(false);
+  const imageGetUrl = process.env.REACT_APP_IMAGE_GET_URL;
+
+  const isBlobURL = (url) => {
+    return url.startsWith("blob:");
+  };
   return (
     <Modal
       open={props.open}
@@ -48,7 +53,15 @@ export const OpenImageDialog = (props) => {
           padding: "2rem",
         }}
       >
-        <img style={style} src={props.selectedImage} alt="Image" />
+        <img
+          style={style}
+          src={
+            !isBlobURL(props.selectedImage)
+              ? `${imageGetUrl}/${props.selectedImage}`
+              : props.selectedImage
+          }
+          alt="Image"
+        />
         <ClearIcon
           style={{
             cursor: "pointer",
