@@ -100,9 +100,7 @@ function AddPayment() {
     //   `${baseUrl}/surcharge/surcharge/get/1708427568557`
     // );
     let adminid = accessType?.admin_id;
-    console.log(adminid, "yash");
     const url = `${baseUrl}/surcharge/surcharge/getadmin/${adminid}`;
-    console.log(url);
     axios
       .get(url)
       .then((response) => {

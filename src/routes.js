@@ -68,6 +68,8 @@ import TrialLogin from "views/source/TrialLogin";
 import DemoPayment from "views/source/DemoPayment";
 import SurchargeForm from "views/source/Surcharge";
 import SurchargeTable from "views/source/SurchargeTable";
+import Settings from "views/source/Settings";
+
 // ==========================  Super Admin ===================================================
 
 import SuperAdminDashBoard from "../src/components/superadmin/Dashboard/DashBoard";
@@ -111,6 +113,13 @@ var routes = [
     name: "User Profile",
     icon: "ni ni-single-02 text-yellow",
     component: <Profile />,
+    layout: "/admin",
+  },
+  {
+    path: "/settings",
+    name: "Settings",
+    icon: "ni ni-settings-gear-65 text-yellow",
+    component: <Settings />,
     layout: "/admin",
   },
   {
