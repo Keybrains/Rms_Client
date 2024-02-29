@@ -849,23 +849,23 @@ const Applicants = () => {
                             )
                           }
                         >
-                          <td>{applicant.applicant_firstName}</td>
-                          <td>{applicant.applicant_lastName}</td>
-                          <td>{applicant.applicant_email}</td>
-                          <td>{applicant.applicant_phoneNumber}</td>
+                          <td>{applicant?.applicant_firstName}</td>
+                          <td>{applicant?.applicant_lastName}</td>
+                          <td>{applicant?.applicant_email}</td>
+                          <td>{applicant?.applicant_phoneNumber}</td>
                           <td>
-                            {applicant.rental_data.rental_adress}{" "}
-                            {applicant.unit_data &&
-                              applicant.unit_data.rental_unit
-                              ? " - " + applicant.unit_data.rental_unit
+                            {applicant?.rental_data?.rental_adress}{" "}
+                            {applicant?.unit_data &&
+                              applicant?.unit_data?.rental_unit
+                              ? " - " + applicant?.unit_data?.rental_unit
                               : null}
                           </td>
 
                           <td>
                             {applicant?.applicant_status?.status || "Undecided"}
                           </td>
-                          <td>{applicant.createdAt}</td>
-                          <td>{applicant.updatedAt || " - "}</td>
+                          <td>{applicant?.createdAt}</td>
+                          <td>{applicant?.updatedAt || " - "}</td>
                           <td>
                             <DeleteIcon
                               onClick={(e) => {
@@ -1509,7 +1509,7 @@ const Applicants = () => {
                         {Array.isArray(rentalownerData) &&
                           rentalownerData
                             .filter((tenant) => {
-                              const fullName = `${tenant.applicant_firstName} ${tenant.applicant_lastName}`;
+                              const fullName = `${tenant?.applicant_firstName} ${tenant?.applicant_lastName}`;
                               return fullName
                                 .toLowerCase()
                                 .includes(searchQuery1.toLowerCase());
@@ -1528,9 +1528,9 @@ const Applicants = () => {
                                   }}
                                 >
                                   <pre>
-                                    {tenant.applicant_firstName}&nbsp;
-                                    {tenant.applicant_lastName}
-                                    {`(${tenant.applicant_phoneNumber})`}
+                                    {tenant?.applicant_firstName}&nbsp;
+                                    {tenant?.applicant_lastName}
+                                    {`(${tenant?.applicant_phoneNumber})`}
                                   </pre>
                                 </td>
                                 <td

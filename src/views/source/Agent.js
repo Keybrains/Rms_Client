@@ -172,9 +172,9 @@ const Agent = () => {
                   <tbody>
                     {AgentData?.map((agent) => (
                       <tr key={agent._id}>
-                        <td>{agent.agent_name}</td>
-                        <td>{agent.agent_phoneNumber}</td>
-                        <td>{agent.agent_email}</td>
+                        <td>{agent?.agent_name}</td>
+                        <td>{agent?.agent_phoneNumber}</td>
+                        <td>{agent?.agent_email}</td>
                         <td>
                           <div style={{ display: "flex" }}>
                             <div

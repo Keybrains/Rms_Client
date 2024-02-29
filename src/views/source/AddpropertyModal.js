@@ -58,9 +58,9 @@ function CreditCardForm(props) {
           setSelectedProperty(propertyData.property_type || "Select");
 
           propertyFormik.setValues({
-            property_type: propertyData.property_type || "",
-            propertysub_type: propertyData.propertysub_type || "",
-            isMultiUnit: propertyData.is_multiunit,
+            property_type: propertyData?.property_type || "",
+            propertysub_type: propertyData?.propertysub_type || "",
+            isMultiUnit: propertyData?.is_multiunit,
           });
         })
         .catch((error) => {
@@ -183,9 +183,9 @@ function CreditCardForm(props) {
           setSelectedProperty(propertyData.property_type || "Select");
 
           propertyFormik.setValues({
-            property_type: propertyData.property_type || "",
-            propertysub_type: propertyData.propertysub_type || "",
-            isMultiUnit: propertyData.is_multiunit,
+            property_type: propertyData?.property_type || "",
+            propertysub_type: propertyData?.propertysub_type || "",
+            isMultiUnit: propertyData?.is_multiunit,
           });
         })
         .catch((error) => {
