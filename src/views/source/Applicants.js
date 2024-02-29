@@ -141,11 +141,11 @@ const Applicants = () => {
 
   const [unitId, setUnitId] = useState(null);
   const handleUnitSelect = (selectedUnit) => {
-    setSelectedUnit(selectedUnit.rental_unit_adress);
+    setSelectedUnit(selectedUnit.rental_unit);
     setUnitId(selectedUnit.unit_id);
     applicantFormik.setFieldValue(
-      "rental_units",
-      selectedUnit.rental_unit_adress
+      "rental_unit",
+      selectedUnit.rental_unit
     ); // Update the formik state here
   };
 
@@ -350,7 +350,7 @@ const Applicants = () => {
       tenant_businessNumber: "",
       tenant_faxPhoneNumber: "",
       rental_adress: "",
-      rental_units: "",
+      rental_unit: "",
       statusUpdatedBy: "",
     },
     validationSchema: yup.object({
@@ -874,12 +874,12 @@ const Applicants = () => {
                           <td>{applicant.createdAt}</td>
                           <td>{applicant.updatedAt || " - "}</td>
                           <td>
-                            <DeleteIcon
+                            {/* <DeleteIcon
                               onClick={(e) => {
                                 e.stopPropagation();
                                 deleteRentals(applicant._id);
                               }}
-                            />
+                            /> */}
                             <EditIcon
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -1426,7 +1426,7 @@ const Applicants = () => {
                                     key={index}
                                     onClick={() => handleUnitSelect(unit)}
                                   >
-                                    {unit.rental_unit_adress}
+                                    {unit.rental_unit}
                                   </DropdownItem>
                                 ))
                               ) : (
@@ -1436,12 +1436,12 @@ const Applicants = () => {
                               )}
                             </DropdownMenu>
                             {applicantFormik.errors &&
-                              applicantFormik.errors?.rental_units &&
+                              applicantFormik.errors?.rental_unit &&
                               applicantFormik.touched &&
-                              applicantFormik.touched?.rental_units &&
-                              applicantFormik.values.rental_units === "" ? (
+                              applicantFormik.touched?.rental_unit &&
+                              applicantFormik.values.rental_unit === "" ? (
                               <div style={{ color: "red" }}>
-                                {applicantFormik.errors.rental_units}
+                                {applicantFormik.errors.rental_unit}
                               </div>
                             ) : null}
                           </Dropdown>

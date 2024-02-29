@@ -82,9 +82,9 @@ const RentRollDetail = () => {
   const fetchfinancialData = async () => {
     setLoader(true);
     try {
-      const res = await axios.get(
-        `${baseUrl}/payment/charges_payments/${lease_id}`
-      );
+      const url = `${baseUrl}/payment/charges_payments/${lease_id}`;
+      console.log(`${baseUrl}/payment/charges_payments/${lease_id}`, "yash");
+      const res = await axios.get(url);
       setFinancialData(res.data.data);
       setTotalAmount(res.data.totalBalance);
     } catch (error) {
@@ -321,8 +321,8 @@ const RentRollDetail = () => {
                     {getStatus(leaseData?.start_date, leaseData?.end_date)} |{" "}
                     {leaseData?.rental_adress ? leaseData?.rental_adress : " "}
                     {leaseData?.rental_unit &&
-                      leaseData?.rental_unit !== undefined &&
-                      leaseData?.rental_unit !== ""
+                    leaseData?.rental_unit !== undefined &&
+                    leaseData?.rental_unit !== ""
                       ? ` - ${leaseData?.rental_unit}`
                       : ""}
                   </h5>
@@ -439,8 +439,8 @@ const RentRollDetail = () => {
                                         <Col>
                                           {leaseData?.rentalOwner_firstName
                                             ? leaseData?.rentalOwner_firstName +
-                                            " " +
-                                            leaseData?.rentalOwner_lastName
+                                              " " +
+                                              leaseData?.rentalOwner_lastName
                                             : "N/A"}
                                         </Col>
                                         <Col>
@@ -808,9 +808,10 @@ const RentRollDetail = () => {
                                       (generalledger, index) => (
                                         <>
                                           <tr
-                                            key={`${generalledger?.payment_id ||
+                                            key={`${
+                                              generalledger?.payment_id ||
                                               generalledger?.charge_id
-                                              }`}
+                                            }`}
                                           >
                                             <td>
                                               {generalledger?.entry[0]?.date ||
@@ -820,12 +821,11 @@ const RentRollDetail = () => {
                                               {generalledger?.type || "-"}
                                             </td>
 
-
                                             <td
                                               style={{
                                                 cursor:
                                                   generalledger?.entry?.length >
-                                                    1
+                                                  1
                                                     ? "pointer"
                                                     : "",
                                               }}
@@ -855,23 +855,23 @@ const RentRollDetail = () => {
                                                 color:
                                                   generalledger.type ===
                                                     "Payment" &&
-                                                    generalledger.response ===
+                                                  generalledger.response ===
                                                     "SUCCESS"
                                                     ? "#50975E"
                                                     : generalledger.type ===
-                                                      "Refund" &&
+                                                        "Refund" &&
                                                       generalledger.response ===
-                                                      "SUCCESS"
-                                                      ? "#ffc40c"
-                                                      : generalledger.response ===
-                                                        "FAILURE"
-                                                        ? "#AA3322"
-                                                        : "inherit",
+                                                        "SUCCESS"
+                                                    ? "#ffc40c"
+                                                    : generalledger.response ===
+                                                      "FAILURE"
+                                                    ? "#AA3322"
+                                                    : "inherit",
                                                 fontWeight: "bold",
                                               }}
                                             >
                                               {generalledger.response &&
-                                                generalledger.payment_type
+                                              generalledger.payment_type
                                                 ? `Manual ${generalledger.type} ${generalledger.response} for ${generalledger.payment_type}`
                                                 : "- - - - - - - - - - - - - - - - -"}
                                               {generalledger.transaction_id
@@ -881,29 +881,29 @@ const RentRollDetail = () => {
                                             <td>
                                               {generalledger.type ===
                                                 "Charge" ||
-                                                generalledger.type === "Refund"
+                                              generalledger.type === "Refund"
                                                 ? "$" +
-                                                generalledger.total_amount
+                                                  generalledger.total_amount
                                                 : "-"}
                                             </td>
                                             <td>
                                               {generalledger.type === "Payment"
                                                 ? "$" +
-                                                generalledger.total_amount
+                                                  generalledger.total_amount
                                                 : "-"}
                                             </td>
                                             <td>
                                               {generalledger.balance !==
-                                                undefined
+                                              undefined
                                                 ? generalledger.balance >= 0
                                                   ? `$${generalledger.balance.toFixed(
-                                                    2
-                                                  )}`
-                                                  : `$(${Math.abs(
-                                                    generalledger.balance.toFixed(
                                                       2
-                                                    )
-                                                  )})`
+                                                    )}`
+                                                  : `$(${Math.abs(
+                                                      generalledger.balance.toFixed(
+                                                        2
+                                                      )
+                                                    )})`
                                                 : "0"}
                                             </td>
                                             <td>
@@ -915,7 +915,7 @@ const RentRollDetail = () => {
                                               >
                                                 {generalledger?.response !==
                                                   "Failure" &&
-                                                  generalledger?.type !==
+                                                generalledger?.type !==
                                                   "Refund" ? (
                                                   <UncontrolledDropdown nav>
                                                     <DropdownToggle
@@ -953,55 +953,55 @@ const RentRollDetail = () => {
                                                     <DropdownMenu className="dropdown-menu-arrow">
                                                       {generalledger?.payment_id ===
                                                         showOptionsId && (
-                                                          <div>
-                                                            {generalledger?.response ===
-                                                              "SUCCESS" && (
-                                                                <DropdownItem
-                                                                  // style={{color:'black'}}
-                                                                  onClick={() => {
-                                                                    fetchData(
-                                                                      generalledger.payment_id
-                                                                    );
-                                                                    // setIsRefundOpen(
-                                                                    //   true
-                                                                    // );
-                                                                    setRefund(true);
-                                                                  }}
-                                                                >
-                                                                  Refund
-                                                                </DropdownItem>
-                                                              )}
-                                                            {(generalledger?.response ===
-                                                              "PENDING" ||
-                                                              generalledger?.payment_type ===
+                                                        <div>
+                                                          {generalledger?.response ===
+                                                            "SUCCESS" && (
+                                                            <DropdownItem
+                                                              // style={{color:'black'}}
+                                                              onClick={() => {
+                                                                fetchData(
+                                                                  generalledger.payment_id
+                                                                );
+                                                                // setIsRefundOpen(
+                                                                //   true
+                                                                // );
+                                                                setRefund(true);
+                                                              }}
+                                                            >
+                                                              Refund
+                                                            </DropdownItem>
+                                                          )}
+                                                          {(generalledger?.response ===
+                                                            "PENDING" ||
+                                                            generalledger?.payment_type ===
                                                               "Cash" ||
-                                                              generalledger?.payment_type ===
+                                                            generalledger?.payment_type ===
                                                               "Check" ||
-                                                              generalledger?.type ===
+                                                            generalledger?.type ===
                                                               "Charge") && (
-                                                                <DropdownItem
-                                                                  tag="div"
-                                                                  onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    if (
-                                                                      generalledger?.type ===
-                                                                      "Charge"
-                                                                    ) {
-                                                                      navigate(
-                                                                        `/${admin}/AddCharge/${lease_id}/${generalledger.charge_id}`
-                                                                      );
-                                                                    } else {
-                                                                      // navigate(
-                                                                      //   `/${admin}/AddPayment/${lease_id}/${generalledger.payment_id}`
-                                                                      // );
-                                                                    }
-                                                                  }}
-                                                                >
-                                                                  Edit
-                                                                </DropdownItem>
-                                                              )}
-                                                          </div>
-                                                        )}
+                                                            <DropdownItem
+                                                              tag="div"
+                                                              onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                if (
+                                                                  generalledger?.type ===
+                                                                  "Charge"
+                                                                ) {
+                                                                  navigate(
+                                                                    `/${admin}/AddCharge/${lease_id}/${generalledger.charge_id}`
+                                                                  );
+                                                                } else {
+                                                                  // navigate(
+                                                                  //   `/${admin}/AddPayment/${lease_id}/${generalledger.payment_id}`
+                                                                  // );
+                                                                }
+                                                              }}
+                                                            >
+                                                              Edit
+                                                            </DropdownItem>
+                                                          )}
+                                                        </div>
+                                                      )}
                                                     </DropdownMenu>
                                                   </UncontrolledDropdown>
                                                 ) : (
@@ -1019,10 +1019,26 @@ const RentRollDetail = () => {
                                             </td>
                                           </tr>
                                           {expandedRows.includes(index) && (
-                                            <tr style={{ border: '0', backgroundColor:"#f6f9fc" }} key={`expanded_${index}`}>
-                                              <td scope="col" style={{ border: '0' }} colSpan="2"></td>
-                                              <td scope="col" style={{ border: '0' }} colSpan="2" className="text-left">
-                                                <b>Accounts</b><br />
+                                            <tr
+                                              style={{
+                                                border: "0",
+                                                backgroundColor: "#f6f9fc",
+                                              }}
+                                              key={`expanded_${index}`}
+                                            >
+                                              <td
+                                                scope="col"
+                                                style={{ border: "0" }}
+                                                colSpan="2"
+                                              ></td>
+                                              <td
+                                                scope="col"
+                                                style={{ border: "0" }}
+                                                colSpan="2"
+                                                className="text-left"
+                                              >
+                                                <b>Accounts</b>
+                                                <br />
                                                 {expandedData[index].map(
                                                   (item, subIndex) => (
                                                     <span
@@ -1034,19 +1050,28 @@ const RentRollDetail = () => {
                                                   )
                                                 )}
                                               </td>
-                                              <td scope="col" style={{ border: '0' }}>
-                                                {financialData[index]
-                                                  ?.type === "Charge" ||
-                                                  financialData[index]
-                                                    ?.type === "Refund"
-                                                  ? (<><b>Amount</b><br /></>) : ""}
+                                              <td
+                                                scope="col"
+                                                style={{ border: "0" }}
+                                              >
+                                                {financialData[index]?.type ===
+                                                  "Charge" ||
+                                                financialData[index]?.type ===
+                                                  "Refund" ? (
+                                                  <>
+                                                    <b>Amount</b>
+                                                    <br />
+                                                  </>
+                                                ) : (
+                                                  ""
+                                                )}
                                                 {expandedData[index].map(
                                                   (data, subIndex) => (
                                                     <>
                                                       {financialData[index]
                                                         ?.type === "Charge" ||
-                                                        financialData[index]
-                                                          ?.type === "Refund"
+                                                      financialData[index]
+                                                        ?.type === "Refund"
                                                         ? "$" + data?.amount
                                                         : ""}
                                                       <br />
@@ -1054,10 +1079,19 @@ const RentRollDetail = () => {
                                                   )
                                                 )}
                                               </td>
-                                              <td scope="col" style={{ border: '0' }}>
-                                                {financialData[index]
-                                                  ?.type === "Payment"
-                                                  ? (<><b>Amount</b><br /></>) : ""}
+                                              <td
+                                                scope="col"
+                                                style={{ border: "0" }}
+                                              >
+                                                {financialData[index]?.type ===
+                                                "Payment" ? (
+                                                  <>
+                                                    <b>Amount</b>
+                                                    <br />
+                                                  </>
+                                                ) : (
+                                                  ""
+                                                )}
                                                 {expandedData[index].map(
                                                   (data, subIndex) => (
                                                     <>
@@ -1070,7 +1104,10 @@ const RentRollDetail = () => {
                                                   )
                                                 )}
                                               </td>
-                                              <td scope="col" style={{ border: '0' }} ></td>
+                                              <td
+                                                scope="col"
+                                                style={{ border: "0" }}
+                                              ></td>
                                               <td></td>
                                               {console.log(
                                                 expandedData[index],
@@ -1278,7 +1315,7 @@ const RentRollDetail = () => {
                                         <br></br>
                                         {tenant.rental_adress}
                                         {tenant.rental_unit !== "" &&
-                                          tenant.rental_unit !== undefined
+                                        tenant.rental_unit !== undefined
                                           ? ` - ${tenant.rental_unit}`
                                           : null}
                                       </div>
@@ -1335,13 +1372,13 @@ const RentRollDetail = () => {
                                         style={
                                           tenant.moveout_notice_given_date
                                             ? {
-                                              display: "flex",
-                                              flexDirection: "row",
-                                              marginTop: "10px",
-                                            }
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                marginTop: "10px",
+                                              }
                                             : {
-                                              display: "none",
-                                            }
+                                                display: "none",
+                                              }
                                         }
                                       >
                                         <Typography
@@ -1359,13 +1396,13 @@ const RentRollDetail = () => {
                                         style={
                                           tenant.moveout_date
                                             ? {
-                                              display: "flex",
-                                              flexDirection: "row",
-                                              marginTop: "10px",
-                                            }
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                marginTop: "10px",
+                                              }
                                             : {
-                                              display: "none",
-                                            }
+                                                display: "none",
+                                              }
                                         }
                                       >
                                         <Typography
@@ -1782,7 +1819,7 @@ const RentRollDetail = () => {
           <CreditCardForm
             tenantId={tenantId}
             closeModal={closeModal}
-          //getCreditCard={getCreditCard}
+            //getCreditCard={getCreditCard}
           />
         </ModalBody>
       </Modal>

@@ -44,6 +44,7 @@ const TenantFinancial = () => {
   const [rental_adress, setRentalAddress] = useState([]);
   const [Ledger, setLedger] = useState([]);
   const [propertyDetails, setPropertyDetails] = useState([]);
+  const [propertyDropdownData, setPropertyDropdownData] = useState([]);
   const [propertyLoading, setPropertyLoading] = useState(true);
   const [propertyError, setPropertyError] = useState(null);
   const [tenantDetails, setTenantDetails] = useState({});
@@ -70,7 +71,6 @@ const TenantFinancial = () => {
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
   const [loader, setLoader] = React.useState(true);
   const [financialData, setFinancialData] = useState([]);
-
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
@@ -103,8 +103,15 @@ const TenantFinancial = () => {
       const response = await axios.get(
         `${baseUrl}/payment/tenant_financial/${"1708683886820"}`
       );
-      console.log(response, "yashu");
       setLedger(response.data.data);
+      const filteredData = Array.from(
+        new Set(
+          response.data.data.map(
+            (item) => `${item.rental_adress}, ${item.rental_unit}`
+          )
+        )
+      );
+      setPropertyDropdownData(filteredData);
       setLoader(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -115,7 +122,7 @@ const TenantFinancial = () => {
   useEffect(() => {
     fetchLedger();
   }, [accessType]);
-  console.log(Ledger, "yashu")
+  console.log(Ledger, "yashu");
   const fetchUnitsByProperty = async (propertyType) => {
     try {
       const response = await fetch(
@@ -429,7 +436,7 @@ const TenantFinancial = () => {
 
     return filteredData;
   };
-  
+
   const [expandedRows, setExpandedRows] = useState([]);
   const [expandedData, setExpandedData] = useState([]);
   const openAccount = (ledger, i) => {
@@ -451,7 +458,6 @@ const TenantFinancial = () => {
     }
   };
 
-  console.log(paymentId ? paymentId : "");
   return (
     <>
       <TenantsHeader />
@@ -532,21 +538,22 @@ const TenantFinancial = () => {
 
                           <tbody>
                             {filterLedgerBySearch()?.length > 0 ? (
-                              filterLedgerBySearch().map((item, index) => (<>
-                                <tr
-                                  key={index}
-                                  style={{ cursor: "pointer" }}
-                                  className="w-100"
-                                >
-                                  <td>
-                                    {moment(item?.createdAt).format(
-                                      "DD-MM-YYYY"
-                                    ) || "N/A"}
-                                  </td>
+                              filterLedgerBySearch().map((item, index) => (
+                                <>
+                                  <tr
+                                    key={index}
+                                    style={{ cursor: "pointer" }}
+                                    className="w-100"
+                                  >
+                                    <td>
+                                      {moment(item?.createdAt).format(
+                                        "DD-MM-YYYY"
+                                      ) || "N/A"}
+                                    </td>
 
-                                  <td>{item?.type || "N/A"}</td>
+                                    <td>{item?.type || "N/A"}</td>
 
-                                  {/* <td>
+                                    {/* <td>
                                     {item?.entry?.map((data, i) => (
                                       <>
                                         <div className="d-flex">
@@ -559,126 +566,140 @@ const TenantFinancial = () => {
                                       </>
                                     ))}
                                   </td> */}
-                                  <td
-                                    style={{
-                                      cursor:
-                                        item?.entry?.length >
-                                          1
-                                          ? "pointer"
-                                          : "",
-                                    }}
-                                    onClick={() => {
-                                      if (
-                                        item?.entry?.length >
-                                        1
-                                      ) {
-                                        openAccount(
-                                          item,
-                                          index
-                                        );
-                                      }
-                                    }}
-                                  >
-                                    {item?.entry?.map(
-                                      (data) => (
+                                    <td
+                                      style={{
+                                        cursor:
+                                          item?.entry?.length > 1
+                                            ? "pointer"
+                                            : "",
+                                      }}
+                                      onClick={() => {
+                                        if (item?.entry?.length > 1) {
+                                          openAccount(item, index);
+                                        }
+                                      }}
+                                    >
+                                      {item?.entry?.map((data) => (
                                         <>
                                           {data?.account}
                                           <br />
                                         </>
-                                      )
-                                    ) || "-"}
-                                  </td>
+                                      )) || "-"}
+                                    </td>
 
-                                  <td>
-                                    {" "}
-                                    {item.is_leaseAdded === true
-                                      ? item.entry.map((data, i) => (
-                                        <>
-                                          <div className="d-flex ">
-                                            <div>
-                                              {i + 1}
-                                              {". "}
-                                            </div>
-                                            <div>{data.memo}</div>
-                                          </div>
-                                        </>
-                                      ))
-                                      : item.entry[0].memo}
-                                  </td>
+                                    <td>
+                                      {" "}
+                                      {item.is_leaseAdded === true
+                                        ? item.entry.map((data, i) => (
+                                            <>
+                                              <div className="d-flex ">
+                                                <div>
+                                                  {i + 1}
+                                                  {". "}
+                                                </div>
+                                                <div>{data.memo}</div>
+                                              </div>
+                                            </>
+                                          ))
+                                        : item.entry[0].memo}
+                                    </td>
 
-                                  {item.type === "Charge" ? (
-                                    <td> {item?.total_amount}</td>
-                                  ) : (
-                                    <td>-</td>
-                                  )}
-                                  {item.type === "Payment" ? (
-                                    <td> {item?.total_amount}</td>
-                                  ) : (
-                                    <td>-</td>
-                                  )}
-                                  <td>{item?.balance}</td>
-                                </tr>
-                                {expandedRows.includes(index) && (
-                                  <tr style={{ border: '0', backgroundColor: "#f6f9fc" }} key={`expanded_${index}`}>
-                                    <td scope="col" style={{ border: '0' }} colSpan="2"></td>
-                                    <td scope="col" style={{ border: '0' }} colSpan="2" className="text-left">
-                                      <b>Accounts</b><br />
-                                      {expandedData[index].map(
-                                        (item, subIndex) => (
-                                          <span
-                                            key={`expanded_${index}_${subIndex}`}
-                                          >
-                                            {item?.account}
-                                            <br />
-                                          </span>
-                                        )
-                                      )}
-                                    </td>
-                                    <td scope="col" style={{ border: '0' }}>
-                                      {Ledger[index]
-                                        ?.type === "Charge" ||
-                                        Ledger[index]
-                                          ?.type === "Refund"
-                                        ? (<><b>Amount</b><br /></>) : ""}
-                                      {expandedData[index].map(
-                                        (data, subIndex) => (
-                                          <>
-                                            {Ledger[index]
-                                              ?.type === "Charge" ||
-                                              Ledger[index]
-                                                ?.type === "Refund"
-                                              ? "$" + data?.amount
-                                              : ""}
-                                            <br />
-                                          </>
-                                        )
-                                      )}
-                                    </td>
-                                    <td scope="col" style={{ border: '0' }}>
-                                      {Ledger[index]
-                                        ?.type === "Payment"
-                                        ? (<><b>Amount</b><br /></>) : ""}
-                                      {expandedData[index].map(
-                                        (data, subIndex) => (
-                                          <>
-                                            {Ledger[index]
-                                              ?.type === "Payment"
-                                              ? "$" + data?.amount
-                                              : ""}
-                                            <br />
-                                          </>
-                                        )
-                                      )}
-                                    </td>
-                                    <td scope="col" style={{ border: '0' }} ></td>
-                                    <td></td>
-                                    {console.log(
-                                      expandedData[index],
-                                      "yash"
+                                    {item.type === "Charge" ? (
+                                      <td> {item?.total_amount}</td>
+                                    ) : (
+                                      <td>-</td>
                                     )}
+                                    {item.type === "Payment" ? (
+                                      <td> {item?.total_amount}</td>
+                                    ) : (
+                                      <td>-</td>
+                                    )}
+                                    <td>{item?.balance}</td>
                                   </tr>
-                                )}
-                              </>
+                                  {expandedRows.includes(index) && (
+                                    <tr
+                                      style={{
+                                        border: "0",
+                                        backgroundColor: "#f6f9fc",
+                                      }}
+                                      key={`expanded_${index}`}
+                                    >
+                                      <td
+                                        scope="col"
+                                        style={{ border: "0" }}
+                                        colSpan="2"
+                                      ></td>
+                                      <td
+                                        scope="col"
+                                        style={{ border: "0" }}
+                                        colSpan="2"
+                                        className="text-left"
+                                      >
+                                        <b>Accounts</b>
+                                        <br />
+                                        {expandedData[index].map(
+                                          (item, subIndex) => (
+                                            <span
+                                              key={`expanded_${index}_${subIndex}`}
+                                            >
+                                              {item?.account}
+                                              <br />
+                                            </span>
+                                          )
+                                        )}
+                                      </td>
+                                      <td scope="col" style={{ border: "0" }}>
+                                        {Ledger[index]?.type === "Charge" ||
+                                        Ledger[index]?.type === "Refund" ? (
+                                          <>
+                                            <b>Amount</b>
+                                            <br />
+                                          </>
+                                        ) : (
+                                          ""
+                                        )}
+                                        {expandedData[index].map(
+                                          (data, subIndex) => (
+                                            <>
+                                              {Ledger[index]?.type ===
+                                                "Charge" ||
+                                              Ledger[index]?.type === "Refund"
+                                                ? "$" + data?.amount
+                                                : ""}
+                                              <br />
+                                            </>
+                                          )
+                                        )}
+                                      </td>
+                                      <td scope="col" style={{ border: "0" }}>
+                                        {Ledger[index]?.type === "Payment" ? (
+                                          <>
+                                            <b>Amount</b>
+                                            <br />
+                                          </>
+                                        ) : (
+                                          ""
+                                        )}
+                                        {expandedData[index].map(
+                                          (data, subIndex) => (
+                                            <>
+                                              {Ledger[index]?.type === "Payment"
+                                                ? "$" + data?.amount
+                                                : ""}
+                                              <br />
+                                            </>
+                                          )
+                                        )}
+                                      </td>
+                                      <td
+                                        scope="col"
+                                        style={{ border: "0" }}
+                                      ></td>
+                                      <td></td>
+                                      {console.log(expandedData[index], "yash")}
+                                    </tr>
+                                  )}
+                                </>
                               ))
                             ) : (
                               <tr>
