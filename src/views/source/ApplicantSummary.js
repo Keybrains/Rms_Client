@@ -466,7 +466,7 @@ const ApplicantSummary = () => {
                       <Row>
                         <Col>
                           <Grid container spacing={3}>
-                            <Grid item xs={9}>
+                            <Grid item xs={9}  md={9}>
                               <div>
                                 <div>
                                   <input
@@ -947,7 +947,7 @@ const ApplicantSummary = () => {
                               </> */}
                             </Grid>
 
-                            <Grid item xs="12" md="6" lg="4" xl="3">
+                            <Grid item xs={12} md={3} lg="4" xl="3">
                               <Card
                                 sx={{ minWidth: 275 }}
                                 style={{

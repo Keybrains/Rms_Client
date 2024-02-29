@@ -94,6 +94,7 @@ function AddPayment() {
   const [selectedCreditCard, setSelectedCreditCard] = useState(null);
   const [totalAmount1, setTotalAmount1] = useState();
   const [surchargePercentage, setSurchargePercentage] = useState();
+  const [ResponseData, setResponseData] = useState("");
   // Fetch surcharge from the API
   const fetchData = async () => {
     // try {
@@ -117,26 +118,9 @@ function AddPayment() {
     fetchData();
   }, [accessType?.admin_id]);
 
-  // Calculate total amount after surcharge
-  const calculateTotalAmount = () => {
-    const amount = parseFloat(generalledgerFormik.values.total_amount) || 0;
-    let totalAmount = amount;
-
-    if (selectedPaymentMethod === "Credit Card") {
-      const surchargeAmount = (amount * surchargePercentage) / 100;
-      generalledgerFormik.setFieldValue("surcharge", surchargeAmount);
-      totalAmount += surchargeAmount;
-    }
-    return totalAmount;
-  };
-
-  useEffect(() => {
-    const totalAmount = calculateTotalAmount();
-    setTotalAmount1(totalAmount);
-  }, [surchargePercentage, selectedPaymentMethod]);
-
   const closeModal = () => {
     setIsModalOpen(false);
+    getCreditCard();
   };
 
   const openCardForm = () => {
@@ -248,12 +232,66 @@ function AddPayment() {
     }
   }, [customervault]);
 
-  const generalledgerFormik = useFormik({
+  const generalledgerFormik = useFormik(
+    !payment_id ?  {
+      initialValues: {
+        payment_id: "",
+        date: "",
+        total_amount: "",
+        payments_memo: "",
+        check_number: "",
+        customer_vault_id: "",
+        billing_id: "",
+        transaction_id: "",
+        surcharge: "",
+        payments: [
+          {
+            entry_id: "",
+            account: "",
+            amount: "",
+            balance: "",
+            charge_type: "",
+          },
+        ],
+        payments_attachment: [],
+      },
+      
+      validationSchema: yup.object({
+        date: yup.string().required("Required"),
+        total_amount: yup.string().required("Required"),
+        payments: yup.array().of(
+          yup.object().shape({
+            account: yup.string().required("Required"),
+            amount: yup
+              .number()
+              .required("Required")
+              .min(1, "Amount must be greater than zero.")
+              .test(
+                "is-less-than-balance",
+                "Amount must be less than or equal to balance",
+                function (value) {
+                  if (value && this.parent.balance) {
+                    const balance = this.parent.balance;
+                    return value <= balance;
+                  }
+                }
+              ),
+          })
+        ),
+      }),
+      onSubmit: (values) => {
+        if (Number(generalledgerFormik.values.total_amount) === Number(total)) {
+          handleSubmit(values);
+        }
+      },
+    }:
+    {
     initialValues: {
       payment_id: "",
       date: "",
       total_amount: "",
       payments_memo: "",
+      check_number: "",
       customer_vault_id: "",
       billing_id: "",
       transaction_id: "",
@@ -269,6 +307,7 @@ function AddPayment() {
       ],
       payments_attachment: [],
     },
+    
     validationSchema: yup.object({
       date: yup.string().required("Required"),
       total_amount: yup.string().required("Required"),
@@ -279,16 +318,16 @@ function AddPayment() {
             .number()
             .required("Required")
             .min(1, "Amount must be greater than zero.")
-            .test(
-              "is-less-than-balance",
-              "Amount must be less than or equal to balance",
-              function (value) {
-                if (value && this.parent.balance) {
-                  const balance = this.parent.balance;
-                  return value <= balance;
-                }
-              }
-            ),
+            // .test(
+            //   "is-less-than-balance",
+            //   "Amount must be less than or equal to balance",
+            //   function (value) {
+            //     if (value && this.parent.balance) {
+            //       const balance = this.parent.balance;
+            //       return value <= balance;
+            //     }
+            //   }
+            // ),
         })
       ),
     }),
@@ -298,6 +337,68 @@ function AddPayment() {
       }
     },
   });
+
+  const fetchPaymentData = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/payment/payment/${payment_id}`
+      );
+
+      if (response.data.statusCode === 200) {
+        const responseData = response.data.data[0]; // Assuming this is an object
+        console.log("meet", response.data.data[0]);
+        generalledgerFormik.setValues({
+          ...generalledgerFormik.values,
+          payment_id: responseData.payment_id,
+          check_number: responseData.check_number,
+          payment_type: responseData.payment_type,
+          date: responseData.entry[0].date,
+          total_amount: responseData.total_amount,
+          payments_memo: responseData.entry[0].memo,
+          customer_vault_id: responseData.customer_vault_id,
+          billing_id: responseData.billing_id,
+          transaction_id: responseData.transaction_id,
+          surcharge: responseData.surcharge,
+          payments: responseData.entry.map((entry) => ({
+            entry_id: entry.entry_id,
+            account: entry.account,
+            amount: entry.amount,
+            balance: entry.amount,
+            charge_type: entry.charge_type,
+          })),
+          payments_attachment: responseData.payment_attachment,
+        });
+        setSelectedPaymentMethod(responseData.payment_type);
+        setSelectedCreditCard(responseData.billing_id);
+      } else {
+        console.error("Error:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+  };
+
+
+  // Calculate total amount after surcharge
+  const calculateTotalAmount = () => {
+    const amount = parseFloat(generalledgerFormik.values.total_amount) || 0;
+    let totalAmount = amount;
+
+    if (selectedPaymentMethod === "Credit Card") {
+      const surchargeAmount = (amount * surchargePercentage) / 100;
+      generalledgerFormik.setFieldValue(
+        "surcharge",
+        surchargeAmount.toFixed(2)
+      );
+      totalAmount += surchargeAmount;
+    }
+
+    setTotalAmount1(totalAmount);
+  };
+
+  useEffect(() => {
+    calculateTotalAmount();
+  }, [generalledgerFormik?.values, surchargePercentage, selectedPaymentMethod]);
 
   const editPayment = async (values) => {
     setLoader(true);
@@ -341,10 +442,14 @@ function AddPayment() {
       admin_id: accessType.admin_id,
       tenant_id: tenantData?.tenant_id,
       lease_id: lease_id,
+      billing_id: values.billing_id,
+      customer_vault_id: values.customer_vault_id,
+      check_number: values.check_number,
 
-      entry: values.charges?.map((item) => {
+      entry: values.payments?.map((item) => {
         const data = {
           entry_id: item.entry_id,
+          balance: Number(item.amount),
           account: item.account,
           amount: Number(item.amount),
           memo: values.payments_memo || "payment",
@@ -489,6 +594,7 @@ function AddPayment() {
             admin_id: accessType.admin_id,
             tenant_id: tenantData?.tenant_id,
             lease_id: lease_id,
+            surcharge: values.surcharge,
             payment_type: selectedPaymentMethod,
             customer_vault_id: values.customer_vault_id,
             billing_id: values.billing_id,
@@ -532,6 +638,7 @@ function AddPayment() {
           admin_id: accessType.admin_id,
           tenant_id: tenantData?.tenant_id,
           lease_id: lease_id,
+          check_number: values.check_number,
           payment_type: selectedPaymentMethod,
           entry: values.payments?.map((item) => ({
             entry_id: item?.entry_id,
@@ -571,7 +678,10 @@ function AddPayment() {
           admin_id: accessType.admin_id,
           tenant_id: tenantData?.tenant_id,
           lease_id: lease_id,
+          surcharge: values.surcharge,
           payment_type: selectedPaymentMethod,
+          customer_vault_id: values.customer_vault_id,
+          billing_id: values.billing_id,
           entry: values.payments?.map((item) => ({
             entry_id: item?.entry_id,
             account: item.account,
@@ -693,9 +803,13 @@ function AddPayment() {
   }, [accessType?.admin_id]);
 
   useEffect(() => {
-    fetchchargeData();
+    if (!payment_id) {
+      fetchchargeData();
+    } else {
+      fetchPaymentData();
+    }
     fetchTenant();
-  }, [lease_id]);
+  }, [lease_id, payment_id]);
 
   const [total, setTotal] = useState(0);
   const handleTotal = () => {
@@ -803,10 +917,7 @@ function AddPayment() {
       const url = URL.createObjectURL(item?.upload_file);
       window.open(url, "_blank");
     } else {
-      window.open(
-        `${imageGetUrl}/${item}`,
-        "_blank"
-      );
+      window.open(`${imageGetUrl}/${item}`, "_blank");
     }
   };
 
@@ -835,8 +946,8 @@ function AddPayment() {
                       {" "}
                       Payment for{" "}
                       <span style={{ fontWeight: "bold" }}>
-                        {tenantData.tenant_firstName}{" "}
-                        {tenantData.tenant_lastName}
+                        {tenantData?.tenant_firstName}{" "}
+                        {tenantData?.tenant_lastName}
                       </span>
                     </h3>
                   </Col>
@@ -1244,7 +1355,7 @@ function AddPayment() {
                             <thead>
                               <tr>
                                 <th>Account</th>
-                                <th>Balance</th>
+                                {!payment_id && (<th>Balance</th>)}
                                 <th>Amount</th>
                               </tr>
                             </thead>
@@ -1366,6 +1477,7 @@ function AddPayment() {
                                           </DropdownMenu>
                                         </Dropdown>
                                       </td>
+                                      {!payment_id && (
                                       <td>
                                         <Input
                                           className="form-control-alternative"
@@ -1388,6 +1500,7 @@ function AddPayment() {
                                           readOnly
                                         />
                                       </td>
+                                      )}
                                       <td>
                                         <Input
                                           className="form-control-alternative"
@@ -1581,6 +1694,77 @@ function AddPayment() {
                       </FormGroup>
                     </Col>
                   </Row> */}
+                  <Table
+                    style={{
+                      width: "40%",
+                      borderCollapse: "collapse",
+                      backgroundColor: "#f7f7f7",
+                      borderRadius: "8px",
+                      boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                    }}
+                  >
+                    <tbody>
+                      {selectedPaymentMethod === "Credit Card" && (
+                        <>
+                          <tr style={{ backgroundColor: "#e0e0e0" }}>
+                            <td
+                              style={{
+                                padding: "12px",
+                                borderBottom: "1px solid #bdbdbd",
+                              }}
+                            >
+                              Amount
+                            </td>
+                            <td
+                              style={{
+                                padding: "12px",
+                                borderBottom: "1px solid #bdbdbd",
+                              }}
+                            >
+                              <strong style={{ color: "grey" }}>
+                                ${generalledgerFormik.values.total_amount || 0}
+                              </strong>
+                            </td>
+                          </tr>
+                          <tr style={{ backgroundColor: "#f5f5f5" }}>
+                            <td
+                              style={{
+                                padding: "12px",
+                                borderBottom: "1px solid #bdbdbd",
+                              }}
+                            >
+                              Surcharge included
+                            </td>
+                            <td
+                              style={{
+                                padding: "12px",
+                                borderBottom: "1px solid #bdbdbd",
+                              }}
+                            >
+                              <strong style={{ color: "grey" }}>
+                                ${generalledgerFormik.values.surcharge || 0}
+                              </strong>
+                            </td>
+                          </tr>
+                        </>
+                      )}
+
+                      <tr style={{ backgroundColor: "#e0f2f1" }}>
+                        <td style={{ padding: "12px" }}>Total Amount</td>
+                        <td style={{ padding: "12px" }}>
+                          <strong style={{ color: "green" }}>
+                            $
+                            {totalAmount1 ||
+                              generalledgerFormik.values.total_amount ||
+                              0}
+                          </strong>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </Table>
+
+                  <br />
+
                   <Row>
                     <Col lg="5">
                       <FormGroup>
@@ -1639,6 +1823,7 @@ function AddPayment() {
             </Card>
           </Col>
         </Row>
+        <ToastContainer />
         <Modal
           isOpen={isModalOpen}
           toggle={closeModal}
@@ -1655,7 +1840,6 @@ function AddPayment() {
             />
           </ModalBody>
         </Modal>
-        <ToastContainer />
       </Container>
     </>
   );

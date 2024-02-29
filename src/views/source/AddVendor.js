@@ -104,9 +104,9 @@ const AddVendor = () => {
 
           // Initialize the form with fetched data
           VendorFormik.setValues({
-            vendor_name: vendorData.vendor_name || "",
-            vendor_phoneNumber: vendorData.vendor_phoneNumber || "",
-            vendor_email: vendorData.vendor_email || "",
+            vendor_name: vendorData?.vendor_name || "",
+            vendor_phoneNumber: vendorData?.vendor_phoneNumber || "",
+            vendor_email: vendorData?.vendor_email || "",
             vendor_password: vendorData?.vendor_password || "",
           });
 

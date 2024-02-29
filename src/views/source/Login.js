@@ -62,9 +62,12 @@ const Login = () => {
     setIsLoading(true);
     try {
       if (!admin_id) {
-        const adminRes = await axios.post(`${baseUrl}/admin/login`, values);
+        const url = `${baseUrl}/admin/login`;
+        console.log(url, "yash");
+        const adminRes = await axios.post(url, values);
 
         if (adminRes.status === 200) {
+          console.log(adminRes, "yash ")
           const adminData = adminRes.data;
           if (adminData.statusCode === 200) {
             toast.success("Admin Login successfully!", {

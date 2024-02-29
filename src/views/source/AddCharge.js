@@ -134,8 +134,8 @@ const AddCharge = () => {
           entry_id: item.entry_id,
           account: item.account,
           amount: Number(item.amount),
-          memo: values.charges_memo || "charge",
-          date: values.date,
+          memo: values?.charges_memo || "charge",
+          date: values?.date,
           account: item.account,
           charge_type: item.charge_type,
         };
@@ -220,8 +220,8 @@ const AddCharge = () => {
         const data = {
           account: item.account,
           amount: Number(item.amount),
-          memo: values.charges_memo || "charge",
-          date: values.date,
+          memo: values?.charges_memo || "charge",
+          date: values?.date,
           account: item.account,
           charge_type: item.charge_type,
           is_repeatable: false,
@@ -301,7 +301,7 @@ const AddCharge = () => {
           generalledgerFormik.setValues({
             charge_id: charge_id,
             date: data.entry[0].date,
-            total_amount: data.total_amount,
+            total_amount: data?.total_amount,
             charges_memo: data.entry[0].memo,
             charges: data.entry.map((item) => {
               const items = {
@@ -490,8 +490,8 @@ const AddCharge = () => {
                       >
                         Charge for:{" "}
                         <span>
-                          {tenantData.tenant_firstName}{" "}
-                          {tenantData.tenant_lastName}
+                          {tenantData?.tenant_firstName}{" "}
+                          {tenantData?.tenant_lastName}
                         </span>
                       </label>
                     </Col>
