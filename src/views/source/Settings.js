@@ -401,7 +401,6 @@ const Settings = () => {
                             </Form>
                           </div>
                         )}
-
                         {selectedOption === "mail" && (
                           <div className="table-responsive">
                             <h1>Mail Service</h1>
