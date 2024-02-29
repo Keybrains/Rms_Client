@@ -32,7 +32,8 @@ import { OpenImageDialog } from "components/OpenImageDialog";
 
 const AddWorkorder = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const imageUrl = process.env.REACT_APP_IMAGE_URL;
+  const imageUrl = process.env.REACT_APP_IMAGE_POST_URL;
+  const imageGetUrl = process.env.REACT_APP_IMAGE_GET_URL;
 
   const { id, admin } = useParams();
 
@@ -347,7 +348,7 @@ const AddWorkorder = () => {
               const form = new FormData();
               form.append("files", fileItem);
 
-              const res = await axios.post(`${baseUrl}/images/upload`, form);
+              const res = await axios.post(`${imageUrl}/images/upload`, form);
 
               if (
                 res &&
@@ -355,7 +356,8 @@ const AddWorkorder = () => {
                 res.data.files &&
                 res.data.files.length > 0
               ) {
-                image[i] = res.data.files[0].url;
+                fileItem = res.data.files[0].filename;
+                image[i] = res.data.files[0].filename;
               } else {
                 console.error("Unexpected response format:", res);
               }
@@ -542,6 +544,10 @@ const AddWorkorder = () => {
     setWorkOrderImage(newFiles);
   };
 
+  const isBlobURL = (url) => {
+    return url.startsWith("blob:");
+  };
+
   const handleQuantityChange = (e, index) => {
     const updatedEntries = [...WorkFormik.values.entries];
     updatedEntries[index].part_qty = e.target.value;
@@ -587,7 +593,7 @@ const AddWorkorder = () => {
               const form = new FormData();
               form.append("files", fileItem);
 
-              const res = await axios.post(`${baseUrl}/images/upload`, form);
+              const res = await axios.post(`${imageUrl}/images/upload`, form);
 
               if (
                 res &&
@@ -595,7 +601,8 @@ const AddWorkorder = () => {
                 res.data.files &&
                 res.data.files.length > 0
               ) {
-                image[i] = res.data.files[0].url;
+                fileItem = res.data.files[0].filename;
+                image[i] = res.data.files[0].filename;
               } else {
                 console.error("Unexpected response format:", res);
               }
@@ -743,7 +750,6 @@ const AddWorkorder = () => {
                               WorkFormik.handleChange(e);
                             }}
                             value={WorkFormik.values.work_subject}
-                            
                           />
                         </FormGroup>
                       </Col>
@@ -770,7 +776,6 @@ const AddWorkorder = () => {
                               color: "blue",
                             }}
                           >
-                            {" "}
                             <input
                               type="file"
                               className="form-control-file d-none"
@@ -814,14 +819,19 @@ const AddWorkorder = () => {
                                   height: "100px",
                                   display: "flex",
                                   flexDirection: "column",
+                                  marginRight: "20px",
                                 }}
                               >
                                 <img
-                                  src={unitImg}
+                                  src={
+                                    !isBlobURL(unitImg)
+                                      ? `${imageGetUrl}/${unitImg}`
+                                      : unitImg
+                                  }
                                   alt=""
                                   style={{
-                                    width: "100px",
-                                    height: "100px",
+                                    width: "150px",
+                                    height: "150px",
                                     maxHeight: "100%",
                                     maxWidth: "100%",
                                     borderRadius: "10px",
@@ -836,7 +846,7 @@ const AddWorkorder = () => {
                                     cursor: "pointer",
                                     alignSelf: "flex-start",
                                     position: "absolute",
-                                    top: "-12px",
+                                    top: "-6px",
                                     right: "-12px",
                                   }}
                                   onClick={() =>
@@ -848,17 +858,14 @@ const AddWorkorder = () => {
                                 />
                               </div>
                             ))}
+                        </div>
+                        {open && (
                           <OpenImageDialog
                             open={open}
                             setOpen={setOpen}
                             selectedImage={selectedImage}
                           />
-                        </div>
-                        <OpenImageDialog
-                          open={open}
-                          setOpen={setOpen}
-                          selectedImage={selectedImage}
-                        />
+                        )}
                       </div>
                     </FormGroup>
                   </div>
@@ -1938,9 +1945,9 @@ const AddWorkorder = () => {
                   >
                     Cancel
                   </button>
-                   {/* Conditional message */}
-                   {!WorkFormik.isValid && (
-                    <div style={{ color: 'red', marginTop: '10px' }}>
+                  {/* Conditional message */}
+                  {!WorkFormik.isValid && (
+                    <div style={{ color: "red", marginTop: "10px" }}>
                       Please fill in all fields correctly.
                     </div>
                   )}

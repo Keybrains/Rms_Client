@@ -83,6 +83,7 @@ import queryString from "query-string";
 const PropDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const imageUrl = process.env.REACT_APP_IMAGE_URL;
+  const imageGetUrl = process.env.REACT_APP_IMAGE_GET_URL;
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -217,8 +218,6 @@ const PropDetails = () => {
     handleSate();
   }, [clickedUnitObject]);
 
-  console.log("clickedUnitObject?.unit_id", clickedUnitObject?.unit_id);
-
   const getStatus = (startDate, endDate) => {
     const today = new Date();
     const start = new Date(startDate);
@@ -327,6 +326,7 @@ const PropDetails = () => {
           setOpenEdite(false);
           addUnitFormik.resetForm();
           fetchUnitsData();
+          setClickedUnitObject([]);
         }
       } catch (error) {
         console.error("Error:", error.message);
@@ -427,7 +427,6 @@ const PropDetails = () => {
   const [showModal, setShowModal] = useState(false);
   const [clickedObject, setClickedObject] = useState({});
   const handleMoveOutClick = (tenant) => {
-    console.log("Move out button clicked");
     setClickedObject(tenant);
     setShowModal(true);
   };
@@ -456,13 +455,11 @@ const PropDetails = () => {
       axios
         .put(`${baseUrl}/leases/lease_moveout/${lease_id}`, updatedApplicant)
         .then((res) => {
-          console.log(res, "res");
           if (res.data.statusCode === 200) {
             toast.success("Move-out Successfully", {
               position: "top-center",
               autoClose: 500,
             });
-            // Close the modal if the status code is 200
             handleModalClose();
             tenantsData();
           }
@@ -513,7 +510,7 @@ const PropDetails = () => {
                   <td>
                     {clickedObject.rental_adress}
                     {clickedObject.rental_unit !== "" &&
-                      clickedObject.rental_unit !== undefined
+                    clickedObject.rental_unit !== undefined
                       ? `- ${clickedObject.rental_unit}`
                       : null}
                   </td>
@@ -647,7 +644,13 @@ const PropDetails = () => {
                   </Box>
 
                   <TabPanel value="summary">
-                    <div className="main d-flex justify-content-start mainnnnn col-lg-8 col-md-10 col-sm-12" style={{ border: "1px solid rgb(210 205 205) ", borderRadius: "10px" }} >
+                    <div
+                      className="main d-flex justify-content-start mainnnnn col-lg-8 col-md-10 col-sm-12"
+                      style={{
+                        border: "1px solid rgb(210 205 205) ",
+                        borderRadius: "10px",
+                      }}
+                    >
                       {!propImageLoader ? (
                         <>
                           <div className="col-md-4 mt-2">
@@ -661,7 +664,7 @@ const PropDetails = () => {
                               <img
                                 src={
                                   rentalData?.rental_image
-                                    ? rentalData?.rental_image
+                                    ? `${imageGetUrl}/${rentalData?.rental_image}`
                                     : fone
                                 }
                                 className="img-fluid rounded-start m-image card-image"
@@ -669,7 +672,7 @@ const PropDetails = () => {
                                 style={{
                                   width: "260px",
                                   aspectRatio: "3/2",
-                                  overflow: 'hidden',
+                                  overflow: "hidden",
                                   objectFit: "contain",
                                 }}
                               />
@@ -711,7 +714,7 @@ const PropDetails = () => {
                         </div>
                       )}
 
-                      <div className="col-md-4 col-sm-12 propertydetail mx-3" >
+                      <div className="col-md-4 col-sm-12 propertydetail mx-3">
                         <div
                           className="card-body mt-1"
                           style={{ padding: "0" }}
@@ -779,7 +782,6 @@ const PropDetails = () => {
                         </div>
                       </div>
                     </div>
-
 
                     <div className="table-responsive d-flex">
                       <Table
@@ -853,11 +855,13 @@ const PropDetails = () => {
                                                   <>
                                                     <tr className="body">
                                                       <td>
-                                                        {`${rentalOwnerData.rentalOwner_firstName ||
+                                                        {`${
+                                                          rentalOwnerData.rentalOwner_firstName ||
                                                           "N/A"
-                                                          } ${rentalOwnerData.rentalOwner_lastName ||
+                                                        } ${
+                                                          rentalOwnerData.rentalOwner_lastName ||
                                                           "N/A"
-                                                          }`}
+                                                        }`}
                                                       </td>
                                                       <td>
                                                         {rentalOwnerData.rentalOwner_companyName ||
@@ -924,9 +928,10 @@ const PropDetails = () => {
                                                   <>
                                                     <tr className="body">
                                                       <td>
-                                                        {`${staffMemberData?.staffmember_name ||
+                                                        {`${
+                                                          staffMemberData?.staffmember_name ||
                                                           "No staff member assigned"
-                                                          }`}
+                                                        }`}
                                                       </td>
                                                     </tr>
                                                   </>
@@ -971,7 +976,7 @@ const PropDetails = () => {
                             {financialType
                               ? financialType
                               : "Month to date" &&
-                              setFinancialType("Month to date")}
+                                setFinancialType("Month to date")}
                           </DropdownToggle>
                           <DropdownMenu>
                             {financialTypeArray.map((subtype, index) => (
@@ -1122,7 +1127,7 @@ const PropDetails = () => {
                                           fontWeight: "bold",
                                           backgroundColor: "#f0f0f0",
                                         }}
-                                      //colSpan="2"
+                                        //colSpan="2"
                                       >
                                         Net income
                                       </th>
@@ -1237,7 +1242,7 @@ const PropDetails = () => {
                                       fontWeight: "bold",
                                       backgroundColor: "#f0f0f0",
                                     }}
-                                  //colSpan="2"
+                                    //colSpan="2"
                                   >
                                     Net income
                                   </th>
@@ -1247,13 +1252,13 @@ const PropDetails = () => {
                                       fontWeight: "bold",
                                       backgroundColor: "#f0f0f0",
                                     }}
-                                  //colSpan="2"
+                                    //colSpan="2"
                                   >
                                     {netIncome >= 0
                                       ? `$${netIncome.toFixed(2)}`
                                       : `$(${Math.abs(netIncome || 0).toFixed(
-                                        2
-                                      )})`}
+                                          2
+                                        )})`}
                                   </th>
                                 </tr>
                               </React.Fragment>
@@ -1444,8 +1449,9 @@ const PropDetails = () => {
                                   $
                                   {totals[0] - totals2[0] >= 0
                                     ? (totals[0] - totals2[0]).toFixed(2)
-                                    : `(${-1 * (totals[0] - totals2[0]).toFixed(2)
-                                    })`}
+                                    : `(${
+                                        -1 * (totals[0] - totals2[0]).toFixed(2)
+                                      })`}
                                 </th>
                                 <th
                                   style={{
@@ -1457,8 +1463,9 @@ const PropDetails = () => {
                                   $
                                   {totals[1] - totals2[1] >= 0
                                     ? (totals[1] - totals2[1]).toFixed(2)
-                                    : `(${-1 * (totals[1] - totals2[1]).toFixed(2)
-                                    })`}
+                                    : `(${
+                                        -1 * (totals[1] - totals2[1]).toFixed(2)
+                                      })`}
                                 </th>
                                 <th
                                   style={{
@@ -1470,8 +1477,9 @@ const PropDetails = () => {
                                   $
                                   {totals[2] - totals2[2] >= 0
                                     ? (totals[2] - totals2[2]).toFixed(2)
-                                    : `(${-1 * (totals[2] - totals2[2]).toFixed(2)
-                                    })`}
+                                    : `(${
+                                        -1 * (totals[2] - totals2[2]).toFixed(2)
+                                      })`}
                                 </th>
                               </tr>
                             </tbody>
@@ -1504,6 +1512,7 @@ const PropDetails = () => {
                             size="l"
                             onClick={() => {
                               setOpenEdite(true);
+                              setSelectedFiles([]);
                             }}
                           >
                             <span className="btn-inner--text">Add Unit</span>
@@ -1604,7 +1613,10 @@ const PropDetails = () => {
                             color: "blue",
                           }}
                           size="sm"
-                          onClick={() => setPropSummary(false)}
+                          onClick={() => {
+                            setPropSummary(false);
+                            setClickedUnitObject([]);
+                          }}
                         >
                           <span className="btn-inner--text">Back</span>
                         </Button>
@@ -1615,8 +1627,29 @@ const PropDetails = () => {
                             color: "blue",
                           }}
                           size="sm"
-                          onClick={() => {
-                            handleDeleteUnit(clickedUnitObject?.unit_id);
+                          onClick={async () => {
+                            try {
+                              const res = await handleDeleteUnit(
+                                clickedUnitObject?.unit_id
+                              );
+                              if (res.statusCode === 200) {
+                                fetchUnitsData();
+                                toast.success(res.message, {
+                                  position: "top-center",
+                                  autoClose: 500,
+                                });
+                                setPropSummary(false);
+                                setClickedUnitObject([]);
+                              }
+                              if (res.statusCode === 201) {
+                                toast.warning(res.message, {
+                                  position: "top-center",
+                                  autoClose: 500,
+                                });
+                              }
+                            } catch (error) {
+                              console.error("Error:", error);
+                            }
                           }}
                         >
                           Delete unit
@@ -1640,8 +1673,8 @@ const PropDetails = () => {
                                     <>
                                       <img
                                         src={
-                                          clickedUnitObject.rental_images
-                                            ? clickedUnitObject.rental_images[0]
+                                          clickedUnitObject.rental_images[0]
+                                            ? `${imageGetUrl}/${clickedUnitObject.rental_images[0]}`
                                             : fone
                                         }
                                         className="img-fluid rounded-start card-image"
@@ -1965,7 +1998,7 @@ const PropDetails = () => {
                                             </td>
                                             <td>
                                               {lease?.start_date &&
-                                                lease?.end_date ? (
+                                              lease?.end_date ? (
                                                 <>
                                                   <Link
                                                     to={`/${admin}/tenantdetail/${lease?.tenant_id}`}
@@ -1986,10 +2019,10 @@ const PropDetails = () => {
                                             </td>
                                             <td>
                                               {lease?.tenant_firstName &&
-                                                lease?.tenant_lastName
+                                              lease?.tenant_lastName
                                                 ? lease?.tenant_firstName +
-                                                " " +
-                                                lease?.tenant_lastName
+                                                  " " +
+                                                  lease?.tenant_lastName
                                                 : "N/A"}
                                             </td>
                                             <td>
@@ -2438,7 +2471,7 @@ const PropDetails = () => {
                                     >
                                       {tenant.rental_adress} {""}
                                       {tenant.rental_unit !== "" &&
-                                        tenant.rental_unit !== undefined
+                                      tenant.rental_unit !== undefined
                                         ? `- ${tenant.rental_unit}`
                                         : null}
                                     </div>
@@ -2517,6 +2550,7 @@ const PropDetails = () => {
             </Card>
           </div>
         </Row>
+        <ToastContainer />
       </Container>
 
       <Dialog open={openEdite} onClose={closeModal}>
@@ -2547,7 +2581,6 @@ const PropDetails = () => {
           is_multiunit={propertyTypeData.is_multiunit}
         />
       </Dialog>
-      <ToastContainer />
     </>
   );
 };

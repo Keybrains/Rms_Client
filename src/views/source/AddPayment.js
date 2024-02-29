@@ -41,7 +41,8 @@ import TenantPropertyDetail from "./TenantPropertyDetail";
 function AddPayment() {
   const [accessType, setAccessType] = useState(null);
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const imageUrl = process.env.REACT_APP_IMAGE_URL;
+  const imageUrl = process.env.REACT_APP_IMAGE_POST_URL;
+  const imageGetUrl = process.env.REACT_APP_IMAGE_GET_URL;
   const navigate = useNavigate();
   const { lease_id, admin, payment_id } = useParams();
   const [tenantId, setTenantId] = useState("");
@@ -300,7 +301,7 @@ function AddPayment() {
 
   const editPayment = async (values) => {
     setLoader(true);
-
+    const fileUrl = [];
     if (file) {
       try {
         const uploadPromises = file?.map(async (fileItem, i) => {
@@ -309,13 +310,14 @@ function AddPayment() {
               const form = new FormData();
               form.append("files", fileItem.upload_file);
 
-              const res = await axios.post(`${baseUrl}/images/upload`, form);
+              const res = await axios.post(`${imageUrl}/images/upload`, form);
               if (
                 res &&
                 res.data &&
                 res.data.files &&
                 res.data.files.length > 0
               ) {
+                fileUrl.push(res.data.files[0].filename);
                 fileItem.upload_file = res.data.files[0].filename;
               } else {
                 console.error("Unexpected response format:", res);
@@ -323,6 +325,8 @@ function AddPayment() {
             } catch (error) {
               console.error("Error uploading file:", error);
             }
+          } else {
+            fileUrl.push(fileItem.upload_file);
           }
         });
 
@@ -351,7 +355,7 @@ function AddPayment() {
       }),
 
       total_amount: total,
-      uploaded_file: file,
+      uploaded_file: fileUrl,
     };
 
     try {
@@ -384,6 +388,7 @@ function AddPayment() {
 
   const handleSubmit = async (values) => {
     setLoader(true);
+    const fileUrl = [];
     if (file) {
       try {
         const uploadPromises = file?.map(async (fileItem, i) => {
@@ -392,13 +397,14 @@ function AddPayment() {
               const form = new FormData();
               form.append("files", fileItem.upload_file);
 
-              const res = await axios.post(`${baseUrl}/images/upload`, form);
+              const res = await axios.post(`${imageUrl}/images/upload`, form);
               if (
                 res &&
                 res.data &&
                 res.data.files &&
                 res.data.files.length > 0
               ) {
+                fileUrl.push(res.data.files[0].filename);
                 fileItem.upload_file = res.data.files[0].filename;
               } else {
                 console.error("Unexpected response format:", res);
@@ -406,6 +412,8 @@ function AddPayment() {
             } catch (error) {
               console.error("Error uploading file:", error);
             }
+          } else {
+            fileUrl.push(fileItem.upload_file);
           }
         });
 
@@ -496,7 +504,7 @@ function AddPayment() {
             })),
             total_amount: total,
             is_leaseAdded: false,
-            uploaded_file: file,
+            uploaded_file: fileUrl,
           };
           const paymentResponse = await axios.post(
             `${baseUrl}/payment/payment`,
@@ -536,7 +544,7 @@ function AddPayment() {
           })),
           total_amount: total,
           is_leaseAdded: false,
-          uploaded_file: file,
+          uploaded_file: fileUrl,
           response: "SUCCESS",
         };
         const paymentResponse = await axios.post(
@@ -575,7 +583,7 @@ function AddPayment() {
           })),
           total_amount: total,
           is_leaseAdded: false,
-          uploaded_file: file,
+          uploaded_file: fileUrl,
           // Include relevant transaction details from the first API call
           transaction_id: nmiResponse.transactionid,
           response: nmiResponse.responsetext,
@@ -792,11 +800,11 @@ function AddPayment() {
 
   const handleOpenFile = (item) => {
     if (typeof item !== "string") {
-      const url = URL.createObjectURL(item);
+      const url = URL.createObjectURL(item?.upload_file);
       window.open(url, "_blank");
     } else {
       window.open(
-        `http://192.168.1.10:4000/api/images/get-file/${item}`,
+        `${imageGetUrl}/${item}`,
         "_blank"
       );
     }
@@ -1529,22 +1537,18 @@ function AddPayment() {
                                 >
                                   <p
                                     onClick={() =>
-                                      handleOpenFile(
-                                        file?.upload_file
-                                          ? file?.upload_file
-                                          : file?.name?.upload_file
-                                      )
+                                      handleOpenFile(file ? file : file)
                                     }
                                     style={{ cursor: "pointer" }}
                                   >
-                                    {file?.name?.file_name
-                                      ? file?.name?.file_name?.substr(0, 5)
-                                      : file?.file_name?.substr(0, 5)}
-                                    {file?.name?.file_name
-                                      ? file?.name?.file_name?.length > 5
+                                    {file && typeof file !== "string"
+                                      ? file?.file_name?.substr(0, 5)
+                                      : file.substr(0, 5)}
+                                    {file && typeof file !== "string"
+                                      ? file?.file_name?.length > 5
                                         ? "..."
                                         : null
-                                      : file?.file_name?.length > 5
+                                      : file?.length > 5
                                       ? "..."
                                       : null}
                                   </p>

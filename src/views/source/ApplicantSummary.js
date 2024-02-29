@@ -69,7 +69,8 @@ import { RotatingLines } from "react-loader-spinner";
 
 const ApplicantSummary = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const imageUrl = process.env.REACT_APP_IMAGE_URL;
+  const imageUrl = process.env.REACT_APP_IMAGE_POST_URL;
+  const imageGetUrl = process.env.REACT_APP_IMAGE_GET_URL;
   const { id, admin } = useParams();
   const navigate = useNavigate();
 
@@ -210,7 +211,12 @@ const ApplicantSummary = () => {
   const [newNote, setNewNote] = useState("");
   const [newFile, setNewFile] = useState({});
   const openFileInBrowser = (fileURL) => {
-    window.open(fileURL, "_blank");
+    if (typeof fileURL === "string") {
+      window.open(`${imageGetUrl}/${fileURL}`, "_blank");
+    } else {
+      const url = URL.createObjectURL(fileURL);
+      window.open(url, "_blank");
+    }
   };
 
   const handleAttachFile = () => {
@@ -228,11 +234,10 @@ const ApplicantSummary = () => {
           const form = new FormData();
           form.append("files", newFile);
 
-          const res = await axios.post(`${baseUrl}/images/upload`, form);
+          const res = await axios.post(`${imageUrl}/images/upload`, form);
 
           if (res && res.data && res.data.files && res.data.files.length > 0) {
-            image = res.data.files[0].url;
-            console.log("Upload success", image);
+            image = res.data.files[0].filename;
           } else {
             console.error("Unexpected response format:", res);
           }
@@ -764,7 +769,7 @@ const ApplicantSummary = () => {
                                             accept="file/*"
                                             name="upload_file"
                                             id="upload_file"
-                                            multiple
+                                            multiple={false}
                                             onChange={(e) => {
                                               setNewFile(e.target.files[0]);
                                             }}
@@ -847,7 +852,7 @@ const ApplicantSummary = () => {
                                     <Col>Note</Col>
                                     <Col>File</Col>
                                     <Col>Clear</Col>
-                                  </Row>
+                                  </Row>{console.log(applicantNotesData, "yash")}
                                   {applicantNotesData?.map((data, index) => (
                                     <Row
                                       className="w-100 mt-1"

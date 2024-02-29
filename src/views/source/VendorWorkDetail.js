@@ -32,6 +32,7 @@ import { jwtDecode } from "jwt-decode";
 
 const VendorWorkDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const imageGetUrl = process.env.REACT_APP_IMAGE_GET_URL;
   const { workorder_id } = useParams();
   //console.log(id);
   const [outstandDetails, setoutstandDetails] = useState({});
@@ -837,13 +838,7 @@ const VendorWorkDetail = () => {
                                   Property
                                 </h3>
                               </Box>
-                              {Array.isArray(
-                                outstandDetails.propertyDetails
-                                  ?.propertyres_image
-                              ) ||
-                              Array.isArray(
-                                outstandDetails.propertyDetails?.property_image
-                              ) ? (
+                              {outstandDetails?.property_data?.rental_image ? (
                                 <Box
                                   style={{
                                     width: "100%",
@@ -859,43 +854,16 @@ const VendorWorkDetail = () => {
                                       textAlign: "center",
                                     }}
                                   >
-                                    {outstandDetails.propertyDetails
-                                      ?.propertyres_image &&
-                                    propertyDetails
-                                      ?.propertyres_image[0]?.[0] ? (
-                                      <img
-                                        src={
-                                          propertyDetails
-                                            .propertyres_image[0][0]
-                                        }
-                                        alt="property"
-                                        style={{
-                                          maxWidth: "80%",
-                                          maxHeight: "100%",
-                                          borderRadius: "8px",
-                                          border: "1px solid #ccc",
-                                        }}
-                                      />
-                                    ) : outstandDetails.propertyDetails
-                                        ?.property_image &&
-                                      propertyDetails
-                                        ?.property_image[0]?.[0] ? (
-                                      <img
-                                        src={
-                                          outstandDetails.propertyDetails
-                                            ?.property_image[0][0]
-                                        }
-                                        alt="property"
-                                        style={{
-                                          maxWidth: "80%",
-                                          maxHeight: "100%",
-                                          borderRadius: "8px",
-                                          border: "1px solid #ccc",
-                                        }}
-                                      />
-                                    ) : (
-                                      <span>No Image Found</span>
-                                    )}
+                                    <img
+                                      src={`${imageGetUrl}/${outstandDetails?.property_data.rental_image}`}
+                                      alt="property"
+                                      style={{
+                                        maxWidth: "80%",
+                                        maxHeight: "100%",
+                                        borderRadius: "8px",
+                                        border: "1px solid #ccc",
+                                      }}
+                                    />
                                   </Box>
                                 </Box>
                               ) : null}
@@ -1164,14 +1132,7 @@ const VendorWorkDetail = () => {
                       </Col>
 
                       <Col lg="4" md="12">
-                        {/* <Box
-                      border="1px solid #ccc"
-                      borderRadius="8px"
-                      padding="16px"
-                      maxWidth="1000px"
-                      margin={"20px"}
-                    > */}
-
+                        {console.log(outstandDetails?.workOrder_images, "yash")}
                         {outstandDetails ? (
                           <>
                             <Box
@@ -1200,7 +1161,8 @@ const VendorWorkDetail = () => {
                                 </h2>
                               </Box>
 
-                              {imagedetails && imagedetails.length > 0 ? (
+                              {outstandDetails?.workOrder_images &&
+                              outstandDetails?.workOrder_images.length > 0 ? (
                                 <Box
                                   style={{
                                     width: "100%",
@@ -1211,23 +1173,29 @@ const VendorWorkDetail = () => {
                                     justifyContent: "center",
                                   }}
                                 >
-                                  {imagedetails.map((imageUrl, index) => (
-                                    <Box
-                                      key={index}
-                                      width="48%"
-                                      style={{ minWidth: "48%", margin: "1%" }}
-                                    >
-                                      <img
-                                        src={imageUrl}
-                                        alt={`property ${index}`}
+                                  {outstandDetails?.workOrder_images.map(
+                                    (imageUrl, index) => (
+                                      <Box
+                                        key={index}
+                                        width="48%"
                                         style={{
-                                          width: "100%",
-                                          borderRadius: "8px",
-                                          border: "1px solid #ccc",
+                                          minWidth: "48%",
+                                          margin: "1%",
                                         }}
-                                      />
-                                    </Box>
-                                  ))}
+                                      >
+                                        <img
+                                          src={`${imageGetUrl}/${imageUrl}`}
+                                          alt={`property ${index}`}
+                                          style={{
+                                            width: "100%",
+                                            height: "100%",
+                                            borderRadius: "8px",
+                                            border: "1px solid #ccc",
+                                          }}
+                                        />
+                                      </Box>
+                                    )
+                                  )}
                                 </Box>
                               ) : (
                                 "No Images Attached"

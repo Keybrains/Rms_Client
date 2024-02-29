@@ -47,6 +47,7 @@ import { useFormik } from "formik";
 
 const WorkOrderDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const imageGetUrl = process.env.REACT_APP_IMAGE_GET_URL;
   const { workorder_id, admin } = useParams();
   const [outstandDetails, setoutstandDetails] = useState({});
   const [workOrderStatus, setWorkOrderStatus] = useState("");
@@ -88,7 +89,7 @@ const WorkOrderDetails = () => {
       );
       setoutstandDetails(response.data.data);
       setWorkOrderStatus(response.data.data);
-      console.log("new manu",response.data.data)
+      console.log("new manu", response.data.data);
       setLoading(false);
       setImageDetails(response.data.data.workOrderImage);
     } catch (error) {
@@ -357,6 +358,10 @@ const WorkOrderDetails = () => {
       total = total + item.amount;
     });
     return total;
+  };
+
+  const isBlobURL = (url) => {
+    return url.startsWith("blob:");
   };
 
   return (
@@ -967,10 +972,7 @@ const WorkOrderDetails = () => {
                                   color: "#5e72e4",
                                 }}
                               >
-                                <h3
-                                  className="text"
-                                  style={{ color: "blue" }}
-                                >
+                                <h3 className="text" style={{ color: "blue" }}>
                                   Property
                                 </h3>
                               </Box>
@@ -1137,10 +1139,7 @@ const WorkOrderDetails = () => {
                               >
                                 &nbsp;{outstandDetails?.priority}&nbsp;
                               </span>
-                              <h2
-                                className="text-lg"
-                                style={{ color: "blue" }}
-                              >
+                              <h2 className="text-lg" style={{ color: "blue" }}>
                                 {outstandDetails?.work_subject || "N/A"}
                               </h2>
 
@@ -1265,14 +1264,10 @@ const WorkOrderDetails = () => {
                                   color: "#5e72e4",
                                 }}
                               >
-                                <h2
-                                  className="text"
-                                  style={{ color: "blue" }}
-                                >
+                                <h2 className="text" style={{ color: "blue" }}>
                                   Images
                                 </h2>
                               </Box>
-
                               {outstandDetails?.workOrder_images &&
                               outstandDetails?.workOrder_images.length > 0 ? (
                                 <Box
@@ -1296,10 +1291,15 @@ const WorkOrderDetails = () => {
                                         }}
                                       >
                                         <img
-                                          src={imageUrl}
+                                          src={
+                                            !isBlobURL(imageUrl)
+                                              ? `${imageGetUrl}/${imageUrl}`
+                                              : imageUrl
+                                          }
                                           alt={`property ${index}`}
                                           style={{
                                             width: "100%",
+                                            height: "100%",
                                             borderRadius: "8px",
                                             border: "1px solid #ccc",
                                           }}
@@ -1330,7 +1330,10 @@ const WorkOrderDetails = () => {
                                   <span>
                                     {outstandDetails?.property_data
                                       ?.rental_adress || "N/A"}{" "}
-                                    ({outstandDetails?.unit_data?.rental_unit || ""})
+                                    (
+                                    {outstandDetails?.unit_data?.rental_unit ||
+                                      ""}
+                                    )
                                   </span>
                                 </Box>
                               </Box>

@@ -35,7 +35,8 @@ import { OverlayTrigger } from "react-bootstrap";
 
 const AddCharge = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const imageUrl = process.env.REACT_APP_IMAGE_URL;
+  const imageUrl = process.env.REACT_APP_IMAGE_POST_URL;
+  const imageGetUrl = process.env.REACT_APP_IMAGE_GET_URL;
   const { lease_id, admin, charge_id } = useParams();
   const navigate = useNavigate();
 
@@ -87,7 +88,7 @@ const AddCharge = () => {
 
   const editCharge = async (values) => {
     setLoader(true);
-
+    const fileUrl = [];
     if (file) {
       try {
         const uploadPromises = file?.map(async (fileItem, i) => {
@@ -96,7 +97,7 @@ const AddCharge = () => {
               const form = new FormData();
               form.append("files", fileItem.upload_file);
 
-              const res = await axios.post(`${baseUrl}/images/upload`, form);
+              const res = await axios.post(`${imageUrl}/images/upload`, form);
               if (
                 res &&
                 res.data &&
@@ -104,12 +105,15 @@ const AddCharge = () => {
                 res.data.files.length > 0
               ) {
                 fileItem.upload_file = res.data.files[0].filename;
+                fileUrl.push(res.data.files[0].filename);
               } else {
                 console.error("Unexpected response format:", res);
               }
             } catch (error) {
               console.error("Error uploading file:", error);
             }
+          } else {
+            fileUrl.push(fileItem.upload_file);
           }
         });
 
@@ -139,7 +143,7 @@ const AddCharge = () => {
       }),
 
       total_amount: total,
-      uploaded_file: file,
+      uploaded_file: fileUrl,
     };
 
     try {
@@ -172,7 +176,7 @@ const AddCharge = () => {
 
   const handleSubmit = async (values) => {
     setLoader(true);
-
+    const fileUrl = [];
     if (file) {
       try {
         const uploadPromises = file?.map(async (fileItem, i) => {
@@ -181,7 +185,7 @@ const AddCharge = () => {
               const form = new FormData();
               form.append("files", fileItem.upload_file);
 
-              const res = await axios.post(`${baseUrl}/images/upload`, form);
+              const res = await axios.post(`${imageUrl}/images/upload`, form);
               if (
                 res &&
                 res.data &&
@@ -189,12 +193,15 @@ const AddCharge = () => {
                 res.data.files.length > 0
               ) {
                 fileItem.upload_file = res.data.files[0].filename;
+                fileUrl.push(res.data.files[0].filename);
               } else {
                 console.error("Unexpected response format:", res);
               }
             } catch (error) {
               console.error("Error uploading file:", error);
             }
+          } else {
+            fileUrl.push(fileItem.upload_file);
           }
         });
 
@@ -224,7 +231,7 @@ const AddCharge = () => {
 
       total_amount: total,
       is_leaseAdded: false,
-      uploaded_file: file,
+      uploaded_file: fileUrl,
     };
 
     try {
@@ -387,7 +394,7 @@ const AddCharge = () => {
   const [file, setFile] = useState([]);
   const fileData = (files) => {
     const filesArray = [...files];
-    
+
     if (file.length <= 10 && file.length === 0) {
       const finalArray = [];
       for (let i = 0; i < filesArray.length; i++) {
@@ -433,11 +440,11 @@ const AddCharge = () => {
 
   const handleOpenFile = (item) => {
     if (typeof item !== "string") {
-      const url = URL.createObjectURL(item);
+      const url = URL.createObjectURL(item?.upload_file);
       window.open(url, "_blank");
     } else {
       window.open(
-        `http://192.168.1.10:4000/api/images/get-file/${item}`,
+        `${imageGetUrl}/${item}`,
         "_blank"
       );
     }
@@ -897,22 +904,18 @@ const AddCharge = () => {
                                 >
                                   <p
                                     onClick={() =>
-                                      handleOpenFile(
-                                        file?.upload_file
-                                          ? file?.upload_file
-                                          : file?.name?.upload_file
-                                      )
+                                      handleOpenFile(file ? file : file)
                                     }
                                     style={{ cursor: "pointer" }}
                                   >
-                                    {file?.name?.file_name
-                                      ? file?.name?.file_name?.substr(0, 5)
-                                      : file?.file_name?.substr(0, 5)}
-                                    {file?.name?.file_name
-                                      ? file?.name?.file_name?.length > 5
+                                    {file && typeof file !== "string"
+                                      ? file?.file_name?.substr(0, 5)
+                                      : file.substr(0, 5)}
+                                    {file && typeof file !== "string"
+                                      ? file?.file_name?.length > 5
                                         ? "..."
                                         : null
-                                      : file?.file_name?.length > 5
+                                      : file?.length > 5
                                       ? "..."
                                       : null}
                                   </p>
