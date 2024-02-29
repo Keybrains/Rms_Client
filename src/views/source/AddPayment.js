@@ -946,8 +946,8 @@ function AddPayment() {
                       {" "}
                       Payment for{" "}
                       <span style={{ fontWeight: "bold" }}>
-                        {tenantData.tenant_firstName}{" "}
-                        {tenantData.tenant_lastName}
+                        {tenantData?.tenant_firstName}{" "}
+                        {tenantData?.tenant_lastName}
                       </span>
                     </h3>
                   </Col>

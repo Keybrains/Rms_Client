@@ -124,8 +124,8 @@ const AddWorkorder = () => {
 
   const handlePropertyTypeSelect = async (property) => {
     setSelectedProp(property.rental_adress);
-    WorkFormik.values.rental_adress = property.rental_adress;
-    WorkFormik.values.rental_id = property.rental_id;
+    WorkFormik.values.rental_adress = property?.rental_adress;
+    WorkFormik.values.rental_id = property?.rental_id;
     setSelectedUnit("");
     try {
       const units = await fetchUnitsByProperty(property.rental_id);
@@ -153,8 +153,8 @@ const AddWorkorder = () => {
 
   const handleVendorSelect = (value) => {
     setSelectedVendor(value.vendor_name);
-    WorkFormik.values.vendor_name = value.vendor_name;
-    WorkFormik.values.vendor_id = value.vendor_id;
+    WorkFormik.values.vendor_name = value?.vendor_name;
+    WorkFormik.values.vendor_id = value?.vendor_id;
   };
 
   const handleEntrySelect = (value) => {
@@ -169,8 +169,8 @@ const AddWorkorder = () => {
 
   const handleStaffSelect = (staff) => {
     setSelecteduser(staff.staffmember_name);
-    WorkFormik.values.staffmember_name = staff.staffmember_name;
-    WorkFormik.values.staffmember_id = staff.staffmember_id;
+    WorkFormik.values.staffmember_name = staff?.staffmember_name;
+    WorkFormik.values.staffmember_id = staff?.staffmember_id;
   };
 
   const handleStatusSelect = (status) => {

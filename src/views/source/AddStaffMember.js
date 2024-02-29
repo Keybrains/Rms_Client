@@ -96,13 +96,13 @@ const AddStaffMember = () => {
           //console.log(staffMamberdata);
 
           StaffMemberFormik.setValues({
-            staffmember_name: staffMamberdata.staffmember_name || "",
+            staffmember_name: staffMamberdata?.staffmember_name || "",
             staffmember_designation:
-              staffMamberdata.staffmember_designation || "",
+              staffMamberdata?.staffmember_designation || "",
             staffmember_phoneNumber:
-              staffMamberdata.staffmember_phoneNumber || "",
-            staffmember_email: staffMamberdata.staffmember_email || "",
-            staffmember_password: staffMamberdata.staffmember_password || "",
+              staffMamberdata?.staffmember_phoneNumber || "",
+            staffmember_email: staffMamberdata?.staffmember_email || "",
+            staffmember_password: staffMamberdata?.staffmember_password || "",
           });
         })
         .catch((error) => {
@@ -115,11 +115,11 @@ const AddStaffMember = () => {
     setSubmitLoader(true);
     const object = {
       admin_id: accessType.admin_id,
-      staffmember_name: values.staffmember_name,
-      staffmember_designation: values.staffmember_designation,
-      staffmember_phoneNumber: values.staffmember_phoneNumber,
-      staffmember_email: values.staffmember_email,
-      staffmember_password: values.staffmember_password,
+      staffmember_name: values?.staffmember_name,
+      staffmember_designation: values?.staffmember_designation,
+      staffmember_phoneNumber: values?.staffmember_phoneNumber,
+      staffmember_email: values?.staffmember_email,
+      staffmember_password: values?.staffmember_password,
     };
     try {
       if (id === undefined) {

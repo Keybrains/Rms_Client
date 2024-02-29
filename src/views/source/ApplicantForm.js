@@ -901,7 +901,7 @@ const ApplicantForm = () => {
           applicant_emergencyContact_phone:
             formData.applicant_emergencyContact_phone,
 
-            rental_country: RentalselectedCountry,
+          rental_country: RentalselectedCountry,
           rental_adress: formData.rental_adress,
           rental_city: formData.rental_city,
           rental_state: formData.rental_state,
@@ -1068,7 +1068,7 @@ const ApplicantForm = () => {
           >
             <div
               className="row d-flex justify-content-center p-5"
-              // style={{ backgroundColor: "red" }}
+            // style={{ backgroundColor: "red" }}
             >
               <form
                 style={{ width: "100%" }}
@@ -1393,35 +1393,35 @@ const ApplicantForm = () => {
                     {/* Main Title */}
                     <h2>Rental history</h2>
 
-  <div className="mt-4">
-                    <Dropdown
-                      isOpen={prodropdownOpen2}
-                      toggle={toggle2}
-                      style={{ width: "100%" }}
-                    >
-                      <DropdownToggle
-                        className="w-100 d-flex justify-content-between align-items-center border rounded"
-                        style={{ borderColor: "#007BFF", borderWidth: "20px" }}
+                    <div className="mt-4">
+                      <Dropdown
+                        isOpen={prodropdownOpen2}
+                        toggle={toggle2}
+                        style={{ width: "100%" }}
                       >
-                        {RentalselectedCountry ? RentalselectedCountry : "Country"}
-                        <span className="caret-icon">&#9662;</span>
-                      </DropdownToggle>
-                      <DropdownMenu
-                        style={{ overflowY: "auto", maxHeight: 200 }}
-                      >
-                        {staticCountries.map((country) => (
-                          <DropdownItem
-                            key={country}
-                            onClick={() => {
-                              setRentalSelectedCountry(country);
-                            }}
-                          >
-                            {country}
-                          </DropdownItem>
-                        ))}
-                      </DropdownMenu>
-                    </Dropdown>
-                  </div>
+                        <DropdownToggle
+                          className="w-100 d-flex justify-content-between align-items-center border rounded"
+                          style={{ borderColor: "#007BFF", borderWidth: "20px" }}
+                        >
+                          {RentalselectedCountry ? RentalselectedCountry : "Country"}
+                          <span className="caret-icon">&#9662;</span>
+                        </DropdownToggle>
+                        <DropdownMenu
+                          style={{ overflowY: "auto", maxHeight: 200 }}
+                        >
+                          {staticCountries.map((country) => (
+                            <DropdownItem
+                              key={country}
+                              onClick={() => {
+                                setRentalSelectedCountry(country);
+                              }}
+                            >
+                              {country}
+                            </DropdownItem>
+                          ))}
+                        </DropdownMenu>
+                      </Dropdown>
+                    </div>
                     {/* Input 15 */}
                     {/* <div>
                                           <div className="form-row mt-4">
@@ -1656,34 +1656,34 @@ const ApplicantForm = () => {
                     </div>
 
                     <div className="mt-4">
-                    <Dropdown
-                      isOpen={prodropdownOpen3}
-                      toggle={toggle3}
-                      style={{ width: "100%" }}
-                    >
-                      <DropdownToggle
-                        className="w-100 d-flex justify-content-between align-items-center border rounded"
-                        style={{ borderColor: "#007BFF", borderWidth: "20px" }}
+                      <Dropdown
+                        isOpen={prodropdownOpen3}
+                        toggle={toggle3}
+                        style={{ width: "100%" }}
                       >
-                        {EmploymentselectedCountry ? EmploymentselectedCountry : "Country"}
-                        <span className="caret-icon">&#9662;</span>
-                      </DropdownToggle>
-                      <DropdownMenu
-                        style={{ overflowY: "auto", maxHeight: 200 }}
-                      >
-                        {staticCountries.map((country) => (
-                          <DropdownItem
-                            key={country}
-                            onClick={() => {
-                              setEmploymentSelectedCountry(country);
-                            }}
-                          >
-                            {country}
-                          </DropdownItem>
-                        ))}
-                      </DropdownMenu>
-                    </Dropdown>
-                  </div>
+                        <DropdownToggle
+                          className="w-100 d-flex justify-content-between align-items-center border rounded"
+                          style={{ borderColor: "#007BFF", borderWidth: "20px" }}
+                        >
+                          {EmploymentselectedCountry ? EmploymentselectedCountry : "Country"}
+                          <span className="caret-icon">&#9662;</span>
+                        </DropdownToggle>
+                        <DropdownMenu
+                          style={{ overflowY: "auto", maxHeight: 200 }}
+                        >
+                          {staticCountries.map((country) => (
+                            <DropdownItem
+                              key={country}
+                              onClick={() => {
+                                setEmploymentSelectedCountry(country);
+                              }}
+                            >
+                              {country}
+                            </DropdownItem>
+                          ))}
+                        </DropdownMenu>
+                      </Dropdown>
+                    </div>
 
 
 

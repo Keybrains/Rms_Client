@@ -50,6 +50,8 @@ const Applicants = () => {
   const [loader, setLoader] = useState(true);
   const [btnLoader, setBtnLoader] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery1, setSearchQuery1] = useState("");
+
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [pageItem, setPageItem] = React.useState(10);
@@ -75,7 +77,7 @@ const Applicants = () => {
   const [selectedApplicant, setSelectedApplicant] = useState(null);
 
   const handleSearch = (e) => {
-    setSearchQuery(e.target.value);
+    setSearchQuery1(e.target.value);
   };
   const toggle9 = () => {
     setuserDropdownOpen((prevState) => !prevState);
@@ -523,21 +525,12 @@ const Applicants = () => {
     let filteredData = rentalsData;
 
     if (searchQuery) {
-      filteredData = filteredData.filter((tenant) => {
-        const isRentalAddressMatch = tenant.rental_data.rental_adress
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase());
-        const isFirstNameMatch = (
-          tenant.applicant_firstName +
-          " " +
-          tenant.applicant_lastName
-        )
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase());
-        const isEmailMatch = tenant.applicant_email
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase());
-        return isRentalAddressMatch || isFirstNameMatch || isEmailMatch;
+      filteredData = filteredData.filter((applicant) => {          
+        const fullName = `${applicant.applicant_firstName} ${applicant.applicant_lastName}`;
+          return fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          applicant?.rental_data?.rental_adress?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          applicant?.applicant_status?.status?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          applicant?.applicant_email?.toLowerCase().includes(searchQuery.toLowerCase());
       });
     }
 
@@ -847,7 +840,7 @@ const Applicants = () => {
                     </tbody>
                   ) : (
                     <tbody>
-                      {rentalsData.map((applicant, index) => (
+                      {filterTenantsBySearchAndPage()?.map((applicant, index) => (
                         <tr
                           key={index}
                           onClick={() =>
@@ -856,23 +849,23 @@ const Applicants = () => {
                             )
                           }
                         >
-                          <td>{applicant.applicant_firstName}</td>
-                          <td>{applicant.applicant_lastName}</td>
-                          <td>{applicant.applicant_email}</td>
-                          <td>{applicant.applicant_phoneNumber}</td>
+                          <td>{applicant?.applicant_firstName}</td>
+                          <td>{applicant?.applicant_lastName}</td>
+                          <td>{applicant?.applicant_email}</td>
+                          <td>{applicant?.applicant_phoneNumber}</td>
                           <td>
-                            {applicant.rental_data.rental_adress}{" "}
-                            {applicant.unit_data &&
-                              applicant.unit_data.rental_unit
-                              ? " - " + applicant.unit_data.rental_unit
+                            {applicant?.rental_data?.rental_adress}{" "}
+                            {applicant?.unit_data &&
+                              applicant?.unit_data?.rental_unit
+                              ? " - " + applicant?.unit_data?.rental_unit
                               : null}
                           </td>
 
                           <td>
                             {applicant?.applicant_status?.status || "Undecided"}
                           </td>
-                          <td>{applicant.createdAt}</td>
-                          <td>{applicant.updatedAt || " - "}</td>
+                          <td>{applicant?.createdAt}</td>
+                          <td>{applicant?.updatedAt || " - "}</td>
                           <td>
                             <DeleteIcon
                               onClick={(e) => {
@@ -1471,7 +1464,7 @@ const Applicants = () => {
                   <Input
                     type="text"
                     placeholder="Search by first and last name"
-                    value={searchQuery}
+                    value={searchQuery1}
                     onChange={handleSearch}
                     style={{
                       marginBottom: "10px",
@@ -1516,10 +1509,10 @@ const Applicants = () => {
                         {Array.isArray(rentalownerData) &&
                           rentalownerData
                             .filter((tenant) => {
-                              const fullName = `${tenant.applicant_firstName} ${tenant.applicant_lastName}`;
+                              const fullName = `${tenant?.applicant_firstName} ${tenant?.applicant_lastName}`;
                               return fullName
                                 .toLowerCase()
-                                .includes(searchQuery.toLowerCase());
+                                .includes(searchQuery1.toLowerCase());
                             })
                             .map((tenant, index) => (
                               <tr
@@ -1535,9 +1528,9 @@ const Applicants = () => {
                                   }}
                                 >
                                   <pre>
-                                    {tenant.applicant_firstName}&nbsp;
-                                    {tenant.applicant_lastName}
-                                    {`(${tenant.applicant_phoneNumber})`}
+                                    {tenant?.applicant_firstName}&nbsp;
+                                    {tenant?.applicant_lastName}
+                                    {`(${tenant?.applicant_phoneNumber})`}
                                   </pre>
                                 </td>
                                 <td
