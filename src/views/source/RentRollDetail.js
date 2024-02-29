@@ -22,7 +22,11 @@ import {
   ModalBody,
   ModalFooter,
   Modal,
+  Form,
+  Input,
 } from "reactstrap";
+import * as yup from "yup";
+import { useFormik } from "formik";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
@@ -41,6 +45,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import DoneIcon from "@mui/icons-material/Done";
 import "./Leaseing.css";
 import CreditCardForm from "./CreditCardForm";
+import swal from "sweetalert";
 
 const RentRollDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -108,7 +113,8 @@ const RentRollDetail = () => {
       setLoading(false);
     }
   };
-
+  console.log("tenant manu", tenantId);
+  console.log("tenant manu", tenantDetails);
   useEffect(() => {
     fetchLeaseData();
     fetchfinancialData();
@@ -174,11 +180,13 @@ const RentRollDetail = () => {
   };
 
   const [refund, setRefund] = useState(false);
+  const [paymentLoader, setPaymentLoader] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggle = () => setDropdownOpen((prevState) => !prevState);
   const [showOptions, setShowOptions] = useState(false);
   const [showOptionsId, setShowOptionsId] = useState("");
   const [isRefundOpen, setIsRefundOpen] = useState(false);
+  const [ResponseData, setResponseData] = useState("");
 
   const handleOptionClick = (option) => {
     // generatePDF(option);
@@ -197,31 +205,80 @@ const RentRollDetail = () => {
     // getMultipleCustomerVault();
   };
 
+  const generalledgerFormik = useFormik({
+    initialValues: {
+      payment_id: "",
+      date: "",
+      total_amount: "",
+      payments_memo: "",
+      customer_vault_id: "",
+      billing_id: "",
+      transaction_id: "",
+      surcharge: "",
+      payments: [
+        {
+          entry_id: "",
+          account: "",
+          amount: "",
+          balance: "",
+          charge_type: "",
+        },
+      ],
+      payments_attachment: [],
+    },
+    validationSchema: yup.object({
+      date: yup.string().required("Required"),
+      total_amount: yup.string().required("Required"),
+      payments: yup.array().of(
+        yup.object().shape({
+          account: yup.string().required("Required"),
+          amount: yup
+            .number()
+            .required("Required")
+            .min(1, "Amount must be greater than zero.")
+            .test(
+              "is-less-than-balance",
+              "Amount must be less than or equal to balance",
+              function (value) {
+                if (value && this.parent.balance) {
+                  const balance = this.parent.balance;
+                  return value <= balance;
+                }
+              }
+            ),
+        })
+      ),
+    }),
+    onSubmit: (values) => {
+      // if (Number(generalledgerFormik.values.total_amount) === Number(total)) {
+      //   handleSubmit(values);
+      // }
+    },
+  });
+
   const fetchData = async (id) => {
     try {
-      const response = await axios
-        .get
-        // `${baseUrl}/payment_charge/get_entry/${id}`
-        ();
+      const response = await axios.get(`${baseUrl}/payment/payment/${id}`);
+  
       if (response.data.statusCode === 200) {
         // setFile(response.data.data.charges_attachment);
-        // setResponseData(response.data.data);
-        // generalledgerFormik.setValues({
-        //   date: response.data.data.date,
-        //   amount: response.data.data.amount,
-        //   payment_type: response.data.data.payment_type,
-        //   customer_vault_id: response.data.data.customer_vault_id,
-        //   billing_id: response.data.data.billing_id,
-        //   charges_attachment: response.data.data.charges_attachment,
-        //   memo: response.data.data.memo,
-        //   entries: [
-        //     {
-        //       account: response.data.data.account || "",
-        //       amount: response.data.data.amount || "",
-        //       balance: response.data.data.amount || "",
-        //     },
-        //   ],
-        // });
+        setResponseData(response.data.data);
+        generalledgerFormik.setValues({
+          date: response.data.data[0].entry[0].date,
+          amount: response.data.data[0].total_amount,
+          payment_type: response.data.data[0].payment_type,
+          customer_vault_id: response.data.data[0].customer_vault_id,
+          billing_id: response.data.data[0].billing_id,
+          charges_attachment: response.data.data[0].charges_attachment,
+          
+          entry: [
+            {
+              account: response.data.data[0].account || "",
+              amount: response.data.data[0].amount || "",
+              // balance: response.data.data[0].amount || "",
+            },
+          ],
+        });
         // setSelectedRec(response.data.data.tenant_firstName && response.data.data.tenant_lastName )
         // setSelectedCreditCard(response.data.data.billing_id)
         // setSelectedProp(response.data.data.payment_type)
@@ -235,16 +292,90 @@ const RentRollDetail = () => {
     }
   };
 
-  // useEffect(() => {
-  //   fetchData();
-  // }, [payment_id]);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  const [cardDetalis, setCardDetails] = useState([]);
-  const getCreditCard = async () => {
-    const response = await axios.get(
-      `${baseUrl}/creditcard/getCreditCard/${lease_id}`
-    );
-    setCardDetails(response.data);
+  const handleRefundClick = async () => {
+    try {
+      setPaymentLoader(true);
+      // Assuming 'item' is a prop or state variable
+      const { payment_id, payment_type } = ResponseData[0];
+      const commonData = {
+        transactionId: ResponseData[0].transaction_id,
+        customer_vault_id: ResponseData[0].customer_vault_id,
+        billing_id: ResponseData[0].billing_id,
+        amount: generalledgerFormik.values.amount,
+        payment_type: ResponseData[0].payment_type,
+        
+        total_amount: generalledgerFormik.values.amount,
+        tenant_firstName: ResponseData.tenant_data.tenant_firstName,
+        tenant_lastName: ResponseData.tenant_data.tenant_lastName,
+        tenant_id: ResponseData[0].tenant_id,
+        lease_id: ResponseData[0].lease_id,
+        email_name: ResponseData.tenant_data.tenant_email,
+        // account: ResponseData[0].account,
+        type: ResponseData[0].type,
+        // memo: generalledgerFormik.values.memo,
+        // cvv: ResponseData.cvv,
+        // _id: ResponseData._id,
+        // rental_adress: ResponseData.rental_adress,
+        //unit: ResponseData.unit,
+        entry: ResponseData[0].entry.map((item) => {
+          const obj = {
+            amount: item.amount,
+            account: item.account,
+            date: generalledgerFormik.values.date,
+            memo: generalledgerFormik.values.memo,
+          };
+          return obj;
+        })
+      };
+      console.log("comman data=======", commonData);
+
+      if (payment_type === "Credit Card") {
+        const response = await axios.post(`${baseUrl}/nmipayment/new-refund`, {
+          refundDetails: commonData,
+        });
+        if (response.data.status === 200) {
+          swal("Success!", response.data.data, "success");
+          await fetchfinancialData();
+          closeRefund();
+        } else if (response.data.status === 201) {
+          swal("Warning!", response.data.data.error, "warning");
+        } else {
+          console.error("Failed to process refund:", response.statusText);
+        }
+      } else if (payment_type === "Cash" || payment_type === "Check") {
+        const response = await axios.post(
+          `${baseUrl}/nmipayment/manual-refund/${payment_id}`,
+          {
+            refundDetails: commonData,
+          }
+        );
+
+        if (response.data.statusCode === 200) {
+          //await setRefund(false);
+          swal("Success!", response.data.message, "success");
+          await fetchfinancialData();
+          closeRefund();
+        } else {
+          swal("Warning!", response.statusText, "warning");
+          console.error("Failed to process refund:", response.statusText);
+        }
+      } else {
+        console.log(
+          "Refund is only available for Credit Card, Cash, or Check payments."
+        );
+      }
+    } catch (error) {
+      if (error?.response?.data?.statusCode === 400) {
+        swal("Warning!", error.response.data.message, "warning");
+      }
+      console.error("Error:", error);
+    } finally {
+      setPaymentLoader(false);
+    }
   };
 
   const openCardForm = () => {
@@ -321,8 +452,8 @@ const RentRollDetail = () => {
                     {getStatus(leaseData?.start_date, leaseData?.end_date)} |{" "}
                     {leaseData?.rental_adress ? leaseData?.rental_adress : " "}
                     {leaseData?.rental_unit &&
-                      leaseData?.rental_unit !== undefined &&
-                      leaseData?.rental_unit !== ""
+                    leaseData?.rental_unit !== undefined &&
+                    leaseData?.rental_unit !== ""
                       ? ` - ${leaseData?.rental_unit}`
                       : ""}
                   </h5>
@@ -439,8 +570,8 @@ const RentRollDetail = () => {
                                         <Col>
                                           {leaseData?.rentalOwner_firstName
                                             ? leaseData?.rentalOwner_firstName +
-                                            " " +
-                                            leaseData?.rentalOwner_lastName
+                                              " " +
+                                              leaseData?.rentalOwner_lastName
                                             : "N/A"}
                                         </Col>
                                         <Col>
@@ -561,8 +692,8 @@ const RentRollDetail = () => {
                                       >
                                         {totalAmount
                                           ? totalAmount < 0
-                                            ? `$(${Math.abs(totalAmount)})`
-                                            : `$${totalAmount}`
+                                            ? `$(${Math.abs(totalAmount.toFixed(2))})`
+                                            : `$${totalAmount.toFixed(2)}`
                                           : "$ 0.00"}
                                       </Typography>
                                     </div>
@@ -808,9 +939,10 @@ const RentRollDetail = () => {
                                       (generalledger, index) => (
                                         <>
                                           <tr
-                                            key={`${generalledger?.payment_id ||
+                                            key={`${
+                                              generalledger?.payment_id ||
                                               generalledger?.charge_id
-                                              }`}
+                                            }`}
                                           >
                                             <td>
                                               {generalledger?.entry[0]?.date ||
@@ -820,12 +952,11 @@ const RentRollDetail = () => {
                                               {generalledger?.type || "-"}
                                             </td>
 
-
                                             <td
                                               style={{
                                                 cursor:
                                                   generalledger?.entry?.length >
-                                                    1
+                                                  1
                                                     ? "pointer"
                                                     : "",
                                               }}
@@ -855,23 +986,23 @@ const RentRollDetail = () => {
                                                 color:
                                                   generalledger.type ===
                                                     "Payment" &&
-                                                    generalledger.response ===
+                                                  generalledger.response ===
                                                     "SUCCESS"
                                                     ? "#50975E"
                                                     : generalledger.type ===
-                                                      "Refund" &&
+                                                        "Refund" &&
                                                       generalledger.response ===
-                                                      "SUCCESS"
-                                                      ? "#ffc40c"
-                                                      : generalledger.response ===
-                                                        "FAILURE"
-                                                        ? "#AA3322"
-                                                        : "inherit",
+                                                        "SUCCESS"
+                                                    ? "#ffc40c"
+                                                    : generalledger.response ===
+                                                      "FAILURE"
+                                                    ? "#AA3322"
+                                                    : "inherit",
                                                 fontWeight: "bold",
                                               }}
                                             >
                                               {generalledger.response &&
-                                                generalledger.payment_type
+                                              generalledger.payment_type
                                                 ? `Manual ${generalledger.type} ${generalledger.response} for ${generalledger.payment_type}`
                                                 : "- - - - - - - - - - - - - - - - -"}
                                               {generalledger.transaction_id
@@ -881,29 +1012,29 @@ const RentRollDetail = () => {
                                             <td>
                                               {generalledger.type ===
                                                 "Charge" ||
-                                                generalledger.type === "Refund"
+                                              generalledger.type === "Refund"
                                                 ? "$" +
-                                                generalledger.total_amount
+                                                  generalledger.total_amount
                                                 : "-"}
                                             </td>
                                             <td>
                                               {generalledger.type === "Payment"
                                                 ? "$" +
-                                                generalledger.total_amount
+                                                  generalledger.total_amount
                                                 : "-"}
                                             </td>
                                             <td>
                                               {generalledger.balance !==
-                                                undefined
+                                              undefined
                                                 ? generalledger.balance >= 0
                                                   ? `$${generalledger.balance.toFixed(
-                                                    2
-                                                  )}`
-                                                  : `$(${Math.abs(
-                                                    generalledger.balance.toFixed(
                                                       2
-                                                    )
-                                                  )})`
+                                                    )}`
+                                                  : `$(${Math.abs(
+                                                      generalledger.balance.toFixed(
+                                                        2
+                                                      )
+                                                    )})`
                                                 : "0"}
                                             </td>
                                             <td>
@@ -915,7 +1046,7 @@ const RentRollDetail = () => {
                                               >
                                                 {generalledger?.response !==
                                                   "Failure" &&
-                                                  generalledger?.type !==
+                                                generalledger?.type !==
                                                   "Refund" ? (
                                                   <UncontrolledDropdown nav>
                                                     <DropdownToggle
@@ -953,55 +1084,55 @@ const RentRollDetail = () => {
                                                     <DropdownMenu className="dropdown-menu-arrow">
                                                       {generalledger?.payment_id ===
                                                         showOptionsId && (
-                                                          <div>
-                                                            {generalledger?.response ===
-                                                              "SUCCESS" && (
-                                                                <DropdownItem
-                                                                  // style={{color:'black'}}
-                                                                  onClick={() => {
-                                                                    fetchData(
-                                                                      generalledger.payment_id
-                                                                    );
-                                                                    // setIsRefundOpen(
-                                                                    //   true
-                                                                    // );
-                                                                    setRefund(true);
-                                                                  }}
-                                                                >
-                                                                  Refund
-                                                                </DropdownItem>
-                                                              )}
-                                                            {(generalledger?.response ===
-                                                              "PENDING" ||
-                                                              generalledger?.payment_type ===
+                                                        <div>
+                                                          {generalledger?.response ===
+                                                            "SUCCESS" && (
+                                                            <DropdownItem
+                                                              // style={{color:'black'}}
+                                                              onClick={() => {
+                                                                fetchData(
+                                                                  generalledger.payment_id
+                                                                );
+                                                                setIsRefundOpen(
+                                                                  true
+                                                                );
+                                                                setRefund(true);
+                                                              }}
+                                                            >
+                                                              Refund
+                                                            </DropdownItem>
+                                                          )}
+                                                          {(generalledger?.response ===
+                                                            "PENDING" ||
+                                                            generalledger?.payment_type ===
                                                               "Cash" ||
-                                                              generalledger?.payment_type ===
+                                                            generalledger?.payment_type ===
                                                               "Check" ||
-                                                              generalledger?.type ===
+                                                            generalledger?.type ===
                                                               "Charge") && (
-                                                                <DropdownItem
-                                                                  tag="div"
-                                                                  onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    if (
-                                                                      generalledger?.type ===
-                                                                      "Charge"
-                                                                    ) {
-                                                                      navigate(
-                                                                        `/${admin}/AddCharge/${lease_id}/${generalledger.charge_id}`
-                                                                      );
-                                                                    } else {
-                                                                      // navigate(
-                                                                      //   `/${admin}/AddPayment/${lease_id}/${generalledger.payment_id}`
-                                                                      // );
-                                                                    }
-                                                                  }}
-                                                                >
-                                                                  Edit
-                                                                </DropdownItem>
-                                                              )}
-                                                          </div>
-                                                        )}
+                                                            <DropdownItem
+                                                              tag="div"
+                                                              onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                if (
+                                                                  generalledger?.type ===
+                                                                  "Charge"
+                                                                ) {
+                                                                  navigate(
+                                                                    `/${admin}/AddCharge/${lease_id}/${generalledger.charge_id}`
+                                                                  );
+                                                                } else {
+                                                                  navigate(
+                                                                    `/${admin}/AddPayment/${lease_id}/${generalledger.payment_id}`
+                                                                  );
+                                                                }
+                                                              }}
+                                                            >
+                                                              Edit
+                                                            </DropdownItem>
+                                                          )}
+                                                        </div>
+                                                      )}
                                                     </DropdownMenu>
                                                   </UncontrolledDropdown>
                                                 ) : (
@@ -1019,10 +1150,26 @@ const RentRollDetail = () => {
                                             </td>
                                           </tr>
                                           {expandedRows.includes(index) && (
-                                            <tr style={{ border: '0', backgroundColor:"#f6f9fc" }} key={`expanded_${index}`}>
-                                              <td scope="col" style={{ border: '0' }} colSpan="2"></td>
-                                              <td scope="col" style={{ border: '0' }} colSpan="2" className="text-left">
-                                                <b>Accounts</b><br />
+                                            <tr
+                                              style={{
+                                                border: "0",
+                                                backgroundColor: "#f6f9fc",
+                                              }}
+                                              key={`expanded_${index}`}
+                                            >
+                                              <td
+                                                scope="col"
+                                                style={{ border: "0" }}
+                                                colSpan="2"
+                                              ></td>
+                                              <td
+                                                scope="col"
+                                                style={{ border: "0" }}
+                                                colSpan="2"
+                                                className="text-left"
+                                              >
+                                                <b>Accounts</b>
+                                                <br />
                                                 {expandedData[index].map(
                                                   (item, subIndex) => (
                                                     <span
@@ -1034,19 +1181,28 @@ const RentRollDetail = () => {
                                                   )
                                                 )}
                                               </td>
-                                              <td scope="col" style={{ border: '0' }}>
-                                                {financialData[index]
-                                                  ?.type === "Charge" ||
-                                                  financialData[index]
-                                                    ?.type === "Refund"
-                                                  ? (<><b>Amount</b><br /></>) : ""}
+                                              <td
+                                                scope="col"
+                                                style={{ border: "0" }}
+                                              >
+                                                {financialData[index]?.type ===
+                                                  "Charge" ||
+                                                financialData[index]?.type ===
+                                                  "Refund" ? (
+                                                  <>
+                                                    <b>Amount</b>
+                                                    <br />
+                                                  </>
+                                                ) : (
+                                                  ""
+                                                )}
                                                 {expandedData[index].map(
                                                   (data, subIndex) => (
                                                     <>
                                                       {financialData[index]
                                                         ?.type === "Charge" ||
-                                                        financialData[index]
-                                                          ?.type === "Refund"
+                                                      financialData[index]
+                                                        ?.type === "Refund"
                                                         ? "$" + data?.amount
                                                         : ""}
                                                       <br />
@@ -1054,10 +1210,19 @@ const RentRollDetail = () => {
                                                   )
                                                 )}
                                               </td>
-                                              <td scope="col" style={{ border: '0' }}>
-                                                {financialData[index]
-                                                  ?.type === "Payment"
-                                                  ? (<><b>Amount</b><br /></>) : ""}
+                                              <td
+                                                scope="col"
+                                                style={{ border: "0" }}
+                                              >
+                                                {financialData[index]?.type ===
+                                                "Payment" ? (
+                                                  <>
+                                                    <b>Amount</b>
+                                                    <br />
+                                                  </>
+                                                ) : (
+                                                  ""
+                                                )}
                                                 {expandedData[index].map(
                                                   (data, subIndex) => (
                                                     <>
@@ -1070,7 +1235,10 @@ const RentRollDetail = () => {
                                                   )
                                                 )}
                                               </td>
-                                              <td scope="col" style={{ border: '0' }} ></td>
+                                              <td
+                                                scope="col"
+                                                style={{ border: "0" }}
+                                              ></td>
                                               <td></td>
                                               {console.log(
                                                 expandedData[index],
@@ -1278,7 +1446,7 @@ const RentRollDetail = () => {
                                         <br></br>
                                         {tenant.rental_adress}
                                         {tenant.rental_unit !== "" &&
-                                          tenant.rental_unit !== undefined
+                                        tenant.rental_unit !== undefined
                                           ? ` - ${tenant.rental_unit}`
                                           : null}
                                       </div>
@@ -1335,13 +1503,13 @@ const RentRollDetail = () => {
                                         style={
                                           tenant.moveout_notice_given_date
                                             ? {
-                                              display: "flex",
-                                              flexDirection: "row",
-                                              marginTop: "10px",
-                                            }
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                marginTop: "10px",
+                                              }
                                             : {
-                                              display: "none",
-                                            }
+                                                display: "none",
+                                              }
                                         }
                                       >
                                         <Typography
@@ -1359,13 +1527,13 @@ const RentRollDetail = () => {
                                         style={
                                           tenant.moveout_date
                                             ? {
-                                              display: "flex",
-                                              flexDirection: "row",
-                                              marginTop: "10px",
-                                            }
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                marginTop: "10px",
+                                              }
                                             : {
-                                              display: "none",
-                                            }
+                                                display: "none",
+                                              }
                                         }
                                       >
                                         <Typography
@@ -1418,8 +1586,8 @@ const RentRollDetail = () => {
                               >
                                 {totalAmount
                                   ? totalAmount < 0
-                                    ? `$(${Math.abs(totalAmount)})`
-                                    : `$${totalAmount}`
+                                    ? `$(${Math.abs(totalAmount.toFixed(2))})`
+                                    : `$${totalAmount.toFixed(2)}`
                                   : "$ 0.00"}
                               </Typography>
                             </div>
@@ -1654,7 +1822,7 @@ const RentRollDetail = () => {
           <strong style={{ fontSize: 18 }}>Make Refund</strong>
         </ModalHeader>
 
-        {/* <Form>
+        <Form>
           <ModalBody>
             <Row>
               <Col lg="2">
@@ -1767,7 +1935,7 @@ const RentRollDetail = () => {
             )}
             <Button onClick={closeRefund}>Cancel</Button>
           </ModalFooter>
-        </Form> */}
+        </Form>
       </Modal>
 
       <Modal
@@ -1782,7 +1950,7 @@ const RentRollDetail = () => {
           <CreditCardForm
             tenantId={tenantId}
             closeModal={closeModal}
-          //getCreditCard={getCreditCard}
+            //getCreditCard={getCreditCard}
           />
         </ModalBody>
       </Modal>
