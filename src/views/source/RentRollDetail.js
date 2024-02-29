@@ -963,7 +963,9 @@ const RentRollDetail = () => {
                                               onClick={() => {
                                                 if (
                                                   generalledger?.entry?.length >
-                                                  1
+                                                  1 &&
+                                                  generalledger?.type !==
+                                                    "Refund"
                                                 ) {
                                                   openAccount(
                                                     generalledger,
