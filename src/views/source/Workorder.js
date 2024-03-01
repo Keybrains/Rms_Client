@@ -98,13 +98,13 @@ const Workorder = () => {
         }));
         setWorkData(filteredData);
         setTotalPages(Math.ceil(filteredData.length / pageItem));
+        setLoader(false);
       } else {
         setWorkData([]);
         setTotalPages(0);
       }
-      setLoader(false);
     } catch (error) {
-      setLoader(false);
+      // setLoader(false);
       console.error("Error fetching data:", error);
     }
   };

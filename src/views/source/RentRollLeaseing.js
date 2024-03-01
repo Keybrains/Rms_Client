@@ -1040,7 +1040,6 @@ const RentRollLeaseing = () => {
     try {
       const res = await axios.get(`${baseUrl}/leases/get_lease/${lease_id}`);
       if (res.data.statusCode === 200) {
-        // console.log(res, "yash");
         const { data } = res.data;
 
         if (!data) {
@@ -3865,7 +3864,6 @@ const RentRollLeaseing = () => {
                         </label>
                       </div>
                       <div className="d-flex ">
-                        {console.log(file, applicant_id, "yash")}
                         {file.length > 0 &&
                           file?.map((singleFile, index) => (
                             <div

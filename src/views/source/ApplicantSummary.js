@@ -852,7 +852,7 @@ const ApplicantSummary = () => {
                                     <Col>Note</Col>
                                     <Col>File</Col>
                                     <Col>Clear</Col>
-                                  </Row>{console.log(applicantNotesData, "yash")}
+                                  </Row>
                                   {applicantNotesData?.map((data, index) => (
                                     <Row
                                       className="w-100 mt-1"

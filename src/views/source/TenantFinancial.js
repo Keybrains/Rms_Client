@@ -103,7 +103,6 @@ const TenantFinancial = () => {
       const response = await axios.get(
         `${baseUrl}/payment/tenant_financial/${"1708683886820"}`
       );
-      console.log(response, "yashu");
       setLedger(response.data.data);
       setLoader(false);
     } catch (error) {
@@ -115,7 +114,6 @@ const TenantFinancial = () => {
   useEffect(() => {
     fetchLedger();
   }, [accessType]);
-  console.log(Ledger, "yashu")
   const fetchUnitsByProperty = async (propertyType) => {
     try {
       const response = await fetch(
@@ -672,10 +670,6 @@ const TenantFinancial = () => {
                                     </td>
                                     <td scope="col" style={{ border: '0' }} ></td>
                                     <td></td>
-                                    {console.log(
-                                      expandedData[index],
-                                      "yash"
-                                    )}
                                   </tr>
                                 )}
                               </>

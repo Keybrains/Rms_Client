@@ -1072,10 +1072,7 @@ const RentRollDetail = () => {
                                               </td>
                                               <td scope="col" style={{ border: '0' }} ></td>
                                               <td></td>
-                                              {console.log(
-                                                expandedData[index],
-                                                "yash"
-                                              )}
+                                             
                                             </tr>
                                           )}
                                         </>
@@ -1091,7 +1088,6 @@ const RentRollDetail = () => {
                       <br />
                     </Container>
                   </TabPanel>
-                  {console.log("lease data manu", leaseData)}
                   <TabPanel value="Tenant">
                     <CardHeader className="border-0">
                       <span>
