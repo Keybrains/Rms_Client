@@ -16,6 +16,7 @@ import {
   Table,
   Label,
   InputGroupAddon,
+  UncontrolledDropdown,
   InputGroup,
   Dropdown,
   DropdownToggle,
@@ -44,6 +45,7 @@ const TenantFinancial = () => {
   const [rental_adress, setRentalAddress] = useState([]);
   const [Ledger, setLedger] = useState([]);
   const [propertyDetails, setPropertyDetails] = useState([]);
+  const [propertyDropdownData, setPropertyDropdownData] = useState([]);
   const [propertyLoading, setPropertyLoading] = useState(true);
   const [propertyError, setPropertyError] = useState(null);
   const [tenantDetails, setTenantDetails] = useState({});
@@ -61,7 +63,6 @@ const TenantFinancial = () => {
   const [searchQueryy, setSearchQueryy] = useState("");
   const [unit, setUnit] = useState("");
   const [propertyId, setPropertyId] = useState("");
-  // const [cookie_id, setCookieId] = useState("");
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [pageItem, setPageItem] = React.useState(10);
@@ -70,7 +71,13 @@ const TenantFinancial = () => {
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
   const [loader, setLoader] = React.useState(true);
   const [financialData, setFinancialData] = useState([]);
+  const [showOptionsId, setShowOptionsId] = useState("");
+  const [showOptions, setShowOptions] = useState(false);
 
+  const toggleOptions = (id) => {
+    setShowOptions(!showOptions);
+    setShowOptionsId(id);
+  };
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
@@ -101,10 +108,17 @@ const TenantFinancial = () => {
   const fetchLedger = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/payment/tenant_financial/${"1708683886820"}`
+        `${baseUrl}/payment/tenant_financial/${accessType.tenant_id}`
       );
-      console.log(response, "yashu");
       setLedger(response.data.data);
+      const filteredData = Array.from(
+        new Set(
+          response.data.data.map(
+            (item) => `${item.rental_adress}, ${item.rental_unit}`
+          )
+        )
+      );
+      setPropertyDropdownData(filteredData);
       setLoader(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -115,7 +129,7 @@ const TenantFinancial = () => {
   useEffect(() => {
     fetchLedger();
   }, [accessType]);
-  console.log(Ledger, "yashu")
+  console.log(Ledger, "yashu");
   const fetchUnitsByProperty = async (propertyType) => {
     try {
       const response = await fetch(
@@ -429,7 +443,7 @@ const TenantFinancial = () => {
 
     return filteredData;
   };
-  
+
   const [expandedRows, setExpandedRows] = useState([]);
   const [expandedData, setExpandedData] = useState([]);
   const openAccount = (ledger, i) => {
@@ -451,7 +465,6 @@ const TenantFinancial = () => {
     }
   };
 
-  console.log(paymentId ? paymentId : "");
   return (
     <>
       <TenantsHeader />
@@ -466,7 +479,7 @@ const TenantFinancial = () => {
           <Col className="text-right">
             <Button
               color="primary"
-              onClick={openModal}
+              onClick={() => navigate(`/tenant/TenantPayment`)}
               size="sm"
               style={{ background: "white", color: "#263238" }}
             >
@@ -520,165 +533,279 @@ const TenantFinancial = () => {
                         <>
                           <thead className="thead-light">
                             <tr>
-                              <th scope="col">Date</th>
-                              <th scope="col">Type</th>
-                              <th scope="col">Account</th>
-                              <th scope="col">Memo</th>
-                              <th scope="col">Increase</th>
-                              <th scope="col">Decrease</th>
-                              <th scope="col">Balance</th>
+                            <th scope="col">Date</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Account</th>
+                                    <th scope="col">Transaction</th>
+                                    <th scope="col">Increase</th>
+                                    <th scope="col">Decrease</th>
+                                    <th scope="col">Balance</th>
+                                    <th scope="col">Action</th>
                             </tr>
                           </thead>
 
                           <tbody>
                             {filterLedgerBySearch()?.length > 0 ? (
-                              filterLedgerBySearch().map((item, index) => (<>
-                                <tr
-                                  key={index}
-                                  style={{ cursor: "pointer" }}
-                                  className="w-100"
-                                >
-                                  <td>
-                                    {moment(item?.createdAt).format(
-                                      "DD-MM-YYYY"
-                                    ) || "N/A"}
-                                  </td>
-
-                                  <td>{item?.type || "N/A"}</td>
-
-                                  {/* <td>
-                                    {item?.entry?.map((data, i) => (
-                                      <>
-                                        <div className="d-flex">
-                                          <div className="">
-                                            {i + 1}
-                                            {". "}
-                                          </div>
-                                          <div>{data?.account}</div>
-                                        </div>
-                                      </>
-                                    ))}
-                                  </td> */}
-                                  <td
-                                    style={{
-                                      cursor:
-                                        item?.entry?.length >
-                                          1
-                                          ? "pointer"
-                                          : "",
-                                    }}
-                                    onClick={() => {
-                                      if (
-                                        item?.entry?.length >
-                                        1
-                                      ) {
-                                        openAccount(
-                                          item,
-                                          index
-                                        );
-                                      }
-                                    }}
+                              filterLedgerBySearch().map((item, index) => (
+                                <>
+                                  <tr
+                                    key={index}
+                                    style={{ cursor: "pointer" }}
+                                    className="w-100"
                                   >
-                                    {item?.entry?.map(
-                                      (data) => (
+                                    <td>
+                                      {moment(item?.createdAt).format(
+                                        "DD-MM-YYYY"
+                                      ) || "N/A"}
+                                    </td>
+
+                                    <td>{item?.type || "N/A"}</td>
+
+                                    <td
+                                      style={{
+                                        cursor:
+                                          item?.entry?.length > 1
+                                            ? "pointer"
+                                            : "",
+                                      }}
+                                      onClick={() => {
+                                        if (item?.entry?.length > 1 &&
+                                          item?.type !==
+                                            "Refund") {
+                                          openAccount(item, index);
+                                        }
+                                      }}
+                                    >
+                                      {item?.entry?.map((data) => (
                                         <>
                                           {data?.account}
                                           <br />
                                         </>
-                                      )
-                                    ) || "-"}
-                                  </td>
+                                      )) || "-"}
+                                    </td>
 
-                                  <td>
-                                    {" "}
-                                    {item.is_leaseAdded === true
-                                      ? item.entry.map((data, i) => (
-                                        <>
-                                          <div className="d-flex ">
-                                            <div>
-                                              {i + 1}
-                                              {". "}
-                                            </div>
-                                            <div>{data.memo}</div>
-                                          </div>
-                                        </>
-                                      ))
-                                      : item.entry[0].memo}
-                                  </td>
+                                    <td
+                                              style={{
+                                                color:
+                                                  item.type ===
+                                                    "Payment" &&
+                                                  item.response ===
+                                                    "SUCCESS"
+                                                    ? "#50975E"
+                                                    : item.type ===
+                                                        "Refund" &&
+                                                      item.response ===
+                                                        "SUCCESS"
+                                                    ? "#ffc40c"
+                                                    : item.response ===
+                                                      "FAILURE"
+                                                    ? "#AA3322"
+                                                    : "inherit",
+                                                fontWeight: "bold",
+                                              }}
+                                            >
+                                              {item.response &&
+                                              item.payment_type
+                                                ? `Manual ${item.type} ${item.response} for ${item.payment_type}`
+                                                : "- - - - - - - - - - - - - - - - -"}
+                                              {item.transaction_id
+                                                ? ` (#${item.transaction_id})`
+                                                : ""}
+                                            </td>
 
-                                  {item.type === "Charge" ? (
-                                    <td> {item?.total_amount}</td>
-                                  ) : (
-                                    <td>-</td>
-                                  )}
-                                  {item.type === "Payment" ? (
-                                    <td> {item?.total_amount}</td>
-                                  ) : (
-                                    <td>-</td>
-                                  )}
-                                  <td>{item?.balance}</td>
-                                </tr>
-                                {expandedRows.includes(index) && (
-                                  <tr style={{ border: '0', backgroundColor: "#f6f9fc" }} key={`expanded_${index}`}>
-                                    <td scope="col" style={{ border: '0' }} colSpan="2"></td>
-                                    <td scope="col" style={{ border: '0' }} colSpan="2" className="text-left">
-                                      <b>Accounts</b><br />
-                                      {expandedData[index].map(
-                                        (item, subIndex) => (
-                                          <span
-                                            key={`expanded_${index}_${subIndex}`}
-                                          >
-                                            {item?.account}
-                                            <br />
-                                          </span>
-                                        )
-                                      )}
-                                    </td>
-                                    <td scope="col" style={{ border: '0' }}>
-                                      {Ledger[index]
-                                        ?.type === "Charge" ||
-                                        Ledger[index]
-                                          ?.type === "Refund"
-                                        ? (<><b>Amount</b><br /></>) : ""}
-                                      {expandedData[index].map(
-                                        (data, subIndex) => (
-                                          <>
-                                            {Ledger[index]
-                                              ?.type === "Charge" ||
-                                              Ledger[index]
-                                                ?.type === "Refund"
-                                              ? "$" + data?.amount
-                                              : ""}
-                                            <br />
-                                          </>
-                                        )
-                                      )}
-                                    </td>
-                                    <td scope="col" style={{ border: '0' }}>
-                                      {Ledger[index]
-                                        ?.type === "Payment"
-                                        ? (<><b>Amount</b><br /></>) : ""}
-                                      {expandedData[index].map(
-                                        (data, subIndex) => (
-                                          <>
-                                            {Ledger[index]
-                                              ?.type === "Payment"
-                                              ? "$" + data?.amount
-                                              : ""}
-                                            <br />
-                                          </>
-                                        )
-                                      )}
-                                    </td>
-                                    <td scope="col" style={{ border: '0' }} ></td>
-                                    <td></td>
-                                    {console.log(
-                                      expandedData[index],
-                                      "yash"
+                                    {item.type === "Charge" || item.type === "Refund" ? (
+                                      <td> {item?.total_amount}</td>
+                                    ) : (
+                                      <td>-</td>
                                     )}
+                                    {item.type === "Payment" ? (
+                                      <td> {item?.total_amount}</td>
+                                    ) : (
+                                      <td>-</td>
+                                    )}
+                                    <td> {item.balance !==
+                                              undefined
+                                                ? item.balance >= 0
+                                                  ? `$${item?.balance?.toFixed(
+                                                      2
+                                                    )}`
+                                                  : `$(${Math.abs(
+                                                      item?.balance?.toFixed(
+                                                        2
+                                                      )
+                                                    )})`
+                                                : "0"}</td>
+                                                  <td>
+                                              <div
+                                                style={{
+                                                  display: "flex",
+                                                  gap: "5px",
+                                                }}
+                                              >
+                                                {item?.response !==
+                                                  "FAILURE" && item?.response !==
+                                                  "SUCCESS" &&
+                                                item?.type ===
+                                                  "Payment" ? (
+                                                  <UncontrolledDropdown nav>
+                                                    <DropdownToggle
+                                                      className="pr-0"
+                                                      nav
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                      onClick={() =>
+                                                        toggleOptions(
+                                                          item?.payment_id
+                                                        )
+                                                      }
+                                                    >
+                                                      <span
+                                                        className="avatar avatar-sm rounded-circle"
+                                                        style={{
+                                                          margin: "-20px",
+                                                          background:
+                                                            "transparent",
+                                                          color: "lightblue",
+                                                          fontWeight: "bold",
+                                                          border:
+                                                            "2px solid lightblue",
+                                                          padding: "10px",
+                                                          display: "flex",
+                                                          alignItems: "center",
+                                                          justifyContent:
+                                                            "center",
+                                                        }}
+                                                      >
+                                                        ...
+                                                      </span>
+                                                    </DropdownToggle>
+                                                    <DropdownMenu className="dropdown-menu-arrow">
+                                                      {item?.payment_id ===
+                                                        showOptionsId && (
+                                                        <div>
+                                                          {(item?.response ===
+                                                            "PENDING" ||
+                                                            item?.payment_type ===
+                                                              "Cash" ||
+                                                            item?.payment_type ===
+                                                              "Check" ) && (
+                                                            <DropdownItem
+                                                              tag="div"
+                                                              onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                
+                                                                  navigate(
+                                                                    `/tenant/TenantPayment/${item.payment_id}`
+                                                                  );
+                                                                
+                                                              }}
+                                                            >
+                                                              Edit
+                                                            </DropdownItem>
+                                                          )}
+                                                        </div>
+                                                      )}
+                                                    </DropdownMenu>
+                                                  </UncontrolledDropdown>
+                                                ) : (
+                                                  <div
+                                                    style={{
+                                                      fontSize: "15px",
+                                                      fontWeight: "bolder",
+                                                      paddingLeft: "5px",
+                                                    }}
+                                                  >
+                                                    --
+                                                  </div>
+                                                )}
+                                              </div>
+                                            </td>
                                   </tr>
-                                )}
-                              </>
+                                  {expandedRows.includes(index) && (
+                                    <tr
+                                      style={{
+                                        border: "0",
+                                        backgroundColor: "#f6f9fc",
+                                      }}
+                                      key={`expanded_${index}`}
+                                    >
+                                      <td
+                                        scope="col"
+                                        style={{ border: "0" }}
+                                        colSpan="2"
+                                      ></td>
+                                      <td
+                                        scope="col"
+                                        style={{ border: "0" }}
+                                        colSpan="2"
+                                        className="text-left"
+                                      >
+                                        <b>Accounts</b>
+                                        <br />
+                                        {expandedData[index].map(
+                                          (item, subIndex) => (
+                                            <span
+                                              key={`expanded_${index}_${subIndex}`}
+                                            >
+                                              {item?.account}
+                                              <br />
+                                            </span>
+                                          )
+                                        )}
+                                      </td>
+                                      <td scope="col" style={{ border: "0" }}>
+                                        {Ledger[index]?.type === "Charge" ||
+                                        Ledger[index]?.type === "Refund" ? (
+                                          <>
+                                            <b>Amount</b>
+                                            <br />
+                                          </>
+                                        ) : (
+                                          ""
+                                        )}
+                                        {expandedData[index].map(
+                                          (data, subIndex) => (
+                                            <>
+                                              {Ledger[index]?.type ===
+                                                "Charge" ||
+                                              Ledger[index]?.type === "Refund"
+                                                ? "$" + data?.amount
+                                                : ""}
+                                              <br />
+                                            </>
+                                          )
+                                        )}
+                                      </td>
+                                      <td scope="col" style={{ border: "0" }}>
+                                        {Ledger[index]?.type === "Payment" ? (
+                                          <>
+                                            <b>Amount</b>
+                                            <br />
+                                          </>
+                                        ) : (
+                                          ""
+                                        )}
+                                        {expandedData[index].map(
+                                          (data, subIndex) => (
+                                            <>
+                                              {Ledger[index]?.type === "Payment"
+                                                ? "$" + data?.amount
+                                                : ""}
+                                              <br />
+                                            </>
+                                          )
+                                        )}
+                                      </td>
+                                      <td
+                                        scope="col"
+                                        style={{ border: "0" }}
+                                      ></td>
+                                      <td></td>
+                                      {console.log(expandedData[index], "yash")}
+                                    </tr>
+                                  )}
+                                </>
                               ))
                             ) : (
                               <tr>

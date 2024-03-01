@@ -3901,7 +3901,7 @@ const RentRollLeaseing = () => {
                                   style={{ cursor: "pointer" }}
                                 >
                                   {singleFile.substr(0, 5)}
-                                  {singleFile.length > 5 ? "..." : null}
+                                  {singleFile?.length > 5 ? "..." : null}
                                 </p>
                               )}
                               <CloseIcon

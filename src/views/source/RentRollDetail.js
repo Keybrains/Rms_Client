@@ -87,9 +87,9 @@ const RentRollDetail = () => {
   const fetchfinancialData = async () => {
     setLoader(true);
     try {
-      const res = await axios.get(
-        `${baseUrl}/payment/charges_payments/${lease_id}`
-      );
+      const url = `${baseUrl}/payment/charges_payments/${lease_id}`;
+      console.log(`${baseUrl}/payment/charges_payments/${lease_id}`, "yash");
+      const res = await axios.get(url);
       setFinancialData(res.data.data);
       setTotalAmount(res.data.totalBalance);
     } catch (error) {
@@ -113,8 +113,6 @@ const RentRollDetail = () => {
       setLoading(false);
     }
   };
-  console.log("tenant manu", tenantId);
-  console.log("tenant manu", tenantDetails);
   useEffect(() => {
     fetchLeaseData();
     fetchfinancialData();
@@ -965,7 +963,7 @@ const RentRollDetail = () => {
                                               onClick={() => {
                                                 if (
                                                   generalledger?.entry?.length >
-                                                    1 &&
+                                                  1 &&
                                                   generalledger?.type !==
                                                     "Refund"
                                                 ) {
@@ -1049,7 +1047,7 @@ const RentRollDetail = () => {
                                                 }}
                                               >
                                                 {generalledger?.response !==
-                                                  "Failure" &&
+                                                  "FAILURE" &&
                                                 generalledger?.type !==
                                                   "Refund" ? (
                                                   <UncontrolledDropdown nav>

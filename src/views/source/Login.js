@@ -88,7 +88,7 @@ const Login = () => {
               `${baseUrl}/admin/superadmin_login`,
               values
             );
-
+            console.log(superAdminRes, "yashu");
             if (superAdminRes.status === 200) {
               const superAdminData = superAdminRes.data;
               if (superAdminData.statusCode === 200) {
@@ -114,6 +114,11 @@ const Login = () => {
                   position: "top-center",
                 });
               }
+            } else {
+              toast.error("Invalid User Data", {
+                autoClose: 500,
+                position: "top-center",
+              });
             }
           }
         } else {
