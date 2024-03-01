@@ -132,6 +132,9 @@ const PropDetails = () => {
 
   const fetchRentalData = async () => {
     setLoader(true);
+    setPropImageLoader(true);
+    setLoading(true);
+
     try {
       const url = `${baseUrl}/rentals/rental_summary/${rental_id}`;
       const response = await axios.get(url);
@@ -148,6 +151,8 @@ const PropDetails = () => {
 
   const fetchUnitsData = async () => {
     setLoader(true);
+    setPropImageLoader(true);
+    setLoading(true);
     try {
       const response = await axios.get(
         `${baseUrl}/unit/rental_unit/${rental_id}`
@@ -161,6 +166,7 @@ const PropDetails = () => {
 
   const fetchTenantData = async () => {
     setLoader(true);
+    setLoading(true);
     try {
       const response = await axios.get(
         `${baseUrl}/tenants/rental_tenant/${rental_id}`
@@ -175,6 +181,7 @@ const PropDetails = () => {
 
   const fetchWorkOrderData = async () => {
     setLoader(true);
+    setLoading(true);
     try {
       const response = await axios.get(
         `${baseUrl}/work-order/rental_workorder/${rental_id}`
@@ -188,6 +195,7 @@ const PropDetails = () => {
 
   const fatchunit = async () => {
     setLoader(true);
+    setLoading(true);
     try {
       const response = await axios.get(
         `${baseUrl}/leases/unit_leases/${clickedUnitObject?.unit_id}`
@@ -792,7 +800,7 @@ const PropDetails = () => {
                         {loading ? (
                           <tbody>
                             <tr>
-                              <td>Loading Property details...</td>
+                              {/* <td>Loading Property details...</td> */}
                             </tr>
                           </tbody>
                         ) : rentalOwnerData ? (
@@ -808,7 +816,7 @@ const PropDetails = () => {
                                     {loading ? (
                                       <tbody>
                                         <tr>
-                                          <td>Loading tenant details...</td>
+                                          {/* <td>Loading tenant details...</td> */}
                                         </tr>
                                       </tbody>
                                     ) : (
@@ -950,7 +958,7 @@ const PropDetails = () => {
                         ) : (
                           <tbody>
                             <tr>
-                              <td>No details found.</td>
+                              {/* <td>No details found.</td> */}
                             </tr>
                           </tbody>
                         )}
