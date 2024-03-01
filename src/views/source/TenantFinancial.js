@@ -16,6 +16,7 @@ import {
   Table,
   Label,
   InputGroupAddon,
+  UncontrolledDropdown,
   InputGroup,
   Dropdown,
   DropdownToggle,
@@ -62,7 +63,6 @@ const TenantFinancial = () => {
   const [searchQueryy, setSearchQueryy] = useState("");
   const [unit, setUnit] = useState("");
   const [propertyId, setPropertyId] = useState("");
-  // const [cookie_id, setCookieId] = useState("");
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [pageItem, setPageItem] = React.useState(10);
@@ -71,6 +71,13 @@ const TenantFinancial = () => {
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
   const [loader, setLoader] = React.useState(true);
   const [financialData, setFinancialData] = useState([]);
+  const [showOptionsId, setShowOptionsId] = useState("");
+  const [showOptions, setShowOptions] = useState(false);
+
+  const toggleOptions = (id) => {
+    setShowOptions(!showOptions);
+    setShowOptionsId(id);
+  };
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
@@ -101,7 +108,7 @@ const TenantFinancial = () => {
   const fetchLedger = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/payment/tenant_financial/${"1708683886820"}`
+        `${baseUrl}/payment/tenant_financial/${accessType.tenant_id}`
       );
       setLedger(response.data.data);
       const filteredData = Array.from(
@@ -472,7 +479,7 @@ const TenantFinancial = () => {
           <Col className="text-right">
             <Button
               color="primary"
-              onClick={openModal}
+              onClick={() => navigate(`/tenant/TenantPayment`)}
               size="sm"
               style={{ background: "white", color: "#263238" }}
             >
@@ -526,13 +533,14 @@ const TenantFinancial = () => {
                         <>
                           <thead className="thead-light">
                             <tr>
-                              <th scope="col">Date</th>
-                              <th scope="col">Type</th>
-                              <th scope="col">Account</th>
-                              <th scope="col">Memo</th>
-                              <th scope="col">Increase</th>
-                              <th scope="col">Decrease</th>
-                              <th scope="col">Balance</th>
+                            <th scope="col">Date</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Account</th>
+                                    <th scope="col">Transaction</th>
+                                    <th scope="col">Increase</th>
+                                    <th scope="col">Decrease</th>
+                                    <th scope="col">Balance</th>
+                                    <th scope="col">Action</th>
                             </tr>
                           </thead>
 
@@ -553,19 +561,6 @@ const TenantFinancial = () => {
 
                                     <td>{item?.type || "N/A"}</td>
 
-                                    {/* <td>
-                                    {item?.entry?.map((data, i) => (
-                                      <>
-                                        <div className="d-flex">
-                                          <div className="">
-                                            {i + 1}
-                                            {". "}
-                                          </div>
-                                          <div>{data?.account}</div>
-                                        </div>
-                                      </>
-                                    ))}
-                                  </td> */}
                                     <td
                                       style={{
                                         cursor:
@@ -574,7 +569,9 @@ const TenantFinancial = () => {
                                             : "",
                                       }}
                                       onClick={() => {
-                                        if (item?.entry?.length > 1) {
+                                        if (item?.entry?.length > 1 &&
+                                          item?.type !==
+                                            "Refund") {
                                           openAccount(item, index);
                                         }
                                       }}
@@ -587,24 +584,36 @@ const TenantFinancial = () => {
                                       )) || "-"}
                                     </td>
 
-                                    <td>
-                                      {" "}
-                                      {item.is_leaseAdded === true
-                                        ? item.entry.map((data, i) => (
-                                            <>
-                                              <div className="d-flex ">
-                                                <div>
-                                                  {i + 1}
-                                                  {". "}
-                                                </div>
-                                                <div>{data.memo}</div>
-                                              </div>
-                                            </>
-                                          ))
-                                        : item.entry[0].memo}
-                                    </td>
+                                    <td
+                                              style={{
+                                                color:
+                                                  item.type ===
+                                                    "Payment" &&
+                                                  item.response ===
+                                                    "SUCCESS"
+                                                    ? "#50975E"
+                                                    : item.type ===
+                                                        "Refund" &&
+                                                      item.response ===
+                                                        "SUCCESS"
+                                                    ? "#ffc40c"
+                                                    : item.response ===
+                                                      "FAILURE"
+                                                    ? "#AA3322"
+                                                    : "inherit",
+                                                fontWeight: "bold",
+                                              }}
+                                            >
+                                              {item.response &&
+                                              item.payment_type
+                                                ? `Manual ${item.type} ${item.response} for ${item.payment_type}`
+                                                : "- - - - - - - - - - - - - - - - -"}
+                                              {item.transaction_id
+                                                ? ` (#${item.transaction_id})`
+                                                : ""}
+                                            </td>
 
-                                    {item.type === "Charge" ? (
+                                    {item.type === "Charge" || item.type === "Refund" ? (
                                       <td> {item?.total_amount}</td>
                                     ) : (
                                       <td>-</td>
@@ -614,7 +623,104 @@ const TenantFinancial = () => {
                                     ) : (
                                       <td>-</td>
                                     )}
-                                    <td>{item?.balance}</td>
+                                    <td> {item.balance !==
+                                              undefined
+                                                ? item.balance >= 0
+                                                  ? `$${item?.balance?.toFixed(
+                                                      2
+                                                    )}`
+                                                  : `$(${Math.abs(
+                                                      item?.balance?.toFixed(
+                                                        2
+                                                      )
+                                                    )})`
+                                                : "0"}</td>
+                                                  <td>
+                                              <div
+                                                style={{
+                                                  display: "flex",
+                                                  gap: "5px",
+                                                }}
+                                              >
+                                                {item?.response !==
+                                                  "FAILURE" && item?.response !==
+                                                  "SUCCESS" &&
+                                                item?.type ===
+                                                  "Payment" ? (
+                                                  <UncontrolledDropdown nav>
+                                                    <DropdownToggle
+                                                      className="pr-0"
+                                                      nav
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                      onClick={() =>
+                                                        toggleOptions(
+                                                          item?.payment_id
+                                                        )
+                                                      }
+                                                    >
+                                                      <span
+                                                        className="avatar avatar-sm rounded-circle"
+                                                        style={{
+                                                          margin: "-20px",
+                                                          background:
+                                                            "transparent",
+                                                          color: "lightblue",
+                                                          fontWeight: "bold",
+                                                          border:
+                                                            "2px solid lightblue",
+                                                          padding: "10px",
+                                                          display: "flex",
+                                                          alignItems: "center",
+                                                          justifyContent:
+                                                            "center",
+                                                        }}
+                                                      >
+                                                        ...
+                                                      </span>
+                                                    </DropdownToggle>
+                                                    <DropdownMenu className="dropdown-menu-arrow">
+                                                      {item?.payment_id ===
+                                                        showOptionsId && (
+                                                        <div>
+                                                          {(item?.response ===
+                                                            "PENDING" ||
+                                                            item?.payment_type ===
+                                                              "Cash" ||
+                                                            item?.payment_type ===
+                                                              "Check" ) && (
+                                                            <DropdownItem
+                                                              tag="div"
+                                                              onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                
+                                                                  navigate(
+                                                                    `/tenant/TenantPayment/${item.payment_id}`
+                                                                  );
+                                                                
+                                                              }}
+                                                            >
+                                                              Edit
+                                                            </DropdownItem>
+                                                          )}
+                                                        </div>
+                                                      )}
+                                                    </DropdownMenu>
+                                                  </UncontrolledDropdown>
+                                                ) : (
+                                                  <div
+                                                    style={{
+                                                      fontSize: "15px",
+                                                      fontWeight: "bolder",
+                                                      paddingLeft: "5px",
+                                                    }}
+                                                  >
+                                                    --
+                                                  </div>
+                                                )}
+                                              </div>
+                                            </td>
                                   </tr>
                                   {expandedRows.includes(index) && (
                                     <tr

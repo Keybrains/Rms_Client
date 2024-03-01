@@ -67,7 +67,7 @@ const Login = () => {
         const adminRes = await axios.post(url, values);
 
         if (adminRes.status === 200) {
-          console.log(adminRes, "yash ")
+          console.log(adminRes, "yash ");
           const adminData = adminRes.data;
           if (adminData.statusCode === 200) {
             toast.success("Admin Login successfully!", {
@@ -128,11 +128,13 @@ const Login = () => {
           });
         }
       } else if (roll) {
+        console.log("object======");
         const response = await axios.post(`${baseUrl}/${roll}/login`, {
           email: values.email,
           password: values.password,
           admin_id: admin_id,
         });
+        console.log("object======", response);
 
         if (response.status === 200) {
           const responceData = response.data;
