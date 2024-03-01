@@ -408,13 +408,13 @@ var routes = [
     component: <VenorWorkOrder />,
     layout: "/vendor",
   },
-  // {
-  //   path: "/tenantwork",
-  //   name: "Work Order",
-  //   icon: "ni ni-badge text-green",
-  //   component: <TenantWork />,
-  //   layout: "/tenant",
-  // },
+  {
+    path: "/tenantwork",
+    name: "Work Order",
+    icon: "ni ni-badge text-green",
+    component: <TenantWork />,
+    layout: "/tenant",
+  },
   // {
   //   path: "/taddwork",
   //   name: "Work Order",
