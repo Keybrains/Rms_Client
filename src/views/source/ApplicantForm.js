@@ -1,65 +1,25 @@
 import Header from "components/Headers/Header";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
-import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
-import HomeIcon from "@mui/icons-material/Home";
 import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  CardText,
-  CardTitle,
-  Col,
   Container,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
-  FormGroup,
-  Input,
-  InputGroup,
-  InputGroupAddon,
-  Row,
 } from "reactstrap";
-import AddIcon from "@mui/icons-material/Add";
-import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
 import Box from "@mui/material/Box";
-import { jwtDecode } from "jwt-decode";
-import Tab from "@mui/material/Tab";
-import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
-import TabPanel from "@mui/lab/TabPanel";
-import EmailIcon from "@mui/icons-material/Email";
-import ClearIcon from "@mui/icons-material/Clear";
-import EditIcon from "@mui/icons-material/Edit";
-import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import {
-  CardActions,
-  CardContent,
-  Checkbox,
-  Divider,
-  FormControlLabel,
-  Grid,
-  IconButton,
-  InputAdornment,
-  Paper,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { useFormik } from "formik";
-import Cookies from "universal-cookie";
-import MailIcon from "@mui/icons-material/Mail";
 
 const ApplicantForm = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const navigate = useNavigate();
+  const { id } = useParams();
+
   useEffect(() => {
-    // Add styles to hide the sidebar and header
     const sidenavMain = document.getElementById("sidenav-main");
     const headerElement = document.querySelector(".header");
 
@@ -71,9 +31,7 @@ const ApplicantForm = () => {
       headerElement.style.display = "none";
     }
 
-    // Cleanup on component unmount
     return () => {
-      // Restore sidebar and header visibility on unmount if needed
       if (sidenavMain) {
         sidenavMain.style.display = "block";
       }
@@ -84,20 +42,10 @@ const ApplicantForm = () => {
     };
   }, []);
 
-  const navigate = useNavigate();
-  const id = useParams().id;
-  console.log(id, "id");
   const [selectedDropdownItem, setselectedDropdownItem] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
-  const [value, setValue] = React.useState("Summary");
-  const [searchText, setSearchText] = useState("");
-  const [isAttachFile, setIsAttachFile] = useState(false);
   const [applicantData, setApplicantData] = useState();
   const [propertyData, setPropertyData] = useState();
   const [isEdit, setIsEdit] = useState(false);
-
-  let cookies = new Cookies();
-  const [accessType, setAccessType] = useState(null);
 
   const [prodropdownOpen, setProDropdownOpen] = useState(false);
   const [applicantselectedCountry, setApplicantSelectedCountry] =
@@ -371,38 +319,6 @@ const ApplicantForm = () => {
     "Åland Islands",
   ];
 
-  //   const [prodropdownOpen, setproDropdownOpen] = React.useState(false);
-
-  const handleAttachFile = () => {
-    setIsAttachFile(true);
-  };
-
-  const handleClear = () => {
-    setSearchText("");
-  };
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-    console.log(newValue);
-    console.log(matchedApplicant?.tenant_mobileNumber);
-    tenantsData(matchedApplicant?.tenant_mobileNumber, newValue);
-  };
-
-  const dropdownList = ["Approved", "Rejected"];
-
-  const selectedDropdown = (item) => {
-    setselectedDropdownItem(item);
-
-    console.log(item, "item");
-  };
-
-  const handleOpen = () => {
-    setIsOpen(true);
-  };
-  const toggle = () => setIsOpen((prevState) => !prevState);
-  //   const toggle1 = () => setproDropdownOpen((prevState) => !prevState);
-  // const id = useParams().id;
-
   const applicantFormik = useFormik({
     initialValues: {
       applicant_checklist: [],
@@ -418,184 +334,12 @@ const ApplicantForm = () => {
     },
     onSubmit: (values) => {
       handleEdit(values);
-      console.log(values, "values");
     },
   });
 
-  const [rentaldata, setRentaldata] = useState([]);
-
-  const tenantsData = async (number, status) => {
-    // Construct the API URL
-    const apiUrl = `${baseUrl}/applicant/applicant_get?tenant_mobileNumber=${number}&status=${status}`;
-
-    try {
-      // Fetch tenant data
-      const response = await axios.get(apiUrl);
-      const tenantData = response.data.data;
-      // setTenantDetails(tenantData);
-      setRentaldata(tenantData);
-      // setLoading(false);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      // setError(error);
-      // setLoading(false);
-    }
-  };
-
-  const handleEditStatus = (item) => {
-    console.log(selectedDropdownItem, "selectedDropdownItem");
-
-    // console.log(updatedApplicant, "updatedApplicant 403");
-    const status = {
-      status: item,
-    };
-    axios
-      .put(
-        `${baseUrl}/applicant/applicant/${id}/status`,
-        status
-      )
-      .catch((err) => {
-        console.error(err);
-      })
-      .then((res) => {
-        console.log(res, "res");
-        getApplicantData();
-      });
-  };
-
-  const navigateToLease = (tenantID, entryIndex) => {
-    axios
-      .get(
-        `${baseUrl}/applicant/applicant_summary/${id}`
-      )
-      .then((response) => {
-        const data = response.data.data;
-
-        // Extract the rental address from the response
-        const rentalAddress = data.rental_adress;
-
-        console.log(rentalAddress, "Rental Addressss");
-        axios
-          .get(
-            `${baseUrl}/rentals/allproperty`
-          )
-          .then((response) => {
-            const property = response.data.data;
-            console.log(property, "properties");
-            const matchedProperty = property.find((property) => {
-              return property.rental_adress === rentalAddress;
-            });
-            console.log(matchedProperty, "matchedProperty");
-            if (!matchedProperty) {
-              alert("Property not found");
-              return;
-            } else {
-              // navigate(`/admin/Leaseing/${id}/${matchedProperty._id}`);
-              console.log(tenantID, "tenantID");
-              navigate(`/admin/RentRollLeaseing/${tenantID}/${entryIndex}`);
-              console.log(matchedApplicant, "matchedApplicant");
-              // axios
-              // .get("http://192.168.1.10:4000/api/tenant/tenant")
-              // .then((response) => {
-              //   console.log(response.data.data,'response.data.data');
-              //   const tenant = response.data.data;
-              //   const matchedTenant = tenant.find((tenant) => {
-              //     return tenant._id === id;
-              //   })
-              //   console.log(matchedTenant, "matchedTenantdddd");
-              // })
-              // .then((err) => {
-              //   console.log(err);
-              //   // setLoader(false);
-              // });
-              // navigate(`/admin/rentrolldetail/${id}/`);
-            }
-          });
-
-        // Navigate to the leasing page with the rental address
-
-        // console.log(`/admin/RentRollLeaseing/${rentalAddress}`, "fgbasfg");
-      })
-      .catch((err) => {
-        console.error(err);
-        // Handle errors here if needed
-      });
-  };
-  // const navigateToLease = () => {
-  //   axios
-  //     .get("http://192.168.1.10:4000/api/applicant/applicant")
-  //     .then((applicants) => {
-  //       axios
-  //         .get("http://192.168.1.10:4000/api/rentals/allproperty")
-  //         .then((properties) => {
-  //           console.log(applicants.data.data, "applicants");
-  //           console.log(properties.data.data, "properties");
-  //           setApplicantData(applicants.data.data);
-  //           const allProperties = properties.data.data;
-  //           const allApplicants = applicants.data.data;
-  //           const matchedProperty = allProperties.find((property) => {
-  //             return property.rental_adress === allApplicants[0].rental_adress;
-  //           });
-  //           setPropertyData(matchedProperty);
-  //           console.log(matchedProperty, "matchedProperty");
-  //           navigate(`/admin/Leaseing/${id}/${matchedProperty._id}`);
-  //           // console.log(response.data.data,'response.data.data');
-
-  //           // setRentalsData(response.data.data);
-
-  //           // setLoader(false);
-  //         })
-  //         .then((err) => {
-  //           console.log(err);
-  //           // setLoader(false);
-  //         });
-  //     })
-  //     .then((err) => {
-  //       console.log(err);
-  //       // setLoader(false);rental_adressrental_address
-  //     });
-  // };
-
-  // useEffect(() => {
-  //   axios
-  //     .get(`${baseUrl}/applicant/applicant_summary/${id}`)
-  //     .then((applicants) => {
-  //       axios
-  //         .get("http://192.168.1.10:4000/api/rentals/property")
-  //         .then((properties) => {
-  //           console.log(applicants.data.data, "applicants");
-  //           console.log(properties.data.data, "properties");
-  //           setApplicantData(applicants.data.data);
-  //           const allProperties = properties.data.data;
-  //           const allApplicants = applicants.data.data;
-  //           const matchedProperty = allProperties.find((property) => {
-  //             return property.rental_adress === allApplicants.rental_adress;
-  //           });
-  //           setPropertyData(matchedProperty);
-  //           console.log(matchedProperty, "matchedProperty");
-  //           // navigate(`/admin/Leaseing/${id}/${matchedProperty._id}`);
-  //           // console.log(response.data.data,'response.data.data');
-
-  //           // setRentalsData(response.data.data);
-
-  //           // setLoader(false);
-  //         })
-  //         .then((err) => {
-  //           console.log(err);
-  //           // setLoader(false);
-  //         });
-  //     })
-  //     .then((err) => {
-  //       console.log(err);
-  //       // setLoader(false);
-  //     });
-  // }, [id]);
-
   useEffect(() => {
     axios
-      .get(
-        `${baseUrl}/applicant/applicant_summary/${id}`
-      )
+      .get(`${baseUrl}/applicant/applicant_summary/${id}`)
       .then((applicants) => {
         axios
           .get(`${baseUrl}/rentals/property`)
@@ -607,128 +351,26 @@ const ApplicantForm = () => {
               return property.rental_adress === allApplicants.rental_adress;
             });
             setPropertyData(matchedProperty);
-            console.log(matchedProperty, "matchedProperty");
           })
           .catch((error) => {
             console.error("Error fetching rental properties:", error);
-            // Handle the error, e.g., display an error message to the user.
           });
       })
       .catch((error) => {
         console.error("Error fetching applicants:", error);
-        // Handle the error, e.g., display an error message to the user.
       });
   }, [id]);
 
-  const [isChecklistVisible, setChecklistVisible] = useState(false);
-  const [checklistItems, setChecklistItems] = useState([]);
-  const [newItem, setNewItem] = useState("");
-
-  const toggleChecklist = () => {
-    setChecklistVisible(!isChecklistVisible);
-  };
-
-  const handleAddItem = () => {
-    if (newItem.trim() !== "") {
-      setChecklistItems([...checklistItems, newItem]);
-      const allCheckbox = [...checklistItems, newItem];
-      console.log(allCheckbox, "allCheckbox");
-      console.log(matchedApplicant, "matchedApplicant");
-      const updatedApplicant = {
-        ...matchedApplicant,
-        applicant_checklist: [...matchedApplicant.applicant_checklist, newItem],
-      };
-      console.log(updatedApplicant, "updatedApplicant");
-      axios
-        .put(
-          `${baseUrl}/applicant/applicant/${id}/checklist`,
-          updatedApplicant
-        )
-        .then((response) => {
-          console.log(response.data.data, "response.data.data");
-          getApplicantData();
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-      setNewItem(""); // Clear the input field
-    }
-  };
-  // const [tenantID, setTenantID]=useState("")
-  const fetchDataAndPost = async () => {
-    try {
-      // Step 1: Fetch data from the API
-      const response = await axios.get(
-        `${baseUrl}/applicant/applicant_summary/${id}`
-      );
-
-      // Check if the response contains the data you expect
-      const fetchedData = response.data;
-      if (fetchedData) {
-        // Step 2: Create an object with the fetched data
-        const dataToSend = {
-          tenant_firstName: fetchedData.data.tenant_firstName,
-          tenant_lastName: fetchedData.data.tenant_lastName,
-          tenant_unitNumber: fetchedData.data.tenant_unitNumber,
-          tenant_mobileNumber: fetchedData.data.tenant_mobileNumber,
-          tenant_workNumber: fetchedData.data.tenant_workNumber,
-          tenant_homeNumber: fetchedData.data.tenant_homeNumber,
-          tenant_faxPhoneNumber: fetchedData.data.tenant_faxPhoneNumber,
-          tenant_email: fetchedData.data.tenant_email,
-          isApplicant: true,
-          entries: [
-            {
-              rental_adress: fetchedData.data.rental_adress,
-              rental_units: fetchedData.data.rental_units,
-            },
-          ],
-        };
-
-        // Step 3: Make a POST request to send the data to the server
-        const postResponse = await axios.post(
-          `${baseUrl}/tenant/tenant`,
-          dataToSend
-        );
-
-        console.log(dataToSend, "hagfjg");
-        if (postResponse.status === 200) {
-          console.log("Data posted successfully:", postResponse.data.data);
-          // setTenantID(postResponse.data.data._id)
-          navigateToLease(
-            postResponse.data.data._id,
-            postResponse.data.data.entries[0].entryIndex
-          );
-        } else {
-          console.error(
-            "Data post request failed. Status code:",
-            postResponse.status
-          );
-          console.error(
-            "Error message from the server:",
-            postResponse.data.message
-          );
-        }
-      } else {
-        // Handle the case where the fetched data is not as expected
-        console.error("Invalid data format received from the API");
-      }
-    } catch (error) {
-      // Handle errors if either the GET or POST request fails
-      console.error("Data fetch or post failed", error);
-    }
-  };
   const [matchedApplicant, setMatchedApplicant] = useState([]);
   const getApplicantData = async () => {
     await axios
       .get(`${baseUrl}/applicant/applicant`)
       .then((response) => {
-        console.log(response.data.data);
         if (response.data.data) {
           const applicantData = response.data.data;
           const matchedApplicant = applicantData.find((applicant) => {
             return applicant._id === id;
           });
-          console.log(matchedApplicant, "matchedApplicant");
           setMatchedApplicant(matchedApplicant);
         }
       })
@@ -736,48 +378,28 @@ const ApplicantForm = () => {
         console.error(err);
       });
   };
-  const onClickEditButton = () => {
-    setIsEdit(true);
-    applicantFormik.setValues({
-      tenant_firstName: matchedApplicant.tenant_firstName,
-      tenant_lastName: matchedApplicant.tenant_lastName,
-      tenant_unitNumber: matchedApplicant.tenant_unitNumber,
-      tenant_mobileNumber: matchedApplicant.tenant_mobileNumber,
-      tenant_workNumber: matchedApplicant.tenant_workNumber,
-      tenant_homeNumber: matchedApplicant.tenant_homeNumber,
-      tenant_faxPhoneNumber: matchedApplicant.tenant_faxPhoneNumber,
-      tenant_email: matchedApplicant.tenant_email,
-    });
-  };
 
   const handleEdit = (values) => {
     setIsEdit(false);
-    console.log(matchedApplicant, "matchedApplicant from edit ");
     const updatedApplicant = {
       ...matchedApplicant,
       tenant_firstName: values.tenant_firstName,
       tenant_lastName: values.tenant_lastName,
       tenant_unitNumber: values.tenant_unitNumber,
       tenant_mobileNumber: values.tenant_mobileNumber,
-      // tenant_workNumber: values.tenant_workNumber,
       tenant_homeNumber: values.tenant_homeNumber,
       tenant_faxPhoneNumber: values.tenant_faxPhoneNumber,
       tenant_email: values.tenant_email,
       tenant_workNumber: values.tenant_workNumber,
       status: selectedDropdownItem,
     };
-    console.log(updatedApplicant, "updatedApplicant");
 
     axios
-      .put(
-        `${baseUrl}/applicant/applicant/${id}`,
-        updatedApplicant
-      )
+      .put(`${baseUrl}/applicant/applicant/${id}`, updatedApplicant)
       .catch((err) => {
         console.error(err);
       })
       .then((res) => {
-        console.log(res, "res");
         getApplicantData();
       });
   };
@@ -785,40 +407,6 @@ const ApplicantForm = () => {
   useEffect(() => {
     getApplicantData();
   }, []);
-
-  const handleChecklistChange = (event, item) => {
-    // if (event.target.checked) {
-    //   setChecklistItems([...checklistItems, item]);
-    //   const allCheckbox = [...checklistItems, item];
-    //   console.log(allCheckbox, "allCheckbox");
-    //   console.log(matchedApplicant, "matchedApplicant");
-    //   const updatedApplicant = {
-    //     ...matchedApplicant,
-    //     applicant_checklist: [...matchedApplicant.applicant_checklist, item],
-    //   };
-    //   console.log(updatedApplicant, "updatedApplicant");
-    // }
-    if (event.target.checked) {
-      console.log(item, "item");
-      if (!applicantFormik.values.applicant_checkedChecklist.includes(item)) {
-        applicantFormik.setFieldValue("applicant_checkedChecklist", [
-          ...applicantFormik.values.applicant_checkedChecklist,
-          item,
-        ]);
-      }
-      // console.log(applicantFormik.values, "ssssssssssss");
-    } else {
-      applicantFormik.setFieldValue(
-        "applicant_checkedChecklist",
-        applicantFormik.values.applicant_checkedChecklist.filter(
-          (checklistItem) => checklistItem !== item
-        )
-      );
-      // setChecklistItems([...checklistItems, item]);
-    }
-  };
-
-  // ----------------------------------------------Applicant Put----------------------------------------------------------------------------
 
   const [formData, setFormData] = useState({
     applicant_firstName: "",
@@ -874,11 +462,9 @@ const ApplicantForm = () => {
       const apiUrl = `${baseUrl}/applicant/application/${id}`;
 
       const updatedData = {
-        // Add other fields as needed
         applicant: {
           applicant_firstName: formData.applicant_firstName,
           applicant_lastName: formData.applicant_lastName,
-
           applicant_socialSecurityNumber:
             formData.applicant_socialSecurityNumber,
           applicant_dob: formData.applicant_dob,
@@ -937,14 +523,14 @@ const ApplicantForm = () => {
       if (response.status === 200) {
         // Check if the response status is 200
         toast.success(response.data.message, {
-          position: 'top-center',
-        })
+          position: "top-center",
+        });
         navigate("/admin/Applicants/");
       } else {
         // If the status is not 200, handle the error
         toast.error(response.data.message, {
-          position: 'top-center',
-        })
+          position: "top-center",
+        });
       }
     } catch (error) {
       console.error("Error updating data:", error);
@@ -965,21 +551,13 @@ const ApplicantForm = () => {
         const response = await axios.get(
           `${baseUrl}/applicant/applicant_summary/${id}`
         );
-        // const { applicant } = response.data.data;
+
         const { applicant, tenant_firstName } = response.data.data;
-        console.log(tenant_firstName, "tenant_firstName");
 
-        // Update the formValues state with the fetched data
         setFormData({
-          //   applicant_firstName: applicant.applicant_firstName || '',
-          //   applicant_lastName: applicant.applicant_lastName || '',
-          //   applicant_socialSecurityNumber: String(applicant.applicant_socialSecurityNumber) || '',
-
-          //   applicant_firstName: applicant.applicant_firstName || "",
           applicant_firstName:
             applicant.applicant_firstName || tenant_firstName || "",
           applicant_lastName: applicant.applicant_lastName || "",
-
           applicant_socialSecurityNumber:
             applicant.applicant_socialSecurityNumber || "",
           applicant_dob: applicant.applicant_dob || "",
@@ -1001,7 +579,6 @@ const ApplicantForm = () => {
             applicant.applicant_emergencyContact_email || "",
           applicant_emergencyContact_phone:
             applicant.applicant_emergencyContact_phone || "",
-
           rental_country: applicant.rental_country || "",
           rental_adress: applicant.rental_adress || "",
           rental_city: applicant.rental_city || "",
@@ -1016,7 +593,6 @@ const ApplicantForm = () => {
           rental_landlord_phoneNumber:
             applicant.rental_landlord_phoneNumber || "",
           rental_landlord_email: applicant.rental_landlord_email || "",
-
           employment_name: applicant.employment_name || "",
           employment_country: applicant.employment_country || "",
           employment_adress: applicant.employment_adress || "",
@@ -1034,8 +610,6 @@ const ApplicantForm = () => {
             applicant.employment_supervisor_name || "",
           employment_supervisor_title:
             applicant.employment_supervisor_title || "",
-
-          // Update other form fields accordingly
         });
       } catch (error) {
         console.error("Error fetching applicant data:", error);
@@ -1045,17 +619,8 @@ const ApplicantForm = () => {
     fetchData();
   }, [id]);
 
-  //   const handleApplicantChange = (e) => {
-  //     // Handle changes to form fields here
-  //     setFormValues({
-  //       ...formValues,
-  //       [e.target.name]: e.target.value,
-  //     });
-  //   };
-
   return (
     <>
-      <Header title="ApplicantSummary" />
       <Container className="mt-5" style={{ paddingLeft: 30, paddingRight: 30 }}>
         <Box>
           <section
@@ -1066,19 +631,13 @@ const ApplicantForm = () => {
               borderRadius: 15,
             }}
           >
-            <div
-              className="row d-flex justify-content-center p-5"
-            // style={{ backgroundColor: "red" }}
-            >
+            <div className="row d-flex justify-content-center p-5">
               <form
                 style={{ width: "100%" }}
                 onSubmit={applicantFormik.handleSubmit}
               >
                 <div>
-                  {" "}
-                  {/* Main Title */}
                   <h2>Applicant information</h2>
-                  {/* 1 */}
                   <div className="form-row">
                     <div className="col">
                       <input
@@ -1086,7 +645,6 @@ const ApplicantForm = () => {
                         className="form-control"
                         placeholder="First name"
                         name="applicant_firstName"
-                        // value={formData.applicant_firstName}
                         value={formData.applicant_firstName}
                         onChange={handleApplicantChange}
                       />
@@ -1102,7 +660,6 @@ const ApplicantForm = () => {
                       />
                     </div>
                   </div>
-                  {/* 2 */}
                   <div className="form-row mt-4">
                     <div className="col">
                       <input
@@ -1115,7 +672,6 @@ const ApplicantForm = () => {
                       />
                     </div>
                   </div>
-                  {/* Input 3 */}
                   <div className="form-row mt-4">
                     <div className="col">
                       <label htmlFor="applicantHomePhone">
@@ -1130,38 +686,7 @@ const ApplicantForm = () => {
                         onChange={handleApplicantChange}
                       />
                     </div>
-                    <div className="col">
-                      {/* Add another input or leave it empty */}
-                    </div>
                   </div>
-                  {/* 4 */}
-                  {/* <div className="mt-4">
-                    <Dropdown
-                      isOpen={prodropdownOpen}
-                      toggle={toggle1}
-                      style={{ width: "100%" }}
-                    >
-                      <DropdownToggle
-                        className="w-100 d-flex justify-content-between align-items-center border rounded"
-                        style={{
-                          borderColor: "#007BFF",
-                          borderWidth: "20px",
-                        }}
-                      >
-                        <span>{"Country"}</span>
-                        <span className="caret-icon">&#9662;</span>
-                      </DropdownToggle>
-                      <DropdownMenu
-                        style={{ overflowY: "auto", maxHeight: 200 }}
-                      >
-                        {countries.map((country) => (
-                          <DropdownItem key={country.cca2} onClick={() => {}}>
-                            {country.name.common}
-                          </DropdownItem>
-                        ))}
-                      </DropdownMenu>
-                    </Dropdown>
-                  </div> */}
                   <div className="mt-4">
                     <Dropdown
                       isOpen={prodropdownOpen}
@@ -1172,7 +697,9 @@ const ApplicantForm = () => {
                         className="w-100 d-flex justify-content-between align-items-center border rounded"
                         style={{ borderColor: "#007BFF", borderWidth: "20px" }}
                       >
-                        {applicantselectedCountry ? applicantselectedCountry : "Country"}
+                        {applicantselectedCountry
+                          ? applicantselectedCountry
+                          : "Country"}
                         <span className="caret-icon">&#9662;</span>
                       </DropdownToggle>
                       <DropdownMenu
@@ -1191,7 +718,6 @@ const ApplicantForm = () => {
                       </DropdownMenu>
                     </Dropdown>
                   </div>
-                  {/* 5 */}
                   <div className="form-row mt-4">
                     <div className="col">
                       <input
@@ -1204,7 +730,6 @@ const ApplicantForm = () => {
                       />
                     </div>
                   </div>
-                  {/* 6 */}
                   <div className="form-row mt-4">
                     <div className="col-7">
                       <input
@@ -1237,7 +762,6 @@ const ApplicantForm = () => {
                       />
                     </div>
                   </div>
-                  {/*7 */}
                   <div className="form-row mt-4">
                     <div className="col">
                       <input
@@ -1250,7 +774,6 @@ const ApplicantForm = () => {
                       />
                     </div>
                   </div>
-                  {/* 8 */}
                   <div className="form-row mt-4">
                     <div className="col">
                       <input
@@ -1263,7 +786,6 @@ const ApplicantForm = () => {
                       />
                     </div>
                   </div>
-                  {/* 9 */}
                   <div className="form-row mt-4 pl-4">
                     <div className="col-md-12">
                       <input
@@ -1282,7 +804,6 @@ const ApplicantForm = () => {
                     </div>
                   </div>
                   <div>
-                    {/* Input 10 */}
                     <div className="form-row mt-4">
                       <div className="col">
                         <label htmlFor="applicantHomePhone">
@@ -1299,7 +820,6 @@ const ApplicantForm = () => {
                       </div>
                     </div>
 
-                    {/* Input 11 */}
                     <div className="form-row mt-4">
                       <div className="col-md-6 form-group">
                         <label htmlFor="firstName">
@@ -1328,9 +848,7 @@ const ApplicantForm = () => {
                       </div>
                     </div>
 
-                    {/* Input 12 */}
                     <div>
-                      {/* Emergency Contact Relationship */}
                       <div className="form-row">
                         <div className="col">
                           <label htmlFor="emergencyContactRelationship">
@@ -1350,9 +868,7 @@ const ApplicantForm = () => {
                       </div>
                     </div>
 
-                    {/* Input 13 */}
                     <div>
-                      {/* Emergency Contact Relationship */}
                       <div className="form-row mt-4">
                         <div className="col">
                           <label htmlFor="emergencyContactRelationship">
@@ -1370,7 +886,6 @@ const ApplicantForm = () => {
                       </div>
                     </div>
 
-                    {/* Input 14 */}
                     <div className="form-row mt-4">
                       <div className="col">
                         <label htmlFor="applicantHomePhone">
@@ -1388,9 +903,7 @@ const ApplicantForm = () => {
                     </div>
                     <hr />
                   </div>
-                  {/* -------------------------------------------------------------- */}
                   <div>
-                    {/* Main Title */}
                     <h2>Rental history</h2>
 
                     <div className="mt-4">
@@ -1401,9 +914,14 @@ const ApplicantForm = () => {
                       >
                         <DropdownToggle
                           className="w-100 d-flex justify-content-between align-items-center border rounded"
-                          style={{ borderColor: "#007BFF", borderWidth: "20px" }}
+                          style={{
+                            borderColor: "#007BFF",
+                            borderWidth: "20px",
+                          }}
                         >
-                          {RentalselectedCountry ? RentalselectedCountry : "Country"}
+                          {RentalselectedCountry
+                            ? RentalselectedCountry
+                            : "Country"}
                           <span className="caret-icon">&#9662;</span>
                         </DropdownToggle>
                         <DropdownMenu
@@ -1422,26 +940,6 @@ const ApplicantForm = () => {
                         </DropdownMenu>
                       </Dropdown>
                     </div>
-                    {/* Input 15 */}
-                    {/* <div>
-                                          <div className="form-row mt-4">
-                                            <div className="col">
-                                              <label htmlFor="emergencyContactRelationship">
-                                                Rental address
-                                              </label>
-                                              <input
-                                                type="text"
-                                                className="form-control"
-                                                placeholder="Rental Country"
-                                                name="rental_country"
-                                                value={formData.rental_country}
-                                                onChange={handleApplicantChange}
-                                              />
-                                            </div>
-                                          </div>
-                                        </div> */}
-
-                    {/* 16 */}
                     <div className="form-row mt-4">
                       <div className="col">
                         <input
@@ -1455,7 +953,6 @@ const ApplicantForm = () => {
                       </div>
                     </div>
 
-                    {/* 17 */}
                     <div className="form-row mt-4">
                       <div className="col-7">
                         <input
@@ -1489,7 +986,6 @@ const ApplicantForm = () => {
                       </div>
                     </div>
 
-                    {/* Input 18 */}
                     <div className="form-row mt-4">
                       <div className="col">
                         <label htmlFor="firstName">Rental dates</label>
@@ -1517,9 +1013,7 @@ const ApplicantForm = () => {
                       </div>
                     </div>
 
-                    {/* Input 19 */}
                     <div>
-                      {/* Emergency Contact Relationship */}
                       <div className="form-row mt-4">
                         <div className="col">
                           <label htmlFor="emergencyContactRelationship">
@@ -1537,9 +1031,7 @@ const ApplicantForm = () => {
                       </div>
                     </div>
 
-                    {/* Input 20 */}
                     <div>
-                      {/* Emergency Contact Relationship */}
                       <div className="form-row mt-4">
                         <div className="col">
                           <label htmlFor="emergencyContactRelationship">
@@ -1557,7 +1049,6 @@ const ApplicantForm = () => {
                       </div>
                     </div>
 
-                    {/* Input 21 */}
                     <div className="form-row mt-4">
                       <div className="col">
                         <label htmlFor="firstName">Landlord name</label>
@@ -1583,7 +1074,6 @@ const ApplicantForm = () => {
                       </div>
                     </div>
 
-                    {/* Input 22 */}
                     <div className="form-row mt-4">
                       <div className="col">
                         <label htmlFor="firstName">Landlord phone number</label>
@@ -1596,22 +1086,10 @@ const ApplicantForm = () => {
                           onChange={handleApplicantChange}
                         />
                       </div>
-                      <div className="col">
-                        {/* <label htmlFor="lastName">
-                                          Last name
-                                        </label>
-                                        <input
-                                          type="text"
-                                          className="form-control"
-                                          placeholder="Enter last name"
-                                          id="lastName"
-                                        /> */}
-                      </div>
+                      <div className="col"></div>
                     </div>
 
-                    {/* Input 23 */}
                     <div>
-                      {/* Emergency Contact Relationship */}
                       <div className="form-row mt-4">
                         <div className="col">
                           <label htmlFor="emergencyContactRelationship">
@@ -1629,15 +1107,10 @@ const ApplicantForm = () => {
                       </div>
                     </div>
                   </div>
-                  {/* ------------------------------------------------------------------------------------------------------------ */}
                   <hr />
                   <div>
-                    {/* Main Title */}
                     <h2>Employment</h2>
-
-                    {/* Input 15 */}
                     <div>
-                      {/* Emergency Contact Relationship */}
                       <div className="form-row mt-4">
                         <div className="col">
                           <label htmlFor="emergencyContactRelationship">
@@ -1663,9 +1136,14 @@ const ApplicantForm = () => {
                       >
                         <DropdownToggle
                           className="w-100 d-flex justify-content-between align-items-center border rounded"
-                          style={{ borderColor: "#007BFF", borderWidth: "20px" }}
+                          style={{
+                            borderColor: "#007BFF",
+                            borderWidth: "20px",
+                          }}
                         >
-                          {EmploymentselectedCountry ? EmploymentselectedCountry : "Country"}
+                          {EmploymentselectedCountry
+                            ? EmploymentselectedCountry
+                            : "Country"}
                           <span className="caret-icon">&#9662;</span>
                         </DropdownToggle>
                         <DropdownMenu
@@ -1685,9 +1163,6 @@ const ApplicantForm = () => {
                       </Dropdown>
                     </div>
 
-
-
-                    {/* 16 */}
                     <div className="form-row mt-4">
                       <div className="col">
                         <input
@@ -1701,7 +1176,6 @@ const ApplicantForm = () => {
                       </div>
                     </div>
 
-                    {/* 17 */}
                     <div className="form-row mt-4">
                       <div className="col-7">
                         <input
@@ -1735,7 +1209,6 @@ const ApplicantForm = () => {
                       </div>
                     </div>
 
-                    {/* Input 22 */}
                     <div className="form-row mt-4">
                       <div className="col">
                         <label htmlFor="firstName">Employer phone number</label>
@@ -1751,9 +1224,7 @@ const ApplicantForm = () => {
                       <div className="col"></div>
                     </div>
 
-                    {/* Input 19 */}
                     <div>
-                      {/* Emergency Contact Relationship */}
                       <div className="form-row mt-4">
                         <div className="col">
                           <label htmlFor="emergencyContactRelationship">
@@ -1772,9 +1243,7 @@ const ApplicantForm = () => {
                       </div>
                     </div>
 
-                    {/* Input 19 */}
                     <div>
-                      {/* Emergency Contact Relationship */}
                       <div className="form-row mt-4">
                         <div className="col">
                           <label htmlFor="emergencyContactRelationship">
@@ -1783,8 +1252,7 @@ const ApplicantForm = () => {
                           <input
                             type="text"
                             className="form-control"
-                            placeholder="
-                                              Position held"
+                            placeholder="Position held"
                             name="employment_position"
                             value={formData.employment_position}
                             onChange={handleApplicantChange}
@@ -1793,14 +1261,12 @@ const ApplicantForm = () => {
                       </div>
                     </div>
 
-                    {/* Input 18 */}
                     <div className="form-row mt-4">
                       <div className="col">
                         <label htmlFor="firstName">Rental dates (From)</label>
                         <input
                           type="date"
                           className="form-control"
-                          // placeholder="Enter first name"
                           name="employment_date_from"
                           value={formData.employment_date_from}
                           onChange={handleApplicantChange}
@@ -1811,7 +1277,6 @@ const ApplicantForm = () => {
                         <input
                           type="date"
                           className="form-control"
-                          // placeholder="Enter last name"
                           name="employment_date_to"
                           value={formData.employment_date_to}
                           onChange={handleApplicantChange}
@@ -1819,9 +1284,7 @@ const ApplicantForm = () => {
                       </div>
                     </div>
 
-                    {/* Input 19 */}
                     <div>
-                      {/* Emergency Contact Relationship */}
                       <div className="form-row mt-4">
                         <div className="col">
                           <label htmlFor="emergencyContactRelationship">
@@ -1839,7 +1302,6 @@ const ApplicantForm = () => {
                       </div>
                     </div>
 
-                    {/* Input 21 */}
                     <div className="form-row mt-4">
                       <div className="col">
                         <label htmlFor="firstName">Supervisor name</label>
@@ -1865,9 +1327,7 @@ const ApplicantForm = () => {
                       </div>
                     </div>
 
-                    {/* Input 23 */}
                     <div>
-                      {/* Emergency Contact Relationship */}
                       <div className="form-row mt-4">
                         <div className="col">
                           <label htmlFor="emergencyContactRelationship">
@@ -1886,14 +1346,10 @@ const ApplicantForm = () => {
                     </div>
                   </div>
                   <hr />
-                  {/* ======================================================================================= */}
                   <div>
-                    {/* Main Title */}
                     <h2>Terms and conditions</h2>
 
-                    {/* Input 23 */}
                     <div>
-                      {/* Emergency Contact Relationship */}
                       <div className="form-row mt-4 pl-2">
                         <p>
                           I understand that this is a routine application to
@@ -1916,7 +1372,10 @@ const ApplicantForm = () => {
                             value=""
                             id="defaultCheck1"
                           />
-                          <label className="form-check-label" for="defaultCheck1">
+                          <label
+                            className="form-check-label"
+                            for="defaultCheck1"
+                          >
                             Agreed to*
                           </label>
                         </div>
@@ -1924,7 +1383,6 @@ const ApplicantForm = () => {
                     </div>
 
                     <div>
-                      {/* Emergency Contact Relationship */}
                       <div className="form-row mt-4">
                         <div className="col">
                           <label htmlFor="emergencyContactRelationship">
@@ -1941,7 +1399,6 @@ const ApplicantForm = () => {
                     </div>
 
                     <div>
-                      {/* Emergency Contact Relationship */}
                       <div className="form-row mt-4 pl-2">
                         <p>
                           By submitting this application, I am: (1) giving
@@ -1959,21 +1416,9 @@ const ApplicantForm = () => {
                             Terms of Service.{" "}
                           </span>
                         </p>
-                        {/* <div className="col">
-                                            <label htmlFor="emergencyContactRelationship">
-                                              Supervisor title
-                                            </label>
-                                            <input
-                                              type="email"
-                                              className="form-control"
-                                              placeholder="Supervisor title"
-                                              id="emergencyContactRelationship"
-                                            />
-                                          </div> */}
                       </div>
                     </div>
                   </div>
-                  {/* ------------------------------------------------------------------------------------------------------------- */}
                 </div>
                 <div className="mt-4 d-flex flex-column flex-sm-row">
                   <button

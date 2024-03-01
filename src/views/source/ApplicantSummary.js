@@ -92,6 +92,9 @@ const ApplicantSummary = () => {
   const [applicantLeaseData, setApplicantLeaseData] = useState({});
   const [applicantCheckListData, setApplicantCheckListData] = useState([]);
   const [applicantNotesData, setApplicantNotesData] = useState([]);
+  const [isApplicantDataEmpty, setIsApplicantDataEmpty] = useState(false);
+  const [sendApplicantMail, setSendApplicantMail] = useState();
+  const [sendApplicantMailLoader, setSendApplicantMailLoader] = useState(false);
 
   const fetchApplicantData = async () => {
     setLoader(true);
@@ -100,6 +103,7 @@ const ApplicantSummary = () => {
       const res = await axios.get(url);
       setApplicantData(res.data.data[0]);
       setApplicantLeaseData(res.data.data[0].lease_data);
+      setIsApplicantDataEmpty(res.data.data[0].isApplicantDataEmpty);
       setApplicantCheckListData(res.data.data[0].applicant_checkedChecklist);
       setApplicantNotesData(res.data.data[0].applicant_NotesAndFile);
     } catch (error) {
@@ -113,15 +117,94 @@ const ApplicantSummary = () => {
     fetchApplicantData();
   }, [id]);
 
+  let sendApplicantMailData = async () => {
+    setSendApplicantMailLoader(true);
+    let responce = await axios.get(`${baseUrl}/applicant/applicant/mail/${id}`);
+    setSendApplicantMail(responce.data.data);
+
+    if (responce.data.statusCode === 200) {
+      setSendApplicantMailLoader(false);
+    } else {
+      setSendApplicantMailLoader(false);
+    }
+  };
+
   const dropdownList = ["Approved", "Rejected"];
   const [selectedStatus, setSelectedStatus] = useState("");
-  const handleStatus = (item) => {
+  const [leaseData, setLeaseData] = useState([]);
+
+  const handleStatus = async (item) => {
     setSelectedStatus(item);
+    if (!applicantData.isMovedin) {
+      try {
+        const values = {
+          statusUpdatedBy: "Admin",
+          status: item,
+          rental_id: applicantLeaseData.rental_id,
+          unit_id: applicantLeaseData.unit_id,
+        };
+        const res = await axios.put(
+          `${baseUrl}/applicant/applicant/${id}/status`,
+          values
+        );
+
+        if (res.data.statusCode === 200) {
+          toast.success(res.data.message, {
+            position: "top-center",
+            autoClose: 500,
+          });
+          fetchApplicantData();
+        } else {
+          toast.warn(res.data.message, {
+            position: "top-center",
+            autoClose: 500,
+          });
+        }
+      } catch (error) {
+        console.error("Error: ", error.message);
+      }
+    }
   };
 
   const [value, setValue] = useState("Summary");
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  const handleChange = async (event, newValue) => {
+    if (newValue === "Rejected") {
+      setLoader(true);
+      try {
+        const res = await axios.get(
+          `${baseUrl}/applicant/status_data/${id}/${newValue}`
+        );
+        if (res.data.statusCode === 200 && res.data.data?.length > 0) {
+          setLeaseData(res.data.data);
+        } else {
+          setLeaseData([]);
+        }
+      } catch (error) {
+        console.error("Error: ", error.message);
+      } finally {
+        setLoader(false);
+        setValue(newValue);
+      }
+    } else if (newValue === "Approved") {
+      setLoader(true);
+      try {
+        const res = await axios.get(
+          `${baseUrl}/applicant/status_data/${id}/${newValue}`
+        );
+        if (res.data.statusCode === 200 && res.data.data?.length > 0) {
+          setLeaseData(res.data.data);
+        } else {
+          setLeaseData([]);
+        }
+      } catch (error) {
+        console.error("Error: ", error.message);
+      } finally {
+        setLoader(false);
+        setValue(newValue);
+      }
+    } else {
+      setValue(newValue);
+    }
   };
 
   const [newItem, setNewItem] = useState("");
@@ -254,7 +337,6 @@ const ApplicantSummary = () => {
       const url = `${baseUrl}/applicant/applicant/note_attachment/${id}`;
       const response = await axios.put(url, formData);
       if (response.data) {
-        console.log(response.data, "response.data");
         setIsAttachFile(false);
         fetchApplicantData();
       }
@@ -271,15 +353,14 @@ const ApplicantSummary = () => {
     try {
       const url = `${baseUrl}/applicant/applicant/note_attachment/${id}/${notes._id}`;
       const res = await axios.delete(url);
-
-      console.log(res.data);
       toast.success("Document deleted successfully", {
         position: "top-center",
+        autoClose: 500,
       });
 
       fetchApplicantData();
     } catch (err) {
-      console.log(err);
+      console.error(err);
     } finally {
       // setLoader(false);
     }
@@ -385,12 +466,20 @@ const ApplicantSummary = () => {
                 className="formInput d-flex flex-direction-row"
                 style={{ margin: "30px 30px" }}
               >
-                <Dropdown isOpen={isOpen} toggle={toggle}>
+                <Dropdown
+                  disabled={applicantData.isMovedin}
+                  isOpen={isOpen}
+                  toggle={toggle}
+                >
                   <DropdownToggle caret style={{ width: "100%" }}>
                     {applicantData &&
                     applicantData.applicant_status &&
-                    applicantData?.applicant_status[0]?.status
-                      ? applicantData?.applicant_status[0]?.status
+                    applicantData?.applicant_status[
+                      applicantData?.applicant_status?.length - 1
+                    ]?.status
+                      ? applicantData?.applicant_status[
+                          applicantData?.applicant_status?.length - 1
+                        ]?.status
                       : selectedStatus
                       ? selectedStatus
                       : "Select"}
@@ -417,8 +506,12 @@ const ApplicantSummary = () => {
                   style={{
                     marginLeft: "10px",
                     display:
-                      applicantData?.applicant_status?.length === 0 &&
-                      selectedStatus !== "Approved"
+                      applicantData?.applicant_status?.length === 0 ||
+                      (applicantData?.applicant_status &&
+                        applicantData?.applicant_status[
+                          applicantData?.applicant_status?.length - 1
+                        ]?.status !== "Approved" &&
+                        selectedStatus !== "Approved")
                         ? "none"
                         : "block",
                   }}
@@ -444,7 +537,7 @@ const ApplicantSummary = () => {
                           value="Summary"
                           style={{ textTransform: "none" }}
                         />
-                        {/* <Tab
+                        <Tab
                           label="Application"
                           value="Application"
                           style={{ textTransform: "none" }}
@@ -458,7 +551,7 @@ const ApplicantSummary = () => {
                           label="Rejected"
                           value="Rejected"
                           style={{ textTransform: "none" }}
-                        /> */}
+                        />
                       </TabList>
                     </Box>
 
@@ -466,7 +559,7 @@ const ApplicantSummary = () => {
                       <Row>
                         <Col>
                           <Grid container spacing={3}>
-                            <Grid item xs={9}  md={9}>
+                            <Grid item xs={9} md={9}>
                               <div>
                                 <div>
                                   <input
@@ -852,7 +945,7 @@ const ApplicantSummary = () => {
                                     <Col>Note</Col>
                                     <Col>File</Col>
                                     <Col>Clear</Col>
-                                  </Row>{console.log(applicantNotesData, "yash")}
+                                  </Row>
                                   {applicantNotesData?.map((data, index) => (
                                     <Row
                                       className="w-100 mt-1"
@@ -903,7 +996,7 @@ const ApplicantSummary = () => {
                                 </>
                               )}
 
-                              {/* <>
+                              <>
                                 <Row
                                   className="w-100 my-3 "
                                   style={{
@@ -937,14 +1030,15 @@ const ApplicantSummary = () => {
                                           : "N/A"}
                                       </Col>
                                       <Col>
-                                        {item.statusUpdatedBy +
-                                          " At " +
-                                          item.updateAt || "N/A"}
+                                        Updated By {`${item.statusUpdatedBy}`}{" "}
+                                        {item.updateAt
+                                          ? `At ${item.updateAt}`
+                                          : ""}
                                       </Col>
                                     </Row>
                                   )
                                 )}
-                              </> */}
+                              </>
                             </Grid>
 
                             <Grid item xs={12} md={3} lg="4" xl="3">
@@ -1075,8 +1169,7 @@ const ApplicantSummary = () => {
                       </Row>
                     </TabPanel>
 
-                    {/* working but all data is not get */}
-                    {/* <TabPanel value="Application">
+                    <TabPanel value="Application">
                       <Row style={{ backgroundColor: "" }}>
                         <Col>
                           <Grid container spacing={3}>
@@ -1135,7 +1228,7 @@ const ApplicantSummary = () => {
                                         </button>
 
                                         <Link
-                                          to={`/admin/applicant-form/${id}`}
+                                          to={`/${admin}/applicant-form/${id}`}
                                           target="_blank"
                                           className="btn btn-secondary ml-sm-3 mt-3 mt-sm-0"
                                           style={{
@@ -1361,17 +1454,13 @@ const ApplicantSummary = () => {
                                           >
                                             <Col lg="3" md="3">
                                               {" "}
-                                              {`${
-                                                applicantData?.rental_country
-                                                  ? applicantData?.rental_country +
-                                                    ", "
-                                                  : ""
-                                              } ${
-                                                applicantData?.rental_adress
-                                                  ? applicantData?.rental_adress +
-                                                    ", "
-                                                  : ""
-                                              } ${
+                                              {`
+                                            ${
+                                              applicantData?.rental_adress
+                                                ? applicantData?.rental_adress +
+                                                  ", "
+                                                : ""
+                                            } ${
                                                 applicantData?.rental_city
                                                   ? applicantData?.rental_city +
                                                     ", "
@@ -1379,6 +1468,11 @@ const ApplicantSummary = () => {
                                               } ${
                                                 applicantData?.rental_state
                                                   ? applicantData?.rental_state +
+                                                    ", "
+                                                  : ""
+                                              } ${
+                                                applicantData?.rental_country
+                                                  ? applicantData?.rental_country +
                                                     ", "
                                                   : ""
                                               } ${
@@ -1429,7 +1523,6 @@ const ApplicantSummary = () => {
                                               RENTAL OWNER EMAIL
                                             </Col>
                                           </Row>
-                                          {console.log(applicantData)}
                                           <Row
                                             className="w-100 mt-1 mb-5"
                                             style={{
@@ -1746,264 +1839,264 @@ const ApplicantSummary = () => {
                           </Grid>
                         </Col>
                       </Row>
-                    </TabPanel> */}
+                    </TabPanel>
 
-                    {/* <TabPanel value="Approved">
-                      <CardHeader className="border-0">
-                        
-                      </CardHeader>
+                    <TabPanel value="Approved">
+                      <CardHeader className="border-0"></CardHeader>
                       <Row>
-                        {loader2 ? (
+                        {loader ? (
                           <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
                             <RotatingLines
                               strokeColor="grey"
                               strokeWidth="5"
                               animationDuration="0.75"
                               width="50"
-                              visible={loader2}
+                              visible={loader}
                             />
                           </div>
                         ) : (
                           <Col>
                             <Grid container spacing={2}>
-                              {rentaldata.map((tenant, index) => (
-                                <Grid
-                                  item
-                                  xs={12}
-                                  sm={6}
-                                  // key={index}
-                                >
-                                  <Box
-                                    // key={index}
-                                    border="1px solid #ccc"
-                                    borderRadius="8px"
-                                    padding="16px"
-                                    maxWidth="400px"
-                                    margin="20px"
-                                  >
-                                    <Row>
-                                      <Col lg="2">
-                                        <Box
-                                          width="40px"
-                                          height="40px"
-                                          display="flex"
-                                          alignItems="center"
-                                          justifyContent="center"
-                                          backgroundColor="grey"
-                                          borderRadius="8px"
-                                          color="white"
-                                          fontSize="24px"
-                                        >
-                                          <AssignmentIndIcon />
-                                        </Box>
-                                      </Col>
+                              {leaseData &&
+                                leaseData.map((tenant, index) => (
+                                  <Grid item xs={12} sm={6}>
+                                    <Box
+                                      border="1px solid #ccc"
+                                      borderRadius="8px"
+                                      padding="16px"
+                                      maxWidth="400px"
+                                      margin="20px"
+                                    >
+                                      <Row>
+                                        <Col lg="2">
+                                          <Box
+                                            width="40px"
+                                            height="40px"
+                                            display="flex"
+                                            alignItems="center"
+                                            justifyContent="center"
+                                            backgroundColor="grey"
+                                            borderRadius="8px"
+                                            color="white"
+                                            fontSize="24px"
+                                          >
+                                            <AssignmentIndIcon />
+                                          </Box>
+                                        </Col>
 
-                                      <Col lg="5">
-                                        <div
-                                          style={{
-                                            color: "blue",
-                                            height: "40px",
-                                            fontWeight: "bold",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "start",
-                                          }}
-                                        >
-                                          {tenant.applicant_firstName || "N/A"}{" "}
-                                          {tenant.applicant_lastName || "N/A"}
-                                        </div>
-
-                                        <div
-                                          style={{
-                                            display: "flex",
-                                            paddingTop: "3px",
-                                            flexDirection: "row",
-                                            marginTop: "10px",
-                                          }}
-                                        >
-                                          <Typography
+                                        <Col lg="5">
+                                          <div
                                             style={{
-                                              paddingRight: "3px",
-                                              fontSize: "2px",
-                                              color: "black",
+                                              color: "blue",
+                                              height: "40px",
+                                              fontWeight: "bold",
+                                              display: "flex",
+                                              alignItems: "center",
+                                              justifyContent: "start",
                                             }}
                                           >
-                                            <PhoneAndroidIcon />
-                                          </Typography>
-                                          {tenant.applicant_phoneNumber || "N/A"}
-                                        </div>
+                                            {applicantData?.applicant_firstName ||
+                                              "N/A"}{" "}
+                                            {applicantData?.applicant_lastName ||
+                                              "N/A"}
+                                          </div>
 
-                                        <div
-                                          style={{
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            marginTop: "10px",
-                                          }}
-                                        >
-                                          <Typography
+                                          <div
                                             style={{
-                                              paddingRight: "3px",
-                                              fontSize: "7px",
-                                              color: "black",
+                                              display: "flex",
+                                              paddingTop: "3px",
+                                              flexDirection: "row",
+                                              marginTop: "10px",
                                             }}
                                           >
-                                            <HomeIcon />
-                                          </Typography>
-                                          {tenant.lease_data.rental_adress || "N/A"}
-                                        </div>
+                                            <Typography
+                                              style={{
+                                                paddingRight: "3px",
+                                                fontSize: "2px",
+                                                color: "black",
+                                              }}
+                                            >
+                                              <PhoneAndroidIcon />
+                                            </Typography>
+                                            {applicantData?.applicant_phoneNumber ||
+                                              "N/A"}
+                                          </div>
 
-                                        <div
-                                          style={{
-                                            display: "flex",
-                                            paddingTop: "3px",
-                                            flexDirection: "row",
-                                            marginTop: "10px",
-                                            color: "green",
-                                          }}
-                                        >
-                                          Approved
-                                        </div>
-                                      </Col>
-                                    </Row>
-                                  </Box>
-                                </Grid>
-                              ))}
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              flexDirection: "row",
+                                              marginTop: "10px",
+                                            }}
+                                          >
+                                            <Typography
+                                              style={{
+                                                paddingRight: "3px",
+                                                fontSize: "7px",
+                                                color: "black",
+                                              }}
+                                            >
+                                              <HomeIcon />
+                                            </Typography>
+                                            {tenant?.rental_adress || "N/A"}
+                                          </div>
+
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              paddingTop: "3px",
+                                              flexDirection: "row",
+                                              marginTop: "10px",
+                                              color: "green",
+                                            }}
+                                          >
+                                            Approved
+                                          </div>
+                                        </Col>
+                                      </Row>
+                                    </Box>
+                                  </Grid>
+                                ))}
                             </Grid>
                           </Col>
                         )}
                       </Row>
-                    </TabPanel> */}
+                    </TabPanel>
 
-                    {/* <TabPanel value="Rejected">
-                      <CardHeader className="border-0">
-                      </CardHeader>
+                    <TabPanel value="Rejected">
+                      <CardHeader className="border-0"></CardHeader>
                       <Row>
-                        {loader3 ? (
+                        {loader ? (
                           <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
                             <RotatingLines
                               strokeColor="grey"
                               strokeWidth="5"
                               animationDuration="0.75"
                               width="50"
-                              visible={loader3}
+                              visible={loader}
                             />
                           </div>
                         ) : (
                           <Col>
                             <Grid container spacing={2}>
-                              {rentaldata.map((tenant, index) => (
-                                <Grid
-                                  item
-                                  xs={12}
-                                  sm={6}
-                                  // key={index}
-                                >
-                                  <Box
+                              {leaseData &&
+                                leaseData.map((tenant, index) => (
+                                  <Grid
+                                    item
+                                    xs={12}
+                                    sm={6}
                                     // key={index}
-                                    border="1px solid #ccc"
-                                    borderRadius="8px"
-                                    padding="16px"
-                                    maxWidth="400px"
-                                    margin="20px"
                                   >
-                                    <Row>
-                                      <Col lg="2">
-                                        <Box
-                                          width="40px"
-                                          height="40px"
-                                          display="flex"
-                                          alignItems="center"
-                                          justifyContent="center"
-                                          backgroundColor="grey"
-                                          borderRadius="8px"
-                                          color="white"
-                                          fontSize="24px"
-                                        >
-                                          <AssignmentIndIcon />
-                                        </Box>
-                                      </Col>
+                                    <Box
+                                      // key={index}
+                                      border="1px solid #ccc"
+                                      borderRadius="8px"
+                                      padding="16px"
+                                      maxWidth="400px"
+                                      margin="20px"
+                                    >
+                                      <Row>
+                                        <Col lg="2">
+                                          <Box
+                                            width="40px"
+                                            height="40px"
+                                            display="flex"
+                                            alignItems="center"
+                                            justifyContent="center"
+                                            backgroundColor="grey"
+                                            borderRadius="8px"
+                                            color="white"
+                                            fontSize="24px"
+                                          >
+                                            <AssignmentIndIcon />
+                                          </Box>
+                                        </Col>
 
-                                      <Col lg="5">
-                                        <div
-                                          style={{
-                                            color: "blue",
-                                            height: "40px",
-                                            fontWeight: "bold",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "start",
-                                          }}
-                                        >
-                                          {tenant.applicant_firstName || "N/A"}{" "}
-                                          {tenant.applicant_lastName|| "N/A"}
-                                        </div>
-
-                                        <div
-                                          style={{
-                                            display: "flex",
-                                            paddingTop: "3px",
-                                            flexDirection: "row",
-                                            marginTop: "10px",
-                                          }}
-                                        >
-                                          <Typography
+                                        <Col lg="5">
+                                          <div
                                             style={{
-                                              paddingRight: "3px",
-                                              fontSize: "2px",
-                                              color: "black",
+                                              color: "blue",
+                                              height: "40px",
+                                              fontWeight: "bold",
+                                              display: "flex",
+                                              alignItems: "center",
+                                              justifyContent: "start",
                                             }}
                                           >
-                                            <PhoneAndroidIcon />
-                                          </Typography>
-                                          {tenant.applicant_phoneNumber || "N/A"}
-                                        </div>
+                                            {applicantData?.applicant_firstName ||
+                                              "N/A"}{" "}
+                                            {applicantData?.applicant_lastName ||
+                                              "N/A"}
+                                          </div>
 
-                                        <div
-                                          style={{
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            marginTop: "10px",
-                                          }}
-                                        >
-                                          <Typography
+                                          <div
                                             style={{
-                                              paddingRight: "3px",
-                                              fontSize: "7px",
-                                              color: "black",
+                                              display: "flex",
+                                              paddingTop: "3px",
+                                              flexDirection: "row",
+                                              marginTop: "10px",
                                             }}
                                           >
-                                            <HomeIcon />
-                                          </Typography>
-                                          {tenant.lease_data.rental_adress || "N/A"}
-                                        </div>
+                                            <Typography
+                                              style={{
+                                                paddingRight: "3px",
+                                                fontSize: "2px",
+                                                color: "black",
+                                              }}
+                                            >
+                                              <PhoneAndroidIcon />
+                                            </Typography>
+                                            {applicantData?.applicant_phoneNumber ||
+                                              "N/A"}
+                                          </div>
 
-                                        <div
-                                          style={{
-                                            display: "flex",
-                                            paddingTop: "3px",
-                                            flexDirection: "row",
-                                            marginTop: "10px",
-                                            color: "red",
-                                          }}
-                                        >
-                                          Rejected
-                                        </div>
-                                      </Col>
-                                    </Row>
-                                  </Box>
-                                </Grid>
-                              ))}
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              flexDirection: "row",
+                                              marginTop: "10px",
+                                            }}
+                                          >
+                                            <Typography
+                                              style={{
+                                                paddingRight: "3px",
+                                                fontSize: "7px",
+                                                color: "black",
+                                              }}
+                                            >
+                                              <HomeIcon />
+                                            </Typography>
+                                            {tenant?.rental_adress || "N/A"}
+                                          </div>
+
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              paddingTop: "3px",
+                                              flexDirection: "row",
+                                              marginTop: "10px",
+                                              color: "red",
+                                            }}
+                                          >
+                                            Rejected
+                                          </div>
+                                        </Col>
+                                      </Row>
+                                    </Box>
+                                  </Grid>
+                                ))}
                             </Grid>
                           </Col>
                         )}
                       </Row>
-                    </TabPanel> */}
+                    </TabPanel>
                   </TabContext>
                 </Col>
               </Row>
             </>
           )}
         </Card>
+        <ToastContainer />
       </Container>
     </>
   );

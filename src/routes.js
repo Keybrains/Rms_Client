@@ -677,11 +677,6 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/applicant-form/:id",
-    component: <ApplicantForm />,
-    layout: "/admin",
-  },
-  {
     path: "/trial-login",
     component: <TrialLogin />,
     layout: "/trial",
