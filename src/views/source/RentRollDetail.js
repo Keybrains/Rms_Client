@@ -259,7 +259,7 @@ const RentRollDetail = () => {
   const fetchData = async (id) => {
     try {
       const response = await axios.get(`${baseUrl}/payment/payment/${id}`);
-  
+
       if (response.data.statusCode === 200) {
         // setFile(response.data.data.charges_attachment);
         setResponseData(response.data.data);
@@ -270,7 +270,7 @@ const RentRollDetail = () => {
           customer_vault_id: response.data.data[0].customer_vault_id,
           billing_id: response.data.data[0].billing_id,
           charges_attachment: response.data.data[0].charges_attachment,
-          
+
           entry: [
             {
               account: response.data.data[0].account || "",
@@ -307,7 +307,7 @@ const RentRollDetail = () => {
         billing_id: ResponseData[0].billing_id,
         amount: generalledgerFormik.values.amount,
         payment_type: ResponseData[0].payment_type,
-        
+
         total_amount: generalledgerFormik.values.amount,
         tenant_firstName: ResponseData.tenant_data.tenant_firstName,
         tenant_lastName: ResponseData.tenant_data.tenant_lastName,
@@ -329,7 +329,7 @@ const RentRollDetail = () => {
             memo: generalledgerFormik.values.memo,
           };
           return obj;
-        })
+        }),
       };
       console.log("comman data=======", commonData);
 
@@ -692,8 +692,10 @@ const RentRollDetail = () => {
                                       >
                                         {totalAmount
                                           ? totalAmount < 0
-                                            ? `$(${Math.abs(totalAmount.toFixed(2))})`
-                                            : `$${totalAmount.toFixed(2)}`
+                                            ? `$(${Math.abs(
+                                                totalAmount?.toFixed(2)
+                                              )})`
+                                            : `$${totalAmount?.toFixed(2)}`
                                           : "$ 0.00"}
                                       </Typography>
                                     </div>
@@ -963,7 +965,9 @@ const RentRollDetail = () => {
                                               onClick={() => {
                                                 if (
                                                   generalledger?.entry?.length >
-                                                  1
+                                                    1 &&
+                                                  generalledger?.type !==
+                                                    "Refund"
                                                 ) {
                                                   openAccount(
                                                     generalledger,
@@ -1027,11 +1031,11 @@ const RentRollDetail = () => {
                                               {generalledger.balance !==
                                               undefined
                                                 ? generalledger.balance >= 0
-                                                  ? `$${generalledger.balance.toFixed(
+                                                  ? `$${generalledger?.balance?.toFixed(
                                                       2
                                                     )}`
                                                   : `$(${Math.abs(
-                                                      generalledger.balance.toFixed(
+                                                      generalledger?.balance?.toFixed(
                                                         2
                                                       )
                                                     )})`
@@ -1586,8 +1590,8 @@ const RentRollDetail = () => {
                               >
                                 {totalAmount
                                   ? totalAmount < 0
-                                    ? `$(${Math.abs(totalAmount.toFixed(2))})`
-                                    : `$${totalAmount.toFixed(2)}`
+                                    ? `$(${Math.abs(totalAmount?.toFixed(2))})`
+                                    : `$${totalAmount?.toFixed(2)}`
                                   : "$ 0.00"}
                               </Typography>
                             </div>

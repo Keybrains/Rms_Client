@@ -1122,7 +1122,7 @@ const RentRollLeaseing = () => {
   const fileData = (files) => {
     const filesArray = [...files];
 
-    if (filesArray.length <= 10 && file.length === 0) {
+    if (filesArray.length <= 10 && file?.length === 0) {
       const finalArray = [];
 
       for (let i = 0; i < filesArray.length; i++) {
@@ -1131,9 +1131,9 @@ const RentRollLeaseing = () => {
 
       setFile([...finalArray]);
     } else if (
-      file.length >= 0 &&
-      file.length <= 10 &&
-      filesArray.length + file.length > 10
+      file?.length >= 0 &&
+      file?.length <= 10 &&
+      filesArray.length + file?.length > 10
     ) {
       setFile([...file]);
     } else {
@@ -3866,7 +3866,7 @@ const RentRollLeaseing = () => {
                       </div>
                       <div className="d-flex ">
                         {console.log(file, applicant_id, "yash")}
-                        {file.length > 0 &&
+                        {file?.length > 0 &&
                           file?.map((singleFile, index) => (
                             <div
                               key={index}
