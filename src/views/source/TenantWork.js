@@ -62,7 +62,6 @@ const TenantWork = () => {
   const [search, setSearch] = React.useState(false);
   const toggle3 = () => setSearch((prevState) => !prevState);
 
-
   const [upArrow, setUpArrow] = useState([]);
   const [sortBy, setSortBy] = useState([]);
 
@@ -96,10 +95,7 @@ const TenantWork = () => {
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
       setWorkData(response.data.data);
       setLoader(false);
-
     } catch (error) {
-
-
       console.error("Error fetching work order data:", error);
     }
   };
@@ -179,7 +175,6 @@ const TenantWork = () => {
   // };
 
   const filterRentalsBySearch = () => {
-    const filteredData = workData;
     if (searchQuery2 && !searchQuery) {
       if (searchQuery2 === "All") {
         return workData;
@@ -187,6 +182,7 @@ const TenantWork = () => {
         return workData.filter((rental) => {
           let currentDate = new Date();
           let rentalDate = new Date(rental.date);
+          console.log(rental.date, "yash");
           return rentalDate < currentDate && rental.status !== "Complete";
         });
       } else {
@@ -267,8 +263,6 @@ const TenantWork = () => {
     }
   };
 
-
-
   return (
     <>
       <TenantsHeader />
@@ -298,7 +292,6 @@ const TenantWork = () => {
 
         <Row>
           <div className="col">
-
             <Card className="shadow">
               <CardHeader className="border-0">
                 <Row className="d-flex">
@@ -309,7 +302,10 @@ const TenantWork = () => {
                       type="text"
                       placeholder="Search"
                       value={searchQuery}
-                      onChange={(e) => { setSearchQuery(e.target.value); setSearchQuery2("") }}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setSearchQuery2("");
+                      }}
                       style={{
                         width: "100%",
                         maxWidth: "200px",
@@ -383,7 +379,6 @@ const TenantWork = () => {
                         >
                           All
                         </DropdownItem>
-
                       </DropdownMenu>
                     </Dropdown>
                   </FormGroup>
@@ -405,13 +400,14 @@ const TenantWork = () => {
                   <>
                     <tbody>
                       <tr className="text-center">
-                        <td colSpan="8" style={{ fontSize: "15px" }}>No Work Order Added</td>
+                        <td colSpan="8" style={{ fontSize: "15px" }}>
+                          No Work Order Added
+                        </td>
                       </tr>
                     </tbody>
                   </>
                 ) : (
                   <>
-
                     <thead className="thead-light">
                       <tr>
                         <th scope="col">
@@ -493,11 +489,12 @@ const TenantWork = () => {
                     </thead>
 
                     <tbody>
-
                       {filterTenantsBySearchAndPage().map((rental) => (
                         <tr
                           key={rental?.workOrder_id}
-                          onClick={() => navigateToDetails(rental?.workOrder_id)}
+                          onClick={() =>
+                            navigateToDetails(rental?.workOrder_id)
+                          }
                           style={{ cursor: "pointer" }}
                         >
                           <td>{rental?.work_subject}</td>
@@ -601,7 +598,6 @@ const TenantWork = () => {
                 <></>
               )}
             </Card>
-
           </div>
         </Row>
         <br />

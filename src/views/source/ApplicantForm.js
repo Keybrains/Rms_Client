@@ -419,9 +419,15 @@ const ApplicantForm = () => {
     applicant_state: "",
     applicant_zipcode: "",
     applicant_email: "",
-    applicant_cellPhone: "",
-    applicant_homePhone: "",
-    applicant_emergencyContact_firstName: "",
+    applicant_phoneNumber: "",
+    applicant_homeNumber: "",
+    emergency_contact: {
+      first_name: "",
+      last_name: "",
+      relationship: "",
+      email: "",
+      phone_number: "",
+    },
     applicant_emergencyContact_lasttName: "",
     applicant_emergencyContact_relationship: "",
     applicant_emergencyContact_email: "",
@@ -474,10 +480,10 @@ const ApplicantForm = () => {
           applicant_state: formData.applicant_state,
           applicant_zipcode: formData.applicant_zipcode,
           applicant_email: formData.applicant_email,
-          applicant_cellPhone: formData.applicant_cellPhone,
-          applicant_homePhone: formData.applicant_homePhone,
-          applicant_emergencyContact_firstName:
-            formData.applicant_emergencyContact_firstName,
+          applicant_phoneNumber: formData.applicant_phoneNumber,
+          applicant_homeNumber: formData.applicant_homeNumber,
+          emergency_contactfirst_name:
+            formData.emergency_contact.first_name,
           applicant_emergencyContact_lasttName:
             formData.applicant_emergencyContact_lasttName,
           applicant_emergencyContact_relationship:
@@ -567,10 +573,10 @@ const ApplicantForm = () => {
           applicant_state: applicant.applicant_state || "",
           applicant_zipcode: applicant.applicant_zipcode || "",
           applicant_email: applicant.applicant_email || "",
-          applicant_cellPhone: applicant.applicant_cellPhone || "",
-          applicant_homePhone: applicant.applicant_homePhone || "",
-          applicant_emergencyContact_firstName:
-            applicant.applicant_emergencyContact_firstName || "",
+          applicant_phoneNumber: applicant.applicant_phoneNumber || "",
+          applicant_homeNumber: applicant.applicant_homeNumber || "",
+          emergency_contactfirst_name:
+            applicant.emergency_contact.first_name || "",
           applicant_emergencyContact_lasttName:
             applicant.applicant_emergencyContact_lasttName || "",
           applicant_emergencyContact_relationship:
@@ -780,27 +786,10 @@ const ApplicantForm = () => {
                         type="Number"
                         className="form-control"
                         placeholder="Applicant cell phone"
-                        name="applicant_cellPhone"
-                        value={formData.applicant_cellPhone}
+                        name="applicant_phoneNumber"
+                        value={formData.applicant_phoneNumber}
                         onChange={handleApplicantChange}
                       />
-                    </div>
-                  </div>
-                  <div className="form-row mt-4 pl-4">
-                    <div className="col-md-12">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        value=""
-                        id="defaultCheck1"
-                      />
-                      <label className="form-check-label" for="defaultCheck1">
-                        Opt-in to receive text messages from
-                        gecbhavnagar.managebuilding.com.{" "}
-                        <span style={{ color: "green", fontWeight: "bold" }}>
-                          Terms and conditions apply.
-                        </span>
-                      </label>
                     </div>
                   </div>
                   <div>
@@ -813,24 +802,25 @@ const ApplicantForm = () => {
                           type="Number"
                           className="form-control"
                           placeholder="Enter home phone"
-                          name="applicant_homePhone"
-                          value={formData.applicant_homePhone}
+                          name="applicant_homeNumber"
+                          value={formData.applicant_homeNumber}
                           onChange={handleApplicantChange}
                         />
                       </div>
                     </div>
 
-                    <div className="form-row mt-4">
+                    <idv className="form-row mt-4">
+                      <label htmlFor="firstName">Emergency contact</label>
+                    </idv>
+                    <div className="form-row">
                       <div className="col-md-6 form-group">
-                        <label htmlFor="firstName">
-                          Emergency contact name
-                        </label>
+                        <label htmlFor="firstName">First name</label>
                         <input
                           type="text"
                           className="form-control"
                           placeholder="Enter first name"
-                          name="applicant_emergencyContact_firstName"
-                          value={formData.applicant_emergencyContact_firstName}
+                          name="emergency_contact.first_name"
+                          value={formData.emergency_contact.first_name}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -852,7 +842,7 @@ const ApplicantForm = () => {
                       <div className="form-row">
                         <div className="col">
                           <label htmlFor="emergencyContactRelationship">
-                            Emergency contact relationship
+                            Relationship
                           </label>
                           <input
                             type="text"
@@ -872,7 +862,7 @@ const ApplicantForm = () => {
                       <div className="form-row mt-4">
                         <div className="col">
                           <label htmlFor="emergencyContactRelationship">
-                            Emergency contact email
+                            Email
                           </label>
                           <input
                             type="email"
@@ -889,7 +879,7 @@ const ApplicantForm = () => {
                     <div className="form-row mt-4">
                       <div className="col">
                         <label htmlFor="applicantHomePhone">
-                          Emergency contact phone
+                          Phone number
                         </label>
                         <input
                           type="Number"
@@ -988,7 +978,7 @@ const ApplicantForm = () => {
 
                     <div className="form-row mt-4">
                       <div className="col">
-                        <label htmlFor="firstName">Rental dates</label>
+                        <label htmlFor="firstName">Start date</label>
                         <input
                           type="date"
                           className="form-control"
@@ -1000,7 +990,7 @@ const ApplicantForm = () => {
                         />
                       </div>
                       <div className="col">
-                        <label htmlFor="lastName">Last name</label>
+                        <label htmlFor="lastName">End date</label>
                         <input
                           type="date"
                           className="form-control"
