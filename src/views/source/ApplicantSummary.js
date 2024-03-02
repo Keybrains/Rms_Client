@@ -132,6 +132,7 @@ const ApplicantSummary = () => {
   const dropdownList = ["Approved", "Rejected"];
   const [selectedStatus, setSelectedStatus] = useState("");
   const [leaseData, setLeaseData] = useState([]);
+  const [applicantDetails, setApplicantDetails] = useState({});
 
   const handleStatus = async (item) => {
     setSelectedStatus(item);
@@ -202,10 +203,24 @@ const ApplicantSummary = () => {
         setLoader(false);
         setValue(newValue);
       }
+    } else if (newValue === "Application") {
+      setLoader(true);
+      try {
+        const url = `${baseUrl}/applicant/applicant_details/${id}`;
+        const res = await axios.get(url);
+        setApplicantDetails(res.data.data);
+      } catch (error) {
+        console.error("Error: ", error.message);
+      } finally {
+        setLoader(false);
+        setValue(newValue);
+      }
     } else {
       setValue(newValue);
     }
   };
+
+  console.log(applicantDetails, "yash");
 
   const [newItem, setNewItem] = useState("");
   const handleChecklistChange = async (event, item) => {

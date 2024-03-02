@@ -666,18 +666,7 @@ const ApplicantForm = () => {
                       />
                     </div>
                   </div>
-                  <div className="form-row mt-4">
-                    <div className="col">
-                      <input
-                        type="number"
-                        className="form-control"
-                        placeholder="Applicant social security number"
-                        name="applicant_socialSecurityNumber"
-                        value={formData.applicant_socialSecurityNumber}
-                        onChange={handleApplicantChange}
-                      />
-                    </div>
-                  </div>
+               
                   <div className="form-row mt-4">
                     <div className="col">
                       <label htmlFor="applicantHomePhone">
@@ -769,7 +758,7 @@ const ApplicantForm = () => {
                     </div>
                   </div>
                   <div className="form-row mt-4">
-                    <div className="col">
+                    <div className="col-6">
                       <input
                         type="text"
                         className="form-control"
@@ -779,9 +768,7 @@ const ApplicantForm = () => {
                         onChange={handleApplicantChange}
                       />
                     </div>
-                  </div>
-                  <div className="form-row mt-4">
-                    <div className="col">
+                    <div className="col-6">
                       <input
                         type="Number"
                         className="form-control"
@@ -793,21 +780,7 @@ const ApplicantForm = () => {
                     </div>
                   </div>
                   <div>
-                    <div className="form-row mt-4">
-                      <div className="col">
-                        <label htmlFor="applicantHomePhone">
-                          Applicant home phone
-                        </label>
-                        <input
-                          type="Number"
-                          className="form-control"
-                          placeholder="Enter home phone"
-                          name="applicant_homeNumber"
-                          value={formData.applicant_homeNumber}
-                          onChange={handleApplicantChange}
-                        />
-                      </div>
-                    </div>
+               
 
                     <idv className="form-row mt-4">
                       <label htmlFor="firstName">Emergency contact</label>
@@ -860,7 +833,7 @@ const ApplicantForm = () => {
 
                     <div>
                       <div className="form-row mt-4">
-                        <div className="col">
+                        <div className="col-6">
                           <label htmlFor="emergencyContactRelationship">
                             Email
                           </label>
@@ -873,11 +846,7 @@ const ApplicantForm = () => {
                             onChange={handleApplicantChange}
                           />
                         </div>
-                      </div>
-                    </div>
-
-                    <div className="form-row mt-4">
-                      <div className="col">
+                        <div className="col-6">
                         <label htmlFor="applicantHomePhone">
                           Phone number
                         </label>
@@ -889,6 +858,7 @@ const ApplicantForm = () => {
                           value={formData.applicant_emergencyContact_phone}
                           onChange={handleApplicantChange}
                         />
+                      </div>
                       </div>
                     </div>
                     <hr />
@@ -1065,7 +1035,20 @@ const ApplicantForm = () => {
                     </div>
 
                     <div className="form-row mt-4">
-                      <div className="col">
+                    <div className="col-6">
+                          <label htmlFor="emergencyContactRelationship">
+                            Landlord email
+                          </label>
+                          <input
+                            type="email"
+                            className="form-control"
+                            placeholder="Landlord email"
+                            name="rental_landlord_email"
+                            value={formData.rental_landlord_email}
+                            onChange={handleApplicantChange}
+                          />
+                        </div>
+                      <div className="col-6">
                         <label htmlFor="firstName">Landlord phone number</label>
                         <input
                           type="number"
@@ -1081,19 +1064,8 @@ const ApplicantForm = () => {
 
                     <div>
                       <div className="form-row mt-4">
-                        <div className="col">
-                          <label htmlFor="emergencyContactRelationship">
-                            Landlord email
-                          </label>
-                          <input
-                            type="email"
-                            className="form-control"
-                            placeholder="Landlord email"
-                            name="rental_landlord_email"
-                            value={formData.rental_landlord_email}
-                            onChange={handleApplicantChange}
-                          />
-                        </div>
+                     
+
                       </div>
                     </div>
                   </div>
@@ -1200,23 +1172,7 @@ const ApplicantForm = () => {
                     </div>
 
                     <div className="form-row mt-4">
-                      <div className="col">
-                        <label htmlFor="firstName">Employer phone number</label>
-                        <input
-                          type="number"
-                          className="form-control"
-                          placeholder="Employer phone number"
-                          name="employment_phoneNumber"
-                          value={formData.employment_phoneNumber}
-                          onChange={handleApplicantChange}
-                        />
-                      </div>
-                      <div className="col"></div>
-                    </div>
-
-                    <div>
-                      <div className="form-row mt-4">
-                        <div className="col">
+                    <div className="col-6">
                           <label htmlFor="emergencyContactRelationship">
                             Employer email
                           </label>
@@ -1230,7 +1186,18 @@ const ApplicantForm = () => {
                             onChange={handleApplicantChange}
                           />
                         </div>
+                      <div className="col-6">
+                        <label htmlFor="firstName">Employer phone number</label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          placeholder="Employer phone number"
+                          name="employment_phoneNumber"
+                          value={formData.employment_phoneNumber}
+                          onChange={handleApplicantChange}
+                        />
                       </div>
+                      <div className="col"></div>
                     </div>
 
                     <div>
@@ -1251,46 +1218,7 @@ const ApplicantForm = () => {
                       </div>
                     </div>
 
-                    <div className="form-row mt-4">
-                      <div className="col">
-                        <label htmlFor="firstName">Rental dates (From)</label>
-                        <input
-                          type="date"
-                          className="form-control"
-                          name="employment_date_from"
-                          value={formData.employment_date_from}
-                          onChange={handleApplicantChange}
-                        />
-                      </div>
-                      <div className="col">
-                        <label htmlFor="lastName">Rental dates (To)</label>
-                        <input
-                          type="date"
-                          className="form-control"
-                          name="employment_date_to"
-                          value={formData.employment_date_to}
-                          onChange={handleApplicantChange}
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="form-row mt-4">
-                        <div className="col">
-                          <label htmlFor="emergencyContactRelationship">
-                            Monthly gross salary
-                          </label>
-                          <input
-                            type="number"
-                            className="form-control"
-                            placeholder=" Monthly gross salary"
-                            name="employment_monthlyGrossSalary"
-                            value={formData.employment_monthlyGrossSalary}
-                            onChange={handleApplicantChange}
-                          />
-                        </div>
-                      </div>
-                    </div>
+            
 
                     <div className="form-row mt-4">
                       <div className="col">
