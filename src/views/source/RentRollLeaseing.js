@@ -3864,12 +3864,7 @@ const RentRollLeaseing = () => {
                         </label>
                       </div>
                       <div className="d-flex ">
-<<<<<<< HEAD
-                        {console.log(file, applicant_id, "yash")}
-                        {file?.length > 0 &&
-=======
                         {file.length > 0 &&
->>>>>>> 8661be7cfec27b6664e3a50680c675176b547339
                           file?.map((singleFile, index) => (
                             <div
                               key={index}
