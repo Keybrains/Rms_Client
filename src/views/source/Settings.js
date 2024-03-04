@@ -65,7 +65,6 @@ const Settings = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { admin } = useParams();
   let navigate = useNavigate();
-
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
   let [loader, setLoader] = React.useState(false);
@@ -670,7 +669,7 @@ const Settings = () => {
                                 ) : (
                                   <>
                                     <div className="row row-cols-1 row-cols-md-2 g-4">
-                                      {mailData.map((data, index) => (
+                                      {mailData && mailData.map((data, index) => (
                                         <MailConfigurationCard
                                           key={index}
                                           data={data}
