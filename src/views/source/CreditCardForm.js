@@ -288,13 +288,16 @@ function CreditCardForm(props) {
             creditCardResponse.status === 201) &&
           customerVaultResponse.status === 200
         ) {
-          toast.success("Card Added Successfully", {
-            position: "top-center",
-            autoClose: 500,
-          });
-          closeModal();
-          getCreditCard();
-          getMultipleCustomerVault();
+          // toast.success("Card Added Successfully", {
+          //   position: "top-center",
+          //   autoClose: 100,
+          // });
+         
+            closeModal();
+            getCreditCard();
+            getMultipleCustomerVault();
+         
+         
         } else {
           toast.error(creditCardResponse.data.message, {
             position: "top-center",

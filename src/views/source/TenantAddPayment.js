@@ -28,7 +28,6 @@ import {
   ModalBody,
   Modal,
 } from "reactstrap";
-import PaymentHeader from "components/Headers/PaymentHeader";
 import CloseIcon from "@mui/icons-material/Close";
 import Checkbox from "@mui/material/Checkbox";
 import "jspdf-autotable";
@@ -37,8 +36,9 @@ import { jwtDecode } from "jwt-decode";
 import moment from "moment";
 import CreditCardForm from "./CreditCardForm";
 import TenantPropertyDetail from "./TenantPropertyDetail";
+import TenantsHeader from "components/Headers/TenantsHeader";
 
-function AddPayment() {
+function TenantAddPayment() {
   const [accessType, setAccessType] = useState(null);
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const imageUrl = process.env.REACT_APP_IMAGE_POST_URL;
@@ -53,10 +53,12 @@ function AddPayment() {
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt);
+      setTenantId(jwt.tenant_id);
+      setTenantData(jwt);
     } else {
       navigate("/auth/login");
     }
@@ -95,18 +97,30 @@ function AddPayment() {
   const [totalAmount1, setTotalAmount1] = useState();
   const [surchargePercentage, setSurchargePercentage] = useState();
   const [ResponseData, setResponseData] = useState("");
+  const [propertyDropdownData, setPropertyDropdownData] = useState([]);
+  const [selectedPropertyType, setSelectedPropertyType] = useState("");
+  const [propdropdownOpen, setpropDropdownOpen] = React.useState(false);
+
+  const toggle9 = () => {
+    setpropDropdownOpen((prevState) => !prevState);
+  };
+
+  const handlePropertyTypeSelect = async (property) => {
+    setSelectedPropertyType(
+      `${property.rental_adress} - ${property.rental_unit} (${property.status})`
+    );
+    generalledgerFormik.setFieldValue("lease_id", property.lease_id || "");
+  };
+
   // Fetch surcharge from the API
   const fetchData = async () => {
-    // try {
-    // const response = await fetch(
-    //   `${baseUrl}/surcharge/surcharge/get/1708427568557`
-    // );
     let adminid = accessType?.admin_id;
     const url = `${baseUrl}/surcharge/surcharge/getadmin/${adminid}`;
     axios
       .get(url)
       .then((response) => {
         const Data = response.data.data[0];
+        console.log("manu", Data);
         setSurchargePercentage(response.data.data[0].surcharge_percent);
       })
       .catch((error) => {
@@ -116,6 +130,24 @@ function AddPayment() {
   useEffect(() => {
     fetchData();
   }, [accessType?.admin_id]);
+
+  const fetchLedger = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/leases/get_leases/${tenantId}`
+      );
+      setPropertyDropdownData(response.data.data.leases);
+      setLoader(false);
+    } catch (error) {
+      console.error("Error fetching tenant details:", error);
+      setLoader(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLedger();
+  }, [accessType]);
+  console.log("dropdown", propertyDropdownData);
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -232,110 +264,116 @@ function AddPayment() {
   }, [customervault]);
 
   const generalledgerFormik = useFormik(
-    !payment_id ?  {
-      initialValues: {
-        payment_id: "",
-        date: "",
-        total_amount: "",
-        payments_memo: "",
-        check_number: "",
-        customer_vault_id: "",
-        billing_id: "",
-        transaction_id: "",
-        surcharge: "",
-        payments: [
-          {
-            entry_id: "",
-            account: "",
-            amount: "",
-            balance: "",
-            charge_type: "",
+    !payment_id
+      ? {
+          initialValues: {
+            payment_id: "",
+            date: "",
+            total_amount: "",
+            payments_memo: "",
+            check_number: "",
+            customer_vault_id: "",
+            billing_id: "",
+            transaction_id: "",
+            surcharge: "",
+            payments: [
+              {
+                entry_id: "",
+                account: "",
+                amount: "",
+                balance: "",
+                charge_type: "",
+              },
+            ],
+            payments_attachment: [],
           },
-        ],
-        payments_attachment: [],
-      },
-      
-      validationSchema: yup.object({
-        date: yup.string().required("Required"),
-        total_amount: yup.string().required("Required"),
-        payments: yup.array().of(
-          yup.object().shape({
-            account: yup.string().required("Required"),
-            amount: yup
-              .number()
-              .required("Required")
-              .min(1, "Amount must be greater than zero.")
-              .test(
-                "is-less-than-balance",
-                "Amount must be less than or equal to balance",
-                function (value) {
-                  if (value && this.parent.balance) {
-                    const balance = this.parent.balance;
-                    return value <= balance;
-                  }
-                }
-              ),
-          })
-        ),
-      }),
-      onSubmit: (values) => {
-        if (Number(generalledgerFormik.values.total_amount) === Number(total)) {
-          handleSubmit(values);
+
+          validationSchema: yup.object({
+            date: yup.string().required("Required"),
+            total_amount: yup.string().required("Required"),
+            payments: yup.array().of(
+              yup.object().shape({
+                account: yup.string().required("Required"),
+                amount: yup
+                  .number()
+                  .required("Required")
+                  .min(1, "Amount must be greater than zero.")
+                  .test(
+                    "is-less-than-balance",
+                    "Amount must be less than or equal to balance",
+                    function (value) {
+                      if (value && this.parent.balance) {
+                        const balance = this.parent.balance;
+                        return value <= balance;
+                      }
+                    }
+                  ),
+              })
+            ),
+          }),
+          onSubmit: (values) => {
+            if (
+              Number(generalledgerFormik.values.total_amount) === Number(total)
+            ) {
+              handleSubmit(values);
+            }
+          },
         }
-      },
-    }:
-    {
-    initialValues: {
-      payment_id: "",
-      date: "",
-      total_amount: "",
-      payments_memo: "",
-      check_number: "",
-      customer_vault_id: "",
-      billing_id: "",
-      transaction_id: "",
-      surcharge: "",
-      payments: [
-        {
-          entry_id: "",
-          account: "",
-          amount: "",
-          balance: "",
-          charge_type: "",
-        },
-      ],
-      payments_attachment: [],
-    },
-    
-    validationSchema: yup.object({
-      date: yup.string().required("Required"),
-      total_amount: yup.string().required("Required"),
-      payments: yup.array().of(
-        yup.object().shape({
-          account: yup.string().required("Required"),
-          amount: yup
-            .number()
-            .required("Required")
-            .min(1, "Amount must be greater than zero.")
-            // .test(
-            //   "is-less-than-balance",
-            //   "Amount must be less than or equal to balance",
-            //   function (value) {
-            //     if (value && this.parent.balance) {
-            //       const balance = this.parent.balance;
-            //       return value <= balance;
-            //     }
-            //   }
-            // ),
-        })
-      ),
-    }),
-    onSubmit: (values) => {
-      if (Number(generalledgerFormik.values.total_amount) === Number(total)) {
-        handleSubmit(values);
-      }
-    },
-  });
+      : {
+          initialValues: {
+            payment_id: "",
+            date: "",
+            total_amount: "",
+            payments_memo: "",
+            check_number: "",
+            customer_vault_id: "",
+            billing_id: "",
+            transaction_id: "",
+            surcharge: "",
+            payments: [
+              {
+                entry_id: "",
+                account: "",
+                amount: "",
+                balance: "",
+                charge_type: "",
+              },
+            ],
+            payments_attachment: [],
+          },
+
+          validationSchema: yup.object({
+            date: yup.string().required("Required"),
+            total_amount: yup.string().required("Required"),
+            payments: yup.array().of(
+              yup.object().shape({
+                account: yup.string().required("Required"),
+                amount: yup
+                  .number()
+                  .required("Required")
+                  .min(1, "Amount must be greater than zero."),
+                // .test(
+                //   "is-less-than-balance",
+                //   "Amount must be less than or equal to balance",
+                //   function (value) {
+                //     if (value && this.parent.balance) {
+                //       const balance = this.parent.balance;
+                //       return value <= balance;
+                //     }
+                //   }
+                // ),
+              })
+            ),
+          }),
+          onSubmit: (values) => {
+            if (
+              Number(generalledgerFormik.values.total_amount) === Number(total)
+            ) {
+              handleSubmit(values);
+            }
+          },
+        }
+  );
 
   const fetchPaymentData = async () => {
     try {
@@ -376,7 +414,6 @@ function AddPayment() {
       console.error("Network error:", error);
     }
   };
-
 
   // Calculate total amount after surcharge
   const calculateTotalAmount = () => {
@@ -472,7 +509,7 @@ function AddPayment() {
           position: "top-center",
           autoClose: 1000,
         });
-        navigate(`/${admin}/rentrolldetail/${lease_id}`);
+        navigate(`/tenant/tenantFinancial`);
       } else {
         toast.warning(res.data.message, {
           position: "top-center",
@@ -591,8 +628,8 @@ function AddPayment() {
         } else {
           const paymentObject = {
             admin_id: accessType.admin_id,
-            tenant_id: tenantData?.tenant_id,
-            lease_id: lease_id,
+            tenant_id: tenantId,
+            lease_id: values.lease_id,
             surcharge: values.surcharge,
             payment_type: selectedPaymentMethod,
             customer_vault_id: values.customer_vault_id,
@@ -621,7 +658,7 @@ function AddPayment() {
               position: "top-center",
               autoClose: 1000,
             });
-            navigate(`/${admin}/rentrolldetail/${lease_id}`);
+            navigate(`/tenant/tenantFinancial`);
           } else {
             toast.warning(paymentResponse.data.message, {
               position: "top-center",
@@ -635,8 +672,8 @@ function AddPayment() {
       ) {
         const paymentObject = {
           admin_id: accessType.admin_id,
-          tenant_id: tenantData?.tenant_id,
-          lease_id: lease_id,
+          tenant_id: tenantId,
+          lease_id: values.lease_id,
           check_number: values.check_number,
           payment_type: selectedPaymentMethod,
           entry: values.payments?.map((item) => ({
@@ -663,7 +700,7 @@ function AddPayment() {
             position: "top-center",
             autoClose: 1000,
           });
-          navigate(`/${admin}/rentrolldetail/${lease_id}`);
+          navigate(`/tenant/tenantFinancial`);
         } else {
           toast.warning(paymentResponse.data.message, {
             position: "top-center",
@@ -675,8 +712,8 @@ function AddPayment() {
       if (nmiResponse) {
         const paymentObject = {
           admin_id: accessType.admin_id,
-          tenant_id: tenantData?.tenant_id,
-          lease_id: lease_id,
+          tenant_id: tenantId,
+          lease_id: values.lease_id,
           surcharge: values.surcharge,
           payment_type: selectedPaymentMethod,
           customer_vault_id: values.customer_vault_id,
@@ -710,7 +747,7 @@ function AddPayment() {
             position: "top-center",
             autoClose: 1000,
           });
-          navigate(`/${admin}/rentrolldetail/${lease_id}`);
+          navigate(`/tenant/tenantFinancial`);
         } else {
           toast.warning(paymentResponse.data.message, {
             position: "top-center",
@@ -785,17 +822,17 @@ function AddPayment() {
     }
   };
 
-  const fetchTenant = async () => {
-    try {
-      const res = await axios.get(`${baseUrl}/leases/lease_tenant/${lease_id}`);
-      if (res.data.statusCode === 200) {
-        setTenantData(res.data.data);
-        setTenantId(res.data.data.tenant_id);
-      }
-    } catch (error) {
-      console.error("Error: ", error.message);
-    }
-  };
+//   const fetchTenant = async () => {
+//     try {
+//       const res = await axios.get(`${baseUrl}/leases/lease_tenant/${lease_id}`);
+//       if (res.data.statusCode === 200) {
+//         setTenantData(res.data.data);
+//         setTenantId(res.data.data.tenant_id);
+//       }
+//     } catch (error) {
+//       console.error("Error: ", error.message);
+//     }
+//   };
 
   useEffect(() => {
     fetchAccounts();
@@ -807,7 +844,7 @@ function AddPayment() {
     } else {
       fetchPaymentData();
     }
-    fetchTenant();
+    //fetchTenant();
   }, [lease_id, payment_id]);
 
   const [total, setTotal] = useState(0);
@@ -921,19 +958,13 @@ function AddPayment() {
   };
 
   const handleCloseButtonClick = () => {
-    navigate(`/${admin}/rentrolldetail/${lease_id}`);
+    navigate(`/tenant/tenantFinancial`);
   };
 
   return (
     <>
-      <PaymentHeader />
-      <style>
-        {`
-            .custom-date-picker {
-            background-color: white;
-            }
-        `}
-      </style>
+      <TenantsHeader />
+
       <Container className="mt--7" fluid>
         <Row>
           <Col className="order-xl-1" xl="12">
@@ -976,6 +1007,45 @@ function AddPayment() {
                       </FormGroup>
                     </Col>
                   </Row>
+                  <Col md="6">
+                    <label
+                      className="form-control-label"
+                      htmlFor="input-property"
+                    >
+                      Leases *
+                    </label>
+                    <FormGroup>
+                      <Dropdown isOpen={propdropdownOpen} toggle={toggle9}>
+                        <DropdownToggle caret style={{ width: "100%" }}>
+                          {selectedPropertyType
+                            ? selectedPropertyType
+                            : "Select Lease"}
+                        </DropdownToggle>
+                        <DropdownMenu
+                          style={{
+                            width: "100%",
+                            maxHeight: "200px",
+                            overflowY: "auto",
+                          }}
+                        >
+                          {propertyDropdownData?.map((property, index) => (
+                            <DropdownItem
+                              key={index}
+                              onClick={() => {
+                                handlePropertyTypeSelect(property);
+                                generalledgerFormik.setFieldValue(
+                                    "lease_id",
+                                    property.lease_id
+                                  );
+                              }}
+                            >
+                              {`${property.rental_adress} - ${property.rental_unit} (${property.status})`}
+                            </DropdownItem>
+                          ))}
+                        </DropdownMenu>
+                      </Dropdown>
+                    </FormGroup>
+                  </Col>
                   <Row>
                     <Col sm="4">
                       <FormGroup>
@@ -1354,7 +1424,7 @@ function AddPayment() {
                             <thead>
                               <tr>
                                 <th>Account</th>
-                                {!payment_id && (<th>Balance</th>)}
+                                {!payment_id && <th>Balance</th>}
                                 <th>Amount</th>
                               </tr>
                             </thead>
@@ -1477,28 +1547,28 @@ function AddPayment() {
                                         </Dropdown>
                                       </td>
                                       {!payment_id && (
-                                      <td>
-                                        <Input
-                                          className="form-control-alternative"
-                                          id="input-unitadd"
-                                          placeholder="$0.00"
-                                          type="number"
-                                          name={`payments[${index}].balance`}
-                                          onBlur={
-                                            generalledgerFormik.handleBlur
-                                          }
-                                          onChange={
-                                            generalledgerFormik.handleChange
-                                          }
-                                          value={
-                                            payments?.entry_id
-                                              ? payments.balance -
-                                                payments.amount
-                                              : payments?.balance
-                                          }
-                                          readOnly
-                                        />
-                                      </td>
+                                        <td>
+                                          <Input
+                                            className="form-control-alternative"
+                                            id="input-unitadd"
+                                            placeholder="$0.00"
+                                            type="number"
+                                            name={`payments[${index}].balance`}
+                                            onBlur={
+                                              generalledgerFormik.handleBlur
+                                            }
+                                            onChange={
+                                              generalledgerFormik.handleChange
+                                            }
+                                            value={
+                                              payments?.entry_id
+                                                ? payments.balance -
+                                                  payments.amount
+                                                : payments?.balance
+                                            }
+                                            readOnly
+                                          />
+                                        </td>
                                       )}
                                       <td>
                                         <Input
@@ -1844,4 +1914,4 @@ function AddPayment() {
   );
 }
 
-export default AddPayment;
+export default TenantAddPayment;

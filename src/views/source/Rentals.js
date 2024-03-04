@@ -225,8 +225,7 @@ const Rentals = () => {
       rentalOwner_lastName: yup.string().required("Required"),
       rentalOwner_primaryEmail: yup
         .string()
-        .email("Invalid email address")
-        .required("Email is required"),
+        .email("Invalid email address"),
       rentalOwner_phoneNumber: yup.number().required("Required"),
     }),
     onSubmit: (values) => {

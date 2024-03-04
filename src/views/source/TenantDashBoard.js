@@ -59,8 +59,10 @@ const TenantDashBoard = (props) => {
   const fetchPropertyCount = async () => {
     setLoader(true);
     try {
+      const url = `${baseUrl}/tenants/count/${accessType?.tenant_id}`;
+      console.log(url, 'yash')
       const res = await axios.get(
-        `${baseUrl}/tenants/count/${accessType?.tenant_id}`
+        url
       );
       const tenantDashboardBalance = await axios.get(
         `${baseUrl}/payment/tenant_financial/${accessType?.tenant_id}`
@@ -177,11 +179,11 @@ const TenantDashBoard = (props) => {
                       <Col lg="4" style={{ paddingLeft: "30px" }}>
                         <Card style={subcardStyle}>
                           <CardBody className="d-flex flex-column justify-content-center  text-center" style={{ cursor: "pointer" }}
-                           onClick={() =>
-                            navigate(
-                              "/tenant/tenantproperty"
-                            )
-                          }>
+                            onClick={() =>
+                              navigate(
+                                "/tenant/tenantproperty"
+                              )
+                            }>
                             <div className="d-flex align-items-center flex-column p-3">
                               <div
                                 className="d-flex justify-content-center align-items-center"
@@ -199,7 +201,7 @@ const TenantDashBoard = (props) => {
                               </div>
                               <div
                                 style={{ color: "cfd8dc", fontSize: "20px", cursor: "pointer" }}
-                               
+
                               >
                                 Properties
                               </div>
@@ -242,7 +244,7 @@ const TenantDashBoard = (props) => {
                               </div>
                               <div
                                 style={{ color: "#263238", fontSize: "20px" }}
-                              
+
                               >
                                 Work Orders
                               </div>
@@ -261,12 +263,12 @@ const TenantDashBoard = (props) => {
                       </Col>
                       <Col lg="4" style={{ paddingLeft: "30px" }}>
                         <Card style={subcardStyle}>
-                          <CardBody className="d-flex flex-column justify-content-center  text-center" style={{ cursor: "pointer" }}  
-                          onClick={() =>
-                                  navigate(
-                                    "/tenant/tenantFinancial"
-                                  )
-                                }>
+                          <CardBody className="d-flex flex-column justify-content-center  text-center" style={{ cursor: "pointer" }}
+                            onClick={() =>
+                              navigate(
+                                "/tenant/tenantFinancial"
+                              )
+                            }>
                             <div className="d-flex align-items-center flex-column p-3">
                               <div
                                 className="d-flex justify-content-center align-items-center"
@@ -284,7 +286,7 @@ const TenantDashBoard = (props) => {
                               </div>
                               <div
                                 style={{ color: "cfd8dc", fontSize: "20px" }}
-                               
+
                               >
                                 Balance
                               </div>

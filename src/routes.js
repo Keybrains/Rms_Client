@@ -69,6 +69,7 @@ import DemoPayment from "views/source/DemoPayment";
 import SurchargeForm from "views/source/Surcharge";
 import SurchargeTable from "views/source/SurchargeTable";
 import Settings from "views/source/Settings";
+import TenantAddPayment from "views/source/TenantAddPayment";
 
 // ==========================  Super Admin ===================================================
 
@@ -677,9 +678,14 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/applicant-form/:id",
-    component: <ApplicantForm />,
-    layout: "/admin",
+    path: "/TenantPayment",
+    component: <TenantAddPayment />,
+    layout: "/tenant",
+  },
+  {
+    path: "/TenantPayment/:payment_id",
+    component: <TenantAddPayment />,
+    layout: "/tenant",
   },
   {
     path: "/trial-login",

@@ -1121,7 +1121,7 @@ const RentRollLeaseing = () => {
   const fileData = (files) => {
     const filesArray = [...files];
 
-    if (filesArray.length <= 10 && file.length === 0) {
+    if (filesArray.length <= 10 && file?.length === 0) {
       const finalArray = [];
 
       for (let i = 0; i < filesArray.length; i++) {
@@ -1130,9 +1130,9 @@ const RentRollLeaseing = () => {
 
       setFile([...finalArray]);
     } else if (
-      file.length >= 0 &&
-      file.length <= 10 &&
-      filesArray.length + file.length > 10
+      file?.length >= 0 &&
+      file?.length <= 10 &&
+      filesArray.length + file?.length > 10
     ) {
       setFile([...file]);
     } else {
@@ -3899,7 +3899,7 @@ const RentRollLeaseing = () => {
                                   style={{ cursor: "pointer" }}
                                 >
                                   {singleFile.substr(0, 5)}
-                                  {singleFile.length > 5 ? "..." : null}
+                                  {singleFile?.length > 5 ? "..." : null}
                                 </p>
                               )}
                               <CloseIcon

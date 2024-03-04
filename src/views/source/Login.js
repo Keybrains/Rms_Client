@@ -67,6 +67,7 @@ const Login = () => {
         const adminRes = await axios.post(url, values);
 
         if (adminRes.status === 200) {
+          console.log(adminRes, "yash ");
           const adminData = adminRes.data;
           if (adminData.statusCode === 200) {
             toast.success("Admin Login successfully!", {
@@ -87,7 +88,7 @@ const Login = () => {
               `${baseUrl}/admin/superadmin_login`,
               values
             );
-
+            console.log(superAdminRes, "yashu");
             if (superAdminRes.status === 200) {
               const superAdminData = superAdminRes.data;
               if (superAdminData.statusCode === 200) {
@@ -113,6 +114,11 @@ const Login = () => {
                   position: "top-center",
                 });
               }
+            } else {
+              toast.error("Invalid User Data", {
+                autoClose: 500,
+                position: "top-center",
+              });
             }
           }
         } else {
@@ -122,11 +128,13 @@ const Login = () => {
           });
         }
       } else if (roll) {
+        console.log("object======");
         const response = await axios.post(`${baseUrl}/${roll}/login`, {
           email: values.email,
           password: values.password,
           admin_id: admin_id,
         });
+        console.log("object======", response);
 
         if (response.status === 200) {
           const responceData = response.data;
