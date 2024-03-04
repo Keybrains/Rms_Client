@@ -21,6 +21,7 @@ import Trial from "layouts/Trial";
 import SuperAdmin from "../src/components/superadmin/layouts/SuperAdmin";
 import NotFound from "views/source/404NotFound";
 import AuthCheckAdmin from "views/source/AuthCheckAdmin";
+import ApplicantForm from "views/source/ApplicantForm";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -28,6 +29,7 @@ root.render(
   <BrowserRouter>
     <Routes>
       <Route path="/:admin/*" element={<AdminLayout />} />
+      <Route path="/:admin/applicant-form/:id" element={<ApplicantForm />} />
       <Route path="/" element={<Navigate to="/authentication" replace />} />
       <Route path="/auth/*" element={<AuthLayout />} />
       <Route path="*" element={<NotFound />} />

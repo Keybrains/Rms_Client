@@ -86,7 +86,6 @@ const RentRollDetail = () => {
     setLoader(true);
     try {
       const url = `${baseUrl}/payment/charges_payments/${lease_id}`;
-      console.log(`${baseUrl}/payment/charges_payments/${lease_id}`, "yash");
       const res = await axios.get(url);
       setFinancialData(res.data.data);
       setTotalAmount(res.data.totalBalance);
@@ -303,11 +302,6 @@ const RentRollDetail = () => {
             },
           ],
         });
-        // setSelectedRec(response.data.data.tenant_firstName && response.data.data.tenant_lastName )
-        // setSelectedCreditCard(response.data.data.billing_id)
-        // setSelectedProp(response.data.data.payment_type)
-        console.log("meet", id);
-        console.log("meet", response.data);
       } else {
         console.error("Error:", response.data.message);
       }

@@ -136,7 +136,6 @@ const AddCharge = () => {
           amount: Number(item.amount),
           memo: values?.charges_memo || "charge",
           date: values?.date,
-          account: item.account,
           charge_type: item.charge_type,
         };
         return data;
