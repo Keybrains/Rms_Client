@@ -11,11 +11,12 @@ import {
   FormControlLabel,
   Checkbox,
   Grid,
+  Switch,
 } from "@mui/material";
 import SuperAdminHeader from "../Headers/SuperAdminHeader";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { Button } from "react-bootstrap";
+import { Button, ToggleButton } from "react-bootstrap";
 
 import { ToastContainer, toast } from "react-toastify";
 import {
@@ -27,6 +28,7 @@ import {
   Col,
   Table,
 } from "reactstrap";
+import CheckIcon from "@mui/icons-material/Check";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
@@ -35,6 +37,14 @@ const AddPlanForm = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
   const [accessType, setAccessType] = useState();
+  const [isPropertyCount, setPropertyCount] = useState("false");
+  const [isTenantCount, setTenantCount] = useState("false");
+  const [isLeaseCount, setLeaseCount] = useState("false");
+  const [isRentalOwnerCount, setRentalOwnerCount] = useState("false");
+  const [isApplicantCount, setApplicantCount] = useState("false");
+  const [isStaffCount, setStaffCount] = useState("false");
+  const [isPaymentOption, setPaymentOption] = useState("false");
+
   useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
@@ -63,6 +73,61 @@ const AddPlanForm = () => {
     rows.splice(index, 1);
     setInputFields(rows);
   };
+  const onChangePropertyToggle = (e) => {
+    if (e.target.checked) {
+      setPropertyCount("true");
+    } else {
+      setPropertyCount("false");
+    }
+  };
+  const onChangeTenantToggle = (e) => {
+    if (e.target.checked) {
+      setTenantCount("true");
+    } else {
+      setTenantCount("false");
+    }
+  };
+
+  const onChangeLeaseToggle = (e) => {
+    if (e.target.checked) {
+      setLeaseCount("true");
+    } else {
+      setLeaseCount("false");
+    }
+  };
+
+  const onChangeRentalOwnerToggle = (e) => {
+    if (e.target.checked) {
+      setRentalOwnerCount("true");
+    } else {
+      setRentalOwnerCount("false");
+    }
+  };
+
+  const onChangeApplicantToggle = (e) => {
+    if (e.target.checked) {
+      setApplicantCount("true");
+    } else {
+      setApplicantCount("false");
+    }
+  };
+
+  const onChangeStaffToggle = (e) => {
+    if (e.target.checked) {
+      setStaffCount("true");
+    } else {
+      setStaffCount("false");
+    }
+  };
+
+  const onChangePaymentToggle = (e) => {
+    if (e.target.checked) {
+      setPaymentOption("true");
+    } else {
+      setPaymentOption("false");
+    }
+  };
+
   const handleFeaturesChange = (index, evnt) => {
     const { name, value } = evnt.target;
     const list = [...inputFields];
@@ -76,8 +141,24 @@ const AddPlanForm = () => {
     setLoader(true);
     try {
       values["features"] = inputFields;
+      console.log(values,'values');
       const res = await axios.post(`${baseUrl}/plans/plans`, values);
       if (res.data.statusCode === 200) {
+
+        const nmiResponse = await axios.post(
+          `${baseUrl}/nmipayment/add-plan`,{
+            planPayments: values.plan_payments || "0",
+            planAmount: values.plan_price,
+            planName: values.plan_name,
+            planId: res.data.data.plan_id,
+           // dayFrequency: values.day_frequency,
+            day_of_month: values.day_of_month,
+            month_frequency: values.billing_interval
+          }
+        )
+
+        console.log(nmiResponse,'nmiResponse');
+        
         toast.success(res.data?.message, {
           position: "top-center",
           autoClose: 1000,
@@ -100,9 +181,8 @@ const AddPlanForm = () => {
     }
   };
 
-
-  const [plan, setPlan] = useState([])
-  console.log(plan, plan)
+  const [plan, setPlan] = useState([]);
+  console.log(plan, plan);
   const getPlan = async () => {
     try {
       const newResponse = await axios.get(
@@ -117,9 +197,6 @@ const AddPlanForm = () => {
   useEffect(() => {
     getPlan();
   }, []);
-
-
-
 
   return (
     <div>
@@ -166,7 +243,14 @@ const AddPlanForm = () => {
                       changePlan: false,
                       cancelMembership: false,
                       pauseMembership: false,
-                      annual_discount: ""
+                      annual_discount: "",
+                      property_count:"",
+                      tenant_count: "",
+                      lease_count:"",
+                      rentalowner_count: "",
+                      applicant_count: "",
+                      staffmember_count: "",
+                      payment_functionality:false,
                     }}
                     validationSchema={Yup.object().shape({
                       plan_name: Yup.string().required("Required"),
@@ -174,7 +258,7 @@ const AddPlanForm = () => {
                     })}
                     onSubmit={(values, { resetForm }) => {
                       handleSubmit(values);
-                      console.log(values, "===========================")
+                      console.log(values, "===========================");
                       resetForm();
                     }}
                   >
@@ -216,7 +300,7 @@ const AddPlanForm = () => {
                             helperText={touched.plan_price && errors.plan_price}
                           />
                         </div>
-                        <div className="mb-3 col-lg-8 col-md-12">
+                        {/* <div className="mb-3 col-lg-8 col-md-12">
                           <FormControl fullWidth>
                             <InputLabel size="small">
                               Plan Billing Interval
@@ -244,10 +328,90 @@ const AddPlanForm = () => {
                               </div>
                             ) : null}
                           </FormControl>
-                        </div>
+                        </div> */}
+                        {/* <div className="mt-3">
+                          <FormControl fullWidth>
+                            <InputLabel size="small" color="success">
+                              Plan Billing Interval
+                            </InputLabel>
+                            <Select
+                              size="small"
+                              label="Select Billing-Interval"
+                              name="billing_interval"
+                              color="success"
+                              value={values.billing_interval}
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                              MenuProps={{
+                                style: {
+                                  maxHeight: 250,
+                                },
+                              }}
+                            >
+                              <MenuItem value={"1"}>1</MenuItem>
+                              <MenuItem value={"2"}>2</MenuItem>
+                              <MenuItem value={"3 (Quarterly)"}>3 (Quarterly)</MenuItem>
+                              <MenuItem value={"4"}>4</MenuItem>
+                              <MenuItem value={"5"}>5</MenuItem>
+                              <MenuItem value={"6 (Bi-Annually)"}>6 (Bi-Annually)</MenuItem>
+                              <MenuItem value={"7"}>7</MenuItem>
+                              <MenuItem value={"8"}>8</MenuItem>
+                              <MenuItem value={"9"}>9</MenuItem>
+                              <MenuItem value={"10"}>10</MenuItem>
+                              <MenuItem value={"11"}>11</MenuItem>
+                              <MenuItem value={"12 (Annually)"}>12 (Annually)</MenuItem>
+                            </Select>
+                            {touched.billing_interval &&
+                            errors.billing_interval ? (
+                              <div className="text-danger">
+                                {errors.billing_interval}
+                              </div>
+                            ) : null}
+                          </FormControl>
+                        </div> */}
 
-                        {values.billing_interval === "Annual" ? (
-                          <div className="mt-3 mb-3 mx-0 col-lg-8">
+                        <div className="mb-3 col-lg-8 col-md-12">
+                          <FormControl fullWidth>
+                            <InputLabel size="small" color="success">
+                              Plan Billing Interval
+                            </InputLabel>
+                            <Select
+                              size="small"
+                              label="Select Billing-Interval"
+                              name="billing_interval"
+                              color="success"
+                              value={values.billing_interval}
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                              MenuProps={{
+                                style: {
+                                  maxHeight: 250,
+                                },
+                              }}
+                            >
+                              <MenuItem value={"1"}>1</MenuItem>
+                              <MenuItem value={"2"}>2</MenuItem>
+                              <MenuItem value={"3 (Quarterly)"}>3 (Quarterly)</MenuItem>
+                              <MenuItem value={"4"}>4</MenuItem>
+                              <MenuItem value={"5"}>5</MenuItem>
+                              <MenuItem value={"6 (Bi-Annually)"}>6 (Bi-Annually)</MenuItem>
+                              <MenuItem value={"7"}>7</MenuItem>
+                              <MenuItem value={"8"}>8</MenuItem>
+                              <MenuItem value={"9"}>9</MenuItem>
+                              <MenuItem value={"10"}>10</MenuItem>
+                              <MenuItem value={"11"}>11</MenuItem>
+                              <MenuItem value={"12 (Annually)"}>12 (Annually)</MenuItem>
+                            </Select>
+                            {touched.billing_interval &&
+                            errors.billing_interval ? (
+                              <div className="text-danger">
+                                {errors.billing_interval}
+                              </div>
+                            ) : null}
+                          </FormControl>
+                        </div>
+                        {values.billing_interval === "12 (Annually)" ? (
+                          <div className="mb-3 col-lg-8 col-md-12">
                             <TextField
                               type="number"
                               size="small"
@@ -268,10 +432,10 @@ const AddPlanForm = () => {
                           </div>
                         ) : null}
 
-                        {values.billing_interval === "Monthly" ? (
-                          <div className="mt-3 mb-3 mx-0 col-lg-8">
+                        {values.billing_interval  ? (
+                          <div className="mb-3 col-lg-8 col-md-12">
                             <FormControl fullWidth>
-                              <InputLabel size="small">
+                              <InputLabel size="small" color="success">
                                 Charge on Day of Month *
                               </InputLabel>
                               <Select
@@ -279,6 +443,7 @@ const AddPlanForm = () => {
                                 fullWidth
                                 label="Charge on Day of Month *"
                                 name="day_of_month"
+                                color="success"
                                 value={values.day_of_month}
                                 onBlur={handleBlur}
                                 onChange={handleChange}
@@ -297,10 +462,268 @@ const AddPlanForm = () => {
                             </FormControl>
                           </div>
                         ) : null}
+                        <div className="row ml-1">
+                          <div className="mb-3 col-lg-4 col-md-6 d-flex">
+                            <div style={{ width: "170px" }}>
+                              <FormLabel component={"legend"}>
+                                <Switch
+                                  onChange={onChangePropertyToggle}
+                                  name="property"
+                                />
+                                Property
+                              </FormLabel>
+                            </div>
+                            <div>
+                              <TextField
+                                type="text"
+                                name="property_count"
+                                value={values.property_count}
+                                onBlur={handleBlur}
+                                onChange={(e) => {
+                                  handleChange(e);
+                                }}
+                                onInput={(e) => {
+                                  const inputValue = e.target.value;
+                                  const numericValue =
+                                    inputValue.replace(/\D/g, "");
+                                  e.target.value = numericValue;
+                                }}
+                                size="small"
+                                sx={
+                                  isPropertyCount === "true"
+                                    ? {
+                                        display: "block",
+                                        width: "100px",
+                                      }
+                                    : { display: "none" }
+                                }
+                                placeholder="Count"
+                              />
+                            </div>
+                          </div>
+                          <div className="mb-3 col-lg-4 col-md-6 d-flex">
+                            <div style={{ width: "170px" }}>
+                              <FormLabel component={"legend"}>
+                                <Switch
+                                  onChange={onChangeTenantToggle}
+                                  name="tenant"
+                                />
+                                Tenant
+                              </FormLabel>
+                            </div>
+                            <div>
+                              <TextField
+                                type="text"
+                                name="tenant_count"
+                                value={values.tenant_count}
+                                onBlur={handleBlur}
+                                onChange={(e) => {
+                                  handleChange(e);
+                                }}
+                                onInput={(e) => {
+                                  const inputValue = e.target.value;
+                                  const numericValue =
+                                    inputValue.replace(/\D/g, "");
+                                  e.target.value = numericValue;
+                                }}
+                                size="small"
+                                sx={
+                                  isTenantCount === "true"
+                                    ? {
+                                        display: "block",
+                                        width: "100px",
+                                      }
+                                    : { display: "none" }
+                                }
+                                placeholder="Count"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="row ml-1">
+                          <div className="mb-3 col-lg-4 col-md-6 d-flex">
+                            <div style={{ width: "170px" }}>
+                              <FormLabel component={"legend"}>
+                                <Switch
+                                  onChange={onChangeLeaseToggle}
+                                  name="lease"
+                                />
+                                Lease
+                              </FormLabel>
+                            </div>
+                            <div>
+                              <TextField
+                                name="lease_count"
+                                type="text"
+                                value={values.lease_count}
+                                onBlur={(e) => {
+                                  handleBlur(e);
+                                }}
+                                onChange={(e) => {
+                                  handleChange(e);
+                                }}
+                                onInput={(e) => {
+                                  const inputValue = e.target.value;
+                                  const numericValue =
+                                    inputValue.replace(/\D/g, "");
+                                  e.target.value = numericValue;
+                                }}
+
+                                size="small"
+                                sx={
+                                  isLeaseCount === "true"
+                                    ? {
+                                        display: "block",
+                                        width: "100px",
+                                      }
+                                    : { display: "none" }
+                                }
+                                placeholder="Count"
+                              />
+                            </div>
+                          </div>
+                          <div className="mb-3 col-lg-4 col-md-6 d-flex">
+                            <div style={{ width: "170px" }}>
+                              <FormLabel component={"legend"}>
+                                <Switch
+                                  onChange={onChangeRentalOwnerToggle}
+                                  name="rental_owner"
+                                />
+                                Rental Owner
+                              </FormLabel>
+                            </div>
+                            <div>
+                              <TextField
+                                name="rentalowner_count"
+                                type="text"
+                                value={values.rentalowner_count}
+                                onBlur={(e) => {
+                                  handleBlur(e);
+                                }}
+                               onChange={(e) => {
+                                handleChange(e);
+                              }}
+                              onInput={(e) => {
+                                const inputValue = e.target.value;
+                                const numericValue =
+                                  inputValue.replace(/\D/g, "");
+                                e.target.value = numericValue;
+                              }}
+                                size="small"
+                                sx={
+                                  isRentalOwnerCount === "true"
+                                    ? {
+                                        display: "block",
+                                        width: "100px",
+                                      }
+                                    : { display: "none" }
+                                }
+                                placeholder="Count"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="row ml-1">
+                          <div className="mb-3 col-lg-4 col-md-6 d-flex">
+                            <div style={{ width: "170px" }}>
+                              <FormLabel component={"legend"}>
+                                <Switch
+                                  onChange={onChangeApplicantToggle}
+                                  name="applicant"
+                                />
+                                Applicant
+                              </FormLabel>
+                            </div>
+                            <div>
+                              <TextField
+                                size="small"
+                                type="text"
+                                name="applicant_count"
+                                value={values.applicant_count}
+                                onChange={(e) => {
+                                  handleChange(e);
+                                }}
+                                onBlur={handleBlur}
+                                onInput={(e) => {
+                                  const inputValue = e.target.value;
+                                  const numericValue =
+                                    inputValue.replace(/\D/g, "");
+                                  e.target.value = numericValue;
+                                }}
+                                sx={
+                                  isApplicantCount === "true"
+                                    ? {
+                                        display: "block",
+                                        width: "100px",
+                                      }
+                                    : { display: "none" }
+                                }
+                                placeholder="Count"
+                              />
+                            </div>
+                          </div>
+                          <div className="mb-3 col-lg-4 col-md-6 d-flex">
+                            <div style={{ width: "170px" }}>
+                              <FormLabel component={"legend"}>
+                                <Switch
+                                  onChange={onChangeStaffToggle}
+                                  name="Staff"
+                                />
+                                Staff
+                              </FormLabel>
+                            </div>
+                            <div>
+                              <TextField
+                                name="staffmember_count"
+                                type="text"
+                                value={values.staffmember_count}
+                                onBlur={handleBlur}
+                                onChange={(e) => {
+                                  handleChange(e);
+                                }}
+                                onInput={(e) => {
+                                  const inputValue = e.target.value;
+                                  const numericValue =
+                                    inputValue.replace(/\D/g, "");
+                                  e.target.value = numericValue;
+                                }}
+                                size="small"
+                                sx={
+                                  isStaffCount === "true"
+                                    ? {
+                                        display: "block",
+                                        width: "100px",
+                                      }
+                                    : { display: "none" }
+                                }
+                                placeholder="Count"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                                {console.log(values)}
+                        <div
+                          className="ml-1 mb-3 col-lg-4 col-md-12 d-flex"
+                          style={{ width: "170px" }}
+                        >
+                          <FormLabel component={"legend"}>
+                            <Switch
+                              name="payment_functionality"
+                              value={values.payment_functionality}
+                              checked={values.payment_functionality}
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                            />
+                            Payment
+                          </FormLabel>
+                        </div>
+
                         <div className="mb-3 col-8">
                           <FormLabel component="legend">
                             Add Features:
                           </FormLabel>
+
                           {inputFields.map((data, index) => {
                             const { features } = data;
                             return (
