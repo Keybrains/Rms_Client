@@ -152,11 +152,13 @@ const AddCharge = () => {
         object
       );
       if (res.data.statusCode === 200) {
-        toast.success(res.data.message, {
+        toast.success("Charge Updated Successfully", {
           position: "top-center",
           autoClose: 1000,
         });
-        navigate(`/${admin}/rentrolldetail/${lease_id}`);
+        setTimeout(() => {
+          navigate(`/${admin}/rentrolldetail/${lease_id}`);
+        }, 2000);
       } else {
         toast.warning(res.data.message, {
           position: "top-center",
@@ -237,11 +239,13 @@ const AddCharge = () => {
     try {
       const res = await axios.post(`${baseUrl}/charge/charge`, object);
       if (res.data.statusCode === 200) {
-        toast.success(res.data.message, {
+        toast.success("Charge Added Successfully", {
           position: "top-center",
           autoClose: 1000,
         });
-        navigate(`/${admin}/rentrolldetail/${lease_id}`);
+        setTimeout(() => {
+          navigate(`/${admin}/rentrolldetail/${lease_id}`);
+        }, 2000);
       } else {
         toast.warning(res.data.message, {
           position: "top-center",
