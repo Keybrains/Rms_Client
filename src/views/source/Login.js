@@ -63,7 +63,7 @@ const Login = () => {
     try {
       if (!admin_id) {
         const url = `${baseUrl}/admin/login`;
-        console.log(url, "yash");
+        
         const adminRes = await axios.post(url, values);
 
         if (adminRes.status === 200) {

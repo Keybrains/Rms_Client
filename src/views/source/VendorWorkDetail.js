@@ -1132,7 +1132,6 @@ const VendorWorkDetail = () => {
                       </Col>
 
                       <Col lg="4" md="12">
-                        {console.log(outstandDetails?.workOrder_images, "yash")}
                         {outstandDetails ? (
                           <>
                             <Box

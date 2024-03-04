@@ -432,6 +432,7 @@ const Applicants = () => {
       );
       if (res.data.statusCode === 200) {
         setPropertyData(res.data.data);
+        setLoader(false);
       } else if (res.data.statusCode === 201) {
         setPropertyData([]);
       }
@@ -472,7 +473,6 @@ const Applicants = () => {
       .get(`${baseUrl}/applicant/applicant_lease/${accessType?.admin_id}`)
       .then((response) => {
         setRentalsData(response.data.data);
-        setLoader(false);
       })
       .catch((err) => {
         console.log(err);

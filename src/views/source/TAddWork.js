@@ -568,7 +568,6 @@ const TAddWork = () => {
                         }}
                       >
                         <div className="d-flex">
-                          {console.log(selectedFiles, "yash")}
                           {selectedFiles &&
                             selectedFiles.length > 0 &&
                             selectedFiles.map((unitImg, index) => (

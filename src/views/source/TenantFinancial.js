@@ -129,7 +129,6 @@ const TenantFinancial = () => {
   useEffect(() => {
     fetchLedger();
   }, [accessType]);
-  console.log(Ledger, "yashu");
   const fetchUnitsByProperty = async (propertyType) => {
     try {
       const response = await fetch(
