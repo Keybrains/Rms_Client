@@ -97,7 +97,7 @@ function Rows(props) {
         hover
         onClick={(event) => {
           handleClick(event, row.admin_id);
-          // navigate(`/superadmin/staffmember/${row?.admin_id}`);
+          // navigate(`/superadmin/staffmember/${row?.admin_id}`); 
         }}
         style={{ cursor: "pointer" }}
         role="checkbox"

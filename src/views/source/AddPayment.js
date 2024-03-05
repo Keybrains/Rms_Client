@@ -107,7 +107,6 @@ function AddPayment() {
       .get(url)
       .then((response) => {
         const Data = response.data.data[0];
-        console.log("manu", Data);
         setSurchargePercentage(response.data.data[0].surcharge_percent);
       })
       .catch((error) => {

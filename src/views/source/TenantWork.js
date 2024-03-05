@@ -276,7 +276,7 @@ const TenantWork = () => {
             </FormGroup>
           </Col>
 
-          {/* <Col className="text-right">
+          <Col className="text-right">
             <Button
               color="primary"
               //  href="#rms"
@@ -286,7 +286,7 @@ const TenantWork = () => {
             >
               Add Work Order
             </Button>
-          </Col> */}
+          </Col>
         </Row>
         <br />
 

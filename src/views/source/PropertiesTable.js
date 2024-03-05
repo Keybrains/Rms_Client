@@ -68,7 +68,7 @@ const PropertiesTables = () => {
       const response = await axios.get(
         `${baseUrl}/rentals/rentals/${accessType.admin_id}`
       );
-
+console.log(`${baseUrl}/rentals/rentals/${accessType.admin_id}`)
       setRentalsData(response.data.data);
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
       setLoader(false);

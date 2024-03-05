@@ -415,13 +415,13 @@ var routes = [
     component: <TenantWork />,
     layout: "/tenant",
   },
-  // {
-  //   path: "/taddwork",
-  //   name: "Work Order",
-  //   icon: "ni ni-badge text-green",
-  //   component: <TAddWork />,
-  //   layout: "/tenant",
-  // },
+  {
+    path: "/taddwork",
+    name: "Work Order",
+    icon: "ni ni-badge text-green",
+    component: <TAddWork />,
+    layout: "/tenant",
+  },
   {
     path: "/Workorder",
     name: "Work Order",

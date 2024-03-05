@@ -113,8 +113,25 @@ const ApplicantSummary = () => {
     }
   };
 
+  const [application, setApplication] = useState({});
+  const fetchApplicationData = async () => {
+    setLoader(true);
+    try {
+      const url = `https://saas.cloudrentalmanager.com/api/applicant/applicant_details/${id}`;
+      console.log(url);
+      const res = await axios.get(url);
+      setApplication(res.data.data);
+      console.log(res.data);
+    } catch (error) {
+      console.error("Error: ", error.message);
+    } finally {
+      setLoader(false);
+    }
+  };
+
   useEffect(() => {
     fetchApplicantData();
+    fetchApplicationData();
   }, [id]);
 
   let sendApplicantMailData = async () => {

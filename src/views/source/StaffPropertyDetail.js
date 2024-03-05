@@ -95,7 +95,7 @@ const StaffPropertyDetail = () => {
                                 />
                               </div>
                             </div>
-                          </div>{console.log(propertyDetails, "yash")}
+                          </div>
                           <Row
                             className="w-100 my-3 "
                             style={{
