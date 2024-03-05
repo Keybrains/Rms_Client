@@ -102,6 +102,7 @@ const ApplicantSummary = () => {
       const url = `${baseUrl}/applicant/applicant_summary/${id}`;
       const res = await axios.get(url);
       setApplicantData(res.data.data[0]);
+
       setApplicantLeaseData(res.data.data[0].lease_data);
       setIsApplicantDataEmpty(res.data.data[0].isApplicantDataEmpty);
       setApplicantCheckListData(res.data.data[0].applicant_checkedChecklist);
@@ -113,15 +114,15 @@ const ApplicantSummary = () => {
     }
   };
 
-  const [application, setApplication] = useState({});
+  const [applicationData, setApplicationData] = useState({});
   const fetchApplicationData = async () => {
     setLoader(true);
     try {
       const url = `https://saas.cloudrentalmanager.com/api/applicant/applicant_details/${id}`;
       console.log(url);
       const res = await axios.get(url);
-      setApplication(res.data.data);
-      console.log(res.data);
+      setApplicationData(res.data.data);
+      console.log(res.data.data, "janak");
     } catch (error) {
       console.error("Error: ", error.message);
     } finally {
@@ -131,6 +132,9 @@ const ApplicantSummary = () => {
 
   useEffect(() => {
     fetchApplicantData();
+  }, [id]);
+
+  useEffect(() => {
     fetchApplicationData();
   }, [id]);
 
@@ -316,6 +320,12 @@ const ApplicantSummary = () => {
         console.error(err);
       });
   };
+  const rental_history = applicationData?.rental_history;
+  const emergency_contact = applicationData?.emergency_contact;
+  const employment = applicationData?.employment;
+
+
+  console.log("janakkkk", rental_history)
 
   const [isChecklistVisible, setChecklistVisible] = useState(false);
   const toggleChecklist = () => {
@@ -448,17 +458,16 @@ const ApplicantSummary = () => {
                   <h1 style={{ color: "white" }}>
                     Applicant:{" "}
                     {applicantData?.applicant_firstName &&
-                    applicantData?.applicant_lastName
+                      applicantData?.applicant_lastName
                       ? `${applicantData.applicant_firstName} ${applicantData.applicant_lastName}`
                       : "Unknown"}
                   </h1>
 
                   <h4 style={{ color: "white" }}>
                     {applicantLeaseData?.rental_adress &&
-                      `${applicantLeaseData?.rental_adress} ${
-                        applicantLeaseData?.rental_unit
-                          ? " - " + applicantLeaseData?.rental_unit
-                          : ""
+                      `${applicantLeaseData?.rental_adress} ${applicantLeaseData?.rental_unit
+                        ? " - " + applicantLeaseData?.rental_unit
+                        : ""
                       }`}
                   </h4>
                 </>
@@ -505,16 +514,16 @@ const ApplicantSummary = () => {
                 >
                   <DropdownToggle caret style={{ width: "100%" }}>
                     {applicantData &&
-                    applicantData.applicant_status &&
-                    applicantData?.applicant_status[
-                      applicantData?.applicant_status?.length - 1
-                    ]?.status
+                      applicantData.applicant_status &&
+                      applicantData?.applicant_status[
+                        applicantData?.applicant_status?.length - 1
+                      ]?.status
                       ? applicantData?.applicant_status[
-                          applicantData?.applicant_status?.length - 1
-                        ]?.status
+                        applicantData?.applicant_status?.length - 1
+                      ]?.status
                       : selectedStatus
-                      ? selectedStatus
-                      : "Select"}
+                        ? selectedStatus
+                        : "Select"}
                   </DropdownToggle>
                   <DropdownMenu style={{ width: "100%" }} name="rent_cycle">
                     {dropdownList.map((item, index) => {
@@ -539,11 +548,11 @@ const ApplicantSummary = () => {
                     marginLeft: "10px",
                     display:
                       applicantData?.applicant_status?.length === 0 ||
-                      (applicantData?.applicant_status &&
-                        applicantData?.applicant_status[
-                          applicantData?.applicant_status?.length - 1
-                        ]?.status !== "Approved" &&
-                        selectedStatus !== "Approved")
+                        (applicantData?.applicant_status &&
+                          applicantData?.applicant_status[
+                            applicantData?.applicant_status?.length - 1
+                          ]?.status !== "Approved" &&
+                          selectedStatus !== "Approved")
                         ? "none"
                         : "block",
                   }}
@@ -1057,8 +1066,8 @@ const ApplicantSummary = () => {
                                       <Col>
                                         {item?.status
                                           ? arrayOfStatus.find(
-                                              (x) => x.value === item.status
-                                            )?.label
+                                            (x) => x.value === item.status
+                                          )?.label
                                           : "N/A"}
                                       </Col>
                                       <Col>
@@ -1325,9 +1334,9 @@ const ApplicantSummary = () => {
                                             <Col lg="3" md="3">
                                               APPLICANT NAME
                                             </Col>
-                                            <Col lg="3" md="3">
+                                            {/* <Col lg="3" md="3">
                                               APPLICANT SOCIAL SECURITY NUMBER
-                                            </Col>
+                                            </Col> */}
                                             <Col lg="3" md="3">
                                               APPLICANT BIRTH DATE
                                             </Col>
@@ -1344,52 +1353,47 @@ const ApplicantSummary = () => {
                                             }}
                                           >
                                             <Col lg="3" md="3">
-                                              {`${
-                                                applicantData?.applicant_firstName
-                                                  ? applicantData?.applicant_firstName
+                                              {`${applicationData?.applicant_firstName
+                                                ? applicationData?.applicant_firstName
+                                                : ""
+                                                } ${applicationData?.applicant_lastName
+                                                  ? applicationData?.applicant_lastName
                                                   : ""
-                                              } ${
-                                                applicantData?.applicant_lastName
-                                                  ? applicantData?.applicant_lastName
-                                                  : ""
-                                              }`}
+                                                }`}
                                             </Col>
+                                            {/* <Col lg="3" md="3">
+                                              {applicationData?.applicant_socialSecurityNumber
+                                                ? applicationData?.applicant_socialSecurityNumber
+                                                : ""}
+                                            </Col> */}
                                             <Col lg="3" md="3">
-                                              {applicantData?.applicant_socialSecurityNumber
-                                                ? applicantData?.applicant_socialSecurityNumber
+                                              {applicationData?.applicant_birthDate
+
+                                                ? applicationData?.applicant_birthDate
+
                                                 : ""}
                                             </Col>
                                             <Col lg="3" md="3">
-                                              {applicantData?.applicant_dob
-                                                ? applicantData?.applicant_dob
-                                                : ""}
-                                            </Col>
-                                            <Col lg="3" md="3">
-                                              {`${
-                                                applicantData?.applicant_country
-                                                  ? applicantData?.applicant_country +
-                                                    ", "
+                                              {`${applicationData?.applicant_streetAddress
+                                                ? applicationData?.applicant_streetAddress +
+                                                ", "
+                                                : ""
+                                                } ${applicationData?.applicant_city
+                                                  ? applicationData?.applicant_city +
+                                                  ", "
                                                   : ""
-                                              } ${
-                                                applicantData?.applicant_adress
-                                                  ? applicantData?.applicant_adress +
-                                                    ", "
+                                                } ${applicationData?.applicant_state
+                                                  ? applicationData?.applicant_state +
+                                                  ", "
                                                   : ""
-                                              } ${
-                                                applicantData?.applicant_city
-                                                  ? applicantData?.applicant_city +
-                                                    ", "
+                                                } ${applicationData?.applicant_country
+                                                  ? applicationData?.applicant_country +
+                                                  ", "
                                                   : ""
-                                              } ${
-                                                applicantData?.applicant_state
-                                                  ? applicantData?.applicant_state +
-                                                    ", "
+                                                } ${applicationData?.applicant_postalCode
+                                                  ? applicationData?.applicant_postalCode
                                                   : ""
-                                              } ${
-                                                applicantData?.applicant_zipcode
-                                                  ? applicantData?.applicant_zipcode
-                                                  : ""
-                                              }`}
+                                                }`}
                                             </Col>
                                           </Row>
                                           <Row
@@ -1417,13 +1421,13 @@ const ApplicantSummary = () => {
                                             }}
                                           >
                                             <Col lg="3" md="3">
-                                              {applicantData?.applicant_email
-                                                ? applicantData?.applicant_email
+                                              {applicationData?.applicant_email
+                                                ? applicationData?.applicant_email
                                                 : ""}
                                             </Col>
                                             <Col lg="3" md="3">
-                                              {applicantData?.applicant_phoneNumber
-                                                ? applicantData?.applicant_phoneNumber
+                                              {applicationData?.applicant_phoneNumber
+                                                ? applicationData?.applicant_phoneNumber
                                                 : ""}
                                             </Col>
                                           </Row>
@@ -1454,137 +1458,31 @@ const ApplicantSummary = () => {
                                         style={{ width: "100%" }}
                                       >
                                         <div className="">
-                                          <Row
-                                            className=" mb-1"
-                                            style={{
-                                              fontSize: "14px",
-                                              textTransform: "uppercase",
-                                              color: "#aaa",
-                                              width: "100%",
-                                            }}
-                                          >
-                                            <Col lg="3" md="3">
-                                              RENTAL ADDRESS
-                                            </Col>
-                                            <Col lg="3" md="3">
-                                              RENTAL DATES
-                                            </Col>
-                                            <Col lg="3" md="3">
-                                              MONTHLY RENT
-                                            </Col>
-                                            <Col lg="3" md="3">
-                                              REASON FOR LEAVING
-                                            </Col>
-                                          </Row>
-                                          <Row
-                                            className="w-100 mt-1 mb-5"
-                                            style={{
-                                              fontSize: "14px",
-                                              textTransform: "capitalize",
-                                              color: "#000",
-                                            }}
-                                          >
-                                            <Col lg="3" md="3">
-                                              {" "}
-                                              {`
-                                            ${
-                                              applicantData?.rental_adress
-                                                ? applicantData?.rental_adress +
-                                                  ", "
-                                                : ""
-                                            } ${
-                                                applicantData?.rental_city
-                                                  ? applicantData?.rental_city +
-                                                    ", "
-                                                  : ""
-                                              } ${
-                                                applicantData?.rental_state
-                                                  ? applicantData?.rental_state +
-                                                    ", "
-                                                  : ""
-                                              } ${
-                                                applicantData?.rental_country
-                                                  ? applicantData?.rental_country +
-                                                    ", "
-                                                  : ""
-                                              } ${
-                                                applicantData?.rental_zipcode
-                                                  ? applicantData?.rental_zipcode
-                                                  : ""
-                                              }`}
-                                            </Col>
-                                            <Col lg="3" md="3">
-                                              {`${
-                                                applicantData?.rental_data_from
-                                                  ? applicantData?.rental_data_from +
-                                                    "to "
-                                                  : ""
-                                              } ${
-                                                applicantData?.rental_date_to
-                                                  ? applicantData?.rental_date_to
-                                                  : ""
-                                              }`}
-                                            </Col>
-                                            <Col lg="3" md="3">
-                                              {applicantData?.rental_monthlyRent
-                                                ? applicantData?.rental_monthlyRent
-                                                : ""}
-                                            </Col>
-                                            <Col lg="3" md="3">
-                                              {applicantData?.rental_resaonForLeaving
-                                                ? applicantData?.rental_resaonForLeaving
-                                                : ""}
-                                            </Col>
-                                          </Row>
-                                          <Row
-                                            className=" mb-1"
-                                            style={{
-                                              fontSize: "14px",
-                                              textTransform: "uppercase",
-                                              color: "#aaa",
-                                              width: "100%",
-                                            }}
-                                          >
-                                            <Col lg="3" md="3">
-                                              RENTAL OWNER NAME
-                                            </Col>
-                                            <Col lg="3" md="3">
-                                              RENTAL OWNER PHONE NUMBER
-                                            </Col>
-                                            <Col lg="3" md="3">
-                                              RENTAL OWNER EMAIL
-                                            </Col>
-                                          </Row>
-                                          <Row
-                                            className="w-100 mt-1 mb-5"
-                                            style={{
-                                              fontSize: "14px",
-                                              textTransform: "capitalize",
-                                              color: "#000",
-                                            }}
-                                          >
-                                            <Col lg="3" md="3">
-                                              {`${
-                                                applicantData?.rental_landlord_firstName
-                                                  ? applicantData?.rental_landlord_firstName
-                                                  : ""
-                                              } ${
-                                                applicantData?.rental_landlord_lasttName
-                                                  ? applicantData?.rental_landlord_lasttName
-                                                  : ""
-                                              }`}
-                                            </Col>
-                                            <Col lg="3" md="3">
-                                              {applicantData?.rental_landlord_phoneNumber
-                                                ? applicantData?.rental_landlord_phoneNumber
-                                                : ""}
-                                            </Col>
-                                            <Col lg="3" md="3">
-                                              {applicantData?.rental_landlord_email
-                                                ? applicantData?.rental_landlord_email
-                                                : ""}
-                                            </Col>
-                                          </Row>
+                                          <div>
+                                            <Row className=" mb-1" style={{ fontSize: "14px", textTransform: "uppercase", color: "#aaa", width: "100%" }}>
+                                              <Col lg="3" md="3">RENTAL ADDRESS</Col>
+                                              <Col lg="3" md="3">RENTAL DATES</Col>
+                                              <Col lg="3" md="3">MONTHLY RENT</Col>
+                                              <Col lg="3" md="3">REASON FOR LEAVING</Col>
+                                            </Row>
+                                            <Row className="w-100 mt-1 mb-5" style={{ fontSize: "14px", textTransform: "capitalize", color: "#000" }}>
+                                              <Col lg="3" md="3">{`${rental_history?.rental_adress}, ${rental_history?.rental_city}, ${rental_history?.rental_state}, ${rental_history?.rental_country}, ${rental_history?.rental_postcode}`}</Col>
+                                              <Col lg="3" md="3">{`${rental_history?.start_date} to ${rental_history?.end_date}`}</Col>
+                                              <Col lg="3" md="3">{rental_history?.rent}</Col>
+                                              <Col lg="3" md="3">{rental_history?.leaving_reason}</Col>
+                                            </Row>
+                                            <Row className=" mb-1" style={{ fontSize: "14px", textTransform: "uppercase", color: "#aaa", width: "100%" }}>
+                                              <Col lg="3" md="3">RENTAL OWNER NAME</Col>
+                                              <Col lg="3" md="3">RENTAL OWNER PHONE NUMBER</Col>
+                                              <Col lg="3" md="3">RENTAL OWNER EMAIL</Col>
+                                            </Row>
+                                            <Row className="w-100 mt-1 mb-5" style={{ fontSize: "14px", textTransform: "capitalize", color: "#000" }}>
+                                              <Col lg="3" md="3">{`${rental_history?.rentalOwner_firstName} ${rental_history?.rentalOwner_lastName}`}</Col>
+                                              <Col lg="3" md="3">{rental_history?.rentalOwner_phoneNumber}</Col>
+                                              <Col lg="3" md="3">{rental_history?.rentalOwner_primaryEmail}</Col>
+                                            </Row>
+                                          </div>
+
                                         </div>
                                       </Table>
                                     </div>
@@ -1643,29 +1541,29 @@ const ApplicantSummary = () => {
                                             }}
                                           >
                                             <Col lg="3" md="3">
-                                              {`${
-                                                applicantData?.applicant_emergencyContact_firstName
-                                                  ? applicantData?.applicant_emergencyContact_firstName
+                                              {`${emergency_contact?.first_name
+
+                                                ? emergency_contact?.first_name
+
+                                                : ""
+                                                } ${emergency_contact?.last_name
+                                                  ? emergency_contact?.last_name
                                                   : ""
-                                              } ${
-                                                applicantData?.applicant_emergencyContact_lasttName
-                                                  ? applicantData?.applicant_emergencyContact_lasttName
-                                                  : ""
-                                              }`}
+                                                }`}
                                             </Col>
                                             <Col lg="3" md="3">
-                                              {applicantData?.applicant_emergencyContact_relationship
-                                                ? applicantData?.applicant_emergencyContact_relationship
+                                              {emergency_contact?.relationship
+                                                ? emergency_contact?.relationship
                                                 : ""}
                                             </Col>
                                             <Col lg="3" md="3">
-                                              {applicantData?.applicant_emergencyContact_email
-                                                ? applicantData?.applicant_emergencyContact_email
+                                              {emergency_contact?.email
+                                                ? emergency_contact?.email
                                                 : ""}
                                             </Col>
                                             <Col lg="3" md="3">
-                                              {applicantData?.applicant_emergencyContact_phone
-                                                ? applicantData?.applicant_emergencyContact_phone
+                                              {emergency_contact?.phone_number
+                                                ? emergency_contact?.phone_number
                                                 : ""}
                                             </Col>
                                           </Row>
@@ -1728,45 +1626,42 @@ const ApplicantSummary = () => {
                                           >
                                             <Col lg="3" md="3">
                                               {" "}
-                                              {applicantData?.employment_name
-                                                ? applicantData?.employment_name
+                                              {employment?.name
+                                                ? employment?.name
                                                 : ""}
                                             </Col>
                                             <Col lg="3" md="3">
-                                              {`${
-                                                applicantData?.employment_country
-                                                  ? applicantData?.employment_country +
-                                                    ", "
+                                              {`${employment?.streetAddress
+                                                ? employment?.streetAddress +
+                                                ", "
+                                                : ""
+                                                } ${employment?.city
+                                                  ? employment?.city +
+                                                  ", "
                                                   : ""
-                                              } ${
-                                                applicantData?.employment_adress
-                                                  ? applicantData?.employment_adress +
-                                                    ", "
+                                                } ${employment?.state
+                                                  ? employment?.state +
+                                                  ", "
                                                   : ""
-                                              } ${
-                                                applicantData?.employment_city
-                                                  ? applicantData?.employment_city +
-                                                    ", "
+                                                } ${employment?.country
+                                                  ? employment?.country +
+                                                  ", "
                                                   : ""
-                                              } ${
-                                                applicantData?.employment_state
-                                                  ? applicantData?.employment_state +
-                                                    ", "
+                                                } ${employment?.postalCode
+                                                  ? employment?.postalCode
                                                   : ""
-                                              } ${
-                                                applicantData?.employment_zipcode
-                                                  ? applicantData?.employment_zipcode
-                                                  : ""
-                                              }`}
+                                                }`}
                                             </Col>
                                             <Col lg="3" md="3">
-                                              {applicantData?.employment_phoneNumber
-                                                ? applicantData?.employment_phoneNumber
+                                              {employment?.employment_phoneNumber
+                                                ? employment?.employment_phoneNumber
                                                 : ""}
                                             </Col>
                                             <Col lg="3" md="3">
-                                              {applicantData?.employment_email
-                                                ? applicantData?.employment_email
+                                              {employment?.employment_primaryEmail
+
+                                                ? employment?.employment_primaryEmail
+
                                                 : ""}
                                             </Col>
                                           </Row>
@@ -1782,12 +1677,12 @@ const ApplicantSummary = () => {
                                             <Col lg="3" md="3">
                                               POSITION HELD
                                             </Col>
-                                            <Col lg="3" md="3">
+                                            {/* <Col lg="3" md="3">
                                               EMPLOYMENT DATES
                                             </Col>
                                             <Col lg="3" md="3">
                                               MONTHLY GROSS SALARY
-                                            </Col>
+                                            </Col> */}
                                             <Col lg="3" md="3">
                                               SUPERVISOR NAME
                                             </Col>
@@ -1801,37 +1696,33 @@ const ApplicantSummary = () => {
                                             }}
                                           >
                                             <Col lg="3" md="3">
-                                              {applicantData?.employment_position
-                                                ? applicantData?.employment_position
+                                              {employment?.employment_position
+                                                ? employment?.employment_position
                                                 : ""}
                                             </Col>
-                                            <Col lg="3" md="3">
-                                              {`${
-                                                applicantData?.employment_date_from
-                                                  ? applicantData?.employment_date_from +
-                                                    "to "
+                                            {/* <Col lg="3" md="3">
+                                              {`${employment?.employment_date_from
+                                                ? employment?.employment_date_from +
+                                                "to "
+                                                : ""
+                                                } ${employment?.employment_date_to
+                                                  ? employment?.employment_date_to
                                                   : ""
-                                              } ${
-                                                applicantData?.employment_date_to
-                                                  ? applicantData?.employment_date_to
-                                                  : ""
-                                              }`}
+                                                }`}
                                             </Col>
                                             <Col lg="3" md="3">
-                                              {applicantData?.employment_monthlyGrossSalary
-                                                ? applicantData?.employment_monthlyGrossSalary
+                                              {employment?.employment_monthlyGrossSalary
+                                                ? employment?.employment_monthlyGrossSalary
                                                 : ""}
-                                            </Col>
+                                            </Col> */}
                                             <Col lg="3" md="3">
-                                              {`${
-                                                applicantData?.employment_supervisor_first
-                                                  ? applicantData?.employment_supervisor_first
+                                              {`${employment?.supervisor_firstName
+                                                ? employment?.supervisor_firstName
+                                                : ""
+                                                } ${" "} ${employment?.supervisor_lastName
+                                                  ? employment?.supervisor_lastName
                                                   : ""
-                                              } ${" "} ${
-                                                applicantData?.employment_supervisor_last
-                                                  ? applicantData?.employment_supervisor_last
-                                                  : ""
-                                              }`}
+                                                }`}
                                             </Col>
                                           </Row>
                                           <Row
@@ -1856,8 +1747,8 @@ const ApplicantSummary = () => {
                                             }}
                                           >
                                             <Col lg="3" md="3">
-                                              {applicantData?.employment_supervisor_title
-                                                ? applicantData?.employment_supervisor_title
+                                              {employment?.supervisor_title
+                                                ? employment?.supervisor_title
                                                 : ""}
                                             </Col>
                                           </Row>
@@ -2017,7 +1908,7 @@ const ApplicantSummary = () => {
                                     item
                                     xs={12}
                                     sm={6}
-                                    // key={index}
+                                  // key={index}
                                   >
                                     <Box
                                       // key={index}
