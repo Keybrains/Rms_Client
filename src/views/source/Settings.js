@@ -65,7 +65,6 @@ const Settings = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { admin } = useParams();
   let navigate = useNavigate();
-
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
   let [loader, setLoader] = React.useState(false);
@@ -258,6 +257,24 @@ const Settings = () => {
                         <li style={{ borderBottom: "1px solid #ccc" }}>
                           <div
                             color="link"
+                            onClick={() => handleOptionClick("latefee")}
+                            style={{
+                              backgroundColor:
+                                selectedOption === "latefee"
+                                  ? "#D3D3D3"
+                                  : "inherit",
+                              color: "black",
+                              cursor: "pointer",
+                              fontWeight: "bold",
+                              padding: "20px 15px",
+                            }}
+                          >
+                            Late Fee Charge
+                          </div>
+                        </li>
+                        <li style={{ borderBottom: "1px solid #ccc" }}>
+                          <div
+                            color="link"
                             onClick={() => handleOptionClick("mail")}
                             style={{
                               backgroundColor:
@@ -390,6 +407,88 @@ const Settings = () => {
                                   color="primary"
                                   className="btn btn-primary ml-4"
                                   onClick={surchargeFormik.resetForm}
+                                  style={{
+                                    background: "white",
+                                    color: "black",
+                                  }}
+                                >
+                                  Reset
+                                </Button>
+                              </Row>
+                            </Form>
+                          </div>
+                        )}
+                          {selectedOption === "latefee" && (
+                          <div>
+                            <h1>Late Fee Charge</h1>
+                            <Form onSubmit={surchargeFormik.handleSubmit}>
+                              <div className="pl-lg-4 mt-5">
+                                <Row>
+                                  <span>
+                                    You can set default Late fee charge
+                                    from here
+                                  </span>
+                                </Row>
+                                <Row className="mt-4">
+                                  <Col lg="6">
+                                    <FormGroup>
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-property"
+                                      >
+                                        Late Fee Charge 
+                                      </label>
+                                      <br />
+                                      <br />
+                                      <Input
+                                        className="form-control-alternative"
+                                        id="input-protype"
+                                        placeholder="Late Fee Charge"
+                                        type="number"
+                                        // name="surcharge_percent"
+                                        // onBlur={surchargeFormik.handleBlur}
+                                        // onChange={surchargeFormik.handleChange}
+                                        // value={
+                                        //   surchargeFormik.values
+                                        //     .surcharge_percent
+                                        // }
+                                        // required
+                                      />
+                                    </FormGroup>
+                                  </Col>
+                                </Row>
+                                <br />
+                              </div>
+                              <Row>
+                                {submitLoader ? (
+                                  <Button
+                                    type="submit"
+                                    className="btn btn-primary ml-4"
+                                    style={{
+                                      background: "green",
+                                      color: "white",
+                                    }}
+                                    disabled
+                                  >
+                                    Loading...
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    type="submit"
+                                    className="btn btn-primary ml-5"
+                                    style={{
+                                      background: "green",
+                                      color: "white",
+                                    }}
+                                  >
+                                    {/* {surcharge_id ? "Update" : "Save"} */}
+                                   Update
+                                  </Button>
+                                )}
+                                <Button
+                                  color="primary"
+                                  className="btn btn-primary ml-4"
+                                  // onClick={surchargeFormik.resetForm}
                                   style={{
                                     background: "white",
                                     color: "black",
@@ -670,7 +769,7 @@ const Settings = () => {
                                 ) : (
                                   <>
                                     <div className="row row-cols-1 row-cols-md-2 g-4">
-                                      {mailData.map((data, index) => (
+                                      {mailData && mailData.map((data, index) => (
                                         <MailConfigurationCard
                                           key={index}
                                           data={data}

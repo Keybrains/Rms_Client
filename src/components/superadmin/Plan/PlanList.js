@@ -89,7 +89,7 @@ function Rows(props) {
     <React.Fragment>
       <TableRow
         hover
-        onClick={(event) => handleClick(event, row._id)}
+        onClick={(event) => handleClick(event, row.plan_id)}
         role="checkbox"
         aria-checked={isItemSelected}
         tabIndex={-1}
@@ -125,11 +125,15 @@ function Rows(props) {
         </TableCell>
         <TableCell align="center">{row?.plan_price}</TableCell>
         <TableCell align="center">
-          {row?.is_annual_discount ? row.annual_discount + "%" : "-"}
+          {console.log(row,'row')}
+          {row?.annual_discount != null ? row.annual_discount + "%" : "-"}
         </TableCell>
         <TableCell align="center">
-          {row.is_free_trial === true ? row?.plan_days : "Monthly"}
+          { row?.billing_interval }
         </TableCell>
+        {/* <TableCell align="center">
+          {row.is_free_trial === true ? row?.plan_days : "Monthly"}
+        </TableCell> */}
         {/* <TableCell align="center">{row?.maximum_add}</TableCell>
         <TableCell align="center">
           {row?.annual_discount === null ? (
@@ -278,7 +282,7 @@ const PlanList = () => {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = priorityData?.map((n) => n._id);
+      const newSelected = priorityData?.map((n) => n.plan_id);
       setSelected(newSelected);
       return;
     }
@@ -319,6 +323,9 @@ const PlanList = () => {
           })
           .then((response) => {
             if (response.data.statusCode === 200) {
+              // axios.delete(`${baseUrl}/nmipayment/delete-plan`,{
+              //   planId:selected
+              // });
               getData();
               setSelected([]);
               toast.success(response.data.message, {
@@ -576,7 +583,7 @@ const PlanList = () => {
                               }}
                             />
                           </TableCell>
-
+                                  {console.log("selected", selected)}
                           {/* <TableCell align="center"></TableCell> */}
 
                           {headCells.map((headCell, id) => {
@@ -598,7 +605,7 @@ const PlanList = () => {
                       </TableHead>
                       <TableBody>
                         {priorityData?.map((row, index) => {
-                          const isItemSelected = isSelected(row._id);
+                          const isItemSelected = isSelected(row.plan_id);
                           const labelId = `enhanced-table-checkbox-${index}`;
                           return (
                             <Rows

@@ -51,7 +51,8 @@ const TenantProperty = () => {
     try {
       const allTenants = await axios.get(
         `${baseUrl}/tenants/tenant_property/${accessType.tenant_id}`
-      );
+        );
+        console.log( `${baseUrl}/tenants/tenant_property/${accessType.tenant_id}`,"ja")
       setPropertyDetails(allTenants.data.data);
       setLoader(false);
     } catch (error) {
@@ -261,6 +262,7 @@ const TenantProperty = () => {
                       </thead>
                       <tbody>
                         {filterTenantsBySearchAndPage().map(
+                          
                           (address, index) => (
                             <>
                               <tr

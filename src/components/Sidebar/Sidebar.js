@@ -377,7 +377,22 @@ const Sidebar = (props) => {
               <DropdownItem className="noti-title" header tag="div">
                 <h6 className="text-overflow m-0">Welcome!</h6>
               </DropdownItem>
-
+                <DropdownItem onClick={() => navigate("/"+admin+"/user-profile")} >
+                  <i className="ni ni-single-02" />
+                  <span>My profile</span>
+                </DropdownItem>
+               <DropdownItem onClick={() => navigate("/"+admin+"/settings")}>
+                  <i className="ni ni-settings-gear-65" />
+                  <span>Settings</span>
+                </DropdownItem>
+                 {/* <DropdownItem to="/admin/user-profile" tag={Link}>
+                  <i className="ni ni-calendar-grid-58" />
+                  <span>Activity</span>
+                </DropdownItem>
+                <DropdownItem to="/admin/user-profile" tag={Link}>
+                  <i className="ni ni-support-16" />
+                  <span>Support</span> 
+                </DropdownItem> */}
               <DropdownItem divider />
               <DropdownItem
                 //  href="#rms"

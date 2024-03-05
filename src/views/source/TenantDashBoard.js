@@ -38,7 +38,7 @@ const TenantDashBoard = (props) => {
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
   let navigate = useNavigate();
-  let [loader, setLoader] = useState(false);
+  let [loader, setLoader] = useState(true);
 
   const [accessType, setAccessType] = useState(null);
 
@@ -57,23 +57,24 @@ const TenantDashBoard = (props) => {
   const [propertycount, setpropertycount] = useState(0);
   const [tenantBalance, setTenantBalance] = useState(0);
   const fetchPropertyCount = async () => {
-    setLoader(true);
     try {
       const url = `${baseUrl}/tenants/count/${accessType?.tenant_id}`;
       console.log(url, 'yash')
       const res = await axios.get(
         url
-      );
-      const tenantDashboardBalance = await axios.get(
-        `${baseUrl}/payment/tenant_financial/${accessType?.tenant_id}`
-      );
-      setTenantBalance(tenantDashboardBalance?.data?.totalBalance);
-      setpropertycount(res.data);
+        );
+        const tenantDashboardBalance = await axios.get(
+          `${baseUrl}/payment/tenant_financial/${accessType?.tenant_id}`
+          );
+          setTenantBalance(tenantDashboardBalance?.data?.totalBalance);
+          setpropertycount(res.data);
+          setLoader(false);
     } catch (error) {
       console.error("Error: ", error.message);
-    } finally {
-      setLoader(false);
-    }
+    } 
+    // finally {
+    //   setLoader(false);
+    // }
   };
 
   let tenantBalanceForDashboard =

@@ -147,7 +147,6 @@ function TenantAddPayment() {
   useEffect(() => {
     fetchLedger();
   }, [accessType]);
-  console.log("dropdown", propertyDropdownData);
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -382,10 +381,10 @@ function TenantAddPayment() {
       );
 
       if (response.data.statusCode === 200) {
-        const responseData = response.data.data[0]; // Assuming this is an object
-        console.log("meet", response.data.data[0]);
+        const responseData = response.data.data[0];
         generalledgerFormik.setValues({
           ...generalledgerFormik.values,
+          lease_id: responseData.lease_id,
           payment_id: responseData.payment_id,
           check_number: responseData.check_number,
           payment_type: responseData.payment_type,
@@ -405,6 +404,8 @@ function TenantAddPayment() {
           })),
           payments_attachment: responseData.payment_attachment,
         });
+        const selectedProperty = propertyDropdownData.find(property => property.lease_id === responseData.lease_id);
+        handlePropertyTypeSelect(selectedProperty);
         setSelectedPaymentMethod(responseData.payment_type);
         setSelectedCreditCard(responseData.billing_id);
       } else {
@@ -477,7 +478,7 @@ function TenantAddPayment() {
       payment_id: payment_id,
       admin_id: accessType.admin_id,
       tenant_id: tenantData?.tenant_id,
-      lease_id: lease_id,
+      lease_id: values.lease_id,
       billing_id: values.billing_id,
       customer_vault_id: values.customer_vault_id,
       check_number: values.check_number,
@@ -509,7 +510,9 @@ function TenantAddPayment() {
           position: "top-center",
           autoClose: 1000,
         });
-        navigate(`/tenant/tenantFinancial`);
+        setTimeout(() => {
+          navigate(`/tenant/tenantFinancial`);
+        }, 2000)
       } else {
         toast.warning(res.data.message, {
           position: "top-center",
@@ -658,7 +661,10 @@ function TenantAddPayment() {
               position: "top-center",
               autoClose: 1000,
             });
-            navigate(`/tenant/tenantFinancial`);
+            setTimeout(() => {
+              navigate(`/tenant/tenantFinancial`);
+            }, 2000)
+          
           } else {
             toast.warning(paymentResponse.data.message, {
               position: "top-center",
@@ -700,7 +706,9 @@ function TenantAddPayment() {
             position: "top-center",
             autoClose: 1000,
           });
-          navigate(`/tenant/tenantFinancial`);
+          setTimeout(() => {
+            navigate(`/tenant/tenantFinancial`);
+          }, 2000)
         } else {
           toast.warning(paymentResponse.data.message, {
             position: "top-center",
@@ -747,7 +755,9 @@ function TenantAddPayment() {
             position: "top-center",
             autoClose: 1000,
           });
-          navigate(`/tenant/tenantFinancial`);
+          setTimeout(() => {
+            navigate(`/tenant/tenantFinancial`);
+          }, 2000)
         } else {
           toast.warning(paymentResponse.data.message, {
             position: "top-center",
@@ -822,18 +832,6 @@ function TenantAddPayment() {
     }
   };
 
-//   const fetchTenant = async () => {
-//     try {
-//       const res = await axios.get(`${baseUrl}/leases/lease_tenant/${lease_id}`);
-//       if (res.data.statusCode === 200) {
-//         setTenantData(res.data.data);
-//         setTenantId(res.data.data.tenant_id);
-//       }
-//     } catch (error) {
-//       console.error("Error: ", error.message);
-//     }
-//   };
-
   useEffect(() => {
     fetchAccounts();
   }, [accessType?.admin_id]);
@@ -844,7 +842,6 @@ function TenantAddPayment() {
     } else {
       fetchPaymentData();
     }
-    //fetchTenant();
   }, [lease_id, payment_id]);
 
   const [total, setTotal] = useState(0);
@@ -1120,8 +1117,6 @@ function TenantAddPayment() {
                       <Row>
                         {selectedPaymentMethod === "Credit Card" ? (
                           <>
-                            {/* {refund === false ? ( */}
-
                             <Card
                               className="w-100 mt-3"
                               style={{ background: "#F4F6FF" }}
