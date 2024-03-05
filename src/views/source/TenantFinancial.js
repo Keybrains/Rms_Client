@@ -87,7 +87,7 @@ const TenantFinancial = () => {
       setLoader(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
-      setLoader(false);
+    
     }
   };
 
