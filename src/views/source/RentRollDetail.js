@@ -36,8 +36,6 @@ import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import MailIcon from "@mui/icons-material/Mail";
 import { jwtDecode } from "jwt-decode";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { CardContent, Grid, Typography } from "@mui/material";
@@ -88,7 +86,6 @@ const RentRollDetail = () => {
     setLoader(true);
     try {
       const url = `${baseUrl}/payment/charges_payments/${lease_id}`;
-      console.log(`${baseUrl}/payment/charges_payments/${lease_id}`, "yash");
       const res = await axios.get(url);
       setFinancialData(res.data.data);
       setTotalAmount(res.data.totalBalance);
@@ -118,6 +115,34 @@ const RentRollDetail = () => {
     fetchfinancialData();
     fetchTenantsData();
   }, [lease_id]);
+
+  const deleteTenant = (charge_id) => {
+    swal({
+      title: "Are you sure?",
+      text: "Once deleted, you will not be able to recover this lease!",
+      icon: "warning",
+      buttons: ["Cancel", "Delete"],
+      dangerMode: true,
+    }).then(async (willDelete) => {
+      if (willDelete) {
+        const res = await axios.delete(`${baseUrl}/charge/charge/${charge_id}`);
+        if (res.data.statusCode === 200) {
+          toast.success(res.data.message, {
+            position: "top-center",
+          });
+          fetchfinancialData();
+        } else {
+          toast.warning(res.data.message, {
+            position: "top-center",
+          });
+        }
+      } else {
+        toast.success("Tenant is safe :)", {
+          position: "top-center",
+        });
+      }
+    });
+  };
 
   const [value, setValue] = useState("Summary");
   const handleChange = (value) => {
@@ -277,11 +302,6 @@ const RentRollDetail = () => {
             },
           ],
         });
-        // setSelectedRec(response.data.data.tenant_firstName && response.data.data.tenant_lastName )
-        // setSelectedCreditCard(response.data.data.billing_id)
-        // setSelectedProp(response.data.data.payment_type)
-        console.log("meet", id);
-        console.log("meet", response.data);
       } else {
         console.error("Error:", response.data.message);
       }
@@ -329,20 +349,28 @@ const RentRollDetail = () => {
           return obj;
         }),
       };
-      console.log("comman data=======", commonData);
 
       if (payment_type === "Credit Card") {
         const response = await axios.post(`${baseUrl}/nmipayment/new-refund`, {
           refundDetails: commonData,
         });
         if (response.data.status === 200) {
-          swal("Success!", response.data.data, "success");
+          toast.success("Refund Done Successfully", {
+            position: "top-center",
+            autoClose: 1000,
+          });
           await fetchfinancialData();
           closeRefund();
         } else if (response.data.status === 201) {
-          swal("Warning!", response.data.data.error, "warning");
+          toast.warning(response.data.data.error, {
+            position: "top-center",
+            autoClose: 1000,
+          });
         } else {
-          console.error("Failed to process refund:", response.statusText);
+          toast.error("Failed to process refund", {
+            position: "top-center",
+            autoClose: 1000,
+          });
         }
       } else if (payment_type === "Cash" || payment_type === "Check") {
         const response = await axios.post(
@@ -354,23 +382,32 @@ const RentRollDetail = () => {
 
         if (response.data.statusCode === 200) {
           //await setRefund(false);
-          swal("Success!", response.data.message, "success");
+          toast.success("Refund Done Successfully", {
+            position: "top-center",
+            autoClose: 1000,
+          });
           await fetchfinancialData();
           closeRefund();
         } else {
-          swal("Warning!", response.statusText, "warning");
-          console.error("Failed to process refund:", response.statusText);
+          toast.warning(response.statusText, {
+            position: "top-center",
+            autoClose: 1000,
+          });
         }
       } else {
-        console.log(
-          "Refund is only available for Credit Card, Cash, or Check payments."
-        );
+        toast.warning("Refund is only available for Credit Card, Cash, or Check payments.", {
+          position: "top-center",
+          autoClose: 1000,
+        });
       }
     } catch (error) {
       if (error?.response?.data?.statusCode === 400) {
-        swal("Warning!", error.response.data.message, "warning");
+        toast.warning(error.response.data.message, {
+          position: "top-center",
+          autoClose: 1000,
+        });
+       
       }
-      console.error("Error:", error);
     } finally {
       setPaymentLoader(false);
     }
@@ -1131,6 +1168,18 @@ const RentRollDetail = () => {
                                                               }}
                                                             >
                                                               Edit
+                                                            </DropdownItem> 
+                                                          )}
+                                                          {generalledger?.type ===
+                                                            "Charge" && (
+                                                            <DropdownItem
+                                                              // style={{color:'black'}}
+                                                              onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                deleteTenant(generalledger.charge_id);
+                                                              }}
+                                                            >
+                                                              Delete
                                                             </DropdownItem>
                                                           )}
                                                         </div>
@@ -1242,10 +1291,7 @@ const RentRollDetail = () => {
                                                 style={{ border: "0" }}
                                               ></td>
                                               <td></td>
-                                              {console.log(
-                                                expandedData[index],
-                                                "yash"
-                                              )}
+                                             
                                             </tr>
                                           )}
                                         </>
@@ -1261,7 +1307,6 @@ const RentRollDetail = () => {
                       <br />
                     </Container>
                   </TabPanel>
-                  {console.log("lease data manu", leaseData)}
                   <TabPanel value="Tenant">
                     <CardHeader className="border-0">
                       <span>

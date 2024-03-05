@@ -89,7 +89,6 @@ const WorkOrderDetails = () => {
       );
       setoutstandDetails(response.data.data);
       setWorkOrderStatus(response.data.data);
-      console.log("new manu", response.data.data);
       setLoading(false);
       setImageDetails(response.data.data.workOrderImage);
     } catch (error) {
@@ -105,7 +104,6 @@ const WorkOrderDetails = () => {
   //       `${baseUrl}/work-order/workorder_details/${workorder_id}`
   //     );
   //     setoutstandDetails(response.data.data);
-  //     console.log("new manu",response.data.data)
   //     setWorkOrderStatus(response.data.data.workorder_status.reverse());
   //     setSelectedStatus(response.data.data.status);
   //     setSelecteduser(response.data.data.staffmember_name);

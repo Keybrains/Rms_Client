@@ -104,7 +104,7 @@ const StaffProfile = () => {
                           <th>Phone Number</th>
                           <th>Email</th>
                         </tr>
-                        <>{console.log("manu", staffDetails,staffDetails?.length)}
+                        <>
                           <>
                             {!staffDetails ? (
                               <tbody>

@@ -23,7 +23,6 @@ function CreditCardForm(props) {
   const { tenantId, closeModal } = props;
   const [isSubmitting, setSubmitting] = useState(false);
   const [cardLogo, setCardLogo] = useState("");
-  const [loading, setLoading] = useState(true);
 
   const fetchCardLogo = async (cardType) => {
     try {
@@ -146,25 +145,6 @@ function CreditCardForm(props) {
     }
   }, [customervault]);
 
-  console.log("isbilling", isBilling);
-  // useEffect(() => {
-  //   getCreditCard();
-  // }, [tenantId]);
-
-  // console.log("sssss",customervault)
-
-  // useEffect(() => {
-  //   // Extract customer_vault_id values from cardDetails
-  //   const customerVaultIds = customervault?.map(
-  //     (card) => card.billing_id
-  //   );
-
-  //   if (customerVaultIds.length > 0) {
-  //     // Call the API to get multiple customer vault records
-  //     getMultipleCustomerVault(customerVaultIds);
-  //   }
-  // }, [customervault]);
-
   const paymentSchema = yup.object({
     card_number: yup
       .number()
@@ -205,8 +185,6 @@ function CreditCardForm(props) {
     }
     return randomNumber;
   }
-
-  
 
   const handleSubmit = async (values) => {
     const isValidCard = validateCardNumber(values.card_number);
@@ -288,16 +266,17 @@ function CreditCardForm(props) {
             creditCardResponse.status === 201) &&
           customerVaultResponse.status === 200
         ) {
-          // toast.success("Card Added Successfully", {
-          //   position: "top-center",
-          //   autoClose: 100,
-          // });
-         
+          toast.success("Card Added Successfully", {
+            position: "top-center",
+            autoClose: 100,
+          });
+
+          setTimeout(() => {
             closeModal();
+          }, 2000)
             getCreditCard();
             getMultipleCustomerVault();
-         
-         
+               
         } else {
           toast.error(creditCardResponse.data.message, {
             position: "top-center",
@@ -393,8 +372,7 @@ function CreditCardForm(props) {
             {/* {({ isSubmitting }) => ( */}
             <Form>
               {/* Form Fields */}
-              {/* <Row className="mb-0">
-              <Col xs="12" sm="12"> */}
+             
               <Row className="mb--2">
                 <Col xs="12" sm="6">
                   <FormGroup>

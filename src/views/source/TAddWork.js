@@ -80,12 +80,13 @@ const TAddWork = () => {
   const [selectedPriority, setSelectedPriority] = useState("");
 
   const handlePropertyTypeSelect = async (property) => {
-    setSelectedProp(property);
-    WorkFormik.values.rental_adress = property;
+    setSelectedProp(property.rental_adress);
+    WorkFormik.values.rental_adress = property.rental_adress;
+    WorkFormik.values.rental_id = property.rental_id;
 
-    setSelectedUnit(""); // Reset selected unit when a new property is selected
+    setSelectedUnit("");
     try {
-      const units = await fetchUnitsByProperty(property);
+      const units = await fetchUnitsByProperty(property.rental_id);
       setUnitData(units); // Set the received units in the unitData state
     } catch (error) {
       console.error("Error handling selected property:", error);
@@ -137,29 +138,26 @@ const TAddWork = () => {
 
   let navigate = useNavigate();
   const handleCloseButtonClick = () => {
-    navigate("../tenantwork");
+    navigate("/tenant/tenantwork");
   };
 
+
   // Use URLSearchParams to extract parameters from the query string
-  var [getData, setGetData] = useState();
+  const [getData, setGetData] = useState();
   const [vid, setVid] = useState("");
   const location = useLocation();
   const { search } = location;
   const queryParams = new URLSearchParams(search);
   const id1 = queryParams.get("id");
-  console.log("workorder_id", id1);
-  var [getData, setGetData] = useState();
 
   const fetchUnitsByProperty = async (propertyType) => {
     try {
       const response = await fetch(
-        `${baseUrl}/propertyunit/rentals_property/${propertyType}`
+        `${baseUrl}/unit/rental_unit/${propertyType}`
       );
       const data = await response.json();
-      // Ensure that units are extracted correctly and set as an array
       const units = data?.data || [];
 
-      console.log(data, "units246");
       return units;
     } catch (error) {
       console.error("Error fetching units:", error);
@@ -200,13 +198,13 @@ const TAddWork = () => {
         WorkFormik.setValues({
           work_subject: getWorkData[0].work_subject || "",
           rental_adress: getWorkData[0].rental_adress || "",
-          rental_units: getWorkData[0].rental_units || "",
+          rental_unit: getWorkData[0].rental_unit || "",
           unit_no: getWorkData[0].unit_no || "",
           work_category: getWorkData[0].work_category || "",
           entry_allowed: getWorkData[0].entry_allowed || "",
           work_performed: getWorkData[0].work_performed || "",
         });
-        setSelectedUnit(getWorkData[0].rental_units || "Select");
+        setSelectedUnit(getWorkData[0].rental_unit || "Select");
         setSelectedProp(getWorkData[0].rental_adress);
         setSelectedEntry(getWorkData[0].entry_allowed);
         setSelectedCategory(getWorkData[0].work_category);
@@ -224,88 +222,117 @@ const TAddWork = () => {
   const { v4: uuidv4 } = require("uuid");
   const [loader, setLoader] = useState(false);
 
-  const handleSubmit = async (values) => {
-    setLoader(true);
-    var image;
-    if (selectedFiles) {
-      const imageData = new FormData();
-      for (let index = 0; index < selectedFiles.length; index++) {
-        const element = selectedFiles[index];
-        imageData.append(`files`, element);
-      }
+  //   const handleSubmit = async (values,event) => {
+  //     // event.preventDefault(); 
+  //     setLoader(true);
+  //     let image;
 
-      const url = `${imageUrl}/images/upload`;
-      try {
-        const result = await axios.post(url, imageData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-        image = result.data.files.map((data, index) => {
-          return data.filename;
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    }
+  //     if (selectedFiles) {
+  //       const imageData = new FormData();
+  //       for (let index = 0; index < selectedFiles.length; index++) {
+  //         const element = selectedFiles[index];
+  //         imageData.append(`files`, element);
+  //       }
+
+  //       const url = `${imageUrl}/images/upload`;
+  //       try {
+  //         const result = await axios.post(url, imageData, {
+  //           headers: {
+  //             "Content-Type": "multipart/form-data",
+  //           },
+  //         });
+  //         image = result.data.files.map((data, index) => {
+  //           return data.filename;
+  //         });
+  //       } catch (error) {
+  //         console.error(error);
+  //       }
+  //     }
+
+  //     try {
+  //       values["rental_adress"] = selectedProp;
+  //       values["rental_units"] = selectedUnit;
+  //       values["work_category"] = WorkFormik.values.work_category ? WorkFormik.values.work_category : selectedCategory;
+  //       values["vendor"] = selectedVendor;
+  //       values["entry_allowed"] = selectedEntry;
+  //       values["workOrderImage"] = image;
+
+  //       const workorder_id = uuidv4();
+  //       values["workorder_id"] = workorder_id;
+
+  //       const work_subject = values.work_subject;
+
+  //       if (id === undefined) {
+  //         const formData = {
+  //           ...values,
+  //           statusUpdatedBy: vendorDetails.tenant_firstName + " " + vendorDetails.tenant_lastName,
+  //         };
+  //         const workOrderRes = await axios.post(`${baseUrl}/work-order/work-order`, formData);
+
+  //         if (workOrderRes.status === 200) {
+  //           if (workOrderRes.data.statusCode === 200) {
+  //             toast.success("Work Order Added Successfully.", {
+  //               position: "top-center",
+  //               autoClose: 1000,
+  //             });
+  //             navigate("/tenant/tenantwork");
+  //           } else {
+  //             console.log(workOrderRes.data, "workOrderRes.data");
+  //             toast.error(workOrderRes.data.message, {
+  //               position: "top-center",
+  //               autoClose: 1000,
+  //             });
+  //           }
+  //         }
+  //       } else {
+  //         const editUrl = `${baseUrl}/workorder/workorder/${id}`;
+  //         const res = await axios.put(editUrl, values);
+  //         handleResponse(res);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error:", error);
+  //       if (error.response) {
+  //         console.error("Response Data:", error.response.data);
+  //       }
+  //     }
+
+  //     setLoader(false);
+  // };
+
+  const handleSubmit = async (values) => {
+    console.log(values, "mansi")
+    // setSubmitting(true); // Set form submitting state to true
+    setLoader(true);
+
 
     try {
-      values["rental_adress"] = selectedProp;
-      values["rental_units"] = selectedUnit;
-      values["work_category"] = WorkFormik.values.work_category
-        ? WorkFormik.values.work_category
-        : selectedCategory;
-      values["vendor"] = selectedVendor;
-      values["entry_allowed"] = selectedEntry;
-      values["workOrderImage"] = image;
+      // Construct form data to be submitted
+      const formData = {
+        ...values,
+        rental_adress: selectedProp,
+        rental_unit: selectedUnit,
+        work_category: values.work_category || selectedCategory,
+        vendor: selectedVendor,
+        entry_allowed: selectedEntry === "Yes" ? true : false,
+        statusUpdatedBy: `${vendorDetails.tenant_firstName} ${vendorDetails.tenant_lastName}`,
+      };
 
-      const workorder_id = uuidv4();
-      values["workorder_id"] = workorder_id;
-
-      const work_subject = values.work_subject;
-
-      if (id === undefined) {
-        // Create the work order
-        const workOrderRes = await axios.post(
-          `${baseUrl}/workorder/workorder`,
-          {
-            ...values,
-            statusUpdatedBy:
-              vendorDetails.tenant_firstName +
-              " " +
-              vendorDetails.tenant_lastName,
-          }
-        );
-        // Check if the work order was created successfully
-        if (workOrderRes.status === 200) {
-          //console.log(workOrderRes.data, "fjalkjflsk");
-          // Use the work order data from the response to create the notification
-          const notificationRes = await axios.post(
-            `${baseUrl}/notification/notification/tenant`,
-            {
-              workorder: {
-                vendor_name: selectedVendor,
-                staffmember_name: selecteduser,
-                rental_adress: selectedProp,
-                rental_units: selectedUnit,
-                work_subject: work_subject,
-                workorder_id: workorder_id,
-              },
-              // statusUpdatedBy: vendorDetails.tenant_firstName + " " + vendorDetails.tenant_lastName,
-              notification: {},
-            }
-          );
-
-          // Handle the notification response if needed
-          handleResponse(workOrderRes, notificationRes);
-        } else {
-          // Handle the error and display an error message to the user if necessary.
-          console.error("Work Order Error:", workOrderRes.data);
-        }
+      console.log(formData, "yashu")
+      // Make POST request to save workorder
+      const workOrderRes = await axios.post(`${baseUrl}/work-order/work-order`, { workOrder: formData });
+      console.log(workOrderRes, "yashu")
+      if (workOrderRes.status === 200 && workOrderRes.data.statusCode === 200) {
+        toast.success("Work Order Added Successfully.", {
+          position: "top-center",
+          autoClose: 1000,
+        });
+        navigate("/tenant/tenantwork");// Navigate to tenantwork page on success
       } else {
-        const editUrl = `${baseUrl}/workorder/workorder/${id}`;
-        const res = await axios.put(editUrl, values);
-        handleResponse(res);
+        console.error(workOrderRes.data.message);
+        toast.error(workOrderRes.data.message, {
+          position: "top-center",
+          autoClose: 1000,
+        });
       }
     } catch (error) {
       console.error("Error:", error);
@@ -313,8 +340,10 @@ const TAddWork = () => {
         console.error("Response Data:", error.response.data);
       }
     }
-  };
 
+    setLoader(false);
+    // setSubmitting(false); // Set form submitting state to false
+  };
   function handleResponse(response) {
     const successMessage = id
       ? "Workorder updated successfully"
@@ -341,7 +370,7 @@ const TAddWork = () => {
     initialValues: {
       work_subject: getData?.work_subject ? getData.work_subject : "",
       rental_adress: "",
-      rental_units: "",
+      rental_unit: "",
       work_category: "",
       entry_allowed: "",
       staffmember_name: "",
@@ -350,7 +379,7 @@ const TAddWork = () => {
     },
 
     validationSchema: yup.object({
-      rental_adress: yup.string().required("Required"),
+      // rental_adress: yup.string().required("Required"),
       // rental_units: yup.string().required("Required"),
       // vendor: yup.string().required("Required"),
       // staffmember_name: yup.string().required("Required"),
@@ -358,10 +387,10 @@ const TAddWork = () => {
       // status: yup.string().required("Required"),
     }),
 
-    onSubmit: (values) => {
-      handleSubmit(values);
-    },
-  });
+
+    onSubmit: handleSubmit,
+  },
+  );
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -376,29 +405,29 @@ const TAddWork = () => {
     }
   }, [navigate]);
 
-  useEffect(() => {
-    // Make an HTTP GET request to your Express API endpoint
-    fetch(`${baseUrl}/tenant/rental-address/${cookie_id}`)
+  const fetchRentals = () => {
+    axios.get(`${baseUrl}/tenants/tenant_property/${accessType?.tenant_id}`)
       .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+        const responseData = response.data.data;
+        console.log(responseData, "janak");
+
+        if (responseData.length > 0) {
+          setPropertyData(responseData);
+        } else {
+          console.log("No data available");
         }
-        return response.json();
-      })
-      .then((data) => {
-        const uniqueAddresses = [
-          ...new Set(data.rentalAddresses.map((item) => item[0].rental_adress)),
-        ];
-        setPropertyData(uniqueAddresses);
-        setUnitData(data.rentalUnits);
+
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, [cookie_id]);
+  };
 
   useEffect(() => {
-    // Make an HTTP GET request to your Express API endpoint
+    fetchRentals();
+  }, [accessType]);
+
+  const fetchStaffMembers = () => {
     fetch(`${baseUrl}/addstaffmember/find_staffmember`)
       .then((response) => response.json())
       .then((data) => {
@@ -413,6 +442,10 @@ const TAddWork = () => {
         // Handle network error
         console.error("Network error:", error);
       });
+  };
+
+  useEffect(() => {
+    fetchStaffMembers();
   }, []);
 
   const [selectedImage, setSelectedImage] = useState([]);
@@ -438,7 +471,7 @@ const TAddWork = () => {
         {
           work_subject: WorkFormik.values.work_subject,
           rental_adress: selectedProp,
-          rental_units: WorkFormik.values.rental_units,
+          rental_unit: WorkFormik.values.rental_unit,
           work_category: WorkFormik.values.work_category,
           entry_allowed: selectedEntry,
           work_performed: WorkFormik.values.work_performed,
@@ -467,440 +500,450 @@ const TAddWork = () => {
           <Col className="order-xl-1" xl="12">
             <Card
               className="bg-secondary shadow"
-              onSubmit={WorkFormik.handleSubmit}
             >
-              <CardHeader className="bg-white border-0">
-                <Row className="align-items-center">
-                  <Col xs="8">
-                    <h3 className="mb-0">New Work Order</h3>
-                  </Col>
-                </Row>
-              </CardHeader>
-              <CardBody>
-                <Form>
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-member"
-                          >
-                            Subject *
-                          </label>
-                          <br />
-                          <br />
-                          <Input
-                            className="form-control-alternative"
-                            id="input-name"
-                            placeholder="Add Subject"
-                            type="text"
-                            name="work_subject"
-                            //name="nput-staffmember-name"
-                            onBlur={WorkFormik.handleBlur}
-                            onChange={(e) => {
-                              // Update the state or Formik values with the new input value
-                              WorkFormik.handleChange(e);
-                            }}
-                            value={WorkFormik.values.work_subject}
-                            required
-                          />
-                          {/* {WorkFormik.touched.work_subject &&
+              {/* onSubmit={WorkFormik.handleSubmit} */}
+              <Form onSubmit={(event) => {
+                event.preventDefault();
+                handleSubmit(WorkFormik.values)
+              }}>
+                <CardHeader className="bg-white border-0">
+                  <Row className="align-items-center">
+                    <Col xs="8">
+                      <h3 className="mb-0">New Work Order</h3>
+                    </Col>
+                  </Row>
+                </CardHeader>
+                <CardBody>
+                  <Form>
+                    <div className="pl-lg-4">
+                      <Row>
+                        <Col lg="6">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-member"
+                            >
+                              Subject *
+                            </label>
+                            <br />
+                            <br />
+                            <Input
+                              className="form-control-alternative"
+                              id="input-name"
+                              placeholder="Add Subject"
+                              type="text"
+                              name="work_subject"
+                              //name="nput-staffmember-name"
+                              onBlur={WorkFormik.handleBlur}
+                              onChange={(e) => {
+                                // Update the state or Formik values with the new input value
+                                WorkFormik.handleChange(e);
+                              }}
+                              value={WorkFormik.values.work_subject}
+                              required
+                            />
+                            {/* {WorkFormik.touched.work_subject &&
                           WorkFormik.errors.work_subject ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.work_subject}
                             </div>
                           ) : null} */}
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col>
-                        <FormGroup
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                          }}
-                        >
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-unitadd"
-                          >
-                            Photo
-                          </label>
-                          <span
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col>
+                          <FormGroup
                             style={{
-                              cursor: "pointer",
-                              fontSize: "14px",
-                              fontFamily: "monospace",
-                              color: "blue",
+                              display: "flex",
+                              flexDirection: "column",
                             }}
                           >
-                            <br />
-                            <input
-                              type="file"
-                              className="form-control-file d-none"
-                              accept="image/*"
-                              multiple
-                              id={`workOrderImage`}
-                              name={`workOrderImage`}
-                              onChange={(e) => fileData(e)}
-                            />
-                            <label htmlFor={`workOrderImage`}>
-                              <b style={{ fontSize: "20px" }}>+</b> Add
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-unitadd"
+                            >
+                              Photo
                             </label>
-                          </span>
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <FormGroup
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        paddingLeft: "10px",
-                      }}
-                    >
-                      <div
-                        className="mt-3 d-flex"
+                            <span
+                              style={{
+                                cursor: "pointer",
+                                fontSize: "14px",
+                                fontFamily: "monospace",
+                                color: "blue",
+                              }}
+                            >
+                              <br />
+                              <input
+                                type="file"
+                                className="form-control-file d-none"
+                                accept="image/*"
+                                multiple
+                                id={`workOrderImage`}
+                                name={`workOrderImage`}
+                                onChange={(e) => fileData(e)}
+                              />
+                              <label htmlFor={`workOrderImage`}>
+                                <b style={{ fontSize: "20px" }}>+</b> Add
+                              </label>
+                            </span>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <FormGroup
                         style={{
-                          justifyContent: "center",
+                          display: "flex",
                           flexWrap: "wrap",
+                          paddingLeft: "10px",
                         }}
                       >
-                        <div className="d-flex">
-                          {console.log(selectedFiles, "yash")}
-                          {selectedFiles &&
-                            selectedFiles.length > 0 &&
-                            selectedFiles.map((unitImg, index) => (
-                              <div
-                                key={index}
-                                style={{
-                                  position: "relative",
-                                  width: "100px",
-                                  height: "100px",
-                                  margin: "10px",
-                                  display: "flex",
-                                  flexDirection: "column",
-                                }}
-                              >
-                                <img
-                                  src={
-                                    typeof unitImg === "string"
-                                      ? `${imageGetUrl}/${unitImg}`
-                                      : URL.createObjectURL(unitImg)
-                                  }
-                                  alt=""
+                        <div
+                          className="mt-3 d-flex"
+                          style={{
+                            justifyContent: "center",
+                            flexWrap: "wrap",
+                          }}
+                        >
+                          <div className="d-flex">
+                            {selectedFiles &&
+                              selectedFiles.length > 0 &&
+                              selectedFiles.map((unitImg, index) => (
+                                <div
+                                  key={index}
                                   style={{
+                                    position: "relative",
                                     width: "100px",
                                     height: "100px",
-                                    maxHeight: "100%",
-                                    maxWidth: "100%",
-                                    borderRadius: "10px",
+                                    margin: "10px",
+                                    display: "flex",
+                                    flexDirection: "column",
                                   }}
-                                  onClick={() => {
-                                    setSelectedImage(unitImg);
-                                    setOpen(true);
-                                  }}
-                                />
-                                <ClearIcon
-                                  style={{
-                                    cursor: "pointer",
-                                    alignSelf: "flex-start",
-                                    position: "absolute",
-                                    top: "-12px",
-                                    right: "-12px",
-                                  }}
-                                  onClick={() => clearSelectedPhoto(index)}
-                                />
-                              </div>
-                            ))}
+                                >
+                                  <img
+                                    src={
+                                      typeof unitImg === "string"
+                                        ? `${imageGetUrl}/${unitImg}`
+                                        : URL.createObjectURL(unitImg)
+                                    }
+                                    alt=""
+                                    style={{
+                                      width: "100px",
+                                      height: "100px",
+                                      maxHeight: "100%",
+                                      maxWidth: "100%",
+                                      borderRadius: "10px",
+                                    }}
+                                    onClick={() => {
+                                      setSelectedImage(unitImg);
+                                      setOpen(true);
+                                    }}
+                                  />
+                                  <ClearIcon
+                                    style={{
+                                      cursor: "pointer",
+                                      alignSelf: "flex-start",
+                                      position: "absolute",
+                                      top: "-12px",
+                                      right: "-12px",
+                                    }}
+                                    onClick={() => clearSelectedPhoto(index)}
+                                  />
+                                </div>
+                              ))}
+                          </div>
+                          {open && (
+                            <OpenImageDialog
+                              open={open}
+                              setOpen={setOpen}
+                              selectedImage={selectedImage}
+                            />
+                          )}
                         </div>
-                        {open && (
-                          <OpenImageDialog
-                            open={open}
-                            setOpen={setOpen}
-                            selectedImage={selectedImage}
-                          />
-                        )}
-                      </div>
-                    </FormGroup>
-                    <br />
-                  </div>
+                      </FormGroup>
+                      <br />
+                    </div>
 
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="4">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-desg"
-                          >
-                            Property *
-                          </label>
-                          <br />
-                          <br />
+                    <div className="pl-lg-4">
+                      <Row>
+                        <Col lg="4">
                           <FormGroup>
-                            <Dropdown
-                              isOpen={propdropdownOpen}
-                              toggle={toggle1}
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-desg"
                             >
-                              <DropdownToggle caret style={{ width: "100%" }}>
-                                {selectedProp
-                                  ? selectedProp
-                                  : "Select a property..."}{" "}
-                                &nbsp;&nbsp;&nbsp;&nbsp;
-                              </DropdownToggle>
-                              <DropdownMenu
-                                style={{
-                                  width: "100%",
-                                  maxHeight: "200px",
-                                  overflowY: "auto",
-                                }}
+                              Property *
+                            </label>
+                            <br />
+                            <br />
+                            <FormGroup>
+                              <Dropdown
+                                isOpen={propdropdownOpen}
+                                toggle={toggle1}
                               >
-                                {/* Check if propertyData is not empty */}
-                                {propertyData.length > 0 ? (
-                                  <div style={{ color: "blue" }}>
-                                    {propertyData.map((property, index) => (
+                                <DropdownToggle caret style={{ width: "100%" }}>
+                                  {selectedProp
+                                    ? selectedProp
+                                    : "Select a property..."}{" "}
+                                  &nbsp;&nbsp;&nbsp;&nbsp;
+                                </DropdownToggle>
+                                <DropdownMenu
+                                  style={{
+                                    width: "100%",
+                                    maxHeight: "200px",
+                                    overflowY: "auto",
+                                  }}
+                                >
+                                  {/* Check if propertyData is not empty */}
+                                  {/* {propertyData.length > 0 ? (
+                                    propertyData.map((address, index) => (
                                       <DropdownItem
                                         key={index}
-                                        onClick={() =>
-                                          handlePropertyTypeSelect(property)
-                                        }
+                                        onClick={() => handlePropertyTypeSelect(address)}
                                       >
-                                        {property}
+                                        {address}
                                       </DropdownItem>
-                                    ))}
-                                  </div>
-                                ) : (
-                                  <p>No data available</p>
-                                )}
-                              </DropdownMenu>
+                                    ))
+                                  ) : (
+                                    <p>No data available</p>
+                                  )} */}
+                                  {console.log(propertyData, "yash")}
+                                  {propertyData.map((property, index) => (
+                                    <DropdownItem
+                                      key={index}
+                                      onClick={() => handlePropertyTypeSelect(property)}
+                                    >
+                                      {property.rental_adress}
+                                    </DropdownItem>
+                                  ))}
+                                </DropdownMenu>
 
-                              {WorkFormik.errors &&
-                              WorkFormik.errors?.rental_adress &&
-                              WorkFormik.touched &&
-                              WorkFormik.touched?.rental_adress &&
-                              WorkFormik.values.rental_adress === "" ? (
-                                <div style={{ color: "red" }}>
-                                  {WorkFormik.errors.rental_adress}
-                                </div>
-                              ) : null}
+
+
+                                {WorkFormik.errors &&
+                                  WorkFormik.errors?.rental_adress &&
+                                  WorkFormik.touched &&
+                                  WorkFormik.touched?.rental_adress &&
+                                  WorkFormik.values.rental_adress === "" ? (
+                                  <div style={{ color: "red" }}>
+                                    {WorkFormik.errors.rental_adress}
+                                  </div>
+                                ) : null}
+                              </Dropdown>
+                            </FormGroup>
+                          </FormGroup>
+                        </Col>
+
+                        <Col lg="4">
+                          {selectedProp &&
+                            unitData &&
+                            unitData[0] &&
+                            unitData[0].rental_unit && (
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-unit"
+                                >
+                                  Unit *
+                                </label>
+                                <br />
+                                <br />
+                                <FormGroup>
+                                  <Dropdown
+                                    isOpen={unitDropdownOpen}
+                                    toggle={toggle11}
+                                  >
+                                    <DropdownToggle caret>
+                                      {selectedUnit
+                                        ? selectedUnit
+                                        : "Select Unit"}
+                                    </DropdownToggle>
+                                    <DropdownMenu>
+                                      {unitData.length > 0 ? (
+                                        unitData.map((unit) => (
+                                          <DropdownItem
+                                            key={unit._id}
+                                            onClick={() =>
+                                              handleUnitSelect(
+                                                unit.rental_unit,
+                                                unit.unit_id
+                                              )
+                                            }
+                                          >
+                                            {unit.rental_unit}
+                                          </DropdownItem>
+                                        ))
+                                      ) : (
+                                        <DropdownItem disabled>
+                                          No units available
+                                        </DropdownItem>
+                                      )}
+                                    </DropdownMenu>
+                                    {WorkFormik.errors &&
+                                      WorkFormik.errors?.rental_unit &&
+                                      WorkFormik.touched &&
+                                      WorkFormik.touched?.rental_unit &&
+                                      WorkFormik.values.rental_unit === "" ? (
+                                      <div style={{ color: "red" }}>
+                                        {WorkFormik.errors.rental_unit}
+                                      </div>
+                                    ) : null}
+                                  </Dropdown>
+                                </FormGroup>
+                              </FormGroup>
+                            )}
+                        </Col>
+                      </Row>
+                      <br />
+                    </div>
+
+                    <div className="pl-lg-4">
+                      <Row>
+                        <Col lg="3">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-desg"
+                            >
+                              Category
+                            </label>
+                            <br />
+                            <br />
+                            <Dropdown
+                              isOpen={categorydropdownOpen}
+                              toggle={toggle2}
+                            >
+                              <DropdownToggle caret style={{ width: "100%" }}>
+                                {selectedCategory} &nbsp;&nbsp;&nbsp;&nbsp;
+                              </DropdownToggle>
+                              <DropdownMenu style={{ width: "100%" }}>
+                                <DropdownItem
+                                  onClick={() =>
+                                    handleCategorySelection("Complaint")
+                                  }
+                                >
+                                  Complaint
+                                </DropdownItem>
+                                <DropdownItem
+                                  onClick={() =>
+                                    handleCategorySelection(
+                                      "Contribution Request"
+                                    )
+                                  }
+                                >
+                                  Contribution Request
+                                </DropdownItem>
+                                <DropdownItem
+                                  onClick={() =>
+                                    handleCategorySelection("Feedback/Suggestion")
+                                  }
+                                >
+                                  Feedback/Suggestion
+                                </DropdownItem>
+                                <DropdownItem
+                                  onClick={() =>
+                                    handleCategorySelection("General Inquiry")
+                                  }
+                                >
+                                  General Inquiry
+                                </DropdownItem>
+                                <DropdownItem
+                                  onClick={() =>
+                                    handleCategorySelection("Maintenance Request")
+                                  }
+                                >
+                                  Maintenance Request
+                                </DropdownItem>
+                                <DropdownItem
+                                  onClick={() => handleCategorySelection("Other")}
+                                >
+                                  Other
+                                </DropdownItem>
+                              </DropdownMenu>
                             </Dropdown>
                           </FormGroup>
-                        </FormGroup>
-                      </Col>
-
-                      <Col lg="4">
-                        {selectedProp &&
-                          unitData &&
-                          unitData[0] &&
-                          unitData[0].rental_units && (
-                            <FormGroup>
-                              <label
-                                className="form-control-label"
-                                htmlFor="input-unit"
-                              >
-                                Unit *
-                              </label>
-                              <br />
-                              <br />
-                              <FormGroup>
-                                <Dropdown
-                                  isOpen={unitDropdownOpen}
-                                  toggle={toggle11}
-                                >
-                                  <DropdownToggle caret>
-                                    {selectedUnit
-                                      ? selectedUnit
-                                      : "Select Unit"}
-                                  </DropdownToggle>
-                                  <DropdownMenu>
-                                    {unitData.length > 0 ? (
-                                      unitData.map((unit) => (
-                                        <DropdownItem
-                                          key={unit._id}
-                                          onClick={() =>
-                                            handleUnitSelect(
-                                              unit.rental_units,
-                                              unit._id
-                                            )
-                                          }
-                                        >
-                                          {unit.rental_units}
-                                        </DropdownItem>
-                                      ))
-                                    ) : (
-                                      <DropdownItem disabled>
-                                        No units available
-                                      </DropdownItem>
-                                    )}
-                                  </DropdownMenu>
-                                  {WorkFormik.errors &&
-                                  WorkFormik.errors?.rental_units &&
-                                  WorkFormik.touched &&
-                                  WorkFormik.touched?.rental_units &&
-                                  WorkFormik.values.rental_units === "" ? (
-                                    <div style={{ color: "red" }}>
-                                      {WorkFormik.errors.rental_units}
-                                    </div>
-                                  ) : null}
-                                </Dropdown>
-                              </FormGroup>
-                            </FormGroup>
-                          )}
-                      </Col>
-                    </Row>
-                    <br />
-                  </div>
-
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="3">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-desg"
-                          >
-                            Category
-                          </label>
-                          <br />
-                          <br />
-                          <Dropdown
-                            isOpen={categorydropdownOpen}
-                            toggle={toggle2}
-                          >
-                            <DropdownToggle caret style={{ width: "100%" }}>
-                              {selectedCategory} &nbsp;&nbsp;&nbsp;&nbsp;
-                            </DropdownToggle>
-                            <DropdownMenu style={{ width: "100%" }}>
-                              <DropdownItem
-                                onClick={() =>
-                                  handleCategorySelection("Complaint")
-                                }
-                              >
-                                Complaint
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() =>
-                                  handleCategorySelection(
-                                    "Contribution Request"
-                                  )
-                                }
-                              >
-                                Contribution Request
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() =>
-                                  handleCategorySelection("Feedback/Suggestion")
-                                }
-                              >
-                                Feedback/Suggestion
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() =>
-                                  handleCategorySelection("General Inquiry")
-                                }
-                              >
-                                General Inquiry
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() =>
-                                  handleCategorySelection("Maintenance Request")
-                                }
-                              >
-                                Maintenance Request
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() => handleCategorySelection("Other")}
-                              >
-                                Other
-                              </DropdownItem>
-                            </DropdownMenu>
-                          </Dropdown>
-                        </FormGroup>
-                      </Col>
-                      <Col
-                        lg="3"
-                        style={
-                          selectedCategory === "Other"
-                            ? { display: "block" }
-                            : { display: "none" }
-                        }
-                      >
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-member"
-                          >
-                            Other Category
-                          </label>
-                          <br />
-                          <br />
-                          <Input
-                            className="form-control-alternative"
-                            id="input-work-subject"
-                            placeholder="Enter Other Category"
-                            type="text"
-                            name="work_category"
-                            //name="nput-staffmember-name"
-                            onBlur={WorkFormik.handleBlur}
-                            onChange={(e) => {
-                              // Update the state or Formik values with the new input value
-                              // WorkFormik.handleChange(e);
-                              WorkFormik.setFieldValue(
-                                "work_category",
-                                e.target.value
-                              );
-                            }}
-                            value={WorkFormik.values.work_category}
+                        </Col>
+                        <Col
+                          lg="3"
+                          style={
+                            selectedCategory === "Other"
+                              ? { display: "block" }
+                              : { display: "none" }
+                          }
+                        >
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-member"
+                            >
+                              Other Category
+                            </label>
+                            <br />
+                            <br />
+                            <Input
+                              className="form-control-alternative"
+                              id="input-work-subject"
+                              placeholder="Enter Other Category"
+                              type="text"
+                              name="work_category"
+                              //name="nput-staffmember-name"
+                              onBlur={WorkFormik.handleBlur}
+                              onChange={(e) => {
+                                // Update the state or Formik values with the new input value
+                                // WorkFormik.handleChange(e);
+                                WorkFormik.setFieldValue(
+                                  "work_category",
+                                  e.target.value
+                                );
+                              }}
+                              value={WorkFormik.values.work_category}
                             // required
-                          />
-                          {/* {WorkFormik.touched.work_subject &&
+                            />
+                            {/* {WorkFormik.touched.work_subject &&
                           WorkFormik.errors.work_subject ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.work_subject}
                             </div>
                           ) : null} */}
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                  </div>
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="4">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-desg"
-                          >
-                            Entry Allowed
-                          </label>
-                          <br />
-                          <br />
-                          <Dropdown isOpen={entrydropdownOpen} toggle={toggle4}>
-                            <DropdownToggle caret style={{ width: "100%" }}>
-                              {selectedEntry} &nbsp;&nbsp;&nbsp;&nbsp;
-                            </DropdownToggle>
-                            <DropdownMenu style={{ width: "100%" }}>
-                              <DropdownItem
-                                onClick={() => handleEntrySelect("Yes")}
-                              >
-                                Yes
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() => handleEntrySelect("No")}
-                              >
-                                No
-                              </DropdownItem>
-                            </DropdownMenu>
-                          </Dropdown>
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <br />
-                  </div>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                    </div>
+                    <div className="pl-lg-4">
+                      <Row>
+                        <Col lg="4">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-desg"
+                            >
+                              Entry Allowed
+                            </label>
+                            <br />
+                            <br />
+                            <Dropdown isOpen={entrydropdownOpen} toggle={toggle4}>
+                              <DropdownToggle caret style={{ width: "100%" }}>
+                                {selectedEntry} &nbsp;&nbsp;&nbsp;&nbsp;
+                              </DropdownToggle>
+                              <DropdownMenu style={{ width: "100%" }}>
+                                <DropdownItem
+                                  onClick={() => handleEntrySelect("Yes")}
+                                >
+                                  Yes
+                                </DropdownItem>
+                                <DropdownItem
+                                  onClick={() => handleEntrySelect("No")}
+                                >
+                                  No
+                                </DropdownItem>
+                              </DropdownMenu>
+                            </Dropdown>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <br />
+                    </div>
 
-                  {/* <div className="pl-lg-4">
+                    {/* <div className="pl-lg-4">
                         <Row>
                             <Col lg="6">
                                     <FormGroup>
@@ -924,45 +967,45 @@ const TAddWork = () => {
                         <br/>
                         </div> */}
 
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-member"
-                          >
-                            Work To Be Performed
-                          </label>
-                          <br />
-                          <br />
-                          <Input
-                            className="form-control-alternative"
-                            id="input-name"
-                            placeholder=""
-                            type="textarea"
-                            name="work_performed"
-                            //name="nput-staffmember-name"
-                            onBlur={WorkFormik.handleBlur}
-                            onChange={(e) => {
-                              // Update the state or Formik values with the new input value
-                              WorkFormik.handleChange(e);
-                            }}
-                            value={WorkFormik.values.work_performed}
-                          />
-                          {WorkFormik.touched.work_performed &&
-                          WorkFormik.errors.work_performed ? (
-                            <div style={{ color: "red" }}>
-                              {WorkFormik.errors.work_performed}
-                            </div>
-                          ) : null}
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <br />
-                  </div>
+                    <div className="pl-lg-4">
+                      <Row>
+                        <Col lg="6">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-member"
+                            >
+                              Work To Be Performed
+                            </label>
+                            <br />
+                            <br />
+                            <Input
+                              className="form-control-alternative"
+                              id="input-name"
+                              placeholder=""
+                              type="textarea"
+                              name="work_performed"
+                              //name="nput-staffmember-name"
+                              onBlur={WorkFormik.handleBlur}
+                              onChange={(e) => {
+                                // Update the state or Formik values with the new input value
+                                WorkFormik.handleChange(e);
+                              }}
+                              value={WorkFormik.values.work_performed}
+                            />
+                            {WorkFormik.touched.work_performed &&
+                              WorkFormik.errors.work_performed ? (
+                              <div style={{ color: "red" }}>
+                                {WorkFormik.errors.work_performed}
+                              </div>
+                            ) : null}
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <br />
+                    </div>
 
-                  {/* <div className="pl-lg-4">
+                    {/* <div className="pl-lg-4">
                             <Row>
                                 <Col lg="3">
                                     <FormGroup>
@@ -1021,40 +1064,45 @@ const TAddWork = () => {
                       
                         <br/>
                         </div> */}
-                  {id1 ? (
+                    {id1 ? (
+                      <button
+                        type="submit"
+                        className="btn btn-primary"
+                        style={{ background: "green", cursor: "pointer" }}
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          editworkorder(vid);
+                        }}
+                      >
+                        Update Lease
+                      </button>
+                    ) : (
+                      <button
+                        type="submit"
+                        className="btn btn-primary ml-4"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleSubmit(WorkFormik.values);
+                        }}
+                        style={{ background: "green" }}
+                      >
+                        Add Work Order
+                      </button>
+                    )}
                     <button
-                      type="submit"
+                      color="primary"
+                      //  href="#rms"
                       className="btn btn-primary"
-                      style={{ background: "green", cursor: "pointer" }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        editworkorder(vid);
-                      }}
+                      onClick={handleCloseButtonClick}
+                      size="sm"
+                      style={{ background: "white", color: "black" }}
                     >
-                      Update Lease
+                      Cancel
                     </button>
-                  ) : (
-                    <button
-                      type="submit"
-                      className="btn btn-primary ml-4"
-                      style={{ background: "green" }}
-                    >
-                      Add Work Order
-                    </button>
-                  )}
-                  <button
-                    color="primary"
-                    //  href="#rms"
-                    className="btn btn-primary"
-                    onClick={handleCloseButtonClick}
-                    size="sm"
-                    style={{ background: "white", color: "black" }}
-                  >
-                    Cancel
-                  </button>
-                </Form>
-                <br />
-              </CardBody>
+                  </Form>
+                  <br />
+                </CardBody>
+              </Form>
             </Card>
           </Col>
         </Row>

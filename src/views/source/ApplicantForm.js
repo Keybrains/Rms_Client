@@ -104,10 +104,9 @@ const ApplicantForm = () => {
     e.preventDefault();
 
     try {
-      const updatedData = {};
-
+      const object = { ...formData, applicant_id: id };
       const url = `${baseUrl}/applicant/application/${id}`;
-      const response = await axios.put(url, updatedData);
+      const response = await axios.post(url, object);
 
       if (response.status === 200) {
         toast.success(response.data.message, {

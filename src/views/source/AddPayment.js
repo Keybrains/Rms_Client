@@ -107,7 +107,6 @@ function AddPayment() {
       .get(url)
       .then((response) => {
         const Data = response.data.data[0];
-        console.log("manu", Data);
         setSurchargePercentage(response.data.data[0].surcharge_percent);
       })
       .catch((error) => {
@@ -469,11 +468,13 @@ function AddPayment() {
         object
       );
       if (res.data.statusCode === 200) {
-        toast.success(res.data.message, {
+        toast.success("Payment Updated Successfully", {
           position: "top-center",
           autoClose: 1000,
         });
-        navigate(`/${admin}/rentrolldetail/${lease_id}`);
+        setTimeout(() => {
+          navigate(`/${admin}/rentrolldetail/${lease_id}`);
+        }, 2000)
       } else {
         toast.warning(res.data.message, {
           position: "top-center",
@@ -622,7 +623,9 @@ function AddPayment() {
               position: "top-center",
               autoClose: 1000,
             });
-            navigate(`/${admin}/rentrolldetail/${lease_id}`);
+            setTimeout(() => {
+              navigate(`/${admin}/rentrolldetail/${lease_id}`);
+            }, 2000)
           } else {
             toast.warning(paymentResponse.data.message, {
               position: "top-center",
@@ -664,7 +667,9 @@ function AddPayment() {
             position: "top-center",
             autoClose: 1000,
           });
-          navigate(`/${admin}/rentrolldetail/${lease_id}`);
+          setTimeout(() => {
+            navigate(`/${admin}/rentrolldetail/${lease_id}`);
+          }, 2000)
         } else {
           toast.warning(paymentResponse.data.message, {
             position: "top-center",
@@ -711,7 +716,9 @@ function AddPayment() {
             position: "top-center",
             autoClose: 1000,
           });
-          navigate(`/${admin}/rentrolldetail/${lease_id}`);
+          setTimeout(() => {
+            navigate(`/${admin}/rentrolldetail/${lease_id}`);
+          }, 2000)
         } else {
           toast.warning(paymentResponse.data.message, {
             position: "top-center",
