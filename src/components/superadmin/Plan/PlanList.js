@@ -310,9 +310,18 @@ const PlanList = () => {
   };
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
-
+  // const deletePlanFromNmi = async (id) => {
+  //   await axios.post(`${baseUrl}/nmipayment/delete-plan`,{
+  //     planId: id
+  //   }).then((response)=>{
+  //     console.log(response,'response');
+  //   }).catch((error)=>{
+  //     console.log(error,'error');
+  //   })
+  // }
   // Delete selected
-  var handleDelete = () => {
+  var handleDelete = async() => {
+    console.log("selected", selected[0]);
     swal("Are You Sure You Want TO Delete ?", {
       buttons: ["No", "Yes"],
     }).then(async (buttons) => {
@@ -323,9 +332,7 @@ const PlanList = () => {
           })
           .then((response) => {
             if (response.data.statusCode === 200) {
-              // axios.delete(`${baseUrl}/nmipayment/delete-plan`,{
-              //   planId:selected
-              // });
+
               getData();
               setSelected([]);
               toast.success(response.data.message, {
