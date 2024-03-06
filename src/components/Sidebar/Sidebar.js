@@ -237,22 +237,6 @@ const Sidebar = (props) => {
     };
   }
 
-  const [plan, setPlan] = useState("");
-  const getPlan = async () => {
-    try {
-      const res = await axios.get(
-        `${baseUrl}/purchase/plan-purchase/${accessType?.admin_id}`
-      );
-      if (res.data.statusCode === 200) {
-        setPlan(res.data.data);
-      }
-    } catch (error) {}
-  };
-
-  useEffect(() => {
-    getPlan();
-  }, [accessType]);
-
   return (
     <Navbar
       className="navbar-vertical fixed-left navbar-light bg-white"
