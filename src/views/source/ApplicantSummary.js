@@ -118,7 +118,7 @@ const ApplicantSummary = () => {
   const fetchApplicationData = async () => {
     setLoader(true);
     try {
-      const url = `${baseUrl}/applicant/applicant_details/${id}`;
+      const url = `https://saas.cloudrentalmanager.com/api/applicant/applicant_details/${id}`;
       console.log(url);
       const res = await axios.get(url);
       setApplicationData(res.data.data);

@@ -68,10 +68,23 @@ const PropertiesTables = () => {
       const response = await axios.get(
         `${baseUrl}/rentals/rentals/${accessType.admin_id}`
       );
-console.log(`${baseUrl}/rentals/rentals/${accessType.admin_id}`)
+
       setRentalsData(response.data.data);
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
       setLoader(false);
+    } catch (error) {
+      console.error("Error fetching rental data:", error);
+    }
+  };
+
+  const [countRes, setCountRes] = useState("");
+  const getRentalsLimit = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/rentals/limitation/${accessType.admin_id}`
+      );
+      console.log(response.data);
+      setCountRes(response.data);
     } catch (error) {
       console.error("Error fetching rental data:", error);
     }
@@ -122,8 +135,8 @@ console.log(`${baseUrl}/rentals/rentals/${accessType.admin_id}`)
   };
 
   useEffect(() => {
-    // Fetch initial data
     getRentalsData();
+    getRentalsLimit();
   }, [accessType]);
 
   const startIndex = (currentPage - 1) * pageItem;
@@ -417,11 +430,8 @@ console.log(`${baseUrl}/rentals/rentals/${accessType.admin_id}`)
 
     filterRentalsBySearchAndPage();
   };
-  //console.log(sortBy, "sortBy");
 
   useEffect(() => {
-    // setLoader(false);
-    // filterRentalsBySearch();
     getRentalsData();
   }, [upArrow, sortBy]);
 
@@ -439,7 +449,17 @@ console.log(`${baseUrl}/rentals/rentals/${accessType.admin_id}`)
             <Button
               color="primary"
               //  href="#rms"
-              onClick={() => navigate("/" + admin + "/rentals")}
+              onClick={() => {
+                if (countRes.statusCode === 200) {
+                  swal(
+                    "Plan Limitation",
+                    "The limit for adding properties according to the plan has been reached.",
+                    "warning"
+                  );
+                } else {
+                  navigate("/" + admin + "/rentals");
+                }
+              }}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
@@ -464,69 +484,89 @@ console.log(`${baseUrl}/rentals/rentals/${accessType.admin_id}`)
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <Row className="d-flex">
-                    <FormGroup className="mr-sm-2">
-                      <Input
-                        fullWidth
-                        type="text"
-                        placeholder="Search"
-                        value={searchQuery}
-                        onChange={(e) => {
-                          setSearchQuery(e.target.value);
-                          setSearchQuery2("");
-                        }}
-                        style={{
-                          width: "100%",
-                          maxWidth: "200px",
-                          minWidth: "200px",
-                          border: "1px solid #ced4da", // Border color similar to the input
-                        }}
-                      />
-                    </FormGroup>
-                    <FormGroup className="mr-sm-2">
-                      <Dropdown isOpen={search} toggle={toggle3}>
-                        <DropdownToggle
-                          caret
-                          style={{
-                            boxShadow: "none",
-                            border: "1px solid #ced4da",
-                            maxWidth: "200px",
-                            minWidth: "200px",
-                          }}
-                        >
-                          {searchQuery2
-                            ? searchQuery
-                              ? "Select Type"
-                              : searchQuery2
-                            : "Select Type"}
-                        </DropdownToggle>
-                        <DropdownMenu>
-                          <DropdownItem
-                            onClick={() => {
-                              setSearchQuery2("Residential");
-                              setSearchQuery("");
+                    <Col>
+                      <Row>
+                        <FormGroup className="mr-sm-2">
+                          <Input
+                            fullWidth
+                            type="text"
+                            placeholder="Search"
+                            value={searchQuery}
+                            onChange={(e) => {
+                              setSearchQuery(e.target.value);
+                              setSearchQuery2("");
                             }}
-                          >
-                            Residential
-                          </DropdownItem>
-                          <DropdownItem
-                            onClick={() => {
-                              setSearchQuery2("Commercial");
-                              setSearchQuery("");
+                            style={{
+                              width: "100%",
+                              maxWidth: "200px",
+                              minWidth: "200px",
+                              border: "1px solid #ced4da",
                             }}
-                          >
-                            Commercial
-                          </DropdownItem>
-                          <DropdownItem
-                            onClick={() => {
-                              setSearchQuery2("All");
-                              setSearchQuery("");
-                            }}
-                          >
-                            All
-                          </DropdownItem>
-                        </DropdownMenu>
-                      </Dropdown>
-                    </FormGroup>
+                          />
+                        </FormGroup>
+                        <FormGroup className="mr-sm-2">
+                          <Dropdown isOpen={search} toggle={toggle3}>
+                            <DropdownToggle
+                              caret
+                              style={{
+                                boxShadow: "none",
+                                border: "1px solid #ced4da",
+                                maxWidth: "200px",
+                                minWidth: "200px",
+                              }}
+                            >
+                              {searchQuery2
+                                ? searchQuery
+                                  ? "Select Type"
+                                  : searchQuery2
+                                : "Select Type"}
+                            </DropdownToggle>
+                            <DropdownMenu>
+                              <DropdownItem
+                                onClick={() => {
+                                  setSearchQuery2("Residential");
+                                  setSearchQuery("");
+                                }}
+                              >
+                                Residential
+                              </DropdownItem>
+                              <DropdownItem
+                                onClick={() => {
+                                  setSearchQuery2("Commercial");
+                                  setSearchQuery("");
+                                }}
+                              >
+                                Commercial
+                              </DropdownItem>
+                              <DropdownItem
+                                onClick={() => {
+                                  setSearchQuery2("All");
+                                  setSearchQuery("");
+                                }}
+                              >
+                                All
+                              </DropdownItem>
+                            </DropdownMenu>
+                          </Dropdown>
+                        </FormGroup>
+                      </Row>
+                    </Col>
+
+                    <Col className="d-flex justify-content-end">
+                      <FormGroup>
+                        <p>
+                          Added :{" "}
+                          <b style={{ color: "blue", fontWeight: 1000 }}>
+                            {countRes.rentalCount}
+                          </b>{" "}
+                          {" / "}
+                          Total :{" "}
+                          <b style={{ color: "blue", fontWeight: 1000 }}>
+                            {countRes.propertyCountLimit}
+                          </b>
+                        </p>
+                      </FormGroup>
+                    </Col>
                   </Row>
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>
