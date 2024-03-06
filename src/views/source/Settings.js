@@ -166,6 +166,91 @@ const Settings = () => {
     }
   }
 
+    //Selected option Latefee Charge
+    const [lateFee, setLateFee] = useState(null);
+    const [latefee_id, setLateFeeId] = useState(null);
+  
+    const latefeeFormik = useFormik({
+      initialValues: {
+        duration: "",
+        late_fee: "",
+      },
+      validationSchema: yup.object({
+        duration: yup.number().required("Required"),
+        late_fee: yup.number().required("Required"),
+      }),
+      onSubmit: (values) => {
+        handleLateFeeSubmit(values);
+      },
+    });
+  
+    useEffect(() => {
+      let Admin_Id = accessType?.admin_id;
+      axios
+        .get(`${baseUrl}/latefee/latefee/${Admin_Id}`)
+        .then((response) => {
+          const Data = response.data.data;
+          setLateFee(Data);
+          setLateFeeId(Data.latefee_id);
+          latefeeFormik.setValues({
+            duration: Data.duration || "",
+            late_fee: Data.late_fee || "",
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching late fee data:", error);
+        });
+    }, [accessType, selectedOption]);
+  
+    async function handleLateFeeSubmit(values) {
+      setSubmitLoader(true);
+      try {
+        const object = {
+          admin_id: accessType.admin_id,
+          duration: latefeeFormik.values.duration,
+          late_fee: latefeeFormik.values.late_fee,
+        };
+  
+        if (!latefee_id) {
+          const res = await axios.post(`${baseUrl}/latefee/latefee`, object);
+          if (res.data.statusCode === 200) {
+            toast.success("Late Fee Added", {
+              position: "top-center",
+              autoClose: 800,
+              // onClose: () => navigate(`/${admin}/surcharge`),
+            });
+          } else if (res.data.statusCode === 201) {
+            toast.error(res.data.message, {
+              position: "top-center",
+              autoClose: 1000,
+            });
+          }
+        } else {
+          const editUrl = `${baseUrl}/latefee/latefee/${latefee_id}`;
+          const res = await axios.put(editUrl, object);
+          if (res.data.statusCode === 200) {
+            toast.success("Late Fee Updated", {
+              position: "top-center",
+              autoClose: 800,
+              // onClose: () => navigate(`/${admin}/surcharge`),
+            });
+          } else if (res.data.statusCode === 400) {
+            toast.error(res.data.message, {
+              position: "top-center",
+              autoClose: 1000,
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        if (error.response) {
+          console.error("Response Data:", error.response.data);
+        }
+      } finally {
+        setSubmitLoader(false);
+      }
+    }
+
   //Selected option Mail
   const [mailData, setMailData] = useState([]);
   const [click, setClick] = useState(false);
@@ -421,7 +506,7 @@ const Settings = () => {
                           {selectedOption === "latefee" && (
                           <div>
                             <h1>Late Fee Charge</h1>
-                            <Form onSubmit={surchargeFormik.handleSubmit}>
+                            <Form onSubmit={latefeeFormik.handleSubmit}>
                               <div className="pl-lg-4 mt-5">
                                 <Row>
                                   <span>
@@ -436,7 +521,7 @@ const Settings = () => {
                                         className="form-control-label"
                                         htmlFor="input-property"
                                       >
-                                        Late Fee Charge 
+                                       Amount 
                                       </label>
                                       <br />
                                       <br />
@@ -445,19 +530,48 @@ const Settings = () => {
                                         id="input-protype"
                                         placeholder="Late Fee Charge"
                                         type="number"
-                                        // name="surcharge_percent"
-                                        // onBlur={surchargeFormik.handleBlur}
-                                        // onChange={surchargeFormik.handleChange}
-                                        // value={
-                                        //   surchargeFormik.values
-                                        //     .surcharge_percent
-                                        // }
-                                        // required
+                                        name="late_fee"
+                                        onBlur={latefeeFormik.handleBlur}
+                                        onChange={latefeeFormik.handleChange}
+                                        value={
+                                          latefeeFormik.values
+                                            .late_fee
+                                        }
+                                        required
                                       />
                                     </FormGroup>
                                   </Col>
                                 </Row>
-                                <br />
+                                
+                                <Row className="mt-4">
+                                  <Col lg="6">
+                                    <FormGroup>
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-property"
+                                      >
+                                        Duration 
+                                      </label>
+                                      <br />
+                                      <br />
+                                      <Input
+                                        className="form-control-alternative"
+                                        id="input-protype"
+                                        placeholder="Late Fee Duration"
+                                        type="number"
+                                        name="duration"
+                                        onBlur={latefeeFormik.handleBlur}
+                                        onChange={latefeeFormik.handleChange}
+                                        value={
+                                          latefeeFormik.values
+                                            .duration
+                                        }
+                                        required
+                                      />
+                                    </FormGroup>
+                                  </Col>
+                                </Row>
+                                <br/>
                               </div>
                               <Row>
                                 {submitLoader ? (
@@ -481,14 +595,14 @@ const Settings = () => {
                                       color: "white",
                                     }}
                                   >
-                                    {/* {surcharge_id ? "Update" : "Save"} */}
-                                   Update
+                                    {latefee_id ? "Update" : "Save"}
+                                   
                                   </Button>
                                 )}
                                 <Button
                                   color="primary"
                                   className="btn btn-primary ml-4"
-                                  // onClick={surchargeFormik.resetForm}
+                                  onClick={latefeeFormik.resetForm}
                                   style={{
                                     background: "white",
                                     color: "black",
