@@ -179,7 +179,7 @@ const Sidebar = (props) => {
       // prop.name === "Add Agent"
     );
     return filteredRoutes.map((prop, key) => {
-      const path = prop.layout == "/"+admin+"" ? "/" + admin : "/" + admin;
+      const path = prop.layout == "/" + admin + "" ? "/" + admin : "/" + admin;
       return (
         <NavItem key={key}>
           <NavLink
@@ -195,6 +195,7 @@ const Sidebar = (props) => {
     });
   };
 
+  const [accessType, setAccessType] = useState("");
   const checkAdminExist = async () => {
     try {
       const response = await axios.get(`${baseUrl}/admin/company/${admin}`);
@@ -202,24 +203,25 @@ const Sidebar = (props) => {
       const status = response.data.statusCode;
 
       if (status != 200) {
-        navigate(`/${admin}/404`)
+        navigate(`/${admin}/404`);
       } else {
         if (localStorage.getItem("token")) {
           const jwt = jwtDecode(localStorage.getItem("token"));
           if (jwt.company_name != admin) {
-            navigate(`/${admin}/404`)
+            navigate(`/${admin}/404`);
+          } else {
+            setAccessType(jwt);
           }
         }
       }
-
     } catch (error) {
-      console.error("error in acheck admin exist", error)
+      console.error("error in acheck admin exist", error);
     }
-  }
+  };
 
   useEffect(() => {
-    checkAdminExist()
-  }, [admin])
+    checkAdminExist();
+  }, [admin]);
 
   const { bgColor, routes, logo } = props;
   let navbarBrandProps;
@@ -234,6 +236,22 @@ const Sidebar = (props) => {
       target: "_blank",
     };
   }
+
+  const [plan, setPlan] = useState("");
+  const getPlan = async () => {
+    try {
+      const res = await axios.get(
+        `${baseUrl}/purchase/plan-purchase/${accessType?.admin_id}`
+      );
+      if (res.data.statusCode === 200) {
+        setPlan(res.data.data);
+      }
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getPlan();
+  }, [accessType]);
 
   return (
     <Navbar
@@ -377,15 +395,17 @@ const Sidebar = (props) => {
               <DropdownItem className="noti-title" header tag="div">
                 <h6 className="text-overflow m-0">Welcome!</h6>
               </DropdownItem>
-                <DropdownItem onClick={() => navigate("/"+admin+"/user-profile")} >
-                  <i className="ni ni-single-02" />
-                  <span>My profile</span>
-                </DropdownItem>
-               <DropdownItem onClick={() => navigate("/"+admin+"/settings")}>
-                  <i className="ni ni-settings-gear-65" />
-                  <span>Settings</span>
-                </DropdownItem>
-                 {/* <DropdownItem to="/admin/user-profile" tag={Link}>
+              <DropdownItem
+                onClick={() => navigate("/" + admin + "/user-profile")}
+              >
+                <i className="ni ni-single-02" />
+                <span>My profile</span>
+              </DropdownItem>
+              <DropdownItem onClick={() => navigate("/" + admin + "/settings")}>
+                <i className="ni ni-settings-gear-65" />
+                <span>Settings</span>
+              </DropdownItem>
+              {/* <DropdownItem to="/admin/user-profile" tag={Link}>
                   <i className="ni ni-calendar-grid-58" />
                   <span>Activity</span>
                 </DropdownItem>
@@ -501,14 +521,14 @@ const Sidebar = (props) => {
                 Listings
               </DropdownItem> */}
                 <DropdownItem
-                  to={"/"+admin+"/RentRoll"}
+                  to={"/" + admin + "/RentRoll"}
                   tag={Link}
                   onClick={toggleCollapse}
                 >
                   Rent Roll
                 </DropdownItem>
                 <DropdownItem
-                  to={"/"+admin+"/Applicants"}
+                  to={"/" + admin + "/Applicants"}
                   tag={Link}
                   onClick={toggleCollapse}
                 >
@@ -543,20 +563,20 @@ const Sidebar = (props) => {
           </Nav>
           <Nav navbar>
             <UncontrolledDropdown nav>
-            <Button
-              color="primary"
-              className="buy-now-button"
-              onClick={() => navigate("/"+admin+"/Plans")}
-              size="sm"
-              style={{
-                background: "rgb(48 52 58 / 70%)",
-                color: "#fff",
-                marginRight: "20px",
-                width:"100% "
-              }}
-            >
-              Buy
-          </Button>
+              <Button
+                color="primary"
+                className="buy-now-button"
+                onClick={() => navigate("/" + admin + "/Plans")}
+                size="sm"
+                style={{
+                  background: "rgb(48 52 58 / 70%)",
+                  color: "#fff",
+                  marginRight: "20px",
+                  width: "100% ",
+                }}
+              >
+                Buy
+              </Button>
             </UncontrolledDropdown>
           </Nav>
 
