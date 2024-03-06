@@ -300,7 +300,6 @@ const TAddWork = () => {
   // };
 
   const handleSubmit = async (values) => {
-    console.log(values, "mansi")
     // setSubmitting(true); // Set form submitting state to true
     setLoader(true);
 
@@ -317,7 +316,6 @@ const TAddWork = () => {
         statusUpdatedBy: `${vendorDetails.tenant_firstName} ${vendorDetails.tenant_lastName}`,
       };
 
-      console.log(formData, "yashu")
       // Make POST request to save workorder
       const workOrderRes = await axios.post(`${baseUrl}/work-order/work-order`, { workOrder: formData });
       console.log(workOrderRes, "yashu")

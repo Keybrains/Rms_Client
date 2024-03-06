@@ -64,8 +64,11 @@ const VendorWorkTable = () => {
       const response = await axios.get(
         `${baseUrl}/work-order/vendor_work/${accessType.vendor_id}`
       );
-      setLoader(false);
       setWorkData(response.data.data);
+      console.log(`${baseUrl}/work-order/vendor_work/${accessType.vendor_id}`, "ka");
+      setLoader(false);
+
+      console.log(response.data.data,"janak")
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
     } catch (error) {
       console.error("Error fetching data:", error);

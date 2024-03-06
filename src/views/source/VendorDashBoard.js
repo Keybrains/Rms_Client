@@ -34,9 +34,11 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import VendorHeader from "components/Headers/VendorHeader";
+import { RotatingLines } from "react-loader-spinner";
 
 const VendorDashBoard = (props) => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  let [loader, setLoader] = React.useState(true);
 
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
@@ -94,6 +96,10 @@ const VendorDashBoard = (props) => {
           const { data } = response.data;
           setNewWorkOrders(data.new_workorder);
           setOverdueWorkOrders(data.overdue_workorder);
+          console.log(data.new_workorder,data.overdue_workorder,"jack")
+          console.log(`${baseUrl}/vendor/dashboard_workorder/${accessType?.vendor_id}/${accessType?.admin_id}`,"jaaa")
+          setLoader(false);
+
         } else {
           console.error("Failed to fetch work orders");
         }
@@ -110,6 +116,17 @@ const VendorDashBoard = (props) => {
       <Container className="mt--7" fluid>
         <div>
           {/* Small Cards */}
+              {loader ? (
+                <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+                  <RotatingLines
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="50"
+                    visible={loader}
+                  />
+                </div>
+              ) : (
           <Row lg="12" className="d-flex justify-content-around">
             <Col lg="5" md="6" sm="12">
               <Card
@@ -120,42 +137,43 @@ const VendorDashBoard = (props) => {
                   color: "black",
                 }}
               >
-                <CardBody>
-                  <div className="mb-2 d-flex justify-content-start">
-                    <span style={{ fontWeight: "bold", fontSize: "28px" }}>
-                      {" "}
-                      New Work Orders
-                    </span>
-                  </div>
-                  <div className="col-lg-6">
-                    <div className="d-flex justify-content-between mb-2">
-                      <span className="">Total - {newWorkOrders.length}</span>
+                  <CardBody>
+                    <div className="mb-2 d-flex justify-content-start">
+                      <span style={{ fontWeight: "bold", fontSize: "28px" }}>
+                        {" "}
+                        New Work Orders
+                      </span>
                     </div>
-                  </div>
-                  {newWorkOrders.slice(0, 3).map((order, index) => (
-                    <div key={index} style={bgStyle}>
-                      <div className="d-flex justify-content-start">
-                        <span className="">{order.work_subject}</span>
-                      </div>
-                      <div className="col-lg-10" style={{ fontSize: "14px" }}>
-                        <label className="d-flex justify-content-between mb-1 leackage-status">
-                          <span>{order.date}</span>
-                          <span>{order.status}</span>
-                        </label>
+                    <div className="col-lg-6">
+                      <div className="d-flex justify-content-between mb-2">
+                        <span className="">Total - {newWorkOrders.length}</span>
                       </div>
                     </div>
-                  ))}
-                  <label
-                    className="d-flex justify-content-start"
-                    style={{ cursor: "pointer", color: "blue" }}
-                    // onClick={handleViewMoreNewOrders}
-                    onClick={() => navigate("/vendor/vendorworktable")}
-                  >
-                    {showMoreNewOrders ? "View Less" : "View All"}
-                  </label>
-                </CardBody>
+                    {newWorkOrders.slice(0, 3).map((order, index) => (
+                      <div key={index} style={bgStyle}>
+                        <div className="d-flex justify-content-start">
+                          <span className="">{order.work_subject}</span>
+                        </div>
+                        <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                          <label className="d-flex justify-content-between mb-1 leackage-status">
+                            <span>{order.date}</span>
+                            <span>{order.status}</span>
+                          </label>
+                        </div>
+                      </div>
+                    ))}
+                    <label
+                      className="d-flex justify-content-start"
+                      style={{ cursor: "pointer", color: "blue" }}
+                      // onClick={handleViewMoreNewOrders}
+                      onClick={() => navigate("/vendor/vendorworktable")}
+                    >
+                      {showMoreNewOrders ? "View Less" : "View All"}
+                    </label>
+                  </CardBody>
               </Card>
             </Col>
+                
             {/* <Col lg="4" md="6" sm="12">
               <Card style={{
                 justifyContent: "center",
@@ -235,6 +253,7 @@ const VendorDashBoard = (props) => {
               </Card>
             </Col>
           </Row>
+          )}
         </div>
       </Container>
     </>

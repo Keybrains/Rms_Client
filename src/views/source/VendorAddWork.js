@@ -33,6 +33,8 @@ import PropertyType from "./PropertyType";
 
 const VendorAddWork = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const imageUrl = process.env.REACT_APP_IMAGE_POST_URL;
+  const imageGetUrl = process.env.REACT_APP_IMAGE_GET_URL;
   const { workorder_id } = useParams();
   //console.log(workorder_id, "workorder_id");
   const { id } = useParams();
@@ -55,6 +57,10 @@ const VendorAddWork = () => {
   const [selecteduser, setSelecteduser] = useState("Select");
   const [selectedStatus, setSelectedStatus] = useState("Select");
   const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
+  const [selectedCharge, setSelectedCharge] = useState("Select");
+  const [selectedTenant, setSelectedTenant] = useState("Select");
+
+
 
   const toggle11 = () => {
     setUnitDropdownOpen((prevState) => !prevState);
@@ -367,164 +373,309 @@ const VendorAddWork = () => {
 
   // Fetch vendor data if editing an existing vendor
   useEffect(() => {
-    if (id) {
-      axios
-        .get(`${baseUrl}/workorder/workorder_summary/${id}`)
-        .then((response) => {
-          const vendorData = response.data.data;
-          setWorkOrderData(vendorData);
-          //console.log("VendorData", vendorData);
+    const fetchData = async () => {
+      if (id) {
+        try {
+          const response = await axios.get(
+            `${baseUrl}/work-order/workorder_details/${id}`
+          );
+          const {
+            partsandcharge_data,
+            property_data,
+            unit_data,
+            staff_data,
+            vendor_data,
+            tenant_data,
+          } = response.data.data;
+          setWorkOrderData(response.data.data);
 
-          const formattedDueDate = vendorData.due_date
-            ? new Date(vendorData.due_date).toISOString().split("T")[0]
+          const formattedDueDate = response.data.data.date
+            ? new Date(response.data.data.date).toISOString().split("T")[0]
             : "";
-          setSelectedUnit(vendorData.rental_units || "Select");
-          setSelectedProp(vendorData.rental_adress || "Select");
-          setSelectedCategory(vendorData.work_category || "Select");
-          setSelectedVendor(vendorData.vendor || "Select");
-          setSelectedEntry(vendorData.entry_allowed || "Select");
-          setSelecteduser(vendorData.staffmember_name || "Select");
-          setSelectedStatus(vendorData.status);
-          setSelectedPriority(vendorData.priority || "Select");
-          setSelectedAccount(vendorData.account_type || "Select");
-          setWorkOrderImage(vendorData.workOrderImage || []);
 
-          const entriesData = vendorData.entries || []; // Make sure entries is an array
+          setVid(response.data.data.workOrder_id);
+
+          try {
+            const units = await fetchUnitsByProperty(property_data.rental_id);
+            setUnitData(units);
+          } catch (error) {
+            console.error(error, "error");
+          }
+
+          setSelectedUnit(unit_data.rental_unit || "Select");
+          setSelectedProp(property_data.rental_adress || "Select");
+          setSelectedCategory(response.data.data.work_category || "Select");
+          setSelectedVendor(vendor_data.vendor_name || "Select");
+          setSelectedCharge(response.data.data.work_charge_to || "Select");
+          setSelectedEntry(
+            response.data.data.entry_allowed === true ? "Yes" : "No" || "Select"
+          );
+          setSelecteduser(staff_data.staffmember_name || "Select");
+          setSelectedStatus(response.data.data.status || "Select");
+          setSelectedPriority(response.data.data.priority || "Select");
+          setWorkOrderImage(response.data.data.workOrder_images || []);
+          setSelectedFiles(response.data.data.workOrder_images || []);
+          setSelectedTenant(
+            tenant_data.tenant_firstName + " " + tenant_data.tenant_lastName ||
+              "Select"
+          );
+
           WorkFormik.setValues({
-            work_subject: vendorData.work_subject || "",
-            rental_units: vendorData.rental_units || "",
-            invoice_number: vendorData.invoice_number || "",
-            work_charge: vendorData.work_charge || "",
-            detail: vendorData.detail || "",
-            entry_contact: vendorData.entry_contact || "",
-            work_performed: vendorData.work_performed || "",
-            vendor_note: vendorData.vendor_note || "",
-            due_date: formattedDueDate,
-            final_total_amount: vendorData.final_total_amount || "",
-            entries: entriesData.map((entry) => ({
-              part_qty: entry.part_qty || "",
-              account_type: entry.account_type || "Select",
-              description: entry.description || "",
-              part_price: entry.part_price || "",
-              total_amount: entry.total_amount || "",
+            invoice_number: response.data.data?.invoice_number || "",
+            work_charge_to: response.data.data?.work_charge_to || "",
+            detail: response.data.data?.detail || "",
+            entry_contact: response.data.data?.entry_contact || "",
+            final_total_amount: response.data.data?.final_total_amount || "",
+
+            work_subject: response.data.data?.work_subject || "",
+            rental_adress: property_data?.rental_adress || "",
+            rental_unit: unit_data?.rental_unit || "",
+            rental_id: property_data.rental_id || "",
+            work_category: response.data.data?.work_category || "",
+            vendor_name: vendor_data?.vendor_name || "",
+            vendor_id: vendor_data?.vendor_id || "",
+            unit_id: unit_data?.unit_id || "",
+            tenant_id: tenant_data?.tenant_id || "",
+            tenant_name:
+              tenant_data?.tenant_firstName +
+                " " +
+                tenant_data?.tenant_lastName || "",
+            invoice_number: "",
+            work_charge: response.data.data?.work_charge_to || "",
+            entry_allowed:
+              response.data.data.entry_allowed === true ? "Yes" : "No" || "",
+            detail: "",
+            entry_contact: "",
+            work_performed: response.data.data?.work_performed || "",
+            vendor_note: response.data.data?.vendor_notes || "",
+            staffmember_name: staff_data?.staffmember_name || "",
+            staffmember_id: staff_data?.staffmember_id || "",
+            status: response.data.data?.status || "",
+            due_date: formattedDueDate || "",
+            priority: response.data.data?.priority || "",
+            workOrderImage: response.data.data?.workOrder_images || "",
+            final_total_amount: "",
+            statusUpdatedBy: "Admin",
+            entries: partsandcharge_data.map((part) => ({
+              part_qty: part?.parts_quantity || "",
+              parts_id: part?.parts_id || "",
+              account_type: part?.account || "Select",
+              description: part?.description || "",
+              charge_type: "Workorder Charge",
+              part_price: part?.parts_price || "",
+              total_amount: part?.amount || "",
               dropdownOpen: false,
             })),
           });
-        })
-        .catch((error) => {
+        } catch (error) {
           console.error("Error fetching vendor data:", error);
-        });
-    }
+        }
+      }
+    };
+
+    fetchData();
   }, [id]);
 
   const { v4: uuidv4 } = require("uuid");
   const [loader, setLoader] = useState(false);
 
-  async function handleSubmit(values, work) {
+  // async function handleSubmit(values, work) {
+  //   setLoader(true);
+  //   try {
+  //     values["rental_adress"] = selectedProp;
+  //     values["work_category"] = selectedCategory;
+  //     values["vendor_name"] = selectedVendor;
+  //     values["entry_allowed"] = selectedEntry;
+  //     values["staffmember_name"] = selecteduser;
+  //     values["status"] = selectedStatus;
+  //     values["priority"] = selectedPriority;
+  //     values["account_type"] = selectedAccount;
+  //     values["final_total_amount"] = final_total_amount;
+  //     values["rental_units"] = selectedUnit;
+  //     values["workOrderImage"] = workOrderImage;
+
+  //     const entries = WorkFormik.values.entries.map((entry) => ({
+  //       part_qty: entry.part_qty,
+  //       account_type: entry.account_type,
+  //       description: entry.description,
+  //       part_price: parseFloat(entry.part_price),
+  //       total_amount: parseFloat(entry.total_amount),
+  //     }));
+
+  //     values["entries"] = entries;
+
+  //     // Moved this line below values assignment
+  //     const workorder_id = uuidv4();
+  //     values["workorder_id"] = workorder_id;
+
+  //     const work_subject = values.work_subject;
+
+  //     if (id === undefined) {
+  //       // Create the work order
+  //       const workOrderRes = await axios.post(
+  //         `${baseUrl}/workorder/workorder`,
+  //         { ...values, statusUpdatedBy: vendorname }
+  //       );
+
+  //       // Check if the work order was created successfully
+  //       if (workOrderRes.status === 200) {
+  //         const notificationRes = await axios.post(
+  //           `${baseUrl}/notification/notification`,
+  //           {
+  //             workorder: {
+  //               vendor_name: selectedVendor,
+  //               staffmember_name: selecteduser,
+  //               rental_adress: selectedProp,
+  //               work_subject: work_subject,
+  //               workorder_id: workorder_id,
+  //             },
+  //             notification: {},
+  //           }
+  //         );
+
+  //         // Handle the notification response if needed
+  //         handleResponse(workOrderRes, notificationRes);
+  //       } else {
+  //         console.error("Work Order Error:", workOrderRes.data);
+  //       }
+  //     } else {
+  //       const editUrl = `${baseUrl}/workorder/workorder/${id}`;
+  //       const res = await axios.put(editUrl, values);
+  //       if (res.status === 200) {
+  //         const notification = await axios.post(
+  //           `${baseUrl}/notification/notification/vendor`,
+  //           {
+  //             workorder: {
+  //               vendor_name: selectedVendor,
+  //               staffmember_name: selecteduser,
+  //               rental_adress: selectedProp,
+  //               work_subject: work_subject,
+  //               workorder_id: workorder_id,
+  //             },
+  //             notification: {},
+  //           }
+  //         );
+  //         handleResponse(res, notification);
+  //       } else {
+  //         console.error("Work Order Error:", res.data);
+  //       }
+
+  //       await axios
+  //         .put(`${baseUrl}/workorder/workorder/${outstandDetails._id}/status`, {
+  //           statusUpdatedBy: vendorname + "(Vendor)",
+  //           status: selectedStatus,
+  //           // updateAt: updatedAt,
+  //         })
+  //         .then((res) => {
+  //           console.log(res.data, "the status put");
+  //           // getOutstandData();
+  //         })
+  //         .catch((err) => {
+  //           console.log(err);
+  //         });
+  //       //console.log("ID", id);
+  //       //console.log("Workorderid", workorder_id);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //     if (error.response) {
+  //       console.error("Response Data:", error.response.data);
+  //     }
+  //   }
+  // }
+  const handleSubmit = async (values) => {
     setLoader(true);
-    try {
-      values["rental_adress"] = selectedProp;
-      values["work_category"] = selectedCategory;
-      values["vendor_name"] = selectedVendor;
-      values["entry_allowed"] = selectedEntry;
-      values["staffmember_name"] = selecteduser;
-      values["status"] = selectedStatus;
-      values["priority"] = selectedPriority;
-      values["account_type"] = selectedAccount;
-      values["final_total_amount"] = final_total_amount;
-      values["rental_units"] = selectedUnit;
-      values["workOrderImage"] = workOrderImage;
+    let image = [];
 
-      const entries = WorkFormik.values.entries.map((entry) => ({
-        part_qty: entry.part_qty,
-        account_type: entry.account_type,
-        description: entry.description,
-        part_price: parseFloat(entry.part_price),
-        total_amount: parseFloat(entry.total_amount),
-      }));
+    if (selectedFiles) {
+      try {
+        const uploadPromises = selectedFiles.map(async (fileItem, i) => {
+          if (fileItem instanceof File) {
+            try {
+              const form = new FormData();
+              form.append("files", fileItem);
 
-      values["entries"] = entries;
+              const res = await axios.post(`${imageUrl}/images/upload`, form);
 
-      // Moved this line below values assignment
-      const workorder_id = uuidv4();
-      values["workorder_id"] = workorder_id;
-
-      const work_subject = values.work_subject;
-
-      if (id === undefined) {
-        // Create the work order
-        const workOrderRes = await axios.post(
-          `${baseUrl}/workorder/workorder`,
-          { ...values, statusUpdatedBy: vendorname }
-        );
-
-        // Check if the work order was created successfully
-        if (workOrderRes.status === 200) {
-          const notificationRes = await axios.post(
-            `${baseUrl}/notification/notification`,
-            {
-              workorder: {
-                vendor_name: selectedVendor,
-                staffmember_name: selecteduser,
-                rental_adress: selectedProp,
-                work_subject: work_subject,
-                workorder_id: workorder_id,
-              },
-              notification: {},
+              if (
+                res &&
+                res.data &&
+                res.data.files &&
+                res.data.files.length > 0
+              ) {
+                fileItem = res.data.files[0].filename;
+                image[i] = res.data.files[0].filename;
+              } else {
+                console.error("Unexpected response format:", res);
+              }
+            } catch (error) {
+              console.error("Error uploading file:", error);
             }
-          );
+          } else {
+            image[i] = fileItem;
+          }
+        });
 
-          // Handle the notification response if needed
-          handleResponse(workOrderRes, notificationRes);
-        } else {
-          console.error("Work Order Error:", workOrderRes.data);
-        }
-      } else {
-        const editUrl = `${baseUrl}/workorder/workorder/${id}`;
-        const res = await axios.put(editUrl, values);
-        if (res.status === 200) {
-          const notification = await axios.post(
-            `${baseUrl}/notification/notification/vendor`,
-            {
-              workorder: {
-                vendor_name: selectedVendor,
-                staffmember_name: selecteduser,
-                rental_adress: selectedProp,
-                work_subject: work_subject,
-                workorder_id: workorder_id,
-              },
-              notification: {},
-            }
-          );
-          handleResponse(res, notification);
-        } else {
-          console.error("Work Order Error:", res.data);
-        }
-
-        await axios
-          .put(`${baseUrl}/workorder/workorder/${outstandDetails._id}/status`, {
-            statusUpdatedBy: vendorname + "(Vendor)",
-            status: selectedStatus,
-            // updateAt: updatedAt,
-          })
-          .then((res) => {
-            console.log(res.data, "the status put");
-            // getOutstandData();
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-        //console.log("ID", id);
-        //console.log("Workorderid", workorder_id);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      if (error.response) {
-        console.error("Response Data:", error.response.data);
+        await Promise.all(uploadPromises);
+      } catch (error) {
+        console.error("Error processing file uploads:", error);
       }
     }
-  }
 
+    const object = {
+      workOrder: {
+        // admin_id: accessType.admin_id || "",
+        rental_id: WorkFormik.values.rental_id || "",
+        unit_id: WorkFormik.values.unit_id || "",
+        vendor_id: WorkFormik.values.vendor_id || "",
+        tenant_id: WorkFormik.values.tenant_id || "",
+        staffmember_id: WorkFormik.values.staffmember_id || "",
+        work_subject: WorkFormik.values.work_subject || "",
+        work_category: WorkFormik.values.work_category || "",
+        entry_allowed: WorkFormik.values.entry_allowed === "Yes" ? true : false,
+        work_performed: WorkFormik.values.work_performed || "",
+        workOrder_images: image || "",
+        vendor_notes: WorkFormik.values.vendor_note || "",
+        priority: WorkFormik.values.priority || "",
+        work_charge_to: WorkFormik.values.work_charge || "",
+        status: WorkFormik.values.status || "",
+        date: WorkFormik.values.due_date || "",
+      },
+      parts: WorkFormik.values.entries.map((item) => {
+        return {
+          parts_quantity: item.part_qty || 0,
+          account: item.account_type || "",
+          description: item.description || "",
+          charge_type: "Workorder Charge",
+          parts_price: item.part_price || 0,
+          amount: item.total_amount || 0,
+        };
+      }),
+    };
+
+    try {
+      const res = await axios.post(`${baseUrl}/work-order/work-order`, object);
+      if (res.status === 200) {
+        if (res.data.statusCode === 200) {
+          toast.success("Work Order Added Successfully.", {
+            position: "top-center",
+            autoClose: 1000,
+            // onClose: () => navigate(`/${admin}/Workorder`),
+          });
+          navigate("../VendorWorkTable");
+        } else {
+          console.log(res.data, "res.data");
+          toast.error(res.data.message, {
+            position: "top-center",
+            autoClose: 1000,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error: ", error.message);
+    }
+    setLoader(false);
+  };
   function handleResponse(response) {
     if (response.data.statusCode === 200) {
       navigate("/vendor/vendorworktable");
@@ -631,54 +782,151 @@ const VendorAddWork = () => {
         console.error("Network error:", error);
       });
   }, []);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const fileData = (e, type) => {
+    setSelectedFiles((prevSelectedFiles) => [
+      ...prevSelectedFiles,
+      ...e.target.files,
+    ]);
 
-  const fileData = async (file, name, index) => {
-    //setImgLoader(true);
-    const allData = [];
-    const axiosRequests = [];
-    console.log(file, "file after adding");
+    const newFiles = [
+      ...workOrderImage,
+      ...Array.from(e.target.files).map((file) => URL.createObjectURL(file)),
+    ];
 
-    for (let i = 0; i < file.length; i++) {
-      // setImgLoader(true);
-      const dataArray = new FormData();
-      dataArray.append("b_video", file[i]);
-      let url = "https://www.sparrowgroups.com/CDN/image_upload.php";
-
-      // Push the Axios request promises into an array
-      axiosRequests.push(
-        axios
-          .post(url, dataArray, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          })
-          .then((res) => {
-            // setImgLoader(false);
-            const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-            console.log(imagePath, "imagePath");
-            allData.push(imagePath);
-          })
-          .catch((err) => {
-            // setImgLoader(false);
-            console.log("Error uploading image:", err);
-          })
-      );
-    }
-    console.log(allData, "allData");
-
-    // Wait for all Axios requests to complete before logging the data
-    await Promise.all(axiosRequests);
-
-    if (workOrderImage && workOrderImage.length > 0) {
-      setWorkOrderImage([...workOrderImage, ...allData]);
-    } else {
-      setWorkOrderImage([...allData]);
-    }
-
-    // console.log(allData, "allData");
-    // console.log(residentialImage, "residentialImage");
-    // console.log(commercialImage, "commercialImage");
+    setWorkOrderImage(newFiles);
   };
+  const editworkorder = async (vid) => {
+    setLoader(true);
+    let image = [];
+
+    if (selectedFiles) {
+      try {
+        const uploadPromises = selectedFiles.map(async (fileItem, i) => {
+          if (fileItem instanceof File) {
+            try {
+              const form = new FormData();
+              form.append("files", fileItem);
+
+              const res = await axios.post(`${imageUrl}/images/upload`, form);
+
+              if (
+                res &&
+                res.data &&
+                res.data.files &&
+                res.data.files.length > 0
+              ) {
+                fileItem = res.data.files[0].filename;
+                image[i] = res.data.files[0].filename;
+              } else {
+                console.error("Unexpected response format:", res);
+              }
+            } catch (error) {
+              console.error("Error uploading file:", error);
+            }
+          } else {
+            image[i] = fileItem;
+          }
+        });
+
+        await Promise.all(uploadPromises);
+      } catch (error) {
+        console.error("Error processing file uploads:", error);
+      }
+    }
+
+    const object = {
+      workOrder: {
+        // admin_id: accessType.admin_id || "",
+        workOrder_id: id,
+        rental_id: WorkFormik.values.rental_id || "",
+        unit_id: WorkFormik.values.unit_id || "",
+        vendor_id: WorkFormik.values.vendor_id || "",
+        tenant_id: WorkFormik.values.tenant_id || "",
+        staffmember_id: WorkFormik.values.staffmember_id || "",
+        work_subject: WorkFormik.values.work_subject || "",
+        work_category: WorkFormik.values.work_category || "",
+        entry_allowed:
+          WorkFormik.values.entry_allowed === "Yes" ? true : false || "",
+        work_performed: WorkFormik.values.work_performed || "",
+        workOrder_images: image || "",
+        vendor_notes: WorkFormik.values.vendor_note || "",
+        priority: WorkFormik.values.priority || "",
+        work_charge_to: WorkFormik.values.work_charge || "",
+        status: WorkFormik.values.status || "",
+        date: WorkFormik.values.due_date || "",
+        // updated_by: { admin_id: accessType.admin_id },
+      },
+      parts: WorkFormik.values.entries.map((item) => {
+        return {
+          parts_quantity: item.part_qty || 0,
+          parts_id: item.parts_id,
+          account: item.account_type || "",
+          description: item.description || "",
+          workOrder_id: id,
+          charge_type: "Workorder Charge",
+          parts_price: item.part_price || 0,
+          amount: item.total_amount || 0,
+        };
+      }),
+    };
+    try {
+      const res = await axios.put(
+        `${baseUrl}/work-order/work-order/${id}`,
+        object
+      );
+      console.log(res);
+        navigate("../VendorWorkTable");
+    } catch (error) {}
+    setLoader(false);
+  };
+  // const fileData = async (file, name, index) => {
+  //   //setImgLoader(true);
+  //   const allData = [];
+  //   const axiosRequests = [];
+  //   console.log(file, "file after adding");
+
+  //   for (let i = 0; i < file.length; i++) {
+  //     // setImgLoader(true);
+  //     const dataArray = new FormData();
+  //     dataArray.append("b_video", file[i]);
+  //     let url = "https://www.sparrowgroups.com/CDN/image_upload.php";
+
+  //     // Push the Axios request promises into an array
+  //     axiosRequests.push(
+  //       axios
+  //         .post(url, dataArray, {
+  //           headers: {
+  //             "Content-Type": "multipart/form-data",
+  //           },
+  //         })
+  //         .then((res) => {
+  //           // setImgLoader(false);
+  //           const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
+  //           console.log(imagePath, "imagePath");
+  //           allData.push(imagePath);
+  //         })
+  //         .catch((err) => {
+  //           // setImgLoader(false);
+  //           console.log("Error uploading image:", err);
+  //         })
+  //     );
+  //   }
+  //   console.log(allData, "allData");
+
+  //   // Wait for all Axios requests to complete before logging the data
+  //   await Promise.all(axiosRequests);
+
+  //   if (workOrderImage && workOrderImage.length > 0) {
+  //     setWorkOrderImage([...workOrderImage, ...allData]);
+  //   } else {
+  //     setWorkOrderImage([...allData]);
+  //   }
+
+  //   // console.log(allData, "allData");
+  //   // console.log(residentialImage, "residentialImage");
+  //   // console.log(commercialImage, "commercialImage");
+  // };
 
   const handleQuantityChange = (e, index) => {
     const updatedEntries = [...WorkFormik.values.entries];
@@ -1985,13 +2233,16 @@ const VendorAddWork = () => {
                     </button>
                   ) : id ? (
                     <button
-                      type="submit"
-                      onSubmit={{ handleSubmit }}
-                      className="btn btn-primary ml-4"
-                      style={{ background: "green" }}
-                    >
-                      Save Work Order
-                    </button>
+                    type="submit"
+                    className="btn btn-primary"
+                    style={{ background: "green", cursor: "pointer" }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      editworkorder(vid);
+                    }}
+                  >
+                    Update Work Order
+                  </button>
                   ) : (
                     <button
                       type="submit"
