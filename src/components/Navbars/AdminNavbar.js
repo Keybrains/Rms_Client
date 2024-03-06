@@ -33,7 +33,7 @@ import { makeStyles } from "@mui/styles";
 import { jwtDecode } from "jwt-decode";
 
 const AdminNavbar = (props) => {
-  
+
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   let navigate = useNavigate();
@@ -46,10 +46,6 @@ const AdminNavbar = (props) => {
   let cookies = new Cookies();
   let Logout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("Tenant ID");
-    // localStorage.removeItem("name");
-    // localStorage.removeItem("id");
-    // navigate("/login");
   };
   const { workorder_id, admin } = useParams();
   //console.log("workid:",workorder_id);
@@ -152,6 +148,22 @@ const AdminNavbar = (props) => {
     }
   }, [navigate]);
 
+  const [plan, setPlan] = useState("");
+  const getPlan = async () => {
+    try {
+      const res = await axios.get(
+        `${baseUrl}/purchase/plan-purchase/${accessType?.admin_id}`
+      );
+      if (res.data.statusCode === 200) {
+        setPlan(res.data.data);
+      }
+    } catch (error) { }
+  };
+
+  useEffect(() => {
+    getPlan();
+  }, [accessType]);
+
   return (
     <>
       <Navbar className="navbar-top navbar-dark" expand="md" id="navbar-main">
@@ -164,45 +176,46 @@ const AdminNavbar = (props) => {
           </Link>
           <Form className="navbar-search navbar-search-dark  mr-3 d-none d-md-flex ml-lg-auto">
             <Row>
-            <Button
-              color="primary"
-              onClick={() => navigate("/"+admin+"/Plans")}
-              size="sm"
-              style={{
-                background: "rgb(48 52 58 / 70%)",
-                color: "#fff",
-                marginRight: "20px",
-              }}
-            >
-              buy
-          </Button>
-            <FormGroup
-              className="mb-0"
-              onClick={toggleSidebar}
-              style={{ cursor: "pointer", }}
-            >
-              <NotificationsIcon style={{ color: "white", fontSize: "30px" }} />
-              {notificationCount > 0 && (
-                <div
-                  className="notification-circle"
-                  style={{
-                    position: "absolute",
-                    top: "-15px",
-                    right: "-20px",
-                    background: "red",
-                    borderRadius: "50%",
-                    padding: "0.1px 8px",
-                  }}
-                >
-                  <span
-                    className="notification-count"
-                    style={{ color: "white", fontSize: "13px" }}
+              <Button
+                color="primary"
+                onClick={() => navigate("/" + admin + "/Plans")}
+                size="sm"
+                style={{
+                  background: "rgb(48 52 58 / 70%)",
+                  color: "#fff",
+                  marginRight: "20px",
+                }}
+                disabled={plan?.plan_name}
+              >
+                {plan?.plan_name ? plan?.plan_name : "Buys"}
+              </Button>
+              <FormGroup
+                className="mb-0"
+                onClick={toggleSidebar}
+                style={{ cursor: "pointer", }}
+              >
+                <NotificationsIcon style={{ color: "white", fontSize: "30px" }} />
+                {notificationCount > 0 && (
+                  <div
+                    className="notification-circle"
+                    style={{
+                      position: "absolute",
+                      top: "-15px",
+                      right: "-20px",
+                      background: "red",
+                      borderRadius: "50%",
+                      padding: "0.1px 8px",
+                    }}
                   >
-                    {notificationCount}
-                  </span>
-                </div>
-              )}
-            </FormGroup>
+                    <span
+                      className="notification-count"
+                      style={{ color: "white", fontSize: "13px" }}
+                    >
+                      {notificationCount}
+                    </span>
+                  </div>
+                )}
+              </FormGroup>
             </Row>
           </Form>
 
@@ -276,7 +289,7 @@ const AdminNavbar = (props) => {
               </div>
             </Drawer>
           </Nav>
-                
+
           <Nav className="align-items-center d-none d-md-flex" navbar>
             <UncontrolledDropdown nav>
               <DropdownToggle className="pr-0" nav>
@@ -286,13 +299,13 @@ const AdminNavbar = (props) => {
                       alt="..."
                       src={require("../../assets/img/theme/team-4-800x800.jpg")}
                     /> */}
-                     
-                      {`${accessType?.first_name
-                        ?.slice(0, 1)
-                        .toUpperCase()}${accessType?.last_name
+
+                    {`${accessType?.first_name
+                      ?.slice(0, 1)
+                      .toUpperCase()}${accessType?.last_name
                         ?.slice(0, 1)
                         .toUpperCase()}`}
-                    
+
                   </span>
                   <Media className="ml-2 d-none d-lg-block">
                     <span className="mb-0 text-sm font-weight-bold">
@@ -305,15 +318,15 @@ const AdminNavbar = (props) => {
                 <DropdownItem className="noti-title" header tag="div">
                   <h6 className="text-overflow m-0">Welcome</h6>
                 </DropdownItem>
-                <DropdownItem onClick={() => navigate("/"+admin+"/user-profile")} >
+                <DropdownItem onClick={() => navigate("/" + admin + "/user-profile")} >
                   <i className="ni ni-single-02" />
                   <span>My profile</span>
                 </DropdownItem>
-               <DropdownItem onClick={() => navigate("/"+admin+"/settings")}>
+                <DropdownItem onClick={() => navigate("/" + admin + "/settings")}>
                   <i className="ni ni-settings-gear-65" />
                   <span>Settings</span>
                 </DropdownItem>
-                 {/* <DropdownItem to="/admin/user-profile" tag={Link}>
+                {/* <DropdownItem to="/admin/user-profile" tag={Link}>
                   <i className="ni ni-calendar-grid-58" />
                   <span>Activity</span>
                 </DropdownItem>
