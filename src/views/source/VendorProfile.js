@@ -18,6 +18,7 @@ import TenantsHeader from "components/Headers/TenantsHeader";
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 import VendorHeader from "components/Headers/VendorHeader";
+import { RotatingLines } from "react-loader-spinner";
 
 const VendorProfile = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -43,10 +44,10 @@ const VendorProfile = () => {
         `${baseUrl}/vendor/get_vendor/${accessType.vendor_id}`
       );
       setVendorDetails(response.data.data);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
     }
-    setLoading(false);
   };
   useEffect(() => {
     getVendorData();
@@ -71,10 +72,16 @@ const VendorProfile = () => {
                   responsive
                   style={{ width: "100%" }}
                 >
-                  {loading === true ? (
-                    <tr>
-                      <td>Loading vendor details...</td>
-                    </tr>
+                  {loading ? (
+                  <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+                    <RotatingLines
+                      strokeColor="grey"
+                      strokeWidth="5"
+                      animationDuration="0.75"
+                      width="50"
+                      visible={loading}
+                    />
+                  </div>
                   ) : vendorDetails.vendor_id ? (
                     <>
                       <tbody
