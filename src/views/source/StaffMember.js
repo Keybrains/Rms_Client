@@ -91,6 +91,19 @@ const StaffMember = () => {
     }
   };
 
+  const [countRes, setCountRes] = useState("");
+  const getStaffLimit = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/staffmember/limitation/${accessType.admin_id}`
+      );
+      console.log(response.data);
+      setCountRes(response.data);
+    } catch (error) {
+      console.error("Error fetching rental data:", error);
+    }
+  };
+
   const editStaffMemberData = async (id, updatedData) => {
     try {
       const editUrl = `${baseUrl}/addstaffmember/staffmember/${id}`;
@@ -165,19 +178,9 @@ const StaffMember = () => {
     });
   };
 
-  //   auto form fill up in edit
-  // let seletedEditData = async (datas) => {
-  //   setModalShowForPopupForm(true);
-  //   setId(datas._id);
-  //   setEditData(datas);
-  // };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   useEffect(() => {
     getStaffMemberData();
+    getStaffLimit();
   }, [accessType]);
 
   const startIndex = (currentPage - 1) * pageItem;
@@ -312,7 +315,17 @@ const StaffMember = () => {
             <Button
               color="primary"
               //  href="#rms"
-              onClick={() => navigate("/" + admin + "/AddStaffMember")}
+              onClick={() => {
+                if (countRes.statusCode === 201) {
+                  swal(
+                    "Plan Limitation",
+                    "The limit for adding staff members according to the plan has been reached.",
+                    "warning"
+                  );
+                } else {
+                  navigate("/" + admin + "/AddStaffMember");
+                }
+              }}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
@@ -352,6 +365,21 @@ const StaffMember = () => {
                             minWidth: "200px",
                           }}
                         />
+                      </FormGroup>
+                    </Col>
+                    <Col className="d-flex justify-content-end">
+                      <FormGroup>
+                        <p>
+                          Added :{" "}
+                          <b style={{ color: "blue", fontWeight: 1000 }}>
+                            {countRes.rentalCount}
+                          </b>{" "}
+                          {" / "}
+                          Total :{" "}
+                          <b style={{ color: "blue", fontWeight: 1000 }}>
+                            {countRes.propertyCountLimit}
+                          </b>
+                        </p>
                       </FormGroup>
                     </Col>
                   </Row>
@@ -465,43 +493,46 @@ const StaffMember = () => {
                   {StaffMemberData.length === 0 ? (
                     <tbody>
                       <tr className="text-center">
-                        <td colSpan="5"style={{fontSize:"15px"}}>No StaffMembers Added</td>
-                      </tr>
-                    </tbody>
-                    ) : (
-                  <tbody>
-                    {filterTenantsBySearchAndPage().map((staff) => (
-                      <tr key={staff._id}>
-                        <td>{staff.staffmember_name}</td>
-                        <td>{staff.staffmember_designation}</td>
-                        <td>{staff.staffmember_phoneNumber}</td>
-                        <td>{staff.staffmember_email}</td>
-                        <td>{staff.createdAt}</td>
-                        <td>{staff.updatedAt ? staff.updatedAt : "-"}</td>
-                        <td>
-                          <div style={{ display: "flex" }}>
-                            <div
-                              style={{ cursor: "pointer" }}
-                              onClick={() =>
-                                deleteStaffMember(staff.staffmember_id)
-                              }
-                            >
-                              <DeleteIcon />
-                            </div>
-                            &nbsp; &nbsp; &nbsp;
-                            <div
-                              style={{ cursor: "pointer" }}
-                              onClick={() =>
-                                editStaffMember(staff.staffmember_id)
-                              }
-                            >
-                              <EditIcon />
-                            </div>
-                          </div>
+                        <td colSpan="5" style={{ fontSize: "15px" }}>
+                          No StaffMembers Added
                         </td>
                       </tr>
-                    ))}
-                  </tbody>)}
+                    </tbody>
+                  ) : (
+                    <tbody>
+                      {filterTenantsBySearchAndPage().map((staff) => (
+                        <tr key={staff._id}>
+                          <td>{staff.staffmember_name}</td>
+                          <td>{staff.staffmember_designation}</td>
+                          <td>{staff.staffmember_phoneNumber}</td>
+                          <td>{staff.staffmember_email}</td>
+                          <td>{staff.createdAt}</td>
+                          <td>{staff.updatedAt ? staff.updatedAt : "-"}</td>
+                          <td>
+                            <div style={{ display: "flex" }}>
+                              <div
+                                style={{ cursor: "pointer" }}
+                                onClick={() =>
+                                  deleteStaffMember(staff.staffmember_id)
+                                }
+                              >
+                                <DeleteIcon />
+                              </div>
+                              &nbsp; &nbsp; &nbsp;
+                              <div
+                                style={{ cursor: "pointer" }}
+                                onClick={() =>
+                                  editStaffMember(staff.staffmember_id)
+                                }
+                              >
+                                <EditIcon />
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  )}
                 </Table>
                 {paginatedData.length > 0 ? (
                   <Row>

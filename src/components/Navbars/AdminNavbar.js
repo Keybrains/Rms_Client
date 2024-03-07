@@ -187,7 +187,7 @@ const AdminNavbar = (props) => {
                 }}
                 disabled={plan?.plan_name}
               >
-                {plan?.plan_name ? plan?.plan_name : "Buys"}
+                {plan?.plan_name ? plan?.plan_name : "Buy"}
               </Button>
               <FormGroup
                 className="mb-0"
