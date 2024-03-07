@@ -35,7 +35,7 @@ import Checkbox from "@mui/material/Checkbox";
 import { RotatingLines } from "react-loader-spinner";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import WestIcon from '@mui/icons-material/West';
+import WestIcon from "@mui/icons-material/West";
 import Header from "components/Headers/Header";
 import * as React from "react";
 import axios from "axios";
@@ -145,10 +145,7 @@ const Applicants = () => {
   const handleUnitSelect = (selectedUnit) => {
     setSelectedUnit(selectedUnit.rental_unit);
     setUnitId(selectedUnit.unit_id);
-    applicantFormik.setFieldValue(
-      "rental_unit",
-      selectedUnit.rental_unit
-    ); // Update the formik state here
+    applicantFormik.setFieldValue("rental_unit", selectedUnit.rental_unit); // Update the formik state here
   };
 
   const openModal = () => {
@@ -232,6 +229,7 @@ const Applicants = () => {
 
   useEffect(() => {
     getTableData();
+    getApplicatsLimit();
   }, [pageItem]);
 
   const startIndex = (currentPage - 1) * pageItem;
@@ -525,12 +523,20 @@ const Applicants = () => {
     let filteredData = rentalsData;
 
     if (searchQuery) {
-      filteredData = filteredData.filter((applicant) => {          
+      filteredData = filteredData.filter((applicant) => {
         const fullName = `${applicant.applicant_firstName} ${applicant.applicant_lastName}`;
-          return fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          applicant?.rental_data?.rental_adress?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          applicant?.applicant_status?.status?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          applicant?.applicant_email?.toLowerCase().includes(searchQuery.toLowerCase());
+        return (
+          fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          applicant?.rental_data?.rental_adress
+            ?.toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          applicant?.applicant_status?.status
+            ?.toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          applicant?.applicant_email
+            ?.toLowerCase()
+            .includes(searchQuery.toLowerCase())
+        );
       });
     }
 
@@ -644,6 +650,23 @@ const Applicants = () => {
     //console.log(value);
     // setOnClickUpArrow(!onClickUpArrow);
   };
+  const [countRes, setCountRes] = useState("");
+
+  const getApplicatsLimit = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/applicant/limitation/${accessType.admin_id}`
+      );
+      console.log(response.data, "yash");
+      setCountRes(response.data);
+    } catch (error) {
+      console.error("Error fetching rental data:", error);
+    }
+  };
+
+  useEffect(() => {
+    getApplicatsLimit();
+  }, [rentalsData]);
 
   return (
     <>
@@ -657,7 +680,7 @@ const Applicants = () => {
             </FormGroup>
           </Col>
           <Col className="text-right">
-            <Button
+            {/* <Button
               color="primary"
               // href="#rms"
               onClick={openModal}
@@ -665,6 +688,24 @@ const Applicants = () => {
               //   setSelectedApplicant({})
               //   openModal()
               // }}
+              size="sm"
+              style={{ background: "white", color: "blue" }}
+            >
+              Add New Applicant
+            </Button> */}
+            <Button
+              color="primary"
+              onClick={() => {
+                if (countRes.statusCode === 201) {
+                  swal(
+                    "Plan Limitation",
+                    "The limit for adding applicants according to the plan has been reached.",
+                    "warning"
+                  );
+                } else {
+                  openModal();
+                }
+              }}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
@@ -703,6 +744,21 @@ const Applicants = () => {
                             minWidth: "200px",
                           }}
                         />
+                      </FormGroup>
+                    </Col>
+                    <Col className="d-flex justify-content-end">
+                      <FormGroup>
+                        <p>
+                          Added :{" "}
+                          <b style={{ color: "blue", fontWeight: 1000 }}>
+                            {countRes.applicantCount}
+                          </b>{" "}
+                          {" / "}
+                          Total :{" "}
+                          <b style={{ color: "blue", fontWeight: 1000 }}>
+                            {countRes.applicantCountLimit}
+                          </b>
+                        </p>
                       </FormGroup>
                     </Col>
                   </Row>
@@ -840,49 +896,52 @@ const Applicants = () => {
                     </tbody>
                   ) : (
                     <tbody>
-                      {filterTenantsBySearchAndPage()?.map((applicant, index) => (
-                        <tr
-                          key={index}
-                          onClick={() =>
-                            navigate(
-                              `/${admin}/Applicants/${applicant.applicant_id}`
-                            )
-                          }
-                        >
-                          <td>{applicant?.applicant_firstName}</td>
-                          <td>{applicant?.applicant_lastName}</td>
-                          <td>{applicant?.applicant_email}</td>
-                          <td>{applicant?.applicant_phoneNumber}</td>
-                          <td>
-                            {applicant?.rental_data?.rental_adress}{" "}
-                            {applicant?.unit_data &&
+                      {filterTenantsBySearchAndPage()?.map(
+                        (applicant, index) => (
+                          <tr
+                            key={index}
+                            onClick={() =>
+                              navigate(
+                                `/${admin}/Applicants/${applicant.applicant_id}`
+                              )
+                            }
+                          >
+                            <td>{applicant?.applicant_firstName}</td>
+                            <td>{applicant?.applicant_lastName}</td>
+                            <td>{applicant?.applicant_email}</td>
+                            <td>{applicant?.applicant_phoneNumber}</td>
+                            <td>
+                              {applicant?.rental_data?.rental_adress}{" "}
+                              {applicant?.unit_data &&
                               applicant?.unit_data?.rental_unit
-                              ? " - " + applicant?.unit_data?.rental_unit
-                              : null}
-                          </td>
+                                ? " - " + applicant?.unit_data?.rental_unit
+                                : null}
+                            </td>
 
-                          <td>
-                            {applicant?.applicant_status?.status || "Undecided"}
-                          </td>
-                          <td>{applicant?.createdAt}</td>
-                          <td>{applicant?.updatedAt || " - "}</td>
-                          <td>
-                            {/* <DeleteIcon
+                            <td>
+                              {applicant?.applicant_status?.status ||
+                                "Undecided"}
+                            </td>
+                            <td>{applicant?.createdAt}</td>
+                            <td>{applicant?.updatedAt || " - "}</td>
+                            <td>
+                              {/* <DeleteIcon
                               onClick={(e) => {
                                 e.stopPropagation();
                                 deleteRentals(applicant._id);
                               }}
                             /> */}
-                            <EditIcon
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleEdit(applicant);
-                              }}
-                              style={{ cursor: "pointer" }}
-                            />
-                          </td>
-                        </tr>
-                      ))}
+                              <EditIcon
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEdit(applicant);
+                                }}
+                                style={{ cursor: "pointer" }}
+                              />
+                            </td>
+                          </tr>
+                        )
+                      )}
                     </tbody>
                   )}
                 </Table>
@@ -1388,10 +1447,10 @@ const Applicants = () => {
                             ))}
                           </DropdownMenu>
                           {applicantFormik.errors &&
-                            applicantFormik.errors?.rental_adress &&
-                            applicantFormik.touched &&
-                            applicantFormik.touched?.rental_adress &&
-                            applicantFormik.values.rental_adress === "" ? (
+                          applicantFormik.errors?.rental_adress &&
+                          applicantFormik.touched &&
+                          applicantFormik.touched?.rental_adress &&
+                          applicantFormik.values.rental_adress === "" ? (
                             <div style={{ color: "red" }}>
                               {applicantFormik.errors.rental_adress}
                             </div>
@@ -1429,10 +1488,10 @@ const Applicants = () => {
                               )}
                             </DropdownMenu>
                             {applicantFormik.errors &&
-                              applicantFormik.errors?.rental_unit &&
-                              applicantFormik.touched &&
-                              applicantFormik.touched?.rental_unit &&
-                              applicantFormik.values.rental_unit === "" ? (
+                            applicantFormik.errors?.rental_unit &&
+                            applicantFormik.touched &&
+                            applicantFormik.touched?.rental_unit &&
+                            applicantFormik.values.rental_unit === "" ? (
                               <div style={{ color: "red" }}>
                                 {applicantFormik.errors.rental_unit}
                               </div>
@@ -1453,13 +1512,14 @@ const Applicants = () => {
                 >
                   <div>
                     <Label
-                      onClick={() => setshowRentalOwnerTable(!showRentalOwnerTable)}
-                      style={{color:"#1171ef",fontWeight:"bold "}}
+                      onClick={() =>
+                        setshowRentalOwnerTable(!showRentalOwnerTable)
+                      }
+                      style={{ color: "#1171ef", fontWeight: "bold " }}
                     >
                       <WestIcon />
                       Back
                     </Label>
-
                   </div>
                   <Input
                     type="text"
@@ -1470,7 +1530,7 @@ const Applicants = () => {
                       marginBottom: "10px",
                       width: "100%",
                       padding: "8px",
-                      border: "1px solid #ccc", 
+                      border: "1px solid #ccc",
                       borderRadius: "4px",
                     }}
                   />
