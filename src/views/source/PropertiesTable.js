@@ -450,7 +450,7 @@ const PropertiesTables = () => {
               color="primary"
               //  href="#rms"
               onClick={() => {
-                if (countRes.statusCode === 200) {
+                if (countRes.statusCode === 201) {
                   swal(
                     "Plan Limitation",
                     "The limit for adding properties according to the plan has been reached.",
