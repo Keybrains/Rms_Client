@@ -70,6 +70,7 @@ import SurchargeForm from "views/source/Surcharge";
 import SurchargeTable from "views/source/SurchargeTable";
 import Settings from "views/source/Settings";
 import TenantAddPayment from "views/source/TenantAddPayment";
+import Purchaseplan from "views/source/purchaseplandetail";
 
 // ==========================  Super Admin ===================================================
 
@@ -107,6 +108,11 @@ var routes = [
   {
     path: "/Plans",
     component: <Plans />,
+    layout: "/admin",
+  },
+  {
+    path: "/Purchaseplandetail",
+    component: <Purchaseplan />,
     layout: "/admin",
   },
   {
