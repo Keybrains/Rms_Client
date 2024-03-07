@@ -84,6 +84,7 @@ const Vendor = () => {
   };
   useEffect(() => {
     getVendorData();
+    getVendorsLimit();
   }, [accessType]);
 
   const deleteVendor = async (id) => {
@@ -233,6 +234,23 @@ const Vendor = () => {
     getVendorData();
   }, [upArrow, sortBy]);
 
+  const [countRes, setCountRes] = useState("");
+
+  const getVendorsLimit = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/vendor/limitation/${accessType.admin_id}`
+      );
+      console.log(response.data, "yash");
+      setCountRes(response.data);
+    } catch (error) {
+      console.error("Error fetching rental data:", error);
+    }
+  };
+
+
+  
+
   return (
     <>
       <Header />
@@ -244,12 +262,29 @@ const Vendor = () => {
             </FormGroup>
           </Col>
 
-                    <Col className="text-right">
-
-            <Button
+          <Col className="text-right">
+            {/* <Button
               color="primary"
               //  href="#rms"
               onClick={() => navigate("/" + admin + "/addvendor")}
+              size="sm"
+              style={{ background: "white", color: "blue" }}
+            >
+              Add Vendor
+            </Button> */}
+            <Button
+              color="primary"
+              onClick={() => {
+                if (countRes.statusCode === 201) {
+                  swal(
+                    "Plan Limitation",
+                    "The limit for adding vendor according to the plan has been reached.",
+                    "warning"
+                  );
+                } else {
+                  navigate("/" + admin + "/addvendor");
+                }
+              }}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
@@ -289,6 +324,21 @@ const Vendor = () => {
                             minWidth: "200px",
                           }}
                         />
+                      </FormGroup>
+                    </Col>
+                    <Col className="d-flex justify-content-end">
+                      <FormGroup>
+                        <p>
+                          Added :{" "}
+                          <b style={{ color: "blue", fontWeight: 1000 }}>
+                            {countRes.vendorCount}
+                          </b>{" "}
+                          {" / "}
+                          Total :{" "}
+                          <b style={{ color: "blue", fontWeight: 1000 }}>
+                            {countRes.vendorCountLimit}
+                          </b>
+                        </p>
                       </FormGroup>
                     </Col>
                   </Row>
@@ -387,7 +437,6 @@ const Vendor = () => {
                       ))}
                     </tbody>
                   )}
-
                 </Table>
                 {paginatedData?.length > 0 ? (
                   <Row>

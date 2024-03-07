@@ -63,7 +63,7 @@ const TenantsTable = () => {
     navigate(`/${admin}/tenantdetail/${tenantId}`);
   };
 
-  let getTenantsDate = async () => {
+  let getTenantsData = async () => {
     try {
       let response = await axios.get(
         `${baseUrl}/tenants/tenants/${accessType.admin_id}`
@@ -82,8 +82,22 @@ const TenantsTable = () => {
     }
   };
 
+  const [countRes, setCountRes] = useState("");
+  const getTenantsLimit = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/tenants/limitation/${accessType.admin_id}`
+      );
+      console.log(response.data, "yash");
+      setCountRes(response.data);
+    } catch (error) {
+      console.error("Error fetching rental data:", error);
+    }
+  };
+
   React.useEffect(() => {
-    getTenantsDate();
+    getTenantsData();
+    getTenantsLimit();
   }, [pageItem, accessType, upArrow, sortBy]);
 
   const startIndex = (currentPage - 1) * pageItem;
@@ -108,7 +122,7 @@ const TenantsTable = () => {
         );
         console.log(res);
         if (res.data.statusCode === 200) {
-          getTenantsDate();
+          getTenantsData();
           toast.success(res.data.message, {
             position: "top-center",
             autoClose: 800,
@@ -338,7 +352,17 @@ const TenantsTable = () => {
           <Col className="text-right">
             <Button
               color="primary"
-              onClick={() => navigate("/" + admin + "/Leaseing")}
+              onClick={() => {
+                if (countRes.statusCode === 201) {
+                  swal(
+                    "Plan Limitation",
+                    "The limit for adding tenants according to the plan has been reached.",
+                    "warning"
+                  );
+                } else {
+                  navigate("/" + admin + "/Leaseing");
+                }
+              }}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
@@ -377,6 +401,21 @@ const TenantsTable = () => {
                             minWidth: "200px",
                           }}
                         />
+                      </FormGroup>
+                    </Col>
+                    <Col className="d-flex justify-content-end">
+                      <FormGroup>
+                        <p>
+                          Added :{" "}
+                          <b style={{ color: "blue", fontWeight: 1000 }}>
+                            {countRes.rentalCount}
+                          </b>{" "}
+                          {" / "}
+                          Total :{" "}
+                          <b style={{ color: "blue", fontWeight: 1000 }}>
+                            {countRes.propertyCountLimit}
+                          </b>
+                        </p>
                       </FormGroup>
                     </Col>
                   </Row>
