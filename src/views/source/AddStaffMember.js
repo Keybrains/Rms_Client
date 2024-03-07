@@ -68,15 +68,14 @@ const AddStaffMember = () => {
         .string()
         .email("Invalid email address")
         .required("Email is required"),
-      staffmember_password: 
-         yup
-            .string()
-            .required("No Password Provided")
-            .min(8, "Password is too short")
-            .matches(
-              /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-              "Must Contain One Uppercase, One Lowercase, One Number and one special case Character"
-            )
+      staffmember_password: yup
+        .string()
+        .required("No Password Provided")
+        .min(8, "Password is too short")
+        .matches(
+          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+          "Must Contain One Uppercase, One Lowercase, One Number and one special case Character"
+        ),
     }),
     onSubmit: (values) => {
       handleSubmit(values);
@@ -152,10 +151,9 @@ const AddStaffMember = () => {
       if (error.response) {
         console.error("Response Data:", error.response.data);
       }
+    } finally {
+      setSubmitLoader(false);
     }
-   finally {
-    setSubmitLoader(false);
-  }
   }
 
   function handleResponse(response) {
@@ -226,7 +224,7 @@ const AddStaffMember = () => {
                             }}
                             value={StaffMemberFormik.values.staffmember_name}
                           />
-                            {StaffMemberFormik.touched.staffmember_name &&
+                          {StaffMemberFormik.touched.staffmember_name &&
                           StaffMemberFormik.errors.staffmember_name ? (
                             <div style={{ color: "red" }}>
                               {StaffMemberFormik.errors.staffmember_name}
@@ -256,9 +254,11 @@ const AddStaffMember = () => {
                             name="staffmember_designation"
                             onBlur={StaffMemberFormik.handleBlur}
                             onChange={StaffMemberFormik.handleChange}
-                            value={StaffMemberFormik.values.staffmember_designation}
+                            value={
+                              StaffMemberFormik.values.staffmember_designation
+                            }
                           />
-                             {StaffMemberFormik.touched.staffmember_designation &&
+                          {StaffMemberFormik.touched.staffmember_designation &&
                           StaffMemberFormik.errors.staffmember_designation ? (
                             <div style={{ color: "red" }}>
                               {StaffMemberFormik.errors.staffmember_designation}
@@ -300,7 +300,7 @@ const AddStaffMember = () => {
                               e.target.value = numericValue;
                             }}
                           />
-                           {StaffMemberFormik.touched.staffmember_phoneNumber &&
+                          {StaffMemberFormik.touched.staffmember_phoneNumber &&
                           StaffMemberFormik.errors.staffmember_phoneNumber ? (
                             <div style={{ color: "red" }}>
                               {StaffMemberFormik.errors.staffmember_phoneNumber}
@@ -326,7 +326,7 @@ const AddStaffMember = () => {
                             onChange={StaffMemberFormik.handleChange}
                             value={StaffMemberFormik.values.staffmember_email.toLowerCase()}
                           />
-                           {StaffMemberFormik.touched.staffmember_email &&
+                          {StaffMemberFormik.touched.staffmember_email &&
                           StaffMemberFormik.errors.staffmember_email ? (
                             <div style={{ color: "red" }}>
                               {StaffMemberFormik.errors.staffmember_email}
@@ -380,10 +380,9 @@ const AddStaffMember = () => {
                     </Row>
                     <br />
                   </div>
-               
 
                   <Row className="pl-lg-3">
-                  {submitLoader ? (
+                    {submitLoader ? (
                       <button
                         type="submit"
                         className="btn btn-primary ml-4"
@@ -393,14 +392,14 @@ const AddStaffMember = () => {
                         Loading...
                       </button>
                     ) : (
-                    <button
-                      type="submit"
-                      className="btn btn-primary ml-4"
-                      style={{ background: "green" }}
-                      disabled={!StaffMemberFormik.isValid}
-                    >
-                      {id ? "Update Staff Member" : "Add Staff Member"}
-                    </button>
+                      <button
+                        type="submit"
+                        className="btn btn-primary ml-4"
+                        style={{ background: "green" }}
+                        disabled={!StaffMemberFormik.isValid}
+                      >
+                        {id ? "Update Staff Member" : "Add Staff Member"}
+                      </button>
                     )}
                     <button
                       color="primary"
@@ -412,12 +411,12 @@ const AddStaffMember = () => {
                     >
                       Cancel
                     </button>
-                       {/* Conditional message */}
-                  {!StaffMemberFormik.isValid && (
-                    <div style={{ color: 'red', marginTop: '10px' }}>
-                      Please fill in all fields correctly.
-                    </div>
-                  )}
+                    {/* Conditional message */}
+                    {!StaffMemberFormik.isValid && (
+                      <div style={{ color: "red", marginTop: "10px" }}>
+                        Please fill in all fields correctly.
+                      </div>
+                    )}
                   </Row>
                 </Form>
                 <br />

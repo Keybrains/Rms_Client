@@ -663,6 +663,15 @@ const RentRollLeaseing = () => {
 
     try {
       const res = await axios.post(`${baseUrl}/leases/leases`, object);
+      if (res.data.statusCode === 201) {
+        toast.error(res.data.message, {
+          position: "top-center",
+          autoClose: 5000,
+        });
+        // Optionally, stop further execution or navigate the user away
+        return; // This prevents the code from proceeding further
+      }
+    
       if (res.data.statusCode === 200) {
         if (applicant_id) {
           const res2 = await axios.put(

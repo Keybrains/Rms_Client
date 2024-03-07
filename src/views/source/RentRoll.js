@@ -77,11 +77,12 @@ const RentRoll = () => {
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-    } 
+    }
   };
 
   useEffect(() => {
     fetchData();
+    getLeaseLimit();
   }, [accessType]);
 
   const startIndex = (currentPage - 1) * pageItem;
@@ -221,6 +222,19 @@ const RentRoll = () => {
     }
   };
 
+  const [countRes, setCountRes] = useState("");
+  const getLeaseLimit = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/leases/limitation/${accessType.admin_id}`
+      );
+      console.log(response.data, "yash");
+      setCountRes(response.data);
+    } catch (error) {
+      console.error("Error fetching rental data:", error);
+    }
+  };
+
   return (
     <>
       <Header />
@@ -233,9 +247,27 @@ const RentRoll = () => {
           </Col>
 
           <Col className="text-right">
-            <Button
+            {/* <Button
               color="primary"
               onClick={() => navigate("/" + admin + "/RentRollLeaseing")}
+              size="sm"
+              style={{ background: "white", color: "blue" }}
+            >
+              Add New Lease
+            </Button> */}
+            <Button
+              color="primary"
+              onClick={() => {
+                if (countRes.statusCode === 201) {
+                  swal(
+                    "Plan Limitation",
+                    "The limit for adding lease according to the plan has been reached.",
+                    "warning"
+                  );
+                } else {
+                  navigate("/" + admin + "/RentRollLeaseing");
+                }
+              }}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
@@ -274,6 +306,21 @@ const RentRoll = () => {
                             minWidth: "200px",
                           }}
                         />
+                      </FormGroup>
+                    </Col>
+                    <Col className="d-flex justify-content-end">
+                      <FormGroup>
+                        <p>
+                          Added :{" "}
+                          <b style={{ color: "blue", fontWeight: 1000 }}>
+                            {countRes.leaseCount}
+                          </b>{" "}
+                          {" / "}
+                          Total :{" "}
+                          <b style={{ color: "blue", fontWeight: 1000 }}>
+                            {countRes.leaseCountLimit}
+                          </b>
+                        </p>
                       </FormGroup>
                     </Col>
                   </Row>
@@ -396,7 +443,9 @@ const RentRoll = () => {
                   {tenantsData.length === 0 ? (
                     <tbody>
                       <tr className="text-center">
-                        <td colSpan="8" style={{ fontSize: "15px" }}>No Lease Added</td>
+                        <td colSpan="8" style={{ fontSize: "15px" }}>
+                          No Lease Added
+                        </td>
                       </tr>
                     </tbody>
                   ) : (
@@ -428,7 +477,9 @@ const RentRoll = () => {
                             </td>
                             <td>{tenant.amount}</td>
                             <td>{tenant.createdAt} </td>
-                            <td>{tenant.updatedAt ? tenant.updatedAt : "-"} </td>
+                            <td>
+                              {tenant.updatedAt ? tenant.updatedAt : "-"}{" "}
+                            </td>
                             <td style={{}}>
                               <div style={{ display: "flex", gap: "5px" }}>
                                 <div
@@ -454,7 +505,8 @@ const RentRoll = () => {
                           </tr>
                         </>
                       ))}
-                    </tbody>)}
+                    </tbody>
+                  )}
                 </Table>
                 {paginatedData.length > 0 ? (
                   <Row>

@@ -85,6 +85,7 @@ const RentalownerTable = () => {
 
   useEffect(() => {
     fetchRentalsData();
+    getRentalOwnersLimit();
   }, [accessType]);
 
   function navigateToRentRollDetails(rentalowner_id) {
@@ -112,9 +113,9 @@ const RentalownerTable = () => {
               setTimeout(() => {
                 toast.success("The Rental-Owner has been deleted!", {
                   position: "top-center",
-                  autoClose: 2000 // Adjusted timeout for quick display
+                  autoClose: 2000, // Adjusted timeout for quick display
                 });
-              }, 500); 
+              }, 500);
             } else if (response.data.statusCode === 201) {
               toast.warn(response.data.message, {
                 position: "top-center",
@@ -163,6 +164,19 @@ const RentalownerTable = () => {
     });
   };
 
+  const [countRes, setCountRes] = useState("");
+  const getRentalOwnersLimit = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/rental_owner/limitation/${accessType.admin_id}`
+      );
+      console.log(response.data, "yash");
+      setCountRes(response.data);
+    } catch (error) {
+      console.error("Error fetching rental data:", error);
+    }
+  };
+
   return (
     <>
       <Header />
@@ -175,9 +189,27 @@ const RentalownerTable = () => {
           </Col>
 
           <Col className="text-right">
-            <Button
+            {/* <Button
               color="primary"
               onClick={() => navigate("/" + admin + "/Rentalowner")}
+              size="sm"
+              style={{ background: "white", color: "blue" }}
+            >
+              Add New Rental Owner
+            </Button> */}
+            <Button
+              color="primary"
+              onClick={() => {
+                if (countRes.statusCode === 201) {
+                  swal(
+                    "Plan Limitation",
+                    "The limit for adding rentalowners according to the plan has been reached.",
+                    "warning"
+                  );
+                } else {
+                  navigate("/" + admin + "/Rentalowner");
+                }
+              }}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
@@ -217,6 +249,21 @@ const RentalownerTable = () => {
                             minWidth: "200px",
                           }}
                         />
+                      </FormGroup>
+                    </Col>
+                    <Col className="d-flex justify-content-end">
+                      <FormGroup>
+                        <p>
+                          Added :{" "}
+                          <b style={{ color: "blue", fontWeight: 1000 }}>
+                            {countRes.rentalownerCount}
+                          </b>{" "}
+                          {" / "}
+                          Total :{" "}
+                          <b style={{ color: "blue", fontWeight: 1000 }}>
+                            {countRes.rentalOwnerCountLimit}
+                          </b>
+                        </p>
                       </FormGroup>
                     </Col>
                   </Row>

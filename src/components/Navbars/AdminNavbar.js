@@ -176,18 +176,18 @@ const AdminNavbar = (props) => {
           </Link>
           <Form className="navbar-search navbar-search-dark  mr-3 d-none d-md-flex ml-lg-auto">
             <Row>
-              <Button
+            <Button
                 color="primary"
-                onClick={() => navigate("/" + admin + "/Plans")}
+                onClick={() => plan?.plan_detail?.plan_name ? navigate("/" + admin + "/Purchaseplandetail"):navigate("/" + admin + "/Plans")}
                 size="sm"
                 style={{
                   background: "rgb(48 52 58 / 70%)",
                   color: "#fff",
                   marginRight: "20px",
                 }}
-                disabled={plan?.plan_name}
+                // disabled={plan?.plan_detail?.plan_name}
               >
-                {plan?.plan_name ? plan?.plan_name : "Buys"}
+                {plan?.plan_detail?.plan_name ? plan?.plan_detail?.plan_name : "Buy Now"}
               </Button>
               <FormGroup
                 className="mb-0"
