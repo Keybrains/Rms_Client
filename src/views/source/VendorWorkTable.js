@@ -25,7 +25,6 @@ import Cookies from "universal-cookie";
 const VendorWorkTable = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const status = urlParams.get("status");
-
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
   const [workData, setWorkData] = useState([]);
@@ -37,7 +36,6 @@ const VendorWorkTable = () => {
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
   const [searchQuery2, setSearchQuery2] = useState("");
-
   const [search, setSearch] = React.useState(false);
   const toggle3 = () => setSearch((prevState) => !prevState);
   const startIndex = (currentPage - 1) * pageItem;
@@ -65,7 +63,6 @@ const VendorWorkTable = () => {
         `${baseUrl}/work-order/vendor_work/${accessType.vendor_id}`
       );
       setWorkData(response.data.data);
-      console.log(`${baseUrl}/work-order/vendor_work/${accessType.vendor_id}`, "ka");
       setLoader(false);
 
       console.log(response.data.data,"janak")
@@ -122,7 +119,7 @@ const VendorWorkTable = () => {
         rental.work_category.toLowerCase().includes(lowerCaseQuery) ||
         rental.status.toLowerCase().includes(lowerCaseQuery) ||
         (rental.staffmember_name &&
-          rental.staffmember_name.toLowerCase().includes(lowerCaseQuery)) || // Check if staffmember_name exists
+          rental.staffmember_name.toLowerCase().includes(lowerCaseQuery)) || 
         isUnitAddress ||
         rental.priority.toLowerCase().includes(lowerCaseQuery)
       );

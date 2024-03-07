@@ -54,6 +54,7 @@ import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { RotatingLines } from "react-loader-spinner";
 
+
 const Index = (props) => {
 
   const { admin } = useParams();
@@ -337,6 +338,7 @@ const Index = (props) => {
             </Col>
           </Row>
         )}
+
       </Container>
     </>
   );
