@@ -109,11 +109,13 @@ function Plans() {
                     <br />
                   </div>
                   <div className="text-center" style={{ alignItems: "center", marginBottom: "10px" }}>
+
+                    {console.log(plan, "plan")}
                     <Button
                       type="button"
                       className="btn btn-secondary first-button"
                       style={{ background: "linear-gradient(87deg, #11cdef 0, #1171ef 100%)", color: "white" }}
-                      onClick={() => navigate("/" + admin + "/Planpurchases")}
+                      onClick={() => navigate("/" + admin + "/Planpurchases", { state: { plan: plan } })}
                     >
                       Get Started
                     </Button>
