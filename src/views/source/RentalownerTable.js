@@ -69,7 +69,7 @@ const RentalownerTable = () => {
   const fetchRentalsData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/rentals/rental-owners/${accessType.admin_id}`
+        `${baseUrl}/rentals/rental-owners/${accessType?.admin_id}`
       );
       if (response.status === 200) {
         setRentalsData(response.data);
@@ -86,7 +86,7 @@ const RentalownerTable = () => {
   useEffect(() => {
     fetchRentalsData();
     getRentalOwnersLimit();
-  }, [accessType]);
+  }, [accessType?.admin_id]);
 
   function navigateToRentRollDetails(rentalowner_id) {
     navigate(`/${admin}/rentalownerdetail/${rentalowner_id}`);

@@ -75,15 +75,14 @@ function Planpurches() {
         if (response.status === 200) {
           setCardLogo(response.config.url);
           // setCardLogo(cardType);
-        }
-        else{
-          setCardLogo('');
+        } else {
+          setCardLogo("");
         }
         // console.log(cardType, "cardLogo");
         planPurchaseFormik.setFieldValue("card_type", cardType.type);
       } else {
         planPurchaseFormik.setFieldValue("card_type", " ");
-        setCardLogo('');
+        setCardLogo("");
       }
     } catch (error) {
       // Handle error (e.g., card type not found)
@@ -137,6 +136,7 @@ function Planpurches() {
       card_number: values.card_number,
       cvv: values.cvv,
       cardholder_name: values.cardholder_name,
+      is_active: true,
     };
 
     const nmiObject = {
@@ -446,7 +446,10 @@ function Planpurches() {
                                 <OutlinedInput
                                   className="mb-3"
                                   onChange={(e) => {
-                                    const inputValue = e.target.value.slice(0, 16);
+                                    const inputValue = e.target.value.slice(
+                                      0,
+                                      16
+                                    );
                                     setCardNumber(inputValue);
                                     planPurchaseFormik.setFieldValue(
                                       "card_number",
@@ -463,15 +466,16 @@ function Planpurches() {
                                   onBlur={planPurchaseFormik.handleBlur}
                                   endAdornment={
                                     <InputAdornment position="end">
-                                      {planPurchaseFormik.values.card_number && cardLogo && (
-                                        <img
-                                          src={cardLogo}
-                                          height="40px"
-                                          width="40px"
-                                          style={{borderRadius:"30px"}}
-                                          alt="mastercard"
-                                        />
-                                      )}
+                                      {planPurchaseFormik.values.card_number &&
+                                        cardLogo && (
+                                          <img
+                                            src={cardLogo}
+                                            height="40px"
+                                            width="40px"
+                                            style={{ borderRadius: "30px" }}
+                                            alt="mastercard"
+                                          />
+                                        )}
                                     </InputAdornment>
                                   }
                                 />

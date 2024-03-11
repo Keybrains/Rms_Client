@@ -118,7 +118,6 @@ function Rows(props) {
         </TableCell>
         <TableCell align="center">{row?.plan_price}</TableCell>
         <TableCell align="center">
-          {console.log(row, "row")}
           {row?.annual_discount != null ? row.annual_discount + "%" : "-"}
         </TableCell>
         <TableCell align="center">{row?.billing_interval}</TableCell>
@@ -301,18 +300,7 @@ const PlanList = () => {
   };
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
-  // const deletePlanFromNmi = async (id) => {
-  //   await axios.post(`${baseUrl}/nmipayment/delete-plan`,{
-  //     planId: id
-  //   }).then((response)=>{
-  //     console.log(response,'response');
-  //   }).catch((error)=>{
-  //     console.log(error,'error');
-  //   })
-  // }
-  // Delete selected
-  var handleDelete = async() => {
-    console.log("selected", selected[0]);
+  var handleDelete = async () => {
     swal("Are You Sure You Want TO Delete ?", {
       buttons: ["No", "Yes"],
     }).then(async (buttons) => {
@@ -323,7 +311,6 @@ const PlanList = () => {
           })
           .then((response) => {
             if (response.data.statusCode === 200) {
-
               getData();
               setSelected([]);
               toast.success(response.data.message, {
