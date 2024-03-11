@@ -97,19 +97,21 @@ const StaffWorkTable = () => {
   };
 
   const getRentalData = async () => {
-    setLoader(true);
-    try {
-      const response = await axios.get(
-        `${baseUrl}/work-order/staff_work/${accessType.staffmember_id}`
-      );
-      setWorkData(response.data.data);
-      console.log(response.data.data, "this is fetched data");
-      setStaffMember(response.data.data.staffmember_name);
-      setTotalPages(Math.ceil(response.data.data.length / pageItem) || 1);
-    } catch (error) {
-      console.error("Error fetching work order data:", error);
-    } finally {
-      setLoader(false);
+    if (accessType?.staffmember_id) {
+      setLoader(true);
+      try {
+        const response = await axios.get(
+          `${baseUrl}/work-order/staff_work/${accessType.staffmember_id}`
+        );
+        setWorkData(response.data.data);
+        console.log(response.data.data, "this is fetched data");
+        setStaffMember(response.data.data.staffmember_name);
+        setTotalPages(Math.ceil(response.data.data.length / pageItem) || 1);
+      } catch (error) {
+        console.error("Error fetching work order data:", error);
+      } finally {
+        setLoader(false);
+      }
     }
   };
   useEffect(() => {

@@ -738,6 +738,12 @@ var routes = [
     layout: "/superadmin",
   },
   {
+    path: "/addplan/:id",
+    name: "Addplans",
+    component: <SuperAdminAddplan />,
+    layout: "/superadmin",
+  },
+  {
     path: "/Planpurchases",
     name: "Purchase Plan",
     component: <Planpurches />,

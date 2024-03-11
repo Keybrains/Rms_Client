@@ -79,28 +79,32 @@ const StaffMember = () => {
   }, [navigate]);
 
   const getStaffMemberData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/staffmember/staff_member/${accessType.admin_id}`
-      );
-      setLoader(false);
-      setStaffMemberData(response.data.data);
-      setTotalPages(Math.ceil(response.data.data.length / pageItem));
-    } catch (error) {
-      console.error("Error fetching data:", error);
+    if (accessType?.admin_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/staffmember/staff_member/${accessType?.admin_id}`
+        );
+        setLoader(false);
+        setStaffMemberData(response.data.data);
+        setTotalPages(Math.ceil(response.data.data.length / pageItem));
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     }
   };
 
   const [countRes, setCountRes] = useState("");
   const getStaffLimit = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/staffmember/limitation/${accessType.admin_id}`
-      );
-      console.log(response.data);
-      setCountRes(response.data);
-    } catch (error) {
-      console.error("Error fetching rental data:", error);
+    if (accessType?.admin_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/staffmember/limitation/${accessType?.admin_id}`
+        );
+        console.log(response.data);
+        setCountRes(response.data);
+      } catch (error) {
+        console.error("Error fetching rental data:", error);
+      }
     }
   };
 
@@ -149,21 +153,26 @@ const StaffMember = () => {
             if (response.data.statusCode === 200) {
               toast.success("Staff Member deleted successfully!", {
                 position: "top-center",
+                autoClose: 1000
               });
               getStaffMemberData();
+              getStaffLimit();
             } else if (response.data.statusCode === 201) {
               toast.warning("Staff Member already assigned to workorder!", {
                 position: "top-center",
+                autoClose: 1000
               });
               getStaffMemberData();
             } else if (response.data.statusCode === 202) {
               toast.warning("Staff Member already assigned to property", {
                 position: "top-center",
+                autoClose: 1000
               });
               getStaffMemberData();
             } else {
               toast.error(response.data.message, {
                 position: "top-center",
+                autoClose: 1000
               });
             }
           })
@@ -173,6 +182,7 @@ const StaffMember = () => {
       } else {
         toast.success("Staff Member is safe :)", {
           position: "top-center",
+          autoClose: 1000
         });
       }
     });
@@ -493,7 +503,7 @@ const StaffMember = () => {
                   {StaffMemberData.length === 0 ? (
                     <tbody>
                       <tr className="text-center">
-                        <td colSpan="5" style={{ fontSize: "15px" }}>
+                        <td colSpan="8" style={{ fontSize: "15px" }}>
                           No StaffMembers Added
                         </td>
                       </tr>

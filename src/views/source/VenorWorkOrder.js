@@ -41,22 +41,24 @@ const VenorWorkOrder = () => {
   }, [navigate]);
 
   const getWorkOrderDetails = async () => {
-    try {
-      if (!cookie_id) {
-        throw new Error("Vendor ID not found in cookies");
+    if (id) {
+      try {
+        if (!cookie_id) {
+          throw new Error("Vendor ID not found in cookies");
+        }
+
+        const response = await axios.get(
+          `${baseUrl}/workorder/workorder_summary/${id}`
+        );
+
+        //console.log("API Response:", response.data.data);
+        setWorkOrderDetails(response.data.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching work order details:", error);
+        setError(error);
+        setLoading(false);
       }
-
-      const response = await axios.get(
-        `${baseUrl}/workorder/workorder_summary/${id}`
-      );
-
-      //console.log("API Response:", response.data.data);
-      setWorkOrderDetails(response.data.data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching work order details:", error);
-      setError(error);
-      setLoading(false);
     }
   };
 

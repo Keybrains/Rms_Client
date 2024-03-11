@@ -83,18 +83,20 @@ const WorkOrderDetails = () => {
   };
 
   const getOutstandData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/work-order/workorder_details/${workorder_id}`
-      );
-      setoutstandDetails(response.data.data);
-      setWorkOrderStatus(response.data.data);
-      setLoading(false);
-      setImageDetails(response.data.data.workOrderImage);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setError(error);
-      setLoading(false);
+    if (workorder_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/work-order/workorder_details/${workorder_id}`
+        );
+        setoutstandDetails(response.data.data);
+        setWorkOrderStatus(response.data.data);
+        setLoading(false);
+        setImageDetails(response.data.data.workOrderImage);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+        setError(error);
+        setLoading(false);
+      }
     }
   };
 
@@ -164,8 +166,8 @@ const WorkOrderDetails = () => {
     handleDialogClose();
     const formatedDate = updateWorkorderFormik.values.due_date
       ? new Date(updateWorkorderFormik.values.due_date)
-          .toISOString()
-          .split("T")[0]
+        .toISOString()
+        .split("T")[0]
       : "";
     await axios
       .put(`${baseUrl}/workorder/updateworkorder/${outstandDetails._id}`, {
@@ -266,7 +268,7 @@ const WorkOrderDetails = () => {
   const [propertyDetails, setPropertyDetails] = useState({});
 
   const getPropertyData = async () => {
-    if (outstandDetails.rental_units === "") {
+    if (outstandDetails?.rental_units === "") {
       try {
         const response = await axios.get(
           `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}`
@@ -619,7 +621,7 @@ const WorkOrderDetails = () => {
                               </Box>
                             </Box>
                             {outstandDetails?.partsandcharge_data?.length > 0 &&
-                            outstandDetails?.partsandcharge_data ? (
+                              outstandDetails?.partsandcharge_data ? (
                               <Box
                                 border="1px solid #ccc"
                                 borderRadius="8px"
@@ -899,7 +901,7 @@ const WorkOrderDetails = () => {
                               </Box>
                             </Box>
                             {outstandDetails?.tenant_data &&
-                            typeof outstandDetails?.tenant_data === "object" ? (
+                              typeof outstandDetails?.tenant_data === "object" ? (
                               <Box
                                 style={{
                                   display: "flex",
@@ -1118,10 +1120,10 @@ const WorkOrderDetails = () => {
                                     outstandDetails?.priority === "High"
                                       ? "red"
                                       : outstandDetails?.priority === "Medium"
-                                      ? "green"
-                                      : outstandDetails?.priority === "Low"
-                                      ? "#FFD700"
-                                      : "inherit",
+                                        ? "green"
+                                        : outstandDetails?.priority === "Low"
+                                          ? "#FFD700"
+                                          : "inherit",
                                   borderRadius: "15px",
                                   padding: "2px",
                                   fontSize: "15px",
@@ -1129,10 +1131,10 @@ const WorkOrderDetails = () => {
                                     outstandDetails?.priority === "High"
                                       ? "red"
                                       : outstandDetails?.priority === "Medium"
-                                      ? "green"
-                                      : outstandDetails?.priority === "Low"
-                                      ? "#FFD700"
-                                      : "inherit",
+                                        ? "green"
+                                        : outstandDetails?.priority === "Low"
+                                          ? "#FFD700"
+                                          : "inherit",
                                 }}
                               >
                                 &nbsp;{outstandDetails?.priority}&nbsp;
@@ -1267,7 +1269,7 @@ const WorkOrderDetails = () => {
                                 </h2>
                               </Box>
                               {outstandDetails?.workOrder_images &&
-                              outstandDetails?.workOrder_images.length > 0 ? (
+                                outstandDetails?.workOrder_images.length > 0 ? (
                                 <Box
                                   style={{
                                     width: "100%",

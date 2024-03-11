@@ -85,16 +85,18 @@ const StaffDashBoard = (props) => {
 
   const [propertycount, setpropertycount] = useState();
   const fetchPropertyCount = async () => {
-    setLoader(true);
-    try {
-      const res = await axios.get(
-        `${baseUrl}/staffmember/count/${accessType?.staffmember_id}/${accessType?.admin_id}`
-      );
-      setpropertycount(res.data);
-    } catch (error) {
-      console.error("Error: ", error.message);
-    } finally {
-      setLoader(false);
+    if (accessType?.staffmember_id && accessType?.admin_id) {
+      setLoader(true);
+      try {
+        const res = await axios.get(
+          `${baseUrl}/staffmember/count/${accessType?.staffmember_id}/${accessType?.admin_id}`
+        );
+        setpropertycount(res.data);
+      } catch (error) {
+        console.error("Error: ", error.message);
+      } finally {
+        setLoader(false);
+      }
     }
   };
 
@@ -146,21 +148,22 @@ const StaffDashBoard = (props) => {
 
   useEffect(() => {
     const fetchWorkOrders = async () => {
-      try {
-        const [newResponse, overdueResponse] = await Promise.all([
-          axios.get(
-            `${baseUrl}/staffmember/dashboard_workorder/${accessType?.staffmember_id}/${accessType?.admin_id}`
-          ), // Replace this with your actual overdue work orders API endpoint
-        ]);
-        setNewWorkOrders(newResponse.data.data.new_workorder);
-        setOverdueWorkOrders(newResponse.data.data.overdue_workorder);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching work orders:", error);
-        setLoading(false);
-      }
-    };
-
+      if (accessType?.staffmember_id && accessType?.admin_id) {
+        try {
+          const [newResponse, overdueResponse] = await Promise.all([
+            axios.get(
+              `${baseUrl}/staffmember/dashboard_workorder/${accessType?.staffmember_id}/${accessType?.admin_id}`
+            ), // Replace this with your actual overdue work orders API endpoint
+          ]);
+          setNewWorkOrders(newResponse.data.data.new_workorder);
+          setOverdueWorkOrders(newResponse.data.data.overdue_workorder);
+          setLoading(false);
+        } catch (error) {
+          console.error("Error fetching work orders:", error);
+          setLoading(false);
+        }
+      };
+    }
     fetchWorkOrders();
   }, [accessType]);
   const [isPasOverdue, setIsPasOverdue] = useState(false);

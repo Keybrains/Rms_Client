@@ -106,23 +106,25 @@ export default function RentalOwner() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const getData = async () => {
-    try {
-      const res = await axios.get(
-        `${baseUrl}/rental_owner/rental_owner/${admin_id}`,
-        {
-          params: {
-            pageSize: rowsPerPage,
-            pageNumber: page,
-          },
-        }
-      );
-      setLoader(false);
-      setRentalOwnerData(res.data.data);
-      setAdminName(res.data.data[0].admin);
-      setCountData(res.data.count); // Make sure to adjust the key here
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setLoader(false);
+    if (admin_id) {
+      try {
+        const res = await axios.get(
+          `${baseUrl}/rental_owner/rental_owner/${admin_id}`,
+          {
+            params: {
+              pageSize: rowsPerPage,
+              pageNumber: page,
+            },
+          }
+        );
+        setLoader(false);
+        setRentalOwnerData(res.data.data);
+        setAdminName(res.data.data[0].admin);
+        setCountData(res.data.count); // Make sure to adjust the key here
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoader(false);
+      }
     }
   };
 
@@ -263,18 +265,20 @@ export default function RentalOwner() {
   const [adminDataCount, setAdminDataCount] = useState()
   console.log(adminDataCount, "adminDataCount")
   const adminCount = async () => {
-    try {
-      // Make an HTTP request to your API endpoint with the adminId
-     const res  =  await axios.get(`${baseUrl}/admin/admin_count/${admin_id}`);
-      setAdminDataCount(res.data)
-    } catch (error) {
-      console.error('Error occurred while calling API:', error);
+    if (admin_id) {
+      try {
+        // Make an HTTP request to your API endpoint with the adminId
+        const res = await axios.get(`${baseUrl}/admin/admin_count/${admin_id}`);
+        setAdminDataCount(res.data)
+      } catch (error) {
+        console.error('Error occurred while calling API:', error);
+      }
     }
   };
 
-  React.useEffect(() =>{
+  React.useEffect(() => {
     adminCount()
-  },[admin_id])
+  }, [admin_id])
 
   // Formik
   //   let [ProductDetailsFormik, setProductDetailsFormik] = useState({});
@@ -294,7 +298,7 @@ export default function RentalOwner() {
       <Container className="mt--8 ml--10" fluid>
         <Row>
           <Col>
-          <nav
+            <nav
               className="navbar navbar-expand-lg navbar-light bg-light mb-1 main-nav"
               style={{ cursor: "pointer", borderRadius: "15px" }}
             >
@@ -389,7 +393,7 @@ export default function RentalOwner() {
                       className="nav-link"
                       activeClassName="active"
                     >
-                       Vendor({adminDataCount?.vendor})
+                      Vendor({adminDataCount?.vendor})
                     </NavLink>
                   </li>
                   {/* Add more links as needed */}
@@ -476,7 +480,7 @@ export default function RentalOwner() {
                     />
                   </form>
 
-               
+
                 </Toolbar>
 
                 {loader || searchLoader ? (

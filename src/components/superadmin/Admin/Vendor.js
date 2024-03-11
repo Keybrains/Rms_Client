@@ -117,20 +117,22 @@ export default function Vendor() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const getData = async () => {
-    try {
-      const res = await axios.get(`${baseUrl}/vendor/vendor/${admin_id}`, {
-        params: {
-          pageSize: rowsPerPage,
-          pageNumber: page,
-        },
-      });
-      setLoader(false);
-      setVendorData(res.data.data);
-      setAdminName(res.data.data[0].admin);
-      setCountData(res.data.count); // Make sure to adjust the key here
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setLoader(false);
+    if (admin_id) {
+      try {
+        const res = await axios.get(`${baseUrl}/vendor/vendor/${admin_id}`, {
+          params: {
+            pageSize: rowsPerPage,
+            pageNumber: page,
+          },
+        });
+        setLoader(false);
+        setVendorData(res.data.data);
+        setAdminName(res.data.data[0].admin);
+        setCountData(res.data.count); // Make sure to adjust the key here
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoader(false);
+      }
     }
   };
 
@@ -301,12 +303,14 @@ export default function Vendor() {
 
   const [adminDataCount, setAdminDataCount] = useState();
   const adminCount = async () => {
-    try {
-      // Make an HTTP request to your API endpoint with the adminId
-      const res = await axios.get(`${baseUrl}/admin/admin_count/${admin_id}`);
-      setAdminDataCount(res.data);
-    } catch (error) {
-      console.error("Error occurred while calling API:", error);
+    if (admin_id) {
+      try {
+        // Make an HTTP request to your API endpoint with the adminId
+        const res = await axios.get(`${baseUrl}/admin/admin_count/${admin_id}`);
+        setAdminDataCount(res.data);
+      } catch (error) {
+        console.error("Error occurred while calling API:", error);
+      }
     }
   };
 

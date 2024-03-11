@@ -32,6 +32,7 @@ const ApplicantForm = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (id) {
       try {
         const response = await axios.get(
           `${baseUrl}/applicant/applicant_details/${id}`
@@ -41,6 +42,7 @@ const ApplicantForm = () => {
       }
     };
 
+  }
     fetchData();
   }, [id]);
 

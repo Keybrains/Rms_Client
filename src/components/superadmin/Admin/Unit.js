@@ -105,20 +105,22 @@ export default function Unit() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const getData = async () => {
-    try {
-      const res = await axios.get(`${baseUrl}/unit/unit/${admin_id}`, {
-        params: {
-          pageSize: rowsPerPage,
-          pageNumber: page,
-        },
-      });
-      setLoader(false);
-      setUnitData(res.data.data);
-      setAdminName(res?.data?.data[0]?.admin_data);
-      setCountData(res.data.count); // Make sure to adjust the key here
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setLoader(false);
+    if (admin_id) {
+      try {
+        const res = await axios.get(`${baseUrl}/unit/unit/${admin_id}`, {
+          params: {
+            pageSize: rowsPerPage,
+            pageNumber: page,
+          },
+        });
+        setLoader(false);
+        setUnitData(res.data.data);
+        setAdminName(res?.data?.data[0]?.admin_data);
+        setCountData(res.data.count); // Make sure to adjust the key here
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoader(false);
+      }
     }
   };
 
@@ -256,12 +258,14 @@ export default function Unit() {
   const [adminDataCount, setAdminDataCount] = useState();
   console.log(adminDataCount, "adminDataCount");
   const adminCount = async () => {
-    try {
-      // Make an HTTP request to your API endpoint with the adminId
-      const res = await axios.get(`${baseUrl}/admin/admin_count/${admin_id}`);
-      setAdminDataCount(res.data);
-    } catch (error) {
-      console.error("Error occurred while calling API:", error);
+    if (admin_id) {
+      try {
+        // Make an HTTP request to your API endpoint with the adminId
+        const res = await axios.get(`${baseUrl}/admin/admin_count/${admin_id}`);
+        setAdminDataCount(res.data);
+      } catch (error) {
+        console.error("Error occurred while calling API:", error);
+      }
     }
   };
 
@@ -287,7 +291,7 @@ export default function Unit() {
       <Container className="mt--8 ml--10" fluid>
         <Row>
           <Col>
-          <nav
+            <nav
               className="navbar navbar-expand-lg navbar-light bg-light mb-1 main-nav"
               style={{ cursor: "pointer", borderRadius: "15px" }}
             >
@@ -382,7 +386,7 @@ export default function Unit() {
                       className="nav-link"
                       activeClassName="active"
                     >
-                       Vendor({adminDataCount?.vendor})
+                      Vendor({adminDataCount?.vendor})
                     </NavLink>
                   </li>
                   {/* Add more links as needed */}

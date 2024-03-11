@@ -64,29 +64,33 @@ const PropertiesTables = () => {
   }, [navigate]);
 
   const getRentalsData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/rentals/rentals/${accessType.admin_id}`
-      );
+    if (accessType?.admin_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/rentals/rentals/${accessType?.admin_id}`
+        );
 
-      setRentalsData(response.data.data);
-      setTotalPages(Math.ceil(response.data.data.length / pageItem));
-      setLoader(false);
-    } catch (error) {
-      console.error("Error fetching rental data:", error);
+        setRentalsData(response.data.data);
+        setTotalPages(Math.ceil(response.data.data.length / pageItem));
+        setLoader(false);
+      } catch (error) {
+        console.error("Error fetching rental data:", error);
+      }
     }
   };
 
   const [countRes, setCountRes] = useState("");
   const getRentalsLimit = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/rentals/limitation/${accessType.admin_id}`
-      );
-      console.log(response.data);
-      setCountRes(response.data);
-    } catch (error) {
-      console.error("Error fetching rental data:", error);
+    if (accessType?.admin_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/rentals/limitation/${accessType?.admin_id}`
+        );
+        console.log(response.data);
+        setCountRes(response.data);
+      } catch (error) {
+        console.error("Error fetching rental data:", error);
+      }
     }
   };
 
@@ -104,11 +108,12 @@ const PropertiesTables = () => {
           .delete(`${baseUrl}/rentals/rental/${id}`)
           .then((response) => {
             if (response.data.statusCode === 200) {
-              toast.success("Rental property deleted successfully!", {
+              toast.success("Property deleted successfully!", {
                 position: "top-center",
                 autoClose: 500,
               });
-              getRentalsData(); // Refresh your rentals data or perform other actions
+              getRentalsData(); 
+              getRentalsLimit();
             } else if (response.data.statusCode === 201) {
               toast.warning("Property already assigned to Tenant!", {
                 position: "top-center",
@@ -126,7 +131,7 @@ const PropertiesTables = () => {
             console.error("Error deleting rental property:", error);
           });
       } else {
-        toast.success("Rental property is safe", {
+        toast.success("Property is safe :)", {
           position: "top-center",
           autoClose: 500,
         });
@@ -768,7 +773,7 @@ const PropertiesTables = () => {
                   {rentalsData.length === 0 ? (
                     <tbody>
                       <tr className="text-center">
-                        <td colSpan="5" style={{ fontSize: "15px" }}>
+                        <td colSpan="8" style={{ fontSize: "15px" }}>
                           No Properties Added
                         </td>
                       </tr>

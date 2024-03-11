@@ -113,7 +113,7 @@ const AddStaffMember = () => {
   async function handleSubmit(values) {
     setSubmitLoader(true);
     const object = {
-      admin_id: accessType.admin_id,
+      admin_id: accessType?.admin_id,
       staffmember_name: values?.staffmember_name,
       staffmember_designation: values?.staffmember_designation,
       staffmember_phoneNumber: values?.staffmember_phoneNumber,
@@ -125,7 +125,8 @@ const AddStaffMember = () => {
         const res = await axios.post(
           `${baseUrl}/staffmember/staff_member`,
           object
-        );
+          );
+          console.log(object, "yash", res)
         if (res.data.statusCode === 200) {
           handleResponse(res);
         } else if (res.data.statusCode === 201) {

@@ -72,18 +72,20 @@ const StaffNavbar = (props) => {
   };
 
   const getVendorDetails = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/addstaffmember/staffmember_summary/${cookie_id}`
-      );
-      //console.log(response.data.data)
-      setVendorDetails(response.data.data);
-      setVendorname(response.data.data.staffmember_name);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching vendor details:", error);
-      setError(error);
-      setLoading(false);
+    if (cookie_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/addstaffmember/staffmember_summary/${cookie_id}`
+        );
+        //console.log(response.data.data)
+        setVendorDetails(response.data.data);
+        setVendorname(response.data.data.staffmember_name);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching vendor details:", error);
+        setError(error);
+        setLoading(false);
+      }
     }
   };
 
@@ -120,20 +122,22 @@ const StaffNavbar = (props) => {
 
   const [staffMemberNotification, setStaffMemberNotification] = useState([]);
   const staffmemberNotificationData = async (addresses, units) => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/notification/staff/${accessType.staffmember_id}`
-      );
-      if (response.status === 200) {
-        const data = response.data.data;
-        setStaffMemberNotification(data);
-        // Process the data as needed
-      } else {
-        console.error("Response status is not 200");
+    if (accessType?.staffmember_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/notification/staff/${accessType.staffmember_id}`
+        );
+        if (response.status === 200) {
+          const data = response.data.data;
+          setStaffMemberNotification(data);
+          // Process the data as needed
+        } else {
+          console.error("Response status is not 200");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        // Handle the error, display a message to the user, or take other appropriate action.
       }
-    } catch (error) {
-      console.error("Error:", error);
-      // Handle the error, display a message to the user, or take other appropriate action.
     }
   };
 
@@ -248,7 +252,7 @@ const StaffNavbar = (props) => {
                                       navigate(
                                         `/staff/staffworkdetails/${data?.notification_type?.workorder_id}`
                                       );
-                                    } else if (data.is_lease) {
+                                    } else if (data.is_rental) {
                                       navigate(
                                         `/staff/staffpropertydetail/${data?.rental_id}`
                                       );

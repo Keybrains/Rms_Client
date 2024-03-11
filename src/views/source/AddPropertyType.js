@@ -113,7 +113,7 @@ const AddPropertyType = () => {
     setSubmitLoader(true);
     try {
       const object = {
-        admin_id: accessType.admin_id,
+        admin_id: accessType?.admin_id,
         property_type: propertyFormik.values.property_type,
         propertysub_type: propertyFormik.values.propertysub_type,
         is_multiunit: isMultiUnit,

@@ -26,14 +26,16 @@ const TenantPropertyDetail = () => {
 
   const [propertyDetails, setPropertyDetails] = useState([]);
   const getRentalData = async () => {
-    try {
-      const res = await axios.get(
-        `${baseUrl}/leases/lease_summary/${lease_id}`
-      );
-      setPropertyDetails(res.data.data);
-      setLoader(false);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
+    if (lease_id) {
+      try {
+        const res = await axios.get(
+          `${baseUrl}/leases/lease_summary/${lease_id}`
+        );
+        setPropertyDetails(res.data.data);
+        setLoader(false);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+      }
     }
   };
 

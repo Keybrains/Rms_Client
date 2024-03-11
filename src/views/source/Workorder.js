@@ -77,35 +77,40 @@ const Workorder = () => {
   // };
 
   const getWorkData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/work-order/work-orders/${accessType?.admin_id}`
-      );
-      if (response?.data?.data) {
-        const filteredData = response.data.data.map((item) => ({
-          workOrder_id: item?.workOrderData?.workOrder_id,
-          work_subject: item?.workOrderData?.work_subject,
-          work_category: item?.workOrderData?.work_category,
-          status: item?.workOrderData?.status,
-          createdAt: item?.workOrderData?.createdAt,
-          updateAt: item?.workOrderData?.updatedAt,
-          rental_id: item?.rentalAdress?.rental_id,
-          rental_adress: item?.rentalAdress?.rental_adress,
-          unit_id: item?.rentalUnit?.unit_id,
-          rental_unit: item?.rentalUnit?.rental_unit,
-          staffmember_id: item?.staffMember?.staffmember_id,
-          staffmember_name: item?.staffMember?.staffmember_name,
-        }));
-        setWorkData(filteredData);
-        setTotalPages(Math.ceil(filteredData.length / pageItem));
-        setLoader(false);
-      } else {
-        setWorkData([]);
-        setTotalPages(0);
+    if (accessType?.admin_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/work-order/work-orders/${accessType?.admin_id}`
+        );
+        if (response?.data?.data) {
+          const filteredData = response.data.data.map((item) => ({
+            workOrder_id: item?.workOrderData?.workOrder_id,
+            work_subject: item?.workOrderData?.work_subject,
+            work_category: item?.workOrderData?.work_category,
+            status: item?.workOrderData?.status,
+            createdAt: item?.workOrderData?.createdAt,
+            updateAt: item?.workOrderData?.updatedAt,
+            rental_id: item?.rentalAdress?.rental_id,
+            rental_adress: item?.rentalAdress?.rental_adress,
+            unit_id: item?.rentalUnit?.unit_id,
+            rental_unit: item?.rentalUnit?.rental_unit,
+            staffmember_id: item?.staffMember?.staffmember_id,
+            staffmember_name: item?.staffMember?.staffmember_name,
+          }));
+          setWorkData(filteredData);
+          setTotalPages(Math.ceil(filteredData.length / pageItem));
+          // setLoader(false);
+        } else {
+          setWorkData([]);
+          setTotalPages(0);
+        }
+      } catch (error) {
+        // setLoader(false);
+        console.error("Error fetching data:", error);
       }
-    } catch (error) {
-      // setLoader(false);
-      console.error("Error fetching data:", error);
+      finally {
+        setLoader(false); 
+      }
     }
   };
 
@@ -136,15 +141,18 @@ const Workorder = () => {
             if (response.data.statusCode === 200) {
               toast.success("Work Order deleted successfully", {
                 position: "top-center",
+                autoClose: 1000
               });
               getWorkData();
             } else if (response.data.statusCode === 203) {
               toast.warn(response.data.message, {
                 position: "top-center",
+                autoClose: 1000
               });
             } else {
               toast.error(response.data.message, {
                 position: "top-center",
+                autoClose: 1000
               });
             }
           })
@@ -154,6 +162,7 @@ const Workorder = () => {
       } else {
         toast.success("Work Orer is safe!", {
           position: "top-center",
+          autoClose: 1000
         });
       }
     });
@@ -404,7 +413,7 @@ const Workorder = () => {
                   {workData.length === 0 ? (
                     <tbody>
                       <tr className="text-center">
-                        <td colSpan="7" style={{ fontSize: "15px" }}>
+                        <td colSpan="8" style={{ fontSize: "15px" }}>
                           No Workorder Added
                         </td>
                       </tr>
