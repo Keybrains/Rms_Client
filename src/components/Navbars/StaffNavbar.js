@@ -252,7 +252,7 @@ const StaffNavbar = (props) => {
                                       navigate(
                                         `/staff/staffworkdetails/${data?.notification_type?.workorder_id}`
                                       );
-                                    } else if (data.is_lease) {
+                                    } else if (data.is_rental) {
                                       navigate(
                                         `/staff/staffpropertydetail/${data?.rental_id}`
                                       );

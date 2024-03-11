@@ -26,6 +26,7 @@ import {
   DropdownItem,
   ModalHeader,
   ModalBody,
+  Label,
   Modal,
 } from "reactstrap";
 import CloseIcon from "@mui/icons-material/Close";
@@ -50,7 +51,7 @@ function TenantAddPayment() {
   const [loader, setLoader] = useState(false);
   const [recdropdownOpen, setrecDropdownOpen] = useState(false);
   const toggle2 = () => setrecDropdownOpen((prevState) => !prevState);
-
+  const [isLoading, setLoading] = useState(true);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
 
   React.useEffect(() => {
@@ -99,6 +100,7 @@ function TenantAddPayment() {
   const [ResponseData, setResponseData] = useState("");
   const [propertyDropdownData, setPropertyDropdownData] = useState([]);
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
+  console.log("selectedPropertyType", selectedPropertyType);
   const [propdropdownOpen, setpropDropdownOpen] = React.useState(false);
 
   const toggle9 = () => {
@@ -106,9 +108,18 @@ function TenantAddPayment() {
   };
 
   const handlePropertyTypeSelect = async (property) => {
+    if (!property) {
+      console.error(
+        "Selected property is undefined. Unable to select property type."
+      );
+      // You can decide to set a default state or return early to avoid further execution
+      return;
+    }
+
     setSelectedPropertyType(
       `${property.rental_adress} - ${property.rental_unit} (${property.status})`
     );
+
     generalledgerFormik.setFieldValue("lease_id", property.lease_id || "");
   };
 
@@ -130,7 +141,6 @@ function TenantAddPayment() {
   useEffect(() => {
     fetchData();
   }, [accessType?.admin_id]);
-
   const fetchLedger = async () => {
     if (tenantId) {
       try {
@@ -148,7 +158,7 @@ function TenantAddPayment() {
 
   useEffect(() => {
     fetchLedger();
-  }, [accessType]);
+  }, [tenantId]); // Rerun when tenantId changes
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -385,40 +395,40 @@ function TenantAddPayment() {
           `${baseUrl}/payment/payment/${payment_id}`
         );
 
-        if (response.data.statusCode === 200) {
-          const responseData = response.data.data[0];
-          generalledgerFormik.setValues({
-            ...generalledgerFormik.values,
-            lease_id: responseData.lease_id,
-            payment_id: responseData.payment_id,
-            check_number: responseData.check_number,
-            payment_type: responseData.payment_type,
-            date: responseData.entry[0].date,
-            total_amount: responseData.total_amount,
-            payments_memo: responseData.entry[0].memo,
-            customer_vault_id: responseData.customer_vault_id,
-            billing_id: responseData.billing_id,
-            transaction_id: responseData.transaction_id,
-            surcharge: responseData.surcharge,
-            payments: responseData.entry.map((entry) => ({
-              entry_id: entry.entry_id,
-              account: entry.account,
-              amount: entry.amount,
-              balance: entry.amount,
-              charge_type: entry.charge_type,
-            })),
-            payments_attachment: responseData.payment_attachment,
-          });
-          const selectedProperty = propertyDropdownData.find(property => property.lease_id === responseData.lease_id);
-          handlePropertyTypeSelect(selectedProperty);
-          setSelectedPaymentMethod(responseData.payment_type);
-          setSelectedCreditCard(responseData.billing_id);
-        } else {
-          console.error("Error:", response.data.message);
-        }
-      } catch (error) {
-        console.error("Network error:", error);
+      if (response.data.statusCode === 200) {
+        const responseData = response.data.data[0];
+        console.log("responseData", response.data.data);
+        generalledgerFormik.setValues({
+          ...generalledgerFormik.values,
+          lease_id: responseData.lease_id,
+          payment_id: responseData.payment_id,
+          check_number: responseData.check_number,
+          payment_type: responseData.payment_type,
+          date: responseData.entry[0].date,
+          total_amount: responseData.total_amount,
+          payments_memo: responseData.entry[0].memo,
+          customer_vault_id: responseData.customer_vault_id,
+          billing_id: responseData.billing_id,
+          transaction_id: responseData.transaction_id,
+          surcharge: responseData.surcharge,
+          payments: responseData.entry.map((entry) => ({
+            entry_id: entry.entry_id,
+            account: entry.account,
+            amount: entry.amount,
+            balance: entry.amount,
+            charge_type: entry.charge_type,
+          })),
+          payments_attachment: responseData.payment_attachment,
+        });
+
+        handlePropertyTypeSelect(response.data.data.lease_data);
+        setSelectedPaymentMethod(responseData.payment_type);
+        setSelectedCreditCard(responseData.billing_id);
+      } else {
+        console.error("Error:", response.data.message);
       }
+    } catch (error) {
+      console.error("Network error:", error);
     }
   };
 
@@ -518,7 +528,7 @@ function TenantAddPayment() {
         });
         setTimeout(() => {
           navigate(`/tenant/tenantFinancial`);
-        }, 2000)
+        }, 2000);
       } else {
         toast.warning(res.data.message, {
           position: "top-center",
@@ -658,7 +668,7 @@ function TenantAddPayment() {
             uploaded_file: fileUrl,
           };
           const paymentResponse = await axios.post(
-            `${baseUrl}/payment/payment`,
+            `${baseUrl}/payment/tenantpayment`,
             paymentObject
           );
 
@@ -669,8 +679,7 @@ function TenantAddPayment() {
             });
             setTimeout(() => {
               navigate(`/tenant/tenantFinancial`);
-            }, 2000)
-
+            }, 2000);
           } else {
             toast.warning(paymentResponse.data.message, {
               position: "top-center",
@@ -703,7 +712,7 @@ function TenantAddPayment() {
           response: "SUCCESS",
         };
         const paymentResponse = await axios.post(
-          `${baseUrl}/payment/payment`,
+          `${baseUrl}/payment/tenantpayment`,
           paymentObject
         );
 
@@ -714,7 +723,7 @@ function TenantAddPayment() {
           });
           setTimeout(() => {
             navigate(`/tenant/tenantFinancial`);
-          }, 2000)
+          }, 2000);
         } else {
           toast.warning(paymentResponse.data.message, {
             position: "top-center",
@@ -751,7 +760,7 @@ function TenantAddPayment() {
 
         // Make the second API call to baseUrl/payment/payment
         const paymentResponse = await axios.post(
-          `${baseUrl}/payment/payment`,
+          `${baseUrl}/payment/tenantpayment`,
           paymentObject
         );
 
@@ -763,7 +772,7 @@ function TenantAddPayment() {
           });
           setTimeout(() => {
             navigate(`/tenant/tenantFinancial`);
-          }, 2000)
+          }, 2000);
         } else {
           toast.warning(paymentResponse.data.message, {
             position: "top-center",
@@ -1014,45 +1023,43 @@ function TenantAddPayment() {
                       </FormGroup>
                     </Col>
                   </Row>
-                  <Col md="6">
-                    <label
-                      className="form-control-label"
-                      htmlFor="input-property"
-                    >
-                      Leases *
-                    </label>
-                    <FormGroup>
-                      <Dropdown isOpen={propdropdownOpen} toggle={toggle9}>
-                        <DropdownToggle caret style={{ width: "100%" }}>
-                          {selectedPropertyType
-                            ? selectedPropertyType
-                            : "Select Lease"}
-                        </DropdownToggle>
-                        <DropdownMenu
-                          style={{
-                            width: "100%",
-                            maxHeight: "200px",
-                            overflowY: "auto",
-                          }}
-                        >
-                          {propertyDropdownData?.map((property, index) => (
-                            <DropdownItem
-                              key={index}
-                              onClick={() => {
-                                handlePropertyTypeSelect(property);
-                                generalledgerFormik.setFieldValue(
-                                  "lease_id",
-                                  property.lease_id
-                                );
-                              }}
-                            >
-                              {`${property.rental_adress} - ${property.rental_unit} (${property.status})`}
-                            </DropdownItem>
-                          ))}
-                        </DropdownMenu>
-                      </Dropdown>
-                    </FormGroup>
-                  </Col>
+                  <Row>
+                    <Col md="6">
+                      <Label
+                        className="form-control-label"
+                        htmlFor="input-property"
+                      >
+                        Leases *
+                      </Label>
+                      <FormGroup>
+                        <Dropdown isOpen={propdropdownOpen} toggle={toggle9}>
+                          <DropdownToggle caret style={{ width: "100%" }}>
+                            {selectedPropertyType
+                              ? selectedPropertyType
+                              : "Select Lease"}
+                          </DropdownToggle>
+                          <DropdownMenu
+                            style={{
+                              width: "100%",
+                              maxHeight: "200px",
+                              overflowY: "auto",
+                            }}
+                          >
+                            {propertyDropdownData.map((property, index) => (
+                              <DropdownItem
+                                key={index}
+                                onClick={() =>
+                                  handlePropertyTypeSelect(property)
+                                }
+                              >
+                                {`${property.rental_adress} - ${property.rental_unit} (${property.status})`}
+                              </DropdownItem>
+                            ))}
+                          </DropdownMenu>
+                        </Dropdown>
+                      </FormGroup>
+                    </Col>
+                  </Row>
                   <Row>
                     <Col sm="4">
                       <FormGroup>
