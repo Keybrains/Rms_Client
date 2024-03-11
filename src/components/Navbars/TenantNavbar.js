@@ -92,10 +92,11 @@ const TenantNavbar = (props) => {
   const tenantNotificationData = async (addresses, units) => {
     try {
       const response = await axios.get(
-        `${baseUrl}/notification/${accessType?.tenant_id}`
+        `${baseUrl}/notification/tenant/${accessType?.tenant_id}`
       );
       if (response.status === 200) {
         const data = response.data.data;
+        console.log('vaibhav', data)
         setTenantNotification(data);
         // Process the data as needed
       } else {
