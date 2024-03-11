@@ -107,7 +107,7 @@ const Vendor = () => {
               position: "top-center",
               autoClose: 1000,
             });
-
+            getVendorsLimit();
             getVendorData();
           } else if (response.data.statusCode === 201) {
             toast.warning("Vendor already assigned to workorder!", {

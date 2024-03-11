@@ -175,16 +175,20 @@ const RentRoll = () => {
         if (res.data.statusCode === 200) {
           toast.success(res.data.message, {
             position: "top-center",
+            autoClose: 1000
           });
           fetchData();
+          getLeaseLimit();
         } else {
           toast.warning(res.data.message, {
             position: "top-center",
+            autoClose: 1000
           });
         }
       } else {
-        toast.success("Tenant is safe :)", {
+        toast.success("Lease is safe :)", {
           position: "top-center",
+          autoClose: 1000
         });
       }
     });

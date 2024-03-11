@@ -499,13 +499,16 @@ const Applicants = () => {
             if (response.data.statusCode === 200) {
               toast.success("Applicants deleted successfully", {
                 position: "top-center",
+                autoClose: 1000
               });
               // getWorkData(); // Refresh your work order data or perform other actions
               // navigate(`admin/Applicants/${id}`);
               getApplicantData();
+              getApplicatsLimit();
             } else {
               toast.warning(response.data.message, {
                 position: "top-center",
+                autoClose: 1000
               });
             }
           })
@@ -515,6 +518,7 @@ const Applicants = () => {
       } else {
         toast.warning("Applicant is safe!", {
           position: "top-center",
+          autoClose: 1000
         });
       }
     });

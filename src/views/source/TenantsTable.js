@@ -123,6 +123,7 @@ const TenantsTable = () => {
         console.log(res);
         if (res.data.statusCode === 200) {
           getTenantsData();
+          getTenantsLimit();
           toast.success(res.data.message, {
             position: "top-center",
             autoClose: 800,

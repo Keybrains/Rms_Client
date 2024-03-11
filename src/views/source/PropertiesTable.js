@@ -104,11 +104,12 @@ const PropertiesTables = () => {
           .delete(`${baseUrl}/rentals/rental/${id}`)
           .then((response) => {
             if (response.data.statusCode === 200) {
-              toast.success("Rental property deleted successfully!", {
+              toast.success("Property deleted successfully!", {
                 position: "top-center",
                 autoClose: 500,
               });
-              getRentalsData(); // Refresh your rentals data or perform other actions
+              getRentalsData(); 
+              getRentalsLimit();
             } else if (response.data.statusCode === 201) {
               toast.warning("Property already assigned to Tenant!", {
                 position: "top-center",
@@ -126,7 +127,7 @@ const PropertiesTables = () => {
             console.error("Error deleting rental property:", error);
           });
       } else {
-        toast.success("Rental property is safe", {
+        toast.success("Property is safe :)", {
           position: "top-center",
           autoClose: 500,
         });

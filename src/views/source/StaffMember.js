@@ -149,21 +149,26 @@ const StaffMember = () => {
             if (response.data.statusCode === 200) {
               toast.success("Staff Member deleted successfully!", {
                 position: "top-center",
+                autoClose: 1000
               });
               getStaffMemberData();
+              getStaffLimit();
             } else if (response.data.statusCode === 201) {
               toast.warning("Staff Member already assigned to workorder!", {
                 position: "top-center",
+                autoClose: 1000
               });
               getStaffMemberData();
             } else if (response.data.statusCode === 202) {
               toast.warning("Staff Member already assigned to property", {
                 position: "top-center",
+                autoClose: 1000
               });
               getStaffMemberData();
             } else {
               toast.error(response.data.message, {
                 position: "top-center",
+                autoClose: 1000
               });
             }
           })
@@ -173,6 +178,7 @@ const StaffMember = () => {
       } else {
         toast.success("Staff Member is safe :)", {
           position: "top-center",
+          autoClose: 1000
         });
       }
     });

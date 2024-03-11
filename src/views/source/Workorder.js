@@ -136,15 +136,18 @@ const Workorder = () => {
             if (response.data.statusCode === 200) {
               toast.success("Work Order deleted successfully", {
                 position: "top-center",
+                autoClose: 1000
               });
               getWorkData();
             } else if (response.data.statusCode === 203) {
               toast.warn(response.data.message, {
                 position: "top-center",
+                autoClose: 1000
               });
             } else {
               toast.error(response.data.message, {
                 position: "top-center",
+                autoClose: 1000
               });
             }
           })
@@ -154,6 +157,7 @@ const Workorder = () => {
       } else {
         toast.success("Work Orer is safe!", {
           position: "top-center",
+          autoClose: 1000
         });
       }
     });
