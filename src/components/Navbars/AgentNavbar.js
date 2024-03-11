@@ -27,16 +27,18 @@ const AgentNavbar = (props) => {
   const [error, setError] = useState(null);
   const [vendorDetails, setVendorDetails] = useState({});
   const getVendorDetails = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/addagent/agent_summary/${cookie_id}`
-      );
-      setVendorDetails(response.data.data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching vendor details:", error);
-      setError(error);
-      setLoading(false);
+    if (cookie_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/addagent/agent_summary/${cookie_id}`
+        );
+        setVendorDetails(response.data.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching vendor details:", error);
+        setError(error);
+        setLoading(false);
+      }
     }
   };
   useEffect(() => {
@@ -76,7 +78,7 @@ const AgentNavbar = (props) => {
                 </DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem
-                 //  href="#rms"
+                  //  href="#rms"
                   to="/auth/login"
                   onClick={() => {
                     Logout();

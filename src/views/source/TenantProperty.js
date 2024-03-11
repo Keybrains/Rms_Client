@@ -48,17 +48,18 @@ const TenantProperty = () => {
   }, [navigate]);
 
   const getTenantData = async () => {
-    try {
-      const allTenants = await axios.get(
-        `${baseUrl}/tenants/tenant_property/${accessType.tenant_id}`
+    if (accessType?.tenant_id) {
+      try {
+        const allTenants = await axios.get(
+          `${baseUrl}/tenants/tenant_property/${accessType.tenant_id}`
         );
-        console.log( `${baseUrl}/tenants/tenant_property/${accessType.tenant_id}`,"ja")
-      setPropertyDetails(allTenants.data.data);
-      setLoader(false);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
- 
-    } 
+        setPropertyDetails(allTenants.data.data);
+        setLoader(false);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+
+      }
+    }
   };
 
   useEffect(() => {
@@ -81,7 +82,7 @@ const TenantProperty = () => {
 
   const filterTenantsBySearch = () => {
     let filteredData = [...propertyDetails];
-  
+
     if (searchQuery) {
       const lowerCaseSearchQuery = searchQuery.toLowerCase();
       filteredData = filteredData.filter((tenant) => {
@@ -92,7 +93,7 @@ const TenantProperty = () => {
         );
       });
     }
-  
+
 
     if (upArrow.length > 0) {
       const sortingArrows = upArrow;
@@ -180,27 +181,27 @@ const TenantProperty = () => {
                 </Row>
               </CardHeader>
               {loader ? (
-                  <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
-                    <RotatingLines
-                      strokeColor="grey"
-                      strokeWidth="5"
-                      animationDuration="0.75"
-                      width="50"
-                      visible={loader}
-                    />
-                  </div>
-                ) : (
+                <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+                  <RotatingLines
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="50"
+                    visible={loader}
+                  />
+                </div>
+              ) : (
                 <div className="table-responsive">
                   <>
                     <Table
                       className="align-items-center table-flush"
                       responsive
-                      // style={{
-                      //   width: "100%",
-                      //   border: "1px solid #e5e5e5",
-                      //   borderRadius: "8px",
-                      //   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                      // }}
+                    // style={{
+                    //   width: "100%",
+                    //   border: "1px solid #e5e5e5",
+                    //   borderRadius: "8px",
+                    //   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                    // }}
                     >
                       <thead className="thead-light">
                         <tr>
@@ -262,7 +263,7 @@ const TenantProperty = () => {
                       </thead>
                       <tbody>
                         {filterTenantsBySearchAndPage().map(
-                          
+
                           (address, index) => (
                             <>
                               <tr
@@ -273,7 +274,7 @@ const TenantProperty = () => {
                                 //     address.rental_adress
                                 //   )
                                 // }
-                                onClick={()=> navigate(`/tenant/tenantpropertydetail/${address?.lease_id}`)}
+                                onClick={() => navigate(`/tenant/tenantpropertydetail/${address?.lease_id}`)}
                                 style={{ cursor: "pointer" }}
                               >
                                 <td
@@ -301,8 +302,8 @@ const TenantProperty = () => {
                     </Table>
                   </>
                 </div>
-                )}
-             
+              )}
+
             </Card>
           </div>
         </Row>

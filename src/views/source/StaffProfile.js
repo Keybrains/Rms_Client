@@ -36,19 +36,21 @@ const StaffProfile = () => {
   }, [navigate]);
 
   const getStaffData = async () => {
-    try {
-      if (accessType?.staffmember_id) {
-        const response = await axios.get(
-          `${baseUrl}/staffmember/staffmember_profile/${accessType?.staffmember_id}`
-        );
-        //console.log(response.data.data);
-        setStaffDetails(response.data.data);
+    if (accessType?.staffmember_id) {
+      try {
+        if (accessType?.staffmember_id) {
+          const response = await axios.get(
+            `${baseUrl}/staffmember/staffmember_profile/${accessType?.staffmember_id}`
+          );
+          //console.log(response.data.data);
+          setStaffDetails(response.data.data);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error fetching staff details:", error.message);
+        setError(error);
         setLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching staff details:", error.message);
-      setError(error);
-      setLoading(false);
     }
   };
 

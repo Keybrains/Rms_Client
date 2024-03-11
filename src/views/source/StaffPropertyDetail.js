@@ -28,13 +28,15 @@ const StaffPropertyDetail = () => {
   }, [navigate]);
 
   const getRentalData = async () => {
-    try {
-      const res = await axios.get(
-        `${baseUrl}/staffmember/staffmember_summary/${rental_id}`
-      );
-      setPropertyDetails(res.data.data[0]);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
+    if (rental_id) {
+      try {
+        const res = await axios.get(
+          `${baseUrl}/staffmember/staffmember_summary/${rental_id}`
+        );
+        setPropertyDetails(res.data.data[0]);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+      }
     }
   };
 

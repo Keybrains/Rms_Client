@@ -46,16 +46,18 @@ const TenantProfile = () => {
   }, [navigate]);
 
   const getTenantData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/tenants/tenant_profile/${accessType?.tenant_id}`
-      );
-      setTenantDetails(response.data.data);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setError(error);
-    } finally {
-      setLoading(false);
+    if (accessType?.tenant_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/tenants/tenant_profile/${accessType?.tenant_id}`
+        );
+        setTenantDetails(response.data.data);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 

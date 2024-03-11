@@ -88,25 +88,27 @@ const VendorDashBoard = (props) => {
 
   useEffect(() => {
     const fetchWorkOrders = async () => {
-      try {
-        const response = await axios.get(
-          `${baseUrl}/vendor/dashboard_workorder/${accessType?.vendor_id}/${accessType?.admin_id}`
-        );
-        if (response.status === 200) {
-          const { data } = response.data;
-          setNewWorkOrders(data.new_workorder);
-          setOverdueWorkOrders(data.overdue_workorder);
-          console.log(data.new_workorder,data.overdue_workorder,"jack")
-          console.log(`${baseUrl}/vendor/dashboard_workorder/${accessType?.vendor_id}/${accessType?.admin_id}`,"jaaa")
-          setLoader(false);
+      if (accessType?.vendor_id && accessType?.admin_id) {
+        try {
+          const response = await axios.get(
+            `${baseUrl}/vendor/dashboard_workorder/${accessType?.vendor_id}/${accessType?.admin_id}`
+          );
+          if (response.status === 200) {
+            const { data } = response.data;
+            setNewWorkOrders(data.new_workorder);
+            setOverdueWorkOrders(data.overdue_workorder);
+            console.log(data.new_workorder, data.overdue_workorder, "jack")
+            console.log(`${baseUrl}/vendor/dashboard_workorder/${accessType?.vendor_id}/${accessType?.admin_id}`, "jaaa")
+            setLoader(false);
 
-        } else {
-          console.error("Failed to fetch work orders");
+          } else {
+            console.error("Failed to fetch work orders");
+          }
+        } catch (error) {
+          console.error("Error fetching work orders:", error);
         }
-      } catch (error) {
-        console.error("Error fetching work orders:", error);
-      }
-    };
+      };
+    }
     fetchWorkOrders();
   }, [accessType]);
 
@@ -116,27 +118,27 @@ const VendorDashBoard = (props) => {
       <Container className="mt--7" fluid>
         <div>
           {/* Small Cards */}
-              {loader ? (
-                <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
-                  <RotatingLines
-                    strokeColor="grey"
-                    strokeWidth="5"
-                    animationDuration="0.75"
-                    width="50"
-                    visible={loader}
-                  />
-                </div>
-              ) : (
-          <Row lg="12" className="d-flex justify-content-around">
-            <Col lg="5" md="6" sm="12">
-              <Card
-                style={{
-                  justifyContent: "center",
-                  fontFamily: "sans-serif",
-                  fontSize: "20px",
-                  color: "black",
-                }}
-              >
+          {loader ? (
+            <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+              <RotatingLines
+                strokeColor="grey"
+                strokeWidth="5"
+                animationDuration="0.75"
+                width="50"
+                visible={loader}
+              />
+            </div>
+          ) : (
+            <Row lg="12" className="d-flex justify-content-around">
+              <Col lg="5" md="6" sm="12">
+                <Card
+                  style={{
+                    justifyContent: "center",
+                    fontFamily: "sans-serif",
+                    fontSize: "20px",
+                    color: "black",
+                  }}
+                >
                   <CardBody>
                     <div className="mb-2 d-flex justify-content-start">
                       <span style={{ fontWeight: "bold", fontSize: "28px" }}>
@@ -171,10 +173,10 @@ const VendorDashBoard = (props) => {
                       {showMoreNewOrders ? "View Less" : "View All"}
                     </label>
                   </CardBody>
-              </Card>
-            </Col>
-                
-            {/* <Col lg="4" md="6" sm="12">
+                </Card>
+              </Col>
+
+              {/* <Col lg="4" md="6" sm="12">
               <Card style={{
                 justifyContent: "center",
                 fontFamily: 'sans-serif',
@@ -203,56 +205,56 @@ const VendorDashBoard = (props) => {
                 </CardBody>
               </Card>
             </Col> */}
-            <Col lg="5" md="6" sm="12">
-              <Card
-                style={{
-                  justifyContent: "center",
-                  fontFamily: "sans-serif",
-                  fontSize: "20px",
-                  color: "black",
-                }}
-              >
-                <CardBody>
-                  <div className="mb-2 d-flex justify-content-start">
-                    <span style={{ fontWeight: "bold", fontSize: "28px" }}>
-                      {" "}
-                      Overdue Work Orders
-                    </span>
-                  </div>
-                  <div className="col-lg-6">
-                    <div className="d-flex justify-content-between mb-2">
-                      <span className="">
-                        Total - {overdueWorkOrders.length}
+              <Col lg="5" md="6" sm="12">
+                <Card
+                  style={{
+                    justifyContent: "center",
+                    fontFamily: "sans-serif",
+                    fontSize: "20px",
+                    color: "black",
+                  }}
+                >
+                  <CardBody>
+                    <div className="mb-2 d-flex justify-content-start">
+                      <span style={{ fontWeight: "bold", fontSize: "28px" }}>
+                        {" "}
+                        Overdue Work Orders
                       </span>
                     </div>
-                  </div>
-                  {overdueWorkOrders.slice(0, 3).map((order, index) => (
-                    <div key={index} style={bgStyle}>
-                      <div className="d-flex justify-content-start">
-                        <span className="">{order.work_subject}</span>
-                      </div>
-                      <div className="col-lg-10" style={{ fontSize: "14px" }}>
-                        <label className="d-flex justify-content-between mb-1 leackage-status text-danger">
-                          <span>{order.date}</span>
-                          <span>{order.status}</span>
-                        </label>
+                    <div className="col-lg-6">
+                      <div className="d-flex justify-content-between mb-2">
+                        <span className="">
+                          Total - {overdueWorkOrders.length}
+                        </span>
                       </div>
                     </div>
-                  ))}
-                  <label
-                    className="d-flex justify-content-start"
-                    style={{ cursor: "pointer", color: "blue" }}
-                    // onClick={handleViewMoreOverdueOrders}
-                    onClick={() =>
-                      navigate("/vendor/vendorworktable?status=Over Due")
-                    }
-                  >
-                    {showMoreOverdueOrders ? "View Less" : "View All"}
-                  </label>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
+                    {overdueWorkOrders.slice(0, 3).map((order, index) => (
+                      <div key={index} style={bgStyle}>
+                        <div className="d-flex justify-content-start">
+                          <span className="">{order.work_subject}</span>
+                        </div>
+                        <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                          <label className="d-flex justify-content-between mb-1 leackage-status text-danger">
+                            <span>{order.date}</span>
+                            <span>{order.status}</span>
+                          </label>
+                        </div>
+                      </div>
+                    ))}
+                    <label
+                      className="d-flex justify-content-start"
+                      style={{ cursor: "pointer", color: "blue" }}
+                      // onClick={handleViewMoreOverdueOrders}
+                      onClick={() =>
+                        navigate("/vendor/vendorworktable?status=Over Due")
+                      }
+                    >
+                      {showMoreOverdueOrders ? "View Less" : "View All"}
+                    </label>
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
           )}
         </div>
       </Container>

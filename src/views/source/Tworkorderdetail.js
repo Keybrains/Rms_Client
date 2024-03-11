@@ -80,18 +80,20 @@ const TWorkOrderDetails = () => {
 
   const [imagedetails, setImageDetails] = useState([]);
   const getOutstandData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/work-order/workorder_details/${id}`
-      );
-      setoutstandDetails(response.data.data);
-      setLoading(false);
-      //setWorkOrderStatus(response.data.data.workorder_status.reverse());
-      setImageDetails(response.data.data.workOrderImage);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setError(error);
-      setLoading(false);
+    if (id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/work-order/workorder_details/${id}`
+        );
+        setoutstandDetails(response.data.data);
+        setLoading(false);
+        //setWorkOrderStatus(response.data.data.workorder_status.reverse());
+        setImageDetails(response.data.data.workOrderImage);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+        setError(error);
+        setLoading(false);
+      }
     }
   };
   const handleUpdateButtonClick = () => {
@@ -175,8 +177,8 @@ const TWorkOrderDetails = () => {
     handleDialogClose();
     const formatedDate = updateWorkorderFormik.values.due_date
       ? new Date(updateWorkorderFormik.values.due_date)
-          .toISOString()
-          .split("T")[0]
+        .toISOString()
+        .split("T")[0]
       : "";
     await axios
       .put(`${baseUrl}/workorder/updateworkorder/${outstandDetails._id}`, {
@@ -285,7 +287,7 @@ const TWorkOrderDetails = () => {
 
   const [propertyDetails, setPropertyDetails] = useState({});
   const getPropertyData = async () => {
-    if (outstandDetails.rental_unit === "") {
+    if (outstandDetails?.rental_unit === "") {
       try {
         const response = await axios.get(
           `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}`
@@ -430,7 +432,7 @@ const TWorkOrderDetails = () => {
                                       .rental_adress || "N/A"}{" "}
                                     {outstandDetails?.unit_data?.rental_unit
                                       ? " - " +
-                                        outstandDetails?.unit_data?.rental_unit
+                                      outstandDetails?.unit_data?.rental_unit
                                       : null}
                                   </span>
                                 </Box>
@@ -571,7 +573,7 @@ const TWorkOrderDetails = () => {
                               </Box>
                             </Box>
                             {outstandDetails?.partsandcharge_data?.length > 0 &&
-                            outstandDetails?.partsandcharge_data ? (
+                              outstandDetails?.partsandcharge_data ? (
                               <Box
                                 border="1px solid #ccc"
                                 borderRadius="8px"
@@ -734,12 +736,12 @@ const TWorkOrderDetails = () => {
                                         {!Object.keys(item).includes(
                                           "status"
                                         ) ||
-                                        Object.keys(item).includes(
-                                          "due_date"
-                                        ) ||
-                                        item.status !== (" " || "") ||
-                                        item.due_date !== (" " || "") ||
-                                        item.staffmember_name !==
+                                          Object.keys(item).includes(
+                                            "due_date"
+                                          ) ||
+                                          item.status !== (" " || "") ||
+                                          item.due_date !== (" " || "") ||
+                                          item.staffmember_name !==
                                           (" " || "") ? (
                                           <>
                                             <Grid
@@ -749,7 +751,7 @@ const TWorkOrderDetails = () => {
                                                 !Object.keys(item).includes(
                                                   "status"
                                                 ) ||
-                                                item.status === (" " || null)
+                                                  item.status === (" " || null)
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
@@ -763,7 +765,7 @@ const TWorkOrderDetails = () => {
                                                 !Object.keys(item).includes(
                                                   "due_date"
                                                 ) ||
-                                                item.due_date === (" " || null)
+                                                  item.due_date === (" " || null)
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
@@ -776,7 +778,7 @@ const TWorkOrderDetails = () => {
                                               style={{
                                                 display:
                                                   item.staffmember_name &&
-                                                  item.staffmember_name.trim() !==
+                                                    item.staffmember_name.trim() !==
                                                     ""
                                                     ? "block"
                                                     : "none",
@@ -858,7 +860,7 @@ const TWorkOrderDetails = () => {
                               </Box>
                             </Box>
                             {outstandDetails?.tenant_data &&
-                            typeof outstandDetails?.tenant_data === "object" ? (
+                              typeof outstandDetails?.tenant_data === "object" ? (
                               <Box
                                 style={{
                                   display: "flex",
@@ -1314,10 +1316,10 @@ const TWorkOrderDetails = () => {
                                     outstandDetails.priority === "High"
                                       ? "red"
                                       : outstandDetails.priority === "Medium"
-                                      ? "green"
-                                      : outstandDetails.priority === "Low"
-                                      ? "#FFD700"
-                                      : "inherit",
+                                        ? "green"
+                                        : outstandDetails.priority === "Low"
+                                          ? "#FFD700"
+                                          : "inherit",
                                   borderRadius: "15px",
                                   padding: "2px",
                                   fontSize: "15px",
@@ -1325,10 +1327,10 @@ const TWorkOrderDetails = () => {
                                     outstandDetails.priority === "High"
                                       ? "red"
                                       : outstandDetails.priority === "Medium"
-                                      ? "green"
-                                      : outstandDetails.priority === "Low"
-                                      ? "#FFD700"
-                                      : "inherit",
+                                        ? "green"
+                                        : outstandDetails.priority === "Low"
+                                          ? "#FFD700"
+                                          : "inherit",
                                 }}
                               >
                                 &nbsp;{outstandDetails.priority}&nbsp;
@@ -1345,7 +1347,7 @@ const TWorkOrderDetails = () => {
                                   "N/A"}{" "}
                                 {outstandDetails?.unit_data?.rental_unit
                                   ? " - " +
-                                    outstandDetails?.unit_data?.rental_unit
+                                  outstandDetails?.unit_data?.rental_unit
                                   : null}
                               </span>
                             </Col>
@@ -1474,7 +1476,7 @@ const TWorkOrderDetails = () => {
                               </Box>
 
                               {outstandDetails?.workOrder_images &&
-                              outstandDetails?.workOrder_images?.length > 0 ? (
+                                outstandDetails?.workOrder_images?.length > 0 ? (
                                 <Box
                                   style={{
                                     width: "100%",

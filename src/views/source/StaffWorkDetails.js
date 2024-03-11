@@ -38,19 +38,21 @@ const StaffWorkDetails = () => {
   let navigate = useNavigate();
 
   const getOutstandData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/work-order/workorder_details/${workorder_id}`
-      );
-      setoutstandDetails(response.data.data);
+    if (workorder_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/work-order/workorder_details/${workorder_id}`
+        );
+        setoutstandDetails(response.data.data);
 
-      setWorkOrderStatus(response.data.data);
-      setLoading(false);
-      setImageDetails(response.data.data.workOrderImage);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setError(error);
-      setLoading(false);
+        setWorkOrderStatus(response.data.data);
+        setLoading(false);
+        setImageDetails(response.data.data.workOrderImage);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+        setError(error);
+        setLoading(false);
+      }
     }
   };
 
@@ -394,7 +396,7 @@ const StaffWorkDetails = () => {
                               </Box>
                             </Box>
                             {outstandDetails?.partsandcharge_data?.length > 0 &&
-                            outstandDetails?.partsandcharge_data ? (
+                              outstandDetails?.partsandcharge_data ? (
                               <Box
                                 border="1px solid #ccc"
                                 borderRadius="8px"
@@ -550,12 +552,12 @@ const StaffWorkDetails = () => {
                                         {!Object.keys(item).includes(
                                           "status"
                                         ) ||
-                                        Object.keys(item).includes(
-                                          "due_date"
-                                        ) ||
-                                        item.status !== (" " || "") ||
-                                        item.due_date !== (" " || "") ||
-                                        item.staffmember_name !==
+                                          Object.keys(item).includes(
+                                            "due_date"
+                                          ) ||
+                                          item.status !== (" " || "") ||
+                                          item.due_date !== (" " || "") ||
+                                          item.staffmember_name !==
                                           (" " || "") ? (
                                           <>
                                             <Grid
@@ -565,7 +567,7 @@ const StaffWorkDetails = () => {
                                                 !Object.keys(item).includes(
                                                   "status"
                                                 ) ||
-                                                item.status === (" " || null)
+                                                  item.status === (" " || null)
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
@@ -579,7 +581,7 @@ const StaffWorkDetails = () => {
                                                 !Object.keys(item).includes(
                                                   "due_date"
                                                 ) ||
-                                                item.due_date === (" " || null)
+                                                  item.due_date === (" " || null)
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
@@ -592,7 +594,7 @@ const StaffWorkDetails = () => {
                                               style={{
                                                 display:
                                                   item.staffmember_name &&
-                                                  item.staffmember_name.trim() !==
+                                                    item.staffmember_name.trim() !==
                                                     ""
                                                     ? "block"
                                                     : "none",
@@ -674,7 +676,7 @@ const StaffWorkDetails = () => {
                               </Box>
                             </Box>
                             {outstandDetails?.tenant_data &&
-                            typeof outstandDetails?.tenant_data === "object" ? (
+                              typeof outstandDetails?.tenant_data === "object" ? (
                               <Box
                                 style={{
                                   display: "flex",
@@ -924,10 +926,10 @@ const StaffWorkDetails = () => {
                                     outstandDetails?.priority === "High"
                                       ? "red"
                                       : outstandDetails?.priority === "Medium"
-                                      ? "green"
-                                      : outstandDetails?.priority === "Low"
-                                      ? "#FFD700"
-                                      : "inherit",
+                                        ? "green"
+                                        : outstandDetails?.priority === "Low"
+                                          ? "#FFD700"
+                                          : "inherit",
                                   borderRadius: "15px",
                                   padding: "2px",
                                   fontSize: "15px",
@@ -935,10 +937,10 @@ const StaffWorkDetails = () => {
                                     outstandDetails?.priority === "High"
                                       ? "red"
                                       : outstandDetails?.priority === "Medium"
-                                      ? "green"
-                                      : outstandDetails?.priority === "Low"
-                                      ? "#FFD700"
-                                      : "inherit",
+                                        ? "green"
+                                        : outstandDetails?.priority === "Low"
+                                          ? "#FFD700"
+                                          : "inherit",
                                 }}
                               >
                                 &nbsp;{outstandDetails?.priority}&nbsp;
@@ -1080,7 +1082,7 @@ const StaffWorkDetails = () => {
                               </Box>
 
                               {outstandDetails?.workOrder_images &&
-                              outstandDetails?.workOrder_images.length > 0 ? (
+                                outstandDetails?.workOrder_images.length > 0 ? (
                                 <Box
                                   style={{
                                     width: "100%",

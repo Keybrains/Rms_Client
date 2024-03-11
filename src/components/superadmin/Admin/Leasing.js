@@ -306,12 +306,14 @@ export default function Leasing() {
 
   const [adminDataCount, setAdminDataCount] = useState();
   const adminCount = async () => {
-    try {
-      // Make an HTTP request to your API endpoint with the adminId
-      const res = await axios.get(`${baseUrl}/admin/admin_count/${admin_id}`);
-      setAdminDataCount(res.data);
-    } catch (error) {
-      console.error("Error occurred while calling API:", error);
+    if (admin_id) {
+      try {
+        // Make an HTTP request to your API endpoint with the adminId
+        const res = await axios.get(`${baseUrl}/admin/admin_count/${admin_id}`);
+        setAdminDataCount(res.data);
+      } catch (error) {
+        console.error("Error occurred while calling API:", error);
+      }
     }
   };
 

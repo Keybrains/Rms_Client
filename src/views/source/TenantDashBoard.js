@@ -57,24 +57,25 @@ const TenantDashBoard = (props) => {
   const [propertycount, setpropertycount] = useState(0);
   const [tenantBalance, setTenantBalance] = useState(0);
   const fetchPropertyCount = async () => {
-    try {
-      const url = `${baseUrl}/tenants/count/${accessType?.tenant_id}`;
-      console.log(url, 'yash')
-      const res = await axios.get(
-        url
+    if (accessType?.tenant_id) {
+      try {
+        const url = `${baseUrl}/tenants/count/${accessType?.tenant_id}`;
+        const res = await axios.get(
+          url
         );
         const tenantDashboardBalance = await axios.get(
           `${baseUrl}/payment/tenant_financial/${accessType?.tenant_id}`
-          );
-          setTenantBalance(tenantDashboardBalance?.data?.totalBalance);
-          setpropertycount(res.data);
-          setLoader(false);
-    } catch (error) {
-      console.error("Error: ", error.message);
-    } 
-    // finally {
-    //   setLoader(false);
-    // }
+        );
+        setTenantBalance(tenantDashboardBalance?.data?.totalBalance);
+        setpropertycount(res.data);
+        setLoader(false);
+      } catch (error) {
+        console.error("Error: ", error.message);
+      }
+      // finally {
+      //   setLoader(false);
+      // }
+    }
   };
 
   let tenantBalanceForDashboard =
@@ -87,14 +88,16 @@ const TenantDashBoard = (props) => {
   const [newWorkOrders, setNewWorkOrders] = useState([]);
   const [overdueWorkOrders, setOverdueWorkOrders] = useState([]);
   const fetchworkorder = async () => {
-    try {
-      const newResponse = await axios.get(
-        `${baseUrl}/tenants/dashboard_workorder/${accessType?.tenant_id}/${accessType?.admin_id}`
-      );
-      setNewWorkOrders(newResponse.data.data.new_workorder.slice(0, 3)); // Slice to get only the first three elements
-      setOverdueWorkOrders(newResponse.data.data.overdue_workorder.slice(0, 3));
-    } catch (error) {
-      console.error("Error: ", error.message);
+    if (accessType?.tenant_id && accessType?.admin_id) {
+      try {
+        const newResponse = await axios.get(
+          `${baseUrl}/tenants/dashboard_workorder/${accessType?.tenant_id}/${accessType?.admin_id}`
+        );
+        setNewWorkOrders(newResponse.data.data.new_workorder.slice(0, 3)); // Slice to get only the first three elements
+        setOverdueWorkOrders(newResponse.data.data.overdue_workorder.slice(0, 3));
+      } catch (error) {
+        console.error("Error: ", error.message);
+      }
     }
   };
 

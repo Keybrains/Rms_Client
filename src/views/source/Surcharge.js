@@ -97,7 +97,7 @@ function Surcharge() {
   async function handleSubmit(values) {
     try {
       const object = {
-        admin_id: accessType.admin_id,
+        admin_id: accessType?.admin_id,
         surcharge_percent: surchargeFormik.values.surcharge_percent,
       };
 

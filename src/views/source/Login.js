@@ -44,6 +44,7 @@ const Login = () => {
 
   useEffect(() => {
     const checkComapny = async () => {
+      if (admin) {
       try {
         const res = await axios.get(`${baseUrl}/admin/check_company/${admin}`);
         if (res.data.statusCode === 200) {
@@ -52,6 +53,7 @@ const Login = () => {
       } catch (error) {
         console.error("Error: ", error.message);
       }
+    }
     };
     if (admin) {
       checkComapny();

@@ -486,38 +486,40 @@ const DemoPayment = () => {
   const [paymentId, setPaymentId] = useState("");
 
   const getEditeData = async (id) => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/nmipayment/nmipayments/${id}`
-      );
-      if (response.data.statusCode === 200) {
-        const responseData = response.data.data;
-
-        // Find the corresponding propertyId based on rental_adress
-        const matchingEntry = tenantDetails?.entries?.find(
-          (item) => item.rental_adress === responseData.rental_adress
+    if (id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/nmipayment/nmipayments/${id}`
         );
+        if (response.data.statusCode === 200) {
+          const responseData = response.data.data;
 
-        // Set propertyId if matching entry is found
-        financialFormik.setValues((prevValues) => ({
-          ...prevValues,
-          account: responseData.account || "",
-          amount: responseData.amount || "",
-          propertyId: matchingEntry.property_id,
-        }));
+          // Find the corresponding propertyId based on rental_adress
+          const matchingEntry = tenantDetails?.entries?.find(
+            (item) => item.rental_adress === responseData.rental_adress
+          );
 
-        // Update other selected values
-        setSelectedPropertyType(responseData.rental_adress);
-        setSelectedUnit(responseData.rental_unit);
-        setSelectedAccount(responseData.account);
-        setIsEditable(true);
-        setPaymentId(id);
-        openModal();
-      } else {
-        console.error("Error:", response.data.message);
+          // Set propertyId if matching entry is found
+          financialFormik.setValues((prevValues) => ({
+            ...prevValues,
+            account: responseData.account || "",
+            amount: responseData.amount || "",
+            propertyId: matchingEntry.property_id,
+          }));
+
+          // Update other selected values
+          setSelectedPropertyType(responseData.rental_adress);
+          setSelectedUnit(responseData.rental_unit);
+          setSelectedAccount(responseData.account);
+          setIsEditable(true);
+          setPaymentId(id);
+          openModal();
+        } else {
+          console.error("Error:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Network error:", error);
       }
-    } catch (error) {
-      console.error("Network error:", error);
     }
   };
 

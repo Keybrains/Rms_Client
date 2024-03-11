@@ -35,22 +35,15 @@ import FormLabel from "@mui/material/FormLabel";
 import { Radio, RadioGroup, FormGroup } from "@mui/material";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import Cookies from "universal-cookie";
 import moment from "moment";
 import swal from "sweetalert";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Switch from "@mui/material/Switch";
-// import { useHistory } from "react-router-dom";
 import { Circles } from "react-loader-spinner";
 import deleterecord from "../assets/img/delete.png";
 import SuperAdminHeader from "../Headers/SuperAdminHeader";
-// import ArrowDownLineIcon from "@rsuite/icons/ArrowDownLine";
-// import ArrowUpLineIcon from "@rsuite/icons/ArrowUpLine";
 import { jwtDecode } from "jwt-decode";
 import { Col, Container, Row } from "reactstrap";
-
-const label = { inputProps: { "aria-label": "Switch demo" } };
 
 const headCells = [
   {
@@ -83,7 +76,7 @@ function Rows(props) {
   const { row, handleClick, isItemSelected, labelId, seletedEditData } = props;
   const [open, setOpen] = React.useState(false);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <React.Fragment>
@@ -125,12 +118,10 @@ function Rows(props) {
         </TableCell>
         <TableCell align="center">{row?.plan_price}</TableCell>
         <TableCell align="center">
-          {console.log(row,'row')}
+          {console.log(row, "row")}
           {row?.annual_discount != null ? row.annual_discount + "%" : "-"}
         </TableCell>
-        <TableCell align="center">
-          { row?.billing_interval }
-        </TableCell>
+        <TableCell align="center">{row?.billing_interval}</TableCell>
         {/* <TableCell align="center">
           {row.is_free_trial === true ? row?.plan_days : "Monthly"}
         </TableCell> */}
@@ -338,8 +329,10 @@ const PlanList = () => {
     });
   };
 
-  //
-  // Searchbar
+  var handleEdite = (id) => {
+    navigate(`/superadmin/addplan/${id}`);
+  };
+
   const [searchLoader, setSearchLoader] = useState(false);
   let handleSearchData = async (values) => {
     setSearchLoader(true);
@@ -544,6 +537,13 @@ const PlanList = () => {
                         </IconButton>
                       </Tooltip>
                     ) : null}
+                    {selected.length === 1 ? (
+                      <Tooltip title="Edit">
+                        <IconButton onClick={() => handleEdite(selected[0])}>
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
+                    ) : null}
                   </>
                 </Toolbar>
 
@@ -577,15 +577,15 @@ const PlanList = () => {
                                 priorityData?.length > 0 &&
                                 selected.length === priorityData?.length
                               }
-                              onChange={handleSelectAllClick}
+                              onChange={(e) => {
+                                e.stopPropagation();
+                                handleSelectAllClick(e);
+                              }}
                               inputProps={{
                                 "aria-label": "select all desserts",
                               }}
                             />
                           </TableCell>
-                                  {console.log("selected", selected)}
-                          {/* <TableCell align="center"></TableCell> */}
-
                           {headCells.map((headCell, id) => {
                             return (
                               <TableCell
@@ -597,10 +597,6 @@ const PlanList = () => {
                               </TableCell>
                             );
                           })}
-
-                          {/* <TableCell className="fw-bold" align="center">
-                            Action
-                          </TableCell> */}
                         </TableRow>
                       </TableHead>
                       <TableBody>

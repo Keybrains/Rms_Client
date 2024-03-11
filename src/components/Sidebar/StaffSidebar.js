@@ -3,7 +3,7 @@ import { NavLink as NavLinkRRD, Link } from "react-router-dom";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { PropTypes } from "prop-types";
 import Cookies from "universal-cookie";
-import { useNavigate,  useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Drawer from '@mui/material/Drawer';
 // import Button from '@mui/material/Button';
@@ -64,17 +64,17 @@ const StaffSidebar = (props) => {
     return () => {
       window.removeEventListener('resize', handleWindowResize);
     };
-  }, []); 
+  }, []);
 
   const notificationIconStyle = {
-    display: isMobile ? 'block' : 'none', 
+    display: isMobile ? 'block' : 'none',
     cursor: 'pointer',
     position: 'relative',
     marginRight: '-60px'
   };
 
 
-  
+
   let navigate = useNavigate();
 
   let cookies = new Cookies();
@@ -110,18 +110,20 @@ const StaffSidebar = (props) => {
   };
 
   const getVendorDetails = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/addstaffmember/staffmember_summary/${cookie_id}`
-      );
-      //console.log(response.data.data)
-      setVendorDetails(response.data.data);
-      setVendorname(response.data.data.staffmember_name)
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching vendor details:", error);
-      setError(error);
-      setLoading(false);
+    if (cookie_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/addstaffmember/staffmember_summary/${cookie_id}`
+        );
+        //console.log(response.data.data)
+        setVendorDetails(response.data.data);
+        setVendorname(response.data.data.staffmember_name)
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching vendor details:", error);
+        setError(error);
+        setLoading(false);
+      }
     }
   };
 
@@ -154,21 +156,22 @@ const StaffSidebar = (props) => {
   }, [id]);
 
 
-  
+
   const navigateToDetails = (workorder_id) => {
+    if (workorder_id) {
     axios.get(`${baseUrl}/notification/notification/${workorder_id}?role=staff`)
       .then((response) => {
-          if (response.status === 200) {
-            const updatedNotificationData = notificationData.map(notification => {
-              if (notification.workorder_id === workorder_id) {
-                return { ...notification, isStaffread: true };
-              }
-              return notification;
-            });
-            setNotificationData(updatedNotificationData);
-            setNotificationCount(updatedNotificationData.length);
-            fetchNotification();
-           //console.log(`Notification with workorder_id ${workorder_id} deleted successfully.`);
+        if (response.status === 200) {
+          const updatedNotificationData = notificationData.map(notification => {
+            if (notification.workorder_id === workorder_id) {
+              return { ...notification, isStaffread: true };
+            }
+            return notification;
+          });
+          setNotificationData(updatedNotificationData);
+          setNotificationCount(updatedNotificationData.length);
+          fetchNotification();
+          //console.log(`Notification with workorder_id ${workorder_id} deleted successfully.`);
         } else {
           console.error(`Failed to mark notification with workorder_id ${workorder_id} as read.`);
         }
@@ -176,9 +179,10 @@ const StaffSidebar = (props) => {
       .catch((error) => {
         console.error("Error:", error);
       });
-  
+
     // Continue with navigating to the details page
     navigate(`/staff/staffworkdetails/${workorder_id}`);
+    }
   };
 
   // verifies if routeName is the one active (in browser input)
@@ -247,37 +251,37 @@ const StaffSidebar = (props) => {
           </NavbarBrand>
         ) : null}
 
-          <FormGroup className="mb-0" style={notificationIconStyle} onClick={toggleSidebar}>
-             <NotificationsIcon style={{color:'black',fontSize:'30px'}}/>
-              {notificationCount > 0 && (
-              <div className="notification-circle" style={{position: 'absolute',top: '-15px',right: '-20px',background: 'red',borderRadius: '50%',padding: '0.1px 8px'}}>
-                <span className="notification-count" style={{color:'white',fontSize:"13px"}}>{notificationCount}</span>
-              </div>
-               )}
-          </FormGroup>
+        <FormGroup className="mb-0" style={notificationIconStyle} onClick={toggleSidebar}>
+          <NotificationsIcon style={{ color: 'black', fontSize: '30px' }} />
+          {notificationCount > 0 && (
+            <div className="notification-circle" style={{ position: 'absolute', top: '-15px', right: '-20px', background: 'red', borderRadius: '50%', padding: '0.1px 8px' }}>
+              <span className="notification-count" style={{ color: 'white', fontSize: "13px" }}>{notificationCount}</span>
+            </div>
+          )}
+        </FormGroup>
 
-          <Nav className="align-items-center d-none d-md-flex" navbar>
-            
-            <Drawer anchor="right" open={isSidebarOpen} onClose={toggleSidebar}>
-              <div
-                role="presentation"
-                onClick={toggleSidebar}
-                onKeyDown={toggleSidebar}
-              >
-                <List style={{ width: '250px' }}>
-                  <h2 style={{color:'#033E3E',marginLeft:'15px'}}>
-                    Notifications
-                  </h2>
-                  <Divider />
-                  {notificationData.map((data) => {
-                    const notificationTitle =
-                      data.notification_title || 'No Title Available';
-                    const notificationDetails =
-                      data.notification_details || 'No Details Available';
-                    const notificationTime = new Date(data.notification_time).toLocaleString(); 
+        <Nav className="align-items-center d-none d-md-flex" navbar>
 
-                    return (
-                      <div key={data._id}>
+          <Drawer anchor="right" open={isSidebarOpen} onClose={toggleSidebar}>
+            <div
+              role="presentation"
+              onClick={toggleSidebar}
+              onKeyDown={toggleSidebar}
+            >
+              <List style={{ width: '250px' }}>
+                <h2 style={{ color: '#033E3E', marginLeft: '15px' }}>
+                  Notifications
+                </h2>
+                <Divider />
+                {notificationData.map((data) => {
+                  const notificationTitle =
+                    data.notification_title || 'No Title Available';
+                  const notificationDetails =
+                    data.notification_details || 'No Details Available';
+                  const notificationTime = new Date(data.notification_time).toLocaleString();
+
+                  return (
+                    <div key={data._id}>
                       <ListItem
 
                         style={{ cursor: 'pointer' }}
@@ -288,20 +292,20 @@ const StaffSidebar = (props) => {
                           <p>{notificationDetails}</p>
                           <Row>
                             <Col lg="8">
-                               <p>{notificationTime}</p>
+                              <p>{notificationTime}</p>
                             </Col>
                             <Col>
                               <Button
-                              variant="contained"
-                             
-                              style={{ background:'#033E3E',color:'white',textTransform: 'none', fontSize: '12px' }}
-                              onClick={() => navigateToDetails(data.workorder_id)}
-                            >
-                              View
-                            </Button>
+                                variant="contained"
+
+                                style={{ background: '#033E3E', color: 'white', textTransform: 'none', fontSize: '12px' }}
+                                onClick={() => navigateToDetails(data.workorder_id)}
+                              >
+                                View
+                              </Button>
                             </Col>
                           </Row>
-                       </div>
+                        </div>
                         {/* <ListItemText
                           primary={notificationTitle}
                           secondary={notificationTime}
@@ -311,19 +315,19 @@ const StaffSidebar = (props) => {
                           secondary="Notification Details"
                         /> */}
                       </ListItem>
-                      <Divider/>
-                     </div> 
-                    );
-                  })}
-                  
-                </List>
-                
-                <Divider />
-                
-              </div>
-            </Drawer>
+                      <Divider />
+                    </div>
+                  );
+                })}
 
-          </Nav>
+              </List>
+
+              <Divider />
+
+            </div>
+          </Drawer>
+
+        </Nav>
 
         {/* User */}
         <Nav className="align-items-center d-md-none">
@@ -375,11 +379,11 @@ const StaffSidebar = (props) => {
               </DropdownItem> */}
               <DropdownItem divider />
               <DropdownItem
-              //  href="#rms" 
-              to="/auth/login"  
-              onClick={() => {
-              Logout();
-            }} tag={Link} >
+                //  href="#rms" 
+                to="/auth/login"
+                onClick={() => {
+                  Logout();
+                }} tag={Link} >
                 <i className="ni ni-user-run" />
                 <span>Logout</span>
               </DropdownItem>
@@ -457,7 +461,7 @@ const StaffSidebar = (props) => {
               </DropdownItem>
             </DropdownMenu>
           </UncontrolledDropdown> */}
-          
+
           {/* <Nav navbar>
           <UncontrolledDropdown nav>
             <DropdownToggle nav caret>
@@ -479,7 +483,7 @@ const StaffSidebar = (props) => {
             </DropdownMenu>
           </UncontrolledDropdown>
           </Nav> */}
-            
+
           {/* Divider */}
           {/* <hr className="my-3" /> */}
           {/* Heading */}

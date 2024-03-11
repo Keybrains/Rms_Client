@@ -106,21 +106,23 @@ const Applicants = () => {
   // Function to handle property selection
 
   const fetchUnitData = async (rental_id) => {
-    try {
-      const res = await axios.get(`${baseUrl}/unit/rental_unit/${rental_id}`);
-      if (res.data.statusCode === 200) {
-        const filteredData = res.data.data.filter(
-          (item) => item.rental_unit !== ""
-        );
-        if (filteredData.length === 0) {
-          applicantFormik.setFieldValue("unit_id", res.data.data[0].unit_id);
+    if (rental_id) {
+      try {
+        const res = await axios.get(`${baseUrl}/unit/rental_unit/${rental_id}`);
+        if (res.data.statusCode === 200) {
+          const filteredData = res.data.data.filter(
+            (item) => item.rental_unit !== ""
+          );
+          if (filteredData.length === 0) {
+            applicantFormik.setFieldValue("unit_id", res.data.data[0].unit_id);
+          }
+          setUnitData(filteredData);
+        } else if (res.data.statusCode === 201) {
+          setUnitData([]);
         }
-        setUnitData(filteredData);
-      } else if (res.data.statusCode === 201) {
-        setUnitData([]);
+      } catch (error) {
+        console.error("Error:", error.message);
       }
-    } catch (error) {
-      console.error("Error:", error.message);
     }
   };
 
@@ -216,14 +218,16 @@ const Applicants = () => {
   };
 
   const getTableData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/applicant/applicant/${admin}`
-      );
-      setTotalPages(Math.ceil(response.data.data.length / pageItem));
-      setRentalsData(response.data.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
+    if (admin) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/applicant/applicant/${admin}`
+        );
+        setTotalPages(Math.ceil(response.data.data.length / pageItem));
+        setRentalsData(response.data.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     }
   };
 
@@ -378,12 +382,12 @@ const Applicants = () => {
           applicant_homeNumber: values.tenant_homeNumber,
           applicant_businessNumber: values.tenant_businessNumber,
           applicant_telephoneNumber: values.tenant_faxPhoneNumber,
-          admin_id: accessType.admin_id,
+          admin_id: accessType?.admin_id,
         },
         lease: {
           rental_id: selectedPropertyId,
           unit_id: unitId || "",
-          admin_id: accessType.admin_id,
+          admin_id: accessType?.admin_id,
         },
       };
 
@@ -424,18 +428,20 @@ const Applicants = () => {
 
   //get data apis
   const fetchPropertyData = async () => {
-    try {
-      const res = await axios.get(
-        `${baseUrl}/rentals/rentals/${accessType.admin_id}`
-      );
-      if (res.data.statusCode === 200) {
-        setPropertyData(res.data.data);
-        setLoader(false);
-      } else if (res.data.statusCode === 201) {
-        setPropertyData([]);
+    if (accessType?.admin_id) {
+      try {
+        const res = await axios.get(
+          `${baseUrl}/rentals/rentals/${accessType?.admin_id}`
+        );
+        if (res.data.statusCode === 200) {
+          setPropertyData(res.data.data);
+          setLoader(false);
+        } else if (res.data.statusCode === 201) {
+          setPropertyData([]);
+        }
+      } catch (error) {
+        console.error("Error:", error.message);
       }
-    } catch (error) {
-      console.error("Error:", error.message);
     }
   };
 
@@ -657,14 +663,16 @@ const Applicants = () => {
   const [countRes, setCountRes] = useState("");
 
   const getApplicatsLimit = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/applicant/limitation/${accessType.admin_id}`
-      );
-      console.log(response.data, "yash");
-      setCountRes(response.data);
-    } catch (error) {
-      console.error("Error fetching rental data:", error);
+    if (accessType?.admin_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/applicant/limitation/${accessType?.admin_id}`
+        );
+        console.log(response.data, "yash");
+        setCountRes(response.data);
+      } catch (error) {
+        console.error("Error fetching rental data:", error);
+      }
     }
   };
 
@@ -707,6 +715,7 @@ const Applicants = () => {
                     "warning"
                   );
                 } else {
+                  setSelectedApplicant(null);
                   openModal();
                 }
               }}
@@ -917,7 +926,7 @@ const Applicants = () => {
                             <td>
                               {applicant?.rental_data?.rental_adress}{" "}
                               {applicant?.unit_data &&
-                              applicant?.unit_data?.rental_unit
+                                applicant?.unit_data?.rental_unit
                                 ? " - " + applicant?.unit_data?.rental_unit
                                 : null}
                             </td>
@@ -1247,7 +1256,7 @@ const Applicants = () => {
                             value={applicantFormik.values.applicant_firstName}
                           />
                           {applicantFormik.touched.applicant_firstName &&
-                          applicantFormik.errors.applicant_firstName ? (
+                            applicantFormik.errors.applicant_firstName ? (
                             <div style={{ color: "red", marginBottom: "10px" }}>
                               {applicantFormik.errors.applicant_firstName}
                             </div>
@@ -1272,7 +1281,7 @@ const Applicants = () => {
                             value={applicantFormik.values.applicant_lastName}
                           />
                           {applicantFormik.touched.applicant_lastName &&
-                          applicantFormik.errors.applicant_lastName ? (
+                            applicantFormik.errors.applicant_lastName ? (
                             <div style={{ color: "red", marginBottom: "10px" }}>
                               {applicantFormik.errors.applicant_lastName}
                             </div>
@@ -1304,7 +1313,7 @@ const Applicants = () => {
                         />
                       </InputGroup>
                       {applicantFormik.touched.applicant_email &&
-                      applicantFormik.errors.applicant_email ? (
+                        applicantFormik.errors.applicant_email ? (
                         <div style={{ color: "red", marginBottom: "10px" }}>
                           {applicantFormik.errors.applicant_email}
                         </div>
@@ -1339,7 +1348,7 @@ const Applicants = () => {
                         />
                       </InputGroup>
                       {applicantFormik.touched.tenant_mobileNumber &&
-                      applicantFormik.errors.tenant_mobileNumber ? (
+                        applicantFormik.errors.tenant_mobileNumber ? (
                         <div style={{ color: "red", marginBottom: "10px" }}>
                           {applicantFormik.errors.tenant_mobileNumber}
                         </div>
@@ -1451,10 +1460,10 @@ const Applicants = () => {
                             ))}
                           </DropdownMenu>
                           {applicantFormik.errors &&
-                          applicantFormik.errors?.rental_adress &&
-                          applicantFormik.touched &&
-                          applicantFormik.touched?.rental_adress &&
-                          applicantFormik.values.rental_adress === "" ? (
+                            applicantFormik.errors?.rental_adress &&
+                            applicantFormik.touched &&
+                            applicantFormik.touched?.rental_adress &&
+                            applicantFormik.values.rental_adress === "" ? (
                             <div style={{ color: "red" }}>
                               {applicantFormik.errors.rental_adress}
                             </div>
@@ -1492,10 +1501,10 @@ const Applicants = () => {
                               )}
                             </DropdownMenu>
                             {applicantFormik.errors &&
-                            applicantFormik.errors?.rental_unit &&
-                            applicantFormik.touched &&
-                            applicantFormik.touched?.rental_unit &&
-                            applicantFormik.values.rental_unit === "" ? (
+                              applicantFormik.errors?.rental_unit &&
+                              applicantFormik.touched &&
+                              applicantFormik.touched?.rental_unit &&
+                              applicantFormik.values.rental_unit === "" ? (
                               <div style={{ color: "red" }}>
                                 {applicantFormik.errors.rental_unit}
                               </div>

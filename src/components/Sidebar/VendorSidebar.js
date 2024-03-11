@@ -106,18 +106,20 @@ const VendorSidebar = (props) => {
   const [vendor_name, setVendorname] = useState("");
 
   const getVendorDetails = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/vendor/vendor_summary/${cookie_id}`
-      );
-      //console.log(response.data.data)
-      setVendorDetails(response.data.data);
-      setVendorname(response.data.data.vendor_name);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching vendor details:", error);
-      setError(error);
-      setLoading(false);
+    if (cookie_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/vendor/vendor_summary/${cookie_id}`
+        );
+        //console.log(response.data.data)
+        setVendorDetails(response.data.data);
+        setVendorname(response.data.data.vendor_name);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching vendor details:", error);
+        setError(error);
+        setLoading(false);
+      }
     }
   };
 

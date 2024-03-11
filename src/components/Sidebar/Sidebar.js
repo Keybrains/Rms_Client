@@ -197,25 +197,27 @@ const Sidebar = (props) => {
 
   const [accessType, setAccessType] = useState("");
   const checkAdminExist = async () => {
-    try {
-      const response = await axios.get(`${baseUrl}/admin/company/${admin}`);
+    if (admin) {
+      try {
+        const response = await axios.get(`${baseUrl}/admin/company/${admin}`);
 
-      const status = response.data.statusCode;
+        const status = response.data.statusCode;
 
-      if (status != 200) {
-        navigate(`/${admin}/404`);
-      } else {
-        if (localStorage.getItem("token")) {
-          const jwt = jwtDecode(localStorage.getItem("token"));
-          if (jwt.company_name != admin) {
-            navigate(`/${admin}/404`);
-          } else {
-            setAccessType(jwt);
+        if (status != 200) {
+          navigate(`/${admin}/404`);
+        } else {
+          if (localStorage.getItem("token")) {
+            const jwt = jwtDecode(localStorage.getItem("token"));
+            if (jwt.company_name != admin) {
+              navigate(`/${admin}/404`);
+            } else {
+              setAccessType(jwt);
+            }
           }
         }
+      } catch (error) {
+        console.error("error in acheck admin exist", error);
       }
-    } catch (error) {
-      console.error("error in acheck admin exist", error);
     }
   };
 

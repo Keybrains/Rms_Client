@@ -23,9 +23,9 @@ const TenantDetailPage = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id, admin } = useParams();
   const navigate = useNavigate();
-  
+
   const [loading, setLoading] = useState(true);
-  
+
   const [accessType, setAccessType] = useState(null);
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -35,17 +35,19 @@ const TenantDetailPage = () => {
       navigate("/auth/login");
     }
   }, [navigate]);
-  
+
   const [tenantDetails, setTenantDetails] = useState({});
   const getTenantData = async () => {
-    try {
-      const apiUrl = `${baseUrl}/tenants/tenant_details/${id}`;
-      const response = await axios.get(apiUrl);
-      setTenantDetails(response.data.data[0]);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setLoading(false);
+    if (id) {
+      try {
+        const apiUrl = `${baseUrl}/tenants/tenant_details/${id}`;
+        const response = await axios.get(apiUrl);
+        setTenantDetails(response.data.data[0]);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+        setLoading(false);
+      }
     }
   };
 
@@ -796,7 +798,7 @@ const TenantDetailPage = () => {
             <CreditCardForm
               id={id}
               closeModal={closeModal}
-              // getCreditCard={getCreditCard}
+            // getCreditCard={getCreditCard}
             />
           </ModalBody>
         </Modal>

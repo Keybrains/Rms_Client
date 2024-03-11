@@ -56,19 +56,20 @@ const VendorWorkTable = () => {
       navigate("/auth/login");
     }
   }, [navigate]);
-  
-  const getWorkData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/work-order/vendor_work/${accessType.vendor_id}`
-      );
-      setWorkData(response.data.data);
-      setLoader(false);
 
-      console.log(response.data.data,"janak")
-      setTotalPages(Math.ceil(response.data.data.length / pageItem));
-    } catch (error) {
-      console.error("Error fetching data:", error);
+  const getWorkData = async () => {
+    if (accessType?.vendor_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/work-order/vendor_work/${accessType.vendor_id}`
+        );
+        setWorkData(response.data.data);
+        setLoader(false);
+
+        setTotalPages(Math.ceil(response.data.data.length / pageItem));
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     }
   };
 
@@ -119,7 +120,7 @@ const VendorWorkTable = () => {
         rental.work_category.toLowerCase().includes(lowerCaseQuery) ||
         rental.status.toLowerCase().includes(lowerCaseQuery) ||
         (rental.staffmember_name &&
-          rental.staffmember_name.toLowerCase().includes(lowerCaseQuery)) || 
+          rental.staffmember_name.toLowerCase().includes(lowerCaseQuery)) ||
         isUnitAddress ||
         rental.priority.toLowerCase().includes(lowerCaseQuery)
       );

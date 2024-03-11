@@ -90,20 +90,22 @@ const TenantNavbar = (props) => {
   //  Working
   const [tenantNotification, setTenantNotification] = useState([]);
   const tenantNotificationData = async (addresses, units) => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/notification/${accessType?.tenant_id}`
-      );
-      if (response.status === 200) {
-        const data = response.data.data;
-        setTenantNotification(data);
-        // Process the data as needed
-      } else {
-        console.error("Response status is not 200");
+    if (accessType?.tenant_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/notification/${accessType?.tenant_id}`
+        );
+        if (response.status === 200) {
+          const data = response.data.data;
+          setTenantNotification(data);
+          // Process the data as needed
+        } else {
+          console.error("Response status is not 200");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        // Handle the error, display a message to the user, or take other appropriate action.
       }
-    } catch (error) {
-      console.error("Error:", error);
-      // Handle the error, display a message to the user, or take other appropriate action.
     }
   };
 
@@ -248,23 +250,23 @@ const TenantNavbar = (props) => {
             <UncontrolledDropdown nav>
               <DropdownToggle className="pr-0" nav>
                 <Media className="align-items-center">
-                
-                <span className="avatar avatar-sm rounded-circle">
+
+                  <span className="avatar avatar-sm rounded-circle">
                     {/* <img
                       alt="..."
                       src={require("../../assets/img/theme/team-4-800x800.jpg")}
                     /> */}
-                     
-                      {`${accessType?.tenant_firstName
-                        ?.slice(0, 1)
-                        .toUpperCase()}${accessType?.tenant_lastName
+
+                    {`${accessType?.tenant_firstName
+                      ?.slice(0, 1)
+                      .toUpperCase()}${accessType?.tenant_lastName
                         ?.slice(0, 1)
                         .toUpperCase()}`}
-                    
+
                   </span>
                   <Media className="ml-2 d-none d-lg-block">
                     <span className="mb-0 text-sm font-weight-bold">
-                    {accessType?.tenant_firstName} {accessType?.tenant_lastName}
+                      {accessType?.tenant_firstName} {accessType?.tenant_lastName}
                     </span>
                   </Media>
                 </Media>

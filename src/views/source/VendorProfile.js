@@ -39,14 +39,16 @@ const VendorProfile = () => {
   }, []);
 
   const getVendorData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/vendor/get_vendor/${accessType.vendor_id}`
-      );
-      setVendorDetails(response.data.data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
+    if (accessType?.vendor_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/vendor/get_vendor/${accessType.vendor_id}`
+        );
+        setVendorDetails(response.data.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+      }
     }
   };
   useEffect(() => {
@@ -73,15 +75,15 @@ const VendorProfile = () => {
                   style={{ width: "100%" }}
                 >
                   {loading ? (
-                  <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
-                    <RotatingLines
-                      strokeColor="grey"
-                      strokeWidth="5"
-                      animationDuration="0.75"
-                      width="50"
-                      visible={loading}
-                    />
-                  </div>
+                    <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+                      <RotatingLines
+                        strokeColor="grey"
+                        strokeWidth="5"
+                        animationDuration="0.75"
+                        width="50"
+                        visible={loading}
+                      />
+                    </div>
                   ) : vendorDetails.vendor_id ? (
                     <>
                       <tbody
