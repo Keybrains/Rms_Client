@@ -99,6 +99,7 @@ const SuperAdminNavbar = (props) => {
 
   const navigateToDetails = (workorder_id) => {
     // Make a DELETE request to delete the notification
+    if (workorder_id) {
     axios.get(`${baseUrl}/notification/notification/${workorder_id}?role=admin `)
       .then((response) => {
         if (response.status === 200) {
@@ -125,6 +126,7 @@ const SuperAdminNavbar = (props) => {
 
     // Continue with navigating to the details page
     navigate(`/admin/addworkorder/${workorder_id}`);
+    }
   };
 
   // useEffect(() =>{

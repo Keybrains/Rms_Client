@@ -103,7 +103,7 @@ function CreditCardForm(props) {
   async function handleSubmit(values) {
     try {
       const object = {
-        admin_id: accessType.admin_id,
+        admin_id: accessType?.admin_id,
         property_type: propertyFormik.values.property_type,
         propertysub_type: propertyFormik.values.propertysub_type,
         is_multiunit: isMultiUnit,
@@ -222,7 +222,7 @@ function CreditCardForm(props) {
     }),
     onSubmit: async (values, { resetForm }) => {
       const object = {
-        admin_id: accessType.admin_id,
+        admin_id: accessType?.admin_id,
         staffmember_name: values.staffmember_name,
         staffmember_designation: values.staffmember_designation,
         staffmember_phoneNumber: values.staffmember_phoneNumber,
@@ -269,7 +269,7 @@ function CreditCardForm(props) {
 
   async function handleSubmit(values) {
     const object = {
-      admin_id: accessType.admin_id,
+      admin_id: accessType?.admin_id,
       staffmember_name: values.staffmember_name,
       staffmember_designation: values.staffmember_designation,
       staffmember_phoneNumber: values.staffmember_phoneNumber,

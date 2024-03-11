@@ -51,23 +51,25 @@ function CreditCardForm(props) {
   const [vaultId, setVaultId] = useState(false);
 
   const getCreditCard = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/creditcard/getCreditCards/${tenantId}`
-      );
-      setCustomervault(response.data);
-      setVaultId(response.data.customer_vault_id);
-      getMultipleCustomerVault(response.data.customer_vault_id);
+    if (tenantId) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/creditcard/getCreditCards/${tenantId}`
+        );
+        setCustomervault(response.data);
+        setVaultId(response.data.customer_vault_id);
+        getMultipleCustomerVault(response.data.customer_vault_id);
 
-      const hasCustomerVaultId = "customer_vault_id" in response.data;
-      if (hasCustomerVaultId) {
-        setIsBilling(true);
-      } else {
+        const hasCustomerVaultId = "customer_vault_id" in response.data;
+        if (hasCustomerVaultId) {
+          setIsBilling(true);
+        } else {
+          setIsBilling(false);
+        }
+      } catch (error) {
+        console.error("Error fetching credit card details:", error);
         setIsBilling(false);
       }
-    } catch (error) {
-      console.error("Error fetching credit card details:", error);
-      setIsBilling(false);
     }
   };
 
@@ -194,38 +196,38 @@ function CreditCardForm(props) {
 
     const requestBody = isBilling
       ? {
-          first_name: values.first_name,
-          last_name: values.last_name,
-          ccnumber: values.card_number,
-          ccexp: values.exp_date,
-          address1: values.address1,
-          address2: values.address2,
-          city: values.city,
-          state: values.state,
-          zip: values.zip,
-          country: values.country,
-          company: values.company,
-          phone: values.phone,
-          email: values.email,
-          customer_vault_id: vaultId,
-          billing_id: random10DigitNumber,
-        }
+        first_name: values.first_name,
+        last_name: values.last_name,
+        ccnumber: values.card_number,
+        ccexp: values.exp_date,
+        address1: values.address1,
+        address2: values.address2,
+        city: values.city,
+        state: values.state,
+        zip: values.zip,
+        country: values.country,
+        company: values.company,
+        phone: values.phone,
+        email: values.email,
+        customer_vault_id: vaultId,
+        billing_id: random10DigitNumber,
+      }
       : {
-          first_name: values.first_name,
-          last_name: values.last_name,
-          ccnumber: values.card_number,
-          ccexp: values.exp_date,
-          address1: values.address1,
-          address2: values.address2,
-          city: values.city,
-          state: values.state,
-          zip: values.zip,
-          country: values.country,
-          company: values.company,
-          phone: values.phone,
-          email: values.email,
-          billing_id: random10DigitNumber,
-        };
+        first_name: values.first_name,
+        last_name: values.last_name,
+        ccnumber: values.card_number,
+        ccexp: values.exp_date,
+        address1: values.address1,
+        address2: values.address2,
+        city: values.city,
+        state: values.state,
+        zip: values.zip,
+        country: values.country,
+        company: values.company,
+        phone: values.phone,
+        email: values.email,
+        billing_id: random10DigitNumber,
+      };
 
     if (!isValidCard) {
       toast.error("Invalid Credit Card Number", {
@@ -274,9 +276,9 @@ function CreditCardForm(props) {
           setTimeout(() => {
             closeModal();
           }, 2000)
-            getCreditCard();
-            getMultipleCustomerVault();
-               
+          getCreditCard();
+          getMultipleCustomerVault();
+
         } else {
           toast.error(creditCardResponse.data.message, {
             position: "top-center",
@@ -372,7 +374,7 @@ function CreditCardForm(props) {
             {/* {({ isSubmitting }) => ( */}
             <Form>
               {/* Form Fields */}
-             
+
               <Row className="mb--2">
                 <Col xs="12" sm="6">
                   <FormGroup>
@@ -603,12 +605,12 @@ function CreditCardForm(props) {
                   </FormGroup>
                 </Col>
               </Row>
-              
+
               {/* Form Buttons */}
               <div
                 style={{
                   display: "flex",
-                  marginTop:"14px"
+                  marginTop: "14px"
                 }}
               >
                 <button
@@ -677,7 +679,7 @@ function CreditCardForm(props) {
                     visible={paymentLoader}
                   />
                 </div>
-              ) :  cardDetalis && cardDetalis.length > 0 ? (
+              ) : cardDetalis && cardDetalis.length > 0 ? (
                 <Table responsive style={{ overflowX: "hidden" }}>
                   <tbody>
                     <tr>

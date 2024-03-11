@@ -123,20 +123,22 @@ export default function Properties() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const getData = async () => {
-    try {
-      const res = await axios.get(`${baseUrl}/rentals/properties/${admin_id}`, {
-        params: {
-          pageSize: rowsPerPage,
-          pageNumber: page,
-        },
-      });
-      setLoader(false);
-      setPropertiesData(res.data.data);
-      setAdminName(res.data.data[0].admin_data);
-      setCountData(res.data.count); // Make sure to adjust the key here
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setLoader(false);
+    if (admin_id) {
+      try {
+        const res = await axios.get(`${baseUrl}/rentals/properties/${admin_id}`, {
+          params: {
+            pageSize: rowsPerPage,
+            pageNumber: page,
+          },
+        });
+        setLoader(false);
+        setPropertiesData(res.data.data);
+        setAdminName(res.data.data[0].admin_data);
+        setCountData(res.data.count); // Make sure to adjust the key here
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoader(false);
+      }
     }
   };
 
@@ -296,13 +298,16 @@ export default function Properties() {
 
   const [adminDataCount, setAdminDataCount] = useState();
   console.log(adminDataCount, "adminDataCount");
+
   const adminCount = async () => {
-    try {
-      // Make an HTTP request to your API endpoint with the adminId
-      const res = await axios.get(`${baseUrl}/admin/admin_count/${admin_id}`);
-      setAdminDataCount(res.data);
-    } catch (error) {
-      console.error("Error occurred while calling API:", error);
+    if (admin_id) {
+      try {
+        // Make an HTTP request to your API endpoint with the adminId
+        const res = await axios.get(`${baseUrl}/admin/admin_count/${admin_id}`);
+        setAdminDataCount(res.data);
+      } catch (error) {
+        console.error("Error occurred while calling API:", error);
+      }
     }
   };
 

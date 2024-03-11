@@ -18,7 +18,7 @@ import { jwtDecode } from "jwt-decode";
 const RentalOwnerDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id } = useParams();
-  const {admin} = useParams()
+  const { admin } = useParams()
   const [rentalOwnerDetails, setRentalOwnerDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -37,16 +37,18 @@ const RentalOwnerDetail = () => {
   }, [navigate]);
 
   const getRentalOwnerData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/rental_owner/rentalowner_details/${id}`
-      );
-      setRentalOwnerDetails(response.data.data[0]);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching rental owner details:", error);
-      setError(error);
-      setLoading(false);
+    if (id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/rental_owner/rentalowner_details/${id}`
+        );
+        setRentalOwnerDetails(response.data.data[0]);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching rental owner details:", error);
+        setError(error);
+        setLoading(false);
+      }
     }
   };
 
@@ -74,7 +76,7 @@ const RentalOwnerDetail = () => {
               <h1 style={{ color: "white" }}>{rentalOwnerDetails.rentalOwner_firstName +
                 " " +
                 rentalOwnerDetails.rentalOwner_lastName}</h1>
-              <h4 style={{color:"white"}}>Rentalowner</h4>
+              <h4 style={{ color: "white" }}>Rentalowner</h4>
             </FormGroup>
           </Col>
           <Col className="text-right">
@@ -84,7 +86,7 @@ const RentalOwnerDetail = () => {
               onClick={() => navigate(`/${admin}/RentalownerTable`)}
               size="sm"
               style={{ background: "white", color: "blue" }}
-            > 
+            >
               Back
             </Button>
           </Col>
@@ -251,7 +253,7 @@ const RentalOwnerDetail = () => {
                                 >
                                   <Col>Contact Information</Col>
                                 </Row>
-                               
+
                                 <Row
                                   className="w-100 mb-1"
                                   style={{
@@ -362,7 +364,7 @@ const RentalOwnerDetail = () => {
                                     </a>
                                   </Col>
                                   <Col >
-                                   
+
                                   </Col>
                                 </Row>
                                 <Row

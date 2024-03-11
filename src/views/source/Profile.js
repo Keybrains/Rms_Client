@@ -55,16 +55,18 @@ const Profile = () => {
   }, [navigate]);
 
   const getUserProfile = async () => {
-    setLoader(true);
-    try {
-      const res = await axios.get(
-        `${baseUrl}/admin/admin_profile/${accessType.admin_id}`
-      );
-      setUserProfile(res.data.data);
-    } catch (error) {
-      console.error("Error occurred while calling API:", error);
-    } finally {
-      setLoader(false);
+    if (accessType?.admin_id) {
+      setLoader(true);
+      try {
+        const res = await axios.get(
+          `${baseUrl}/admin/admin_profile/${accessType?.admin_id}`
+        );
+        setUserProfile(res.data.data);
+      } catch (error) {
+        console.error("Error occurred while calling API:", error);
+      } finally {
+        setLoader(false);
+      }
     }
   };
 
@@ -111,8 +113,8 @@ const Profile = () => {
                       {`${userProfile?.first_name
                         ?.slice(0, 1)
                         .toUpperCase()}${userProfile?.last_name
-                        ?.slice(0, 1)
-                        .toUpperCase()}`}
+                          ?.slice(0, 1)
+                          .toUpperCase()}`}
                     </div>
 
                     <div className="mt-3">

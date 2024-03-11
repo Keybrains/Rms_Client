@@ -82,12 +82,14 @@ function Rows(props) {
   const baseUrl = process.env.REACT_APP_BASE_URL;
 
   const handleLoginButtonClick = async () => {
-    try {
-      // Make an HTTP request to your API endpoint with the adminId
-      await axios.get(`${baseUrl}/login/${row.admin_id}`);
-      console.log("API called successfully");
-    } catch (error) {
-      console.error("Error occurred while calling API:", error);
+    if (row.admin_id) {
+      try {
+        // Make an HTTP request to your API endpoint with the adminId
+        await axios.get(`${baseUrl}/login/${row.admin_id}`);
+        console.log("API called successfully");
+      } catch (error) {
+        console.error("Error occurred while calling API:", error);
+      }
     }
   };
 
@@ -128,18 +130,18 @@ function Rows(props) {
         <TableCell align="left">
           {row.subscription.status === "active"
             ? `${moment(row.subscription.start_date, "YYYY-MM-DD").format(
-                "DD-MM-YYYY"
-              )} `
+              "DD-MM-YYYY"
+            )} `
             : `${moment(row.trial.start_date, "YYYY-MM-DD").format(
-                "DD-MM-YYYY"
-              )} 
+              "DD-MM-YYYY"
+            )} 
               `}
         </TableCell>
         <TableCell align="left">
           {row.subscription.status === "active"
             ? `${moment(row.subscription.end_date, "YYYY-MM-DD").format(
-                "DD-MM-YYYY"
-              )} `
+              "DD-MM-YYYY"
+            )} `
             : `${moment(row.trial.end_date, "YYYY-MM-DD").format("DD-MM-YYYY")} 
               `}
         </TableCell>

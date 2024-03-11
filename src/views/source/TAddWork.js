@@ -166,53 +166,57 @@ const TAddWork = () => {
   };
   const [vendorDetails, setVendorDetails] = useState([]);
   const getVendorDetails = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/tenant/tenant_summary/${cookie_id}`
-      );
-      const entries = response.data.data.entries;
+    if (cookie_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/tenant/tenant_summary/${cookie_id}`
+        );
+        const entries = response.data.data.entries;
 
-      if (entries.length > 0) {
-        setVendorDetails(response.data.data);
-        // getRentalData(rentalAddresses, rentalUnits);
-      } else {
-        console.error("No rental addresses found.");
+        if (entries.length > 0) {
+          setVendorDetails(response.data.data);
+          // getRentalData(rentalAddresses, rentalUnits);
+        } else {
+          console.error("No rental addresses found.");
+        }
+
+        setLoader(false);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+        setLoader(false);
       }
-
-      setLoader(false);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setLoader(false);
     }
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${baseUrl}/workorder/findworkorderbyId/${id1}`
-        );
-        let getWorkData = response.data.data;
-        setGetData(getWorkData);
-        setVid(getWorkData[0]._id);
-        WorkFormik.setValues({
-          work_subject: getWorkData[0].work_subject || "",
-          rental_adress: getWorkData[0].rental_adress || "",
-          rental_unit: getWorkData[0].rental_unit || "",
-          unit_no: getWorkData[0].unit_no || "",
-          work_category: getWorkData[0].work_category || "",
-          entry_allowed: getWorkData[0].entry_allowed || "",
-          work_performed: getWorkData[0].work_performed || "",
-        });
-        setSelectedUnit(getWorkData[0].rental_unit || "Select");
-        setSelectedProp(getWorkData[0].rental_adress);
-        setSelectedEntry(getWorkData[0].entry_allowed);
-        setSelectedCategory(getWorkData[0].work_category);
-        setSelectedFiles(getWorkData[0].workOrderImage || []);
-      } catch (error) {
-        console.log(error, "aaa");
-      }
-    };
+      if (id1) {
+        try {
+          const response = await axios.get(
+            `${baseUrl}/workorder/findworkorderbyId/${id1}`
+          );
+          let getWorkData = response.data.data;
+          setGetData(getWorkData);
+          setVid(getWorkData[0]._id);
+          WorkFormik.setValues({
+            work_subject: getWorkData[0].work_subject || "",
+            rental_adress: getWorkData[0].rental_adress || "",
+            rental_unit: getWorkData[0].rental_unit || "",
+            unit_no: getWorkData[0].unit_no || "",
+            work_category: getWorkData[0].work_category || "",
+            entry_allowed: getWorkData[0].entry_allowed || "",
+            work_performed: getWorkData[0].work_performed || "",
+          });
+          setSelectedUnit(getWorkData[0].rental_unit || "Select");
+          setSelectedProp(getWorkData[0].rental_adress);
+          setSelectedEntry(getWorkData[0].entry_allowed);
+          setSelectedCategory(getWorkData[0].work_category);
+          setSelectedFiles(getWorkData[0].workOrderImage || []);
+        } catch (error) {
+          console.log(error, "aaa");
+        }
+      };
+    }
     fetchData();
     getVendorDetails();
   }, [baseUrl, id]);
@@ -404,21 +408,22 @@ const TAddWork = () => {
   }, [navigate]);
 
   const fetchRentals = () => {
-    axios.get(`${baseUrl}/tenants/tenant_property/${accessType?.tenant_id}`)
-      .then((response) => {
-        const responseData = response.data.data;
-        console.log(responseData, "janak");
+    if (accessType?.tenant_id) {
 
-        if (responseData.length > 0) {
-          setPropertyData(responseData);
-        } else {
-          console.log("No data available");
-        }
+      axios.get(`${baseUrl}/tenants/tenant_property/${accessType?.tenant_id}`)
+        .then((response) => {
+          const responseData = response.data.data;
+          if (responseData.length > 0) {
+            setPropertyData(responseData);
+          } else {
+            console.log("No data available");
+          }
 
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
   };
 
   useEffect(() => {

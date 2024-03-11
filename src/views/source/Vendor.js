@@ -69,17 +69,19 @@ const Vendor = () => {
   }, [navigate]);
 
   const getVendorData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/vendor/vendors/${accessType.admin_id}`
-      );
-      setLoader(false);
-      if (response.data.statusCode === 200) {
-        setVendorData(response.data.data);
-        setTotalPages(Math.ceil(response.data.data.length / pageItem));
+    if (accessType?.admin_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/vendor/vendors/${accessType?.admin_id}`
+        );
+        setLoader(false);
+        if (response.data.statusCode === 200) {
+          setVendorData(response.data.data);
+          setTotalPages(Math.ceil(response.data.data.length / pageItem));
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
-    } catch (error) {
-      console.error("Error fetching data:", error);
     }
   };
   useEffect(() => {
@@ -237,19 +239,21 @@ const Vendor = () => {
   const [countRes, setCountRes] = useState("");
 
   const getVendorsLimit = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/vendor/limitation/${accessType.admin_id}`
-      );
-      console.log(response.data, "yash");
-      setCountRes(response.data);
-    } catch (error) {
-      console.error("Error fetching rental data:", error);
+    if (accessType?.admin_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/vendor/limitation/${accessType?.admin_id}`
+        );
+        console.log(response.data, "yash");
+        setCountRes(response.data);
+      } catch (error) {
+        console.error("Error fetching rental data:", error);
+      }
     }
   };
 
 
-  
+
 
   return (
     <>

@@ -52,18 +52,20 @@ const VendorWorkDetail = () => {
   let navigate = useNavigate();
 
   const getOutstandData = async () => {
-    try {
-      const url = `${baseUrl}/work-order/workorder_details/${workorder_id}`;
-      const response = await axios.get(url);
-      console.log(response.data.data);
-      setoutstandDetails(response.data.data);
-      setLoading(false);
-      //setWorkOrderStatus(response.data.data.workorder_status.reverse());
-      setImageDetails(response.data.data.workOrder_images);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setError(error);
-      setLoading(false);
+    if (workorder_id) {
+      try {
+        const url = `${baseUrl}/work-order/workorder_details/${workorder_id}`;
+        const response = await axios.get(url);
+        console.log(response.data.data);
+        setoutstandDetails(response.data.data);
+        setLoading(false);
+        //setWorkOrderStatus(response.data.data.workorder_status.reverse());
+        setImageDetails(response.data.data.workOrder_images);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+        setError(error);
+        setLoading(false);
+      }
     }
   };
 
@@ -488,7 +490,7 @@ const VendorWorkDetail = () => {
                               </Box>
                             </Box>
                             {outstandDetails?.partsandcharge_data?.length > 0 &&
-                            outstandDetails?.partsandcharge_data ? (
+                              outstandDetails?.partsandcharge_data ? (
                               <Box
                                 border="1px solid #ccc"
                                 borderRadius="8px"
@@ -644,12 +646,12 @@ const VendorWorkDetail = () => {
                                         {!Object.keys(item).includes(
                                           "status"
                                         ) ||
-                                        Object.keys(item).includes(
-                                          "due_date"
-                                        ) ||
-                                        item.status !== (" " || "") ||
-                                        item.due_date !== (" " || "") ||
-                                        item.staffmember_name !==
+                                          Object.keys(item).includes(
+                                            "due_date"
+                                          ) ||
+                                          item.status !== (" " || "") ||
+                                          item.due_date !== (" " || "") ||
+                                          item.staffmember_name !==
                                           (" " || "") ? (
                                           <>
                                             <Grid
@@ -659,7 +661,7 @@ const VendorWorkDetail = () => {
                                                 !Object.keys(item).includes(
                                                   "status"
                                                 ) ||
-                                                item.status === (" " || null)
+                                                  item.status === (" " || null)
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
@@ -673,7 +675,7 @@ const VendorWorkDetail = () => {
                                                 !Object.keys(item).includes(
                                                   "due_date"
                                                 ) ||
-                                                item.due_date === (" " || null)
+                                                  item.due_date === (" " || null)
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
@@ -686,7 +688,7 @@ const VendorWorkDetail = () => {
                                               style={{
                                                 display:
                                                   item.staffmember_name &&
-                                                  item.staffmember_name.trim() !==
+                                                    item.staffmember_name.trim() !==
                                                     ""
                                                     ? "block"
                                                     : "none",
@@ -767,7 +769,7 @@ const VendorWorkDetail = () => {
                               </Box>
                             </Box>
                             {tenantsDetails &&
-                            typeof tenantsDetails === "object" ? (
+                              typeof tenantsDetails === "object" ? (
                               <Box
                                 style={{
                                   display: "flex",
@@ -1008,10 +1010,10 @@ const VendorWorkDetail = () => {
                                     outstandDetails.priority === "High"
                                       ? "red"
                                       : outstandDetails.priority === "Medium"
-                                      ? "green"
-                                      : outstandDetails.priority === "Low"
-                                      ? "#FFD700"
-                                      : "inherit",
+                                        ? "green"
+                                        : outstandDetails.priority === "Low"
+                                          ? "#FFD700"
+                                          : "inherit",
                                   borderRadius: "15px",
                                   padding: "2px",
                                   fontSize: "15px",
@@ -1019,10 +1021,10 @@ const VendorWorkDetail = () => {
                                     outstandDetails.priority === "High"
                                       ? "red"
                                       : outstandDetails.priority === "Medium"
-                                      ? "green"
-                                      : outstandDetails.priority === "Low"
-                                      ? "#FFD700"
-                                      : "inherit",
+                                        ? "green"
+                                        : outstandDetails.priority === "Low"
+                                          ? "#FFD700"
+                                          : "inherit",
                                 }}
                               >
                                 &nbsp;{outstandDetails.priority}&nbsp;
@@ -1161,7 +1163,7 @@ const VendorWorkDetail = () => {
                               </Box>
 
                               {outstandDetails?.workOrder_images &&
-                              outstandDetails?.workOrder_images.length > 0 ? (
+                                outstandDetails?.workOrder_images.length > 0 ? (
                                 <Box
                                   style={{
                                     width: "100%",

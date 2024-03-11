@@ -97,36 +97,39 @@ const ApplicantSummary = () => {
   const [sendApplicantMailLoader, setSendApplicantMailLoader] = useState(false);
 
   const fetchApplicantData = async () => {
-    setLoader(true);
-    try {
-      const url = `${baseUrl}/applicant/applicant_summary/${id}`;
-      const res = await axios.get(url);
-      setApplicantData(res.data.data[0]);
+    if (id) {
+      setLoader(true);
+      try {
+        const url = `${baseUrl}/applicant/applicant_summary/${id}`;
+        const res = await axios.get(url);
+        setApplicantData(res.data.data[0]);
 
-      setApplicantLeaseData(res.data.data[0].lease_data);
-      setIsApplicantDataEmpty(res.data.data[0].isApplicantDataEmpty);
-      setApplicantCheckListData(res.data.data[0].applicant_checkedChecklist);
-      setApplicantNotesData(res.data.data[0].applicant_NotesAndFile);
-    } catch (error) {
-      console.error("Error: ", error.message);
-    } finally {
-      setLoader(false);
+        setApplicantLeaseData(res.data.data[0].lease_data);
+        setIsApplicantDataEmpty(res.data.data[0].isApplicantDataEmpty);
+        setApplicantCheckListData(res.data.data[0].applicant_checkedChecklist);
+        setApplicantNotesData(res.data.data[0].applicant_NotesAndFile);
+      } catch (error) {
+        console.error("Error: ", error.message);
+      } finally {
+        setLoader(false);
+      }
     }
   };
 
   const [applicationData, setApplicationData] = useState({});
   const fetchApplicationData = async () => {
-    setLoader(true);
-    try {
-      const url = `https://saas.cloudrentalmanager.com/api/applicant/applicant_details/${id}`;
-      console.log(url);
-      const res = await axios.get(url);
-      setApplicationData(res.data.data);
-      console.log(res.data.data, "janak");
-    } catch (error) {
-      console.error("Error: ", error.message);
-    } finally {
-      setLoader(false);
+    if (id) {
+      setLoader(true);
+      try {
+        const url = `https://saas.cloudrentalmanager.com/api/applicant/applicant_details/${id}`;
+        console.log(url);
+        const res = await axios.get(url);
+        setApplicationData(res.data.data);
+      } catch (error) {
+        console.error("Error: ", error.message);
+      } finally {
+        setLoader(false);
+      }
     }
   };
 
@@ -139,14 +142,16 @@ const ApplicantSummary = () => {
   }, [id]);
 
   let sendApplicantMailData = async () => {
-    setSendApplicantMailLoader(true);
-    let responce = await axios.get(`${baseUrl}/applicant/applicant/mail/${id}`);
-    setSendApplicantMail(responce.data.data);
+    if (id) {
+      setSendApplicantMailLoader(true);
+      let responce = await axios.get(`${baseUrl}/applicant/applicant/mail/${id}`);
+      setSendApplicantMail(responce.data.data);
 
-    if (responce.data.statusCode === 200) {
-      setSendApplicantMailLoader(false);
-    } else {
-      setSendApplicantMailLoader(false);
+      if (responce.data.statusCode === 200) {
+        setSendApplicantMailLoader(false);
+      } else {
+        setSendApplicantMailLoader(false);
+      }
     }
   };
 
@@ -190,54 +195,56 @@ const ApplicantSummary = () => {
 
   const [value, setValue] = useState("Summary");
   const handleChange = async (event, newValue) => {
-    if (newValue === "Rejected") {
-      setLoader(true);
-      try {
-        const res = await axios.get(
-          `${baseUrl}/applicant/status_data/${id}/${newValue}`
-        );
-        if (res.data.statusCode === 200 && res.data.data?.length > 0) {
-          setLeaseData(res.data.data);
-        } else {
-          setLeaseData([]);
+    if (id && newValue) {
+      if (newValue === "Rejected") {
+        setLoader(true);
+        try {
+          const res = await axios.get(
+            `${baseUrl}/applicant/status_data/${id}/${newValue}`
+          );
+          if (res.data.statusCode === 200 && res.data.data?.length > 0) {
+            setLeaseData(res.data.data);
+          } else {
+            setLeaseData([]);
+          }
+        } catch (error) {
+          console.error("Error: ", error.message);
+        } finally {
+          setLoader(false);
+          setValue(newValue);
         }
-      } catch (error) {
-        console.error("Error: ", error.message);
-      } finally {
-        setLoader(false);
-        setValue(newValue);
-      }
-    } else if (newValue === "Approved") {
-      setLoader(true);
-      try {
-        const res = await axios.get(
-          `${baseUrl}/applicant/status_data/${id}/${newValue}`
-        );
-        if (res.data.statusCode === 200 && res.data.data?.length > 0) {
-          setLeaseData(res.data.data);
-        } else {
-          setLeaseData([]);
+      } else if (newValue === "Approved") {
+        setLoader(true);
+        try {
+          const res = await axios.get(
+            `${baseUrl}/applicant/status_data/${id}/${newValue}`
+          );
+          if (res.data.statusCode === 200 && res.data.data?.length > 0) {
+            setLeaseData(res.data.data);
+          } else {
+            setLeaseData([]);
+          }
+        } catch (error) {
+          console.error("Error: ", error.message);
+        } finally {
+          setLoader(false);
+          setValue(newValue);
         }
-      } catch (error) {
-        console.error("Error: ", error.message);
-      } finally {
-        setLoader(false);
+      } else if (newValue === "Application") {
+        setLoader(true);
+        try {
+          const url = `${baseUrl}/applicant/applicant_details/${id}`;
+          const res = await axios.get(url);
+          setApplicantDetails(res.data.data);
+        } catch (error) {
+          console.error("Error: ", error.message);
+        } finally {
+          setLoader(false);
+          setValue(newValue);
+        }
+      } else {
         setValue(newValue);
       }
-    } else if (newValue === "Application") {
-      setLoader(true);
-      try {
-        const url = `${baseUrl}/applicant/applicant_details/${id}`;
-        const res = await axios.get(url);
-        setApplicantDetails(res.data.data);
-      } catch (error) {
-        console.error("Error: ", error.message);
-      } finally {
-        setLoader(false);
-        setValue(newValue);
-      }
-    } else {
-      setValue(newValue);
     }
   };
 
@@ -325,7 +332,6 @@ const ApplicantSummary = () => {
   const employment = applicationData?.employment;
 
 
-  console.log("janakkkk", rental_history)
 
   const [isChecklistVisible, setChecklistVisible] = useState(false);
   const toggleChecklist = () => {

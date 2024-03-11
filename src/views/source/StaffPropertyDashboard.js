@@ -45,17 +45,19 @@ const StaffPropertyDashboard = () => {
     }
   }, [navigate]);
   const getTenantData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/staffmember/staffmember_property/${accessType?.staffmember_id}`
-      );
-      setPropertyDetails(response.data.data);
-      setLoader(false);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setLoader(false);
-    } finally {
-      setLoader(false);
+    if (accessType?.staffmember_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/staffmember/staffmember_property/${accessType?.staffmember_id}`
+        );
+        setPropertyDetails(response.data.data);
+        setLoader(false);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+        setLoader(false);
+      } finally {
+        setLoader(false);
+      }
     }
   };
 
@@ -73,7 +75,7 @@ const StaffPropertyDashboard = () => {
 
   const filterTenantsBySearch = () => {
     let filteredData = [...propertyDetails];
-  
+
     if (searchQuery) {
       const lowerCaseSearchQuery = searchQuery.toLowerCase();
       filteredData = filteredData.filter((tenant) => {
@@ -84,7 +86,7 @@ const StaffPropertyDashboard = () => {
         );
       });
     }
-  
+
     if (upArrow.length > 0) {
       const sortingArrows = upArrow;
       sortingArrows.forEach((sort) => {
@@ -110,10 +112,10 @@ const StaffPropertyDashboard = () => {
         }
       });
     }
-  
+
     return filteredData;
   };
-  
+
 
   const sortData = (value) => {
     if (!sortBy.includes(value)) {

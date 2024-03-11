@@ -122,7 +122,7 @@ const AddVendor = () => {
   // Handle form submission
   async function handleSubmit(values) {
     setSubmitLoader(true);
-    values.admin_id = accessType.admin_id;
+    values.admin_id = accessType?.admin_id;
     try {
       if (vendor_id === undefined) {
         const res = await axios.post(`${baseUrl}/vendor/vendor`, values);

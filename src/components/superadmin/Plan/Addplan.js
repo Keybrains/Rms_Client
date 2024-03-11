@@ -29,19 +29,21 @@ import {
   Table,
 } from "reactstrap";
 import CheckIcon from "@mui/icons-material/Check";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 const AddPlanForm = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
+  const { id } = useParams();
   const [accessType, setAccessType] = useState();
   const [isPropertyCount, setPropertyCount] = useState("false");
   const [isTenantCount, setTenantCount] = useState("false");
   const [isLeaseCount, setLeaseCount] = useState("false");
   const [isRentalOwnerCount, setRentalOwnerCount] = useState("false");
   const [isApplicantCount, setApplicantCount] = useState("false");
+  const [isVendorCount, setVendorCount] = useState("false");
   const [isStaffCount, setStaffCount] = useState("false");
   const [isPaymentOption, setPaymentOption] = useState("false");
 
@@ -112,6 +114,14 @@ const AddPlanForm = () => {
     }
   };
 
+  const onChangeVendorToggle = (e) => {
+    if (e.target.checked) {
+      setVendorCount("true");
+    } else {
+      setVendorCount("false");
+    }
+  };
+
   const onChangeStaffToggle = (e) => {
     if (e.target.checked) {
       setStaffCount("true");
@@ -141,24 +151,21 @@ const AddPlanForm = () => {
     setLoader(true);
     try {
       values["features"] = inputFields;
-      console.log(values,'values');
+      console.log(values, "values");
       const res = await axios.post(`${baseUrl}/plans/plans`, values);
       if (res.data.statusCode === 200) {
+        const nmiResponse = await axios.post(`${baseUrl}/nmipayment/add-plan`, {
+          planPayments: values.plan_payments || "0",
+          planAmount: values.plan_price,
+          planName: values.plan_name,
+          planId: res.data.data.plan_id,
+          // dayFrequency: values.day_frequency,
+          day_of_month: values.day_of_month,
+          month_frequency: values.billing_interval,
+        });
 
-        const nmiResponse = await axios.post(
-          `${baseUrl}/nmipayment/add-plan`,{
-            planPayments: values.plan_payments || "0",
-            planAmount: values.plan_price,
-            planName: values.plan_name,
-            planId: res.data.data.plan_id,
-           // dayFrequency: values.day_frequency,
-            day_of_month: values.day_of_month,
-            month_frequency: values.billing_interval
-          }
-        )
+        console.log(nmiResponse, "nmiResponse");
 
-        console.log(nmiResponse,'nmiResponse');
-        
         toast.success(res.data?.message, {
           position: "top-center",
           autoClose: 1000,
@@ -244,13 +251,14 @@ const AddPlanForm = () => {
                       cancelMembership: false,
                       pauseMembership: false,
                       annual_discount: "",
-                      property_count:"",
+                      property_count: "",
                       tenant_count: "",
-                      lease_count:"",
+                      lease_count: "",
                       rentalowner_count: "",
                       applicant_count: "",
+                      vendor_count: "",
                       staffmember_count: "",
-                      payment_functionality:false,
+                      payment_functionality: false,
                     }}
                     validationSchema={Yup.object().shape({
                       plan_name: Yup.string().required("Required"),
@@ -391,16 +399,22 @@ const AddPlanForm = () => {
                             >
                               <MenuItem value={"1"}>1</MenuItem>
                               <MenuItem value={"2"}>2</MenuItem>
-                              <MenuItem value={"3 (Quarterly)"}>3 (Quarterly)</MenuItem>
+                              <MenuItem value={"3 (Quarterly)"}>
+                                3 (Quarterly)
+                              </MenuItem>
                               <MenuItem value={"4"}>4</MenuItem>
                               <MenuItem value={"5"}>5</MenuItem>
-                              <MenuItem value={"6 (Bi-Annually)"}>6 (Bi-Annually)</MenuItem>
+                              <MenuItem value={"6 (Bi-Annually)"}>
+                                6 (Bi-Annually)
+                              </MenuItem>
                               <MenuItem value={"7"}>7</MenuItem>
                               <MenuItem value={"8"}>8</MenuItem>
                               <MenuItem value={"9"}>9</MenuItem>
                               <MenuItem value={"10"}>10</MenuItem>
                               <MenuItem value={"11"}>11</MenuItem>
-                              <MenuItem value={"12 (Annually)"}>12 (Annually)</MenuItem>
+                              <MenuItem value={"12 (Annually)"}>
+                                12 (Annually)
+                              </MenuItem>
                             </Select>
                             {touched.billing_interval &&
                             errors.billing_interval ? (
@@ -432,7 +446,7 @@ const AddPlanForm = () => {
                           </div>
                         ) : null}
 
-                        {values.billing_interval  ? (
+                        {values.billing_interval ? (
                           <div className="mb-3 col-lg-8 col-md-12">
                             <FormControl fullWidth>
                               <InputLabel size="small" color="success">
@@ -484,8 +498,10 @@ const AddPlanForm = () => {
                                 }}
                                 onInput={(e) => {
                                   const inputValue = e.target.value;
-                                  const numericValue =
-                                    inputValue.replace(/\D/g, "");
+                                  const numericValue = inputValue.replace(
+                                    /\D/g,
+                                    ""
+                                  );
                                   e.target.value = numericValue;
                                 }}
                                 size="small"
@@ -522,8 +538,10 @@ const AddPlanForm = () => {
                                 }}
                                 onInput={(e) => {
                                   const inputValue = e.target.value;
-                                  const numericValue =
-                                    inputValue.replace(/\D/g, "");
+                                  const numericValue = inputValue.replace(
+                                    /\D/g,
+                                    ""
+                                  );
                                   e.target.value = numericValue;
                                 }}
                                 size="small"
@@ -565,11 +583,12 @@ const AddPlanForm = () => {
                                 }}
                                 onInput={(e) => {
                                   const inputValue = e.target.value;
-                                  const numericValue =
-                                    inputValue.replace(/\D/g, "");
+                                  const numericValue = inputValue.replace(
+                                    /\D/g,
+                                    ""
+                                  );
                                   e.target.value = numericValue;
                                 }}
-
                                 size="small"
                                 sx={
                                   isLeaseCount === "true"
@@ -601,15 +620,17 @@ const AddPlanForm = () => {
                                 onBlur={(e) => {
                                   handleBlur(e);
                                 }}
-                               onChange={(e) => {
-                                handleChange(e);
-                              }}
-                              onInput={(e) => {
-                                const inputValue = e.target.value;
-                                const numericValue =
-                                  inputValue.replace(/\D/g, "");
-                                e.target.value = numericValue;
-                              }}
+                                onChange={(e) => {
+                                  handleChange(e);
+                                }}
+                                onInput={(e) => {
+                                  const inputValue = e.target.value;
+                                  const numericValue = inputValue.replace(
+                                    /\D/g,
+                                    ""
+                                  );
+                                  e.target.value = numericValue;
+                                }}
                                 size="small"
                                 sx={
                                   isRentalOwnerCount === "true"
@@ -647,8 +668,10 @@ const AddPlanForm = () => {
                                 onBlur={handleBlur}
                                 onInput={(e) => {
                                   const inputValue = e.target.value;
-                                  const numericValue =
-                                    inputValue.replace(/\D/g, "");
+                                  const numericValue = inputValue.replace(
+                                    /\D/g,
+                                    ""
+                                  );
                                   e.target.value = numericValue;
                                 }}
                                 sx={
@@ -684,8 +707,10 @@ const AddPlanForm = () => {
                                 }}
                                 onInput={(e) => {
                                   const inputValue = e.target.value;
-                                  const numericValue =
-                                    inputValue.replace(/\D/g, "");
+                                  const numericValue = inputValue.replace(
+                                    /\D/g,
+                                    ""
+                                  );
                                   e.target.value = numericValue;
                                 }}
                                 size="small"
@@ -702,21 +727,60 @@ const AddPlanForm = () => {
                             </div>
                           </div>
                         </div>
-                                {console.log(values)}
-                        <div
-                          className="ml-1 mb-3 col-lg-4 col-md-12 d-flex"
-                          style={{ width: "170px" }}
-                        >
-                          <FormLabel component={"legend"}>
-                            <Switch
-                              name="payment_functionality"
-                              value={values.payment_functionality}
-                              checked={values.payment_functionality}
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                            />
-                            Payment
-                          </FormLabel>
+
+                        <div className="row ml-1">
+                          <div className="mb-3 col-lg-4 col-md-6 d-flex">
+                            <FormLabel component={"legend"}>
+                              <Switch
+                                name="payment_functionality"
+                                value={values.payment_functionality}
+                                checked={values.payment_functionality}
+                                onBlur={handleBlur}
+                                onChange={handleChange}
+                              />
+                              Payment
+                            </FormLabel>
+                          </div>
+                          <div className="mb-3 col-lg-4 col-md-6 d-flex">
+                            <div style={{ width: "170px" }}>
+                              <FormLabel component={"legend"}>
+                                <Switch
+                                  onChange={onChangeVendorToggle}
+                                  name="applicant"
+                                />
+                                Vendor
+                              </FormLabel>
+                            </div>
+                            <div>
+                              <TextField
+                                size="small"
+                                type="text"
+                                name="vendor_count"
+                                value={values.vendor_count}
+                                onChange={(e) => {
+                                  handleChange(e);
+                                }}
+                                onBlur={handleBlur}
+                                onInput={(e) => {
+                                  const inputValue = e.target.value;
+                                  const numericValue = inputValue.replace(
+                                    /\D/g,
+                                    ""
+                                  );
+                                  e.target.value = numericValue;
+                                }}
+                                sx={
+                                  isVendorCount === "true"
+                                    ? {
+                                        display: "block",
+                                        width: "100px",
+                                      }
+                                    : { display: "none" }
+                                }
+                                placeholder="Count"
+                              />
+                            </div>
+                          </div>
                         </div>
 
                         <div className="mb-3 col-8">

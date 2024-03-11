@@ -25,16 +25,18 @@ const PropDetails = () => {
   let navigate = useNavigate();
 
   const getOutstandData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/tenant/tenant_summary/${id}`
-      );
-      setoutstandDetails(response.data.data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setError(error);
-      setLoading(false);
+    if (id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/tenant/tenant_summary/${id}`
+        );
+        setoutstandDetails(response.data.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+        setError(error);
+        setLoading(false);
+      }
     }
   };
 

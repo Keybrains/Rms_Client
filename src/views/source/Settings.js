@@ -122,7 +122,7 @@ const Settings = () => {
     setSubmitLoader(true);
     try {
       const object = {
-        admin_id: accessType.admin_id,
+        admin_id: accessType?.admin_id,
         surcharge_percent: surchargeFormik.values.surcharge_percent,
       };
 
@@ -206,7 +206,7 @@ const Settings = () => {
       setSubmitLoader(true);
       try {
         const object = {
-          admin_id: accessType.admin_id,
+          admin_id: accessType?.admin_id,
           duration: latefeeFormik.values.duration,
           late_fee: latefeeFormik.values.late_fee,
         };

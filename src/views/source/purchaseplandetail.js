@@ -28,15 +28,16 @@ function Purchaseplan() {
     }, [navigate]);
     useEffect(() => {
         // Fetch purchase data from the API using Axios
-        axios.get(`${baseUrl}/purchase/plan-purchase/${accessType?.admin_id}`)
-            .then((response) => {
-                setPurchase(response.data.data);
-                setLoader(false);
-                console.log(response.data.data,"janak")
-            })
-            .catch((error) => {
-                console.error("Error fetching purchase data:", error);
-            });
+        if (accessType?.admin_id) {
+            axios.get(`${baseUrl}/purchase/plan-purchase/${accessType?.admin_id}`)
+                .then((response) => {
+                    setPurchase(response.data.data);
+                    setLoader(false);
+                })
+                .catch((error) => {
+                    console.error("Error fetching purchase data:", error);
+                });
+        }
     }, [accessType]);
 
     const FeaturesList = ({ features }) => {
@@ -71,7 +72,7 @@ function Purchaseplan() {
 
     return (
         <>
-             <Header />
+            <Header />
             <Container className="mt--8" fluid>
 
                 <Row>
@@ -108,8 +109,8 @@ function Purchaseplan() {
                                                         }}
                                                     >
                                                         <b className="mb-2" style={{ color: "#11cdef", fontSize: '30px' }}>
-                                                        {purchase?.plan_detail?.plan_name}
-                                                          </b>
+                                                            {purchase?.plan_detail?.plan_name}
+                                                        </b>
                                                     </Row>
                                                     <Row
                                                         className="w-100 my-3"
@@ -121,7 +122,7 @@ function Purchaseplan() {
                                                             borderBottom: "1px solid #ddd",
                                                         }}
                                                     >
-                                                        <Col style={{fontSize:"20px"}}>Plan details</Col>
+                                                        <Col style={{ fontSize: "20px" }}>Plan details</Col>
                                                     </Row>
                                                     <Container fluid>
                                                         <Row
@@ -136,10 +137,10 @@ function Purchaseplan() {
                                                                 Purchase Date:
                                                             </Col>
                                                             <Col xs={4} md={4}>
-                                                               Plan Price
+                                                                Plan Price
                                                             </Col>
-                                                          
-                                                         
+
+
                                                         </Row>
                                                         <Row
                                                             className="w-100 mt-1 mb-5"
@@ -155,7 +156,7 @@ function Purchaseplan() {
                                                             <Col xs={4} md={4}>
                                                                 {purchase?.plan_amount}
                                                             </Col>
-                                                          
+
                                                         </Row>
                                                         <Row
                                                             className="w-100 mb-1"
@@ -166,12 +167,12 @@ function Purchaseplan() {
                                                             }}
                                                         >
                                                             <Col xs={4} md={4}>
-                                                               Billing Period:
+                                                                Billing Period:
                                                             </Col>
                                                             <Col xs={4} md={4}>
-                                                             Day of month
+                                                                Day of month
                                                             </Col>
-                                                          
+
                                                         </Row>
                                                         <Row
                                                             className="w-100 mt-1 mb-5"
@@ -182,18 +183,18 @@ function Purchaseplan() {
                                                             }}
                                                         >
                                                             <Col xs={4} md={4}>
-                                                            {purchase?.plan_detail?.billing_interval}
+                                                                {purchase?.plan_detail?.billing_interval}
                                                             </Col>
                                                             <Col xs={4} md={4}>
                                                                 {purchase?.plan_detail?.day_of_month}
                                                             </Col>
-                                                           
-                                                       </Row>
+
+                                                        </Row>
 
                                                         <br />
 
                                                     </Container>
-                                                    
+
                                                     <Row
                                                         className="w-100 my-3"
                                                         style={{
@@ -204,10 +205,10 @@ function Purchaseplan() {
                                                             borderBottom: "1px solid #ddd",
                                                         }}
                                                     >
-                                                     <Col style={{fontSize:"20px"}}>Plan limitations</Col>
+                                                        <Col style={{ fontSize: "20px" }}>Plan limitations</Col>
                                                     </Row>
                                                     <Container fluid>
-                                                        
+
                                                         <Row
                                                             className="w-100 mb-1"
                                                             style={{
@@ -257,13 +258,13 @@ function Purchaseplan() {
                                                             }}
                                                         >
                                                             <Col xs={4} md={4}>
-                                                            lease_limit:
+                                                                lease_limit:
                                                             </Col>
                                                             <Col xs={4} md={4}>
-                                                            tenant_limit:
+                                                                tenant_limit:
                                                             </Col>
                                                             <Col xs={4} md={4}>
-                                                            vendor_limit:
+                                                                vendor_limit:
                                                             </Col>
                                                         </Row>
                                                         <Row
@@ -292,7 +293,7 @@ function Purchaseplan() {
                                                         <br />
 
                                                     </Container>
-                                                    
+
                                                     <Row
                                                         className="w-100 my-3"
                                                         style={{
@@ -303,20 +304,20 @@ function Purchaseplan() {
                                                             borderBottom: "1px solid #ddd",
                                                         }}
                                                     >
-                                                        <Col style={{fontSize:"20px"}}> Plan features</Col>
+                                                        <Col style={{ fontSize: "20px" }}> Plan features</Col>
                                                     </Row>
                                                     <Container fluid>
-                                                       
+
                                                         <Row
                                                             className="w-100 mb-1"
                                                             style={{
-                                                                fontSize: "16px",                                                               
+                                                                fontSize: "16px",
                                                                 color: "#aaa",
                                                             }}
                                                         >
 
                                                             <Col xs={4} md={4}>
-                                                            
+
                                                                 <FeaturesList features={purchase?.plan_detail?.features} />
                                                             </Col>
 

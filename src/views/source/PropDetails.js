@@ -130,73 +130,85 @@ const PropDetails = () => {
     }
   }, [navigate]);
 
+
   const fetchRentalData = async () => {
-    setLoader(true);
-    try {
-      const url = `${baseUrl}/rentals/rental_summary/${rental_id}`;
-      const response = await axios.get(url);
-      setRentalData(response.data.data[0]);
-      setPropertyTypeData(response.data.data[0].property_type_data);
-      setRentalOwnerData(response.data.data[0].rental_owner_data);
-      setStaffMemberData(response.data.data[0].staffmember_data);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
+    if (rental_id) {
+      setLoader(true);
+      try {
+        const url = `${baseUrl}/rentals/rental_summary/${rental_id}`;
+        const response = await axios.get(url);
+        setRentalData(response.data.data[0]);
+        setPropertyTypeData(response.data.data[0].property_type_data);
+        setRentalOwnerData(response.data.data[0].rental_owner_data);
+        setStaffMemberData(response.data.data[0].staffmember_data);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+      }
+      setLoading(false);
+      setPropImageLoader(false);
     }
-    setLoading(false);
-    setPropImageLoader(false);
   };
 
   const fetchUnitsData = async () => {
-    setLoader(true);
-    try {
-      const response = await axios.get(
-        `${baseUrl}/unit/rental_unit/${rental_id}`
-      );
-      setpropertyUnitData(response.data.data);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
+    if (rental_id) {
+      setLoader(true);
+      try {
+        const response = await axios.get(
+          `${baseUrl}/unit/rental_unit/${rental_id}`
+        );
+        setpropertyUnitData(response.data.data);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+      }
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const fetchTenantData = async () => {
-    setLoader(true);
-    try {
-      const response = await axios.get(
-        `${baseUrl}/tenants/rental_tenant/${rental_id}`
-      );
-      setTenantsData(response.data.data);
-      setTenantsCount(response.data.count);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
+    if (rental_id) {
+      setLoader(true);
+      try {
+        const response = await axios.get(
+          `${baseUrl}/tenants/rental_tenant/${rental_id}`
+        );
+        setTenantsData(response.data.data);
+        setTenantsCount(response.data.count);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+      }
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const fetchWorkOrderData = async () => {
-    setLoader(true);
-    try {
-      const response = await axios.get(
-        `${baseUrl}/work-order/rental_workorder/${rental_id}`
-      );
-      setWorkOrderData(response.data.data);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
+    if (rental_id) {
+      setLoader(true);
+      try {
+        const response = await axios.get(
+          `${baseUrl}/work-order/rental_workorder/${rental_id}`
+        );
+        setWorkOrderData(response.data.data);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+      }
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const fatchunit = async () => {
-    setLoader(true);
-    try {
-      const response = await axios.get(
-        `${baseUrl}/leases/unit_leases/${clickedUnitObject?.unit_id}`
-      );
-      setunitLeases(response.data.data);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
+    if (clickedUnitObject?.unit_id) {
+      setLoader(true);
+
+      try {
+        const response = await axios.get(
+          `${baseUrl}/leases/unit_leases/${clickedUnitObject?.unit_id}`
+        );
+        setunitLeases(response.data.data);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+      }
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const [state, setState] = useState({});
@@ -242,13 +254,15 @@ const PropDetails = () => {
   }, [rental_id]);
 
   const fetchApplianceData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/appliance/appliance/${clickedUnitObject.unit_id}`
-      );
-      setApplianceData(response.data.data);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
+    if (clickedUnitObject?.unit_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/appliance/appliance/${clickedUnitObject.unit_id}`
+        );
+        setApplianceData(response.data.data);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+      }
     }
   };
 
@@ -316,7 +330,7 @@ const PropDetails = () => {
         } else {
           res = await handleSubmit(
             rentalData?.rental_id,
-            accessType.admin_id,
+            accessType?.admin_id,
             values,
             selectedFiles
           );
@@ -352,7 +366,7 @@ const PropDetails = () => {
         if (values.appliance_id === "") {
           res = await addAppliancesSubmit(
             clickedUnitObject.unit_id,
-            accessType.admin_id,
+            accessType?.admin_id,
             values
           );
         } else {
@@ -510,7 +524,7 @@ const PropDetails = () => {
                   <td>
                     {clickedObject.rental_adress}
                     {clickedObject.rental_unit !== "" &&
-                    clickedObject.rental_unit !== undefined
+                      clickedObject.rental_unit !== undefined
                       ? `- ${clickedObject.rental_unit}`
                       : null}
                   </td>
@@ -855,13 +869,11 @@ const PropDetails = () => {
                                                   <>
                                                     <tr className="body">
                                                       <td>
-                                                        {`${
-                                                          rentalOwnerData.rentalOwner_firstName ||
+                                                        {`${rentalOwnerData.rentalOwner_firstName ||
                                                           "N/A"
-                                                        } ${
-                                                          rentalOwnerData.rentalOwner_lastName ||
+                                                          } ${rentalOwnerData.rentalOwner_lastName ||
                                                           "N/A"
-                                                        }`}
+                                                          }`}
                                                       </td>
                                                       <td>
                                                         {rentalOwnerData.rentalOwner_companyName ||
@@ -928,10 +940,9 @@ const PropDetails = () => {
                                                   <>
                                                     <tr className="body">
                                                       <td>
-                                                        {`${
-                                                          staffMemberData?.staffmember_name ||
+                                                        {`${staffMemberData?.staffmember_name ||
                                                           "No staff member assigned"
-                                                        }`}
+                                                          }`}
                                                       </td>
                                                     </tr>
                                                   </>
@@ -976,7 +987,7 @@ const PropDetails = () => {
                             {financialType
                               ? financialType
                               : "Month to date" &&
-                                setFinancialType("Month to date")}
+                              setFinancialType("Month to date")}
                           </DropdownToggle>
                           <DropdownMenu>
                             {financialTypeArray.map((subtype, index) => (
@@ -1127,7 +1138,7 @@ const PropDetails = () => {
                                           fontWeight: "bold",
                                           backgroundColor: "#f0f0f0",
                                         }}
-                                        //colSpan="2"
+                                      //colSpan="2"
                                       >
                                         Net income
                                       </th>
@@ -1242,7 +1253,7 @@ const PropDetails = () => {
                                       fontWeight: "bold",
                                       backgroundColor: "#f0f0f0",
                                     }}
-                                    //colSpan="2"
+                                  //colSpan="2"
                                   >
                                     Net income
                                   </th>
@@ -1252,13 +1263,13 @@ const PropDetails = () => {
                                       fontWeight: "bold",
                                       backgroundColor: "#f0f0f0",
                                     }}
-                                    //colSpan="2"
+                                  //colSpan="2"
                                   >
                                     {netIncome >= 0
                                       ? `$${netIncome.toFixed(2)}`
                                       : `$(${Math.abs(netIncome || 0).toFixed(
-                                          2
-                                        )})`}
+                                        2
+                                      )})`}
                                   </th>
                                 </tr>
                               </React.Fragment>
@@ -1449,9 +1460,8 @@ const PropDetails = () => {
                                   $
                                   {totals[0] - totals2[0] >= 0
                                     ? (totals[0] - totals2[0]).toFixed(2)
-                                    : `(${
-                                        -1 * (totals[0] - totals2[0]).toFixed(2)
-                                      })`}
+                                    : `(${-1 * (totals[0] - totals2[0]).toFixed(2)
+                                    })`}
                                 </th>
                                 <th
                                   style={{
@@ -1463,9 +1473,8 @@ const PropDetails = () => {
                                   $
                                   {totals[1] - totals2[1] >= 0
                                     ? (totals[1] - totals2[1]).toFixed(2)
-                                    : `(${
-                                        -1 * (totals[1] - totals2[1]).toFixed(2)
-                                      })`}
+                                    : `(${-1 * (totals[1] - totals2[1]).toFixed(2)
+                                    })`}
                                 </th>
                                 <th
                                   style={{
@@ -1477,9 +1486,8 @@ const PropDetails = () => {
                                   $
                                   {totals[2] - totals2[2] >= 0
                                     ? (totals[2] - totals2[2]).toFixed(2)
-                                    : `(${
-                                        -1 * (totals[2] - totals2[2]).toFixed(2)
-                                      })`}
+                                    : `(${-1 * (totals[2] - totals2[2]).toFixed(2)
+                                    })`}
                                 </th>
                               </tr>
                             </tbody>
@@ -1998,11 +2006,11 @@ const PropDetails = () => {
                                             </td>
                                             <td>
                                               {lease?.start_date &&
-                                              lease?.end_date ? (
+                                                lease?.end_date ? (
                                                 <>
                                                   <Link
                                                     to={`/${admin}/tenantdetail/${lease?.tenant_id}`}
-                                                    onClick={(e) => {}}
+                                                    onClick={(e) => { }}
                                                   >
                                                     {formatDateWithoutTime(
                                                       lease?.start_date
@@ -2019,10 +2027,10 @@ const PropDetails = () => {
                                             </td>
                                             <td>
                                               {lease?.tenant_firstName &&
-                                              lease?.tenant_lastName
+                                                lease?.tenant_lastName
                                                 ? lease?.tenant_firstName +
-                                                  " " +
-                                                  lease?.tenant_lastName
+                                                " " +
+                                                lease?.tenant_lastName
                                                 : "N/A"}
                                             </td>
                                             <td>
@@ -2119,8 +2127,8 @@ const PropDetails = () => {
                                             </div>
                                             {addAppliancesFormin.touched
                                               .appliance_name &&
-                                            addAppliancesFormin.errors
-                                              .appliance_name ? (
+                                              addAppliancesFormin.errors
+                                                .appliance_name ? (
                                               <div style={{ color: "red" }}>
                                                 {
                                                   addAppliancesFormin.errors
@@ -2156,8 +2164,8 @@ const PropDetails = () => {
                                             </div>
                                             {addAppliancesFormin.touched
                                               .appliance_description &&
-                                            addAppliancesFormin.errors
-                                              .appliance_description ? (
+                                              addAppliancesFormin.errors
+                                                .appliance_description ? (
                                               <div style={{ color: "red" }}>
                                                 {
                                                   addAppliancesFormin.errors
@@ -2195,8 +2203,8 @@ const PropDetails = () => {
                                             </div>
                                             {addAppliancesFormin.touched
                                               .installed_date &&
-                                            addAppliancesFormin.errors
-                                              .installed_date ? (
+                                              addAppliancesFormin.errors
+                                                .installed_date ? (
                                               <div style={{ color: "red" }}>
                                                 {
                                                   addAppliancesFormin.errors
@@ -2471,7 +2479,7 @@ const PropDetails = () => {
                                     >
                                       {tenant.rental_adress} {""}
                                       {tenant.rental_unit !== "" &&
-                                      tenant.rental_unit !== undefined
+                                        tenant.rental_unit !== undefined
                                         ? `- ${tenant.rental_unit}`
                                         : null}
                                     </div>

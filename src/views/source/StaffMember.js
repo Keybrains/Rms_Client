@@ -79,28 +79,32 @@ const StaffMember = () => {
   }, [navigate]);
 
   const getStaffMemberData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/staffmember/staff_member/${accessType.admin_id}`
-      );
-      setLoader(false);
-      setStaffMemberData(response.data.data);
-      setTotalPages(Math.ceil(response.data.data.length / pageItem));
-    } catch (error) {
-      console.error("Error fetching data:", error);
+    if (accessType?.admin_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/staffmember/staff_member/${accessType?.admin_id}`
+        );
+        setLoader(false);
+        setStaffMemberData(response.data.data);
+        setTotalPages(Math.ceil(response.data.data.length / pageItem));
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     }
   };
 
   const [countRes, setCountRes] = useState("");
   const getStaffLimit = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/staffmember/limitation/${accessType.admin_id}`
-      );
-      console.log(response.data);
-      setCountRes(response.data);
-    } catch (error) {
-      console.error("Error fetching rental data:", error);
+    if (accessType?.admin_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/staffmember/limitation/${accessType?.admin_id}`
+        );
+        console.log(response.data);
+        setCountRes(response.data);
+      } catch (error) {
+        console.error("Error fetching rental data:", error);
+      }
     }
   };
 
@@ -493,7 +497,7 @@ const StaffMember = () => {
                   {StaffMemberData.length === 0 ? (
                     <tbody>
                       <tr className="text-center">
-                        <td colSpan="5" style={{ fontSize: "15px" }}>
+                        <td colSpan="8" style={{ fontSize: "15px" }}>
                           No StaffMembers Added
                         </td>
                       </tr>
