@@ -33,7 +33,6 @@ import { makeStyles } from "@mui/styles";
 import { jwtDecode } from "jwt-decode";
 
 const AdminNavbar = (props) => {
-
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   let navigate = useNavigate();
@@ -164,7 +163,7 @@ const AdminNavbar = (props) => {
 
   useEffect(() => {
     getPlan();
-  }, [accessType]);
+  }, [accessType?.admin_id]); 
 
   return (
     <>
@@ -180,7 +179,12 @@ const AdminNavbar = (props) => {
             <Row>
               <Button
                 color="primary"
-                onClick={() => plan?.plan_detail?.plan_name ? navigate("/" + admin + "/Purchaseplandetail") : navigate("/" + admin + "/Plans")}
+                onClick={() =>
+                  plan?.plan_detail?.plan_name &&
+                  plan?.plan_detail?.plan_name !== "Free Plan"
+                    ? navigate("/" + admin + "/Purchaseplandetail")
+                    : navigate("/" + admin + "/Plans")
+                }
                 size="sm"
                 style={{
                   background: "rgb(48 52 58 / 70%)",
@@ -189,14 +193,19 @@ const AdminNavbar = (props) => {
                 }}
               // disabled={plan?.plan_detail?.plan_name}
               >
-                {plan?.plan_detail?.plan_name ? plan?.plan_detail?.plan_name : "Buy Now"}
+                {plan?.plan_detail?.plan_name &&
+                plan?.plan_detail?.plan_name !== "Free Plan"
+                  ? plan?.plan_detail?.plan_name
+                  : "Buy Now"}
               </Button>
               <FormGroup
                 className="mb-0"
                 onClick={toggleSidebar}
-                style={{ cursor: "pointer", }}
+                style={{ cursor: "pointer" }}
               >
-                <NotificationsIcon style={{ color: "white", fontSize: "30px" }} />
+                <NotificationsIcon
+                  style={{ color: "white", fontSize: "30px" }}
+                />
                 {notificationCount > 0 && (
                   <div
                     className="notification-circle"
@@ -305,9 +314,8 @@ const AdminNavbar = (props) => {
                     {`${accessType?.first_name
                       ?.slice(0, 1)
                       .toUpperCase()}${accessType?.last_name
-                        ?.slice(0, 1)
-                        .toUpperCase()}`}
-
+                      ?.slice(0, 1)
+                      .toUpperCase()}`}
                   </span>
                   <Media className="ml-2 d-none d-lg-block">
                     <span className="mb-0 text-sm font-weight-bold">
@@ -320,11 +328,15 @@ const AdminNavbar = (props) => {
                 <DropdownItem className="noti-title" header tag="div">
                   <h6 className="text-overflow m-0">Welcome</h6>
                 </DropdownItem>
-                <DropdownItem onClick={() => navigate("/" + admin + "/user-profile")} >
+                <DropdownItem
+                  onClick={() => navigate("/" + admin + "/user-profile")}
+                >
                   <i className="ni ni-single-02" />
                   <span>My profile</span>
                 </DropdownItem>
-                <DropdownItem onClick={() => navigate("/" + admin + "/settings")}>
+                <DropdownItem
+                  onClick={() => navigate("/" + admin + "/settings")}
+                >
                   <i className="ni ni-settings-gear-65" />
                   <span>Settings</span>
                 </DropdownItem>

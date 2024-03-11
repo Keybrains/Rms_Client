@@ -128,26 +128,26 @@ function Rows(props) {
         <TableCell align="left">{row?.phone_number}</TableCell>
         <TableCell align="left">{row?.email}</TableCell>
         <TableCell align="left">
-          {row.subscription.status === "active"
-            ? `${moment(row.subscription.start_date, "YYYY-MM-DD").format(
-              "DD-MM-YYYY"
-            )} `
-            : `${moment(row.trial.start_date, "YYYY-MM-DD").format(
-              "DD-MM-YYYY"
-            )} 
+          {row.subscription?.status === "active"
+            ? `${moment(row.subscription?.start_date, "YYYY-MM-DD").format(
+                "DD-MM-YYYY"
+              )} `
+            : `${moment(row.trial?.start_date, "YYYY-MM-DD").format(
+                "DD-MM-YYYY"
+              )} 
               `}
         </TableCell>
         <TableCell align="left">
-          {row.subscription.status === "active"
-            ? `${moment(row.subscription.end_date, "YYYY-MM-DD").format(
-              "DD-MM-YYYY"
-            )} `
-            : `${moment(row.trial.end_date, "YYYY-MM-DD").format("DD-MM-YYYY")} 
+          {row.subscription?.status === "active"
+            ? `${moment(row.subscription?.end_date, "YYYY-MM-DD").format(
+                "DD-MM-YYYY"
+              )} `
+            : `${moment(row.trial?.end_date, "YYYY-MM-DD").format("DD-MM-YYYY")} 
               `}
         </TableCell>
 
         <TableCell align="left">
-          {row?.subscription.status === "active" ? "Paid" : "Free"}
+          {row?.subscription?.status === "active" ? "Paid" : "Free"}
         </TableCell>
 
         <TableCell align="center">
