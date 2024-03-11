@@ -430,7 +430,7 @@ function TenantAddPayment() {
     } catch (error) {
       console.error("Network error:", error);
     }
-  };
+  }};
 
   // Calculate total amount after surcharge
   const calculateTotalAmount = () => {
