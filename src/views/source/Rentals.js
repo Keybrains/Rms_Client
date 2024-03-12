@@ -643,12 +643,12 @@ const Rentals = () => {
                                   : "Add Property Type"}
                             </DropdownToggle>
                             <DropdownMenu>
-                              {Object.values(
-                                propertyData.reduce((acc, item) => {
-                                  if (!acc[item.property_type]) {
-                                    acc[item.property_type] = [item];
+                              {Object?.values(
+                                propertyData?.reduce((acc, item) => {
+                                  if (!acc[item?.property_type]) {
+                                    acc[item?.property_type] = [item];
                                   } else {
-                                    acc[item.property_type].push(item);
+                                    acc[item?.property_type].push(item);
                                   }
                                   return acc;
                                 }, {})

@@ -216,6 +216,11 @@ const TenantNavbar = (props) => {
                                             `/tenant/tenantpropertydetail/${data.notification_type.lease_id}`
                                           );
                                         }
+                                        else{
+                                          navigate(
+                                            `/tenant/tenantFinancial`
+                                          );
+                                        }
                                       }
                                     }}
                                   >
