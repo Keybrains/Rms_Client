@@ -256,7 +256,7 @@ const PropertyType = () => {
 
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterPropertyBySearch();
-    const paginatedData = filteredData.slice(startIndex, endIndex);
+    const paginatedData = filteredData?.slice(startIndex, endIndex);
     return paginatedData;
   };
 
@@ -449,7 +449,7 @@ const PropertyType = () => {
                       <th scope="col">Action</th>
                     </tr>
                   </thead>
-                  {propertyData.length === 0 ? (
+                  {propertyData?.length === 0 ? (
                     <tbody>
                       <tr className="text-center">
                         <td colSpan="5" style={{ fontSize: "15px" }}>
@@ -459,7 +459,7 @@ const PropertyType = () => {
                     </tbody>
                   ) : (
                     <tbody>
-                      {filterTenantsBySearchAndPage().map((property) => (
+                      {filterTenantsBySearchAndPage()?.map((property) => (
                         <tr key={property._id}>
                           <td>{property.property_type}</td>
                           <td>{property.propertysub_type}</td>
@@ -495,7 +495,7 @@ const PropertyType = () => {
                     </tbody>
                   )}
                 </Table>
-                {paginatedData.length > 0 ? (
+                {paginatedData?.length > 0 ? (
                   <Row>
                     <Col className="text-right m-3">
                       <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
