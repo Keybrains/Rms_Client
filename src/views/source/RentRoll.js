@@ -60,23 +60,25 @@ const RentRoll = () => {
   }, [navigate]);
 
   const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/leases/leases/${accessType.admin_id}`
-      );
-      if (response.data.statusCode === 200) {
-        const data = response.data.data;
+    if (accessType?.admin_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/leases/leases/${accessType?.admin_id}`
+        );
+        if (response.data.statusCode === 200) {
+          const data = response.data.data;
 
-        const reversedData = data.slice().reverse();
-        setTenantsData(reversedData);
-        setTotalPages(Math.ceil(reversedData.length / pageItem));
-        setLoader(false);
-      } else {
-        console.log(response.data.message);
-        return;
+          const reversedData = data.slice().reverse();
+          setTenantsData(reversedData);
+          setTotalPages(Math.ceil(reversedData.length / pageItem));
+          setLoader(false);
+        } else {
+          console.log(response.data.message);
+          return;
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
-    } catch (error) {
-      console.error("Error fetching data:", error);
     }
   };
 
@@ -175,16 +177,20 @@ const RentRoll = () => {
         if (res.data.statusCode === 200) {
           toast.success(res.data.message, {
             position: "top-center",
+            autoClose: 1000
           });
           fetchData();
+          getLeaseLimit();
         } else {
           toast.warning(res.data.message, {
             position: "top-center",
+            autoClose: 1000
           });
         }
       } else {
-        toast.success("Tenant is safe :)", {
+        toast.success("Lease is safe :)", {
           position: "top-center",
+          autoClose: 1000
         });
       }
     });
@@ -224,14 +230,16 @@ const RentRoll = () => {
 
   const [countRes, setCountRes] = useState("");
   const getLeaseLimit = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/leases/limitation/${accessType.admin_id}`
-      );
-      console.log(response.data, "yash");
-      setCountRes(response.data);
-    } catch (error) {
-      console.error("Error fetching rental data:", error);
+    if (accessType?.admin_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/leases/limitation/${accessType?.admin_id}`
+        );
+        console.log(response.data, "yash");
+        setCountRes(response.data);
+      } catch (error) {
+        console.error("Error fetching rental data:", error);
+      }
     }
   };
 

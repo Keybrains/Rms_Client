@@ -125,26 +125,28 @@ const Index = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        console.log("firsti")
-        const response1 = await axios.get(`${baseUrl}/tenants/tenant_count/${accessType.admin_id}`);
-        const response2 = await axios.get(`${baseUrl}/rentals/rental_count/${accessType.admin_id}`);
-        const response3 = await axios.get(
-          `${baseUrl}/rental_owner/rental_owner_count/${accessType.admin_id}`);
-        const response4 = await axios.get(
-          `${baseUrl}/staffmember/staff_count/${accessType.admin_id}`);
-        console.log(response1, "firsti")
-        setLoader(false);
-        const newData = {
-          tenants: response1.data.count,
-          rentals: response2.data.count,
-          rentalowner: response3.data.count,
-          staff: response4.data.count,
-        };
+      if (accessType?.admin_id) {
+        try {
+          console.log("firsti")
+          const response1 = await axios.get(`${baseUrl}/tenants/tenant_count/${accessType?.admin_id}`);
+          const response2 = await axios.get(`${baseUrl}/rentals/rental_count/${accessType?.admin_id}`);
+          const response3 = await axios.get(
+            `${baseUrl}/rental_owner/rental_owner_count/${accessType?.admin_id}`);
+          const response4 = await axios.get(
+            `${baseUrl}/staffmember/staff_count/${accessType?.admin_id}`);
+          console.log(response1, "firsti")
+          setLoader(false);
+          const newData = {
+            tenants: response1.data.count,
+            rentals: response2.data.count,
+            rentalowner: response3.data.count,
+            staff: response4.data.count,
+          };
 
-        setData(newData);
-      } catch (error) {
-        console.error(error);
+          setData(newData);
+        } catch (error) {
+          console.error(error);
+        }
       }
     };
 

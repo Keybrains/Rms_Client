@@ -70,24 +70,26 @@ const TenantFinancial = () => {
   }, [navigate]);
 
   const fetchLedger = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/payment/tenant_financial/${accessType.tenant_id}`
-      );
-      setLedger(response.data.data);
-      // setTotalPages(Math.ceil(response.length / pageItem));
-      const filteredData = Array.from(
-        new Set(
-          response.data.data.map(
-            (item) => `${item.rental_adress}, ${item.rental_unit}`
+    if (accessType?.tenant_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/payment/tenant_financial/${accessType.tenant_id}`
+        );
+        setLedger(response.data.data);
+        // setTotalPages(Math.ceil(response.length / pageItem));
+        const filteredData = Array.from(
+          new Set(
+            response.data.data.map(
+              (item) => `${item.rental_adress}, ${item.rental_unit}`
+            )
           )
-        )
-      );
-      setPropertyDropdownData(filteredData);
-      setLoader(false);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-    
+        );
+        setPropertyDropdownData(filteredData);
+        setLoader(false);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+
+      }
     }
   };
 
@@ -183,7 +185,7 @@ const TenantFinancial = () => {
             </FormGroup>
           </Col>
           <Col className="text-right">
-          <Button
+            <Button
               color="primary"
               onClick={() => openCardForm()}
               size="sm"
@@ -247,14 +249,14 @@ const TenantFinancial = () => {
                         <>
                           <thead className="thead-light">
                             <tr>
-                            <th scope="col">Date</th>
-                                    <th scope="col">Type</th>
-                                    <th scope="col">Account</th>
-                                    <th scope="col">Transaction</th>
-                                    <th scope="col">Increase</th>
-                                    <th scope="col">Decrease</th>
-                                    <th scope="col">Balance</th>
-                                    <th scope="col">Action</th>
+                              <th scope="col">Date</th>
+                              <th scope="col">Type</th>
+                              <th scope="col">Account</th>
+                              <th scope="col">Transaction</th>
+                              <th scope="col">Increase</th>
+                              <th scope="col">Decrease</th>
+                              <th scope="col">Balance</th>
+                              <th scope="col">Action</th>
                             </tr>
                           </thead>
 
@@ -285,7 +287,7 @@ const TenantFinancial = () => {
                                       onClick={() => {
                                         if (item?.entry?.length > 1 &&
                                           item?.type !==
-                                            "Refund") {
+                                          "Refund") {
                                           openAccount(item, index);
                                         }
                                       }}
@@ -299,33 +301,33 @@ const TenantFinancial = () => {
                                     </td>
 
                                     <td
-                                              style={{
-                                                color:
-                                                  item.type ===
-                                                    "Payment" &&
-                                                  item.response ===
-                                                    "SUCCESS"
-                                                    ? "#50975E"
-                                                    : item.type ===
-                                                        "Refund" &&
-                                                      item.response ===
-                                                        "SUCCESS"
-                                                    ? "#ffc40c"
-                                                    : item.response ===
-                                                      "FAILURE"
-                                                    ? "#AA3322"
-                                                    : "inherit",
-                                                fontWeight: "bold",
-                                              }}
-                                            >
-                                              {item.response &&
-                                              item.payment_type
-                                                ? `Manual ${item.type} ${item.response} for ${item.payment_type}`
-                                                : "- - - - - - - - - - - - - - - - -"}
-                                              {item.transaction_id
-                                                ? ` (#${item.transaction_id})`
-                                                : ""}
-                                            </td>
+                                      style={{
+                                        color:
+                                          item.type ===
+                                            "Payment" &&
+                                            item.response ===
+                                            "SUCCESS"
+                                            ? "#50975E"
+                                            : item.type ===
+                                              "Refund" &&
+                                              item.response ===
+                                              "SUCCESS"
+                                              ? "#ffc40c"
+                                              : item.response ===
+                                                "FAILURE"
+                                                ? "#AA3322"
+                                                : "inherit",
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      {item.response &&
+                                        item.payment_type
+                                        ? `Manual ${item.type} ${item.response} for ${item.payment_type}`
+                                        : "- - - - - - - - - - - - - - - - -"}
+                                      {item.transaction_id
+                                        ? ` (#${item.transaction_id})`
+                                        : ""}
+                                    </td>
 
                                     {item.type === "Charge" || item.type === "Refund" ? (
                                       <td> {item?.total_amount}</td>
@@ -338,103 +340,103 @@ const TenantFinancial = () => {
                                       <td>-</td>
                                     )}
                                     <td> {item.balance !==
-                                              undefined
-                                                ? item.balance >= 0
-                                                  ? `$${item?.balance?.toFixed(
-                                                      2
-                                                    )}`
-                                                  : `$(${Math.abs(
-                                                      item?.balance?.toFixed(
-                                                        2
-                                                      )
-                                                    )})`
-                                                : "0"}</td>
-                                                  <td>
-                                              <div
+                                      undefined
+                                      ? item.balance >= 0
+                                        ? `$${item?.balance?.toFixed(
+                                          2
+                                        )}`
+                                        : `$(${Math.abs(
+                                          item?.balance?.toFixed(
+                                            2
+                                          )
+                                        )})`
+                                      : "0"}</td>
+                                    <td>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          gap: "5px",
+                                        }}
+                                      >
+                                        {item?.response !==
+                                          "FAILURE" && item?.response !==
+                                          "SUCCESS" &&
+                                          item?.type ===
+                                          "Payment" ? (
+                                          <UncontrolledDropdown nav>
+                                            <DropdownToggle
+                                              className="pr-0"
+                                              nav
+                                              style={{
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={() =>
+                                                toggleOptions(
+                                                  item?.payment_id
+                                                )
+                                              }
+                                            >
+                                              <span
+                                                className="avatar avatar-sm rounded-circle"
                                                 style={{
+                                                  margin: "-20px",
+                                                  background:
+                                                    "transparent",
+                                                  color: "lightblue",
+                                                  fontWeight: "bold",
+                                                  border:
+                                                    "2px solid lightblue",
+                                                  padding: "10px",
                                                   display: "flex",
-                                                  gap: "5px",
+                                                  alignItems: "center",
+                                                  justifyContent:
+                                                    "center",
                                                 }}
                                               >
-                                                {item?.response !==
-                                                  "FAILURE" && item?.response !==
-                                                  "SUCCESS" &&
-                                                item?.type ===
-                                                  "Payment" ? (
-                                                  <UncontrolledDropdown nav>
-                                                    <DropdownToggle
-                                                      className="pr-0"
-                                                      nav
-                                                      style={{
-                                                        cursor: "pointer",
-                                                      }}
-                                                      onClick={() =>
-                                                        toggleOptions(
-                                                          item?.payment_id
-                                                        )
-                                                      }
-                                                    >
-                                                      <span
-                                                        className="avatar avatar-sm rounded-circle"
-                                                        style={{
-                                                          margin: "-20px",
-                                                          background:
-                                                            "transparent",
-                                                          color: "lightblue",
-                                                          fontWeight: "bold",
-                                                          border:
-                                                            "2px solid lightblue",
-                                                          padding: "10px",
-                                                          display: "flex",
-                                                          alignItems: "center",
-                                                          justifyContent:
-                                                            "center",
-                                                        }}
-                                                      >
-                                                        ...
-                                                      </span>
-                                                    </DropdownToggle>
-                                                    <DropdownMenu className="dropdown-menu-arrow">
-                                                      {item?.payment_id ===
-                                                        showOptionsId && (
-                                                        <div>
-                                                          {(item?.response ===
-                                                            "PENDING" ||
-                                                            item?.payment_type ===
-                                                              "Cash" ||
-                                                            item?.payment_type ===
-                                                              "Check" ) && (
-                                                            <DropdownItem
-                                                              tag="div"
-                                                              onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                
-                                                                  navigate(
-                                                                    `/tenant/TenantPayment/${item.payment_id}`
-                                                                  );
-                                                                
-                                                              }}
-                                                            >
-                                                              Edit
-                                                            </DropdownItem>
-                                                          )}
-                                                        </div>
+                                                ...
+                                              </span>
+                                            </DropdownToggle>
+                                            <DropdownMenu className="dropdown-menu-arrow">
+                                              {item?.payment_id ===
+                                                showOptionsId && (
+                                                  <div>
+                                                    {(item?.response ===
+                                                      "PENDING" ||
+                                                      item?.payment_type ===
+                                                      "Cash" ||
+                                                      item?.payment_type ===
+                                                      "Check") && (
+                                                        <DropdownItem
+                                                          tag="div"
+                                                          onClick={(e) => {
+                                                            e.stopPropagation();
+
+                                                            navigate(
+                                                              `/tenant/TenantPayment/${item.payment_id}`
+                                                            );
+
+                                                          }}
+                                                        >
+                                                          Edit
+                                                        </DropdownItem>
                                                       )}
-                                                    </DropdownMenu>
-                                                  </UncontrolledDropdown>
-                                                ) : (
-                                                  <div
-                                                    style={{
-                                                      fontSize: "15px",
-                                                      fontWeight: "bolder",
-                                                      paddingLeft: "5px",
-                                                    }}
-                                                  >
-                                                    --
                                                   </div>
                                                 )}
-                                              </div>
-                                            </td>
+                                            </DropdownMenu>
+                                          </UncontrolledDropdown>
+                                        ) : (
+                                          <div
+                                            style={{
+                                              fontSize: "15px",
+                                              fontWeight: "bolder",
+                                              paddingLeft: "5px",
+                                            }}
+                                          >
+                                            --
+                                          </div>
+                                        )}
+                                      </div>
+                                    </td>
                                   </tr>
                                   {expandedRows.includes(index) && (
                                     <tr
@@ -470,7 +472,7 @@ const TenantFinancial = () => {
                                       </td>
                                       <td scope="col" style={{ border: "0" }}>
                                         {Ledger[index]?.type === "Charge" ||
-                                        Ledger[index]?.type === "Refund" ? (
+                                          Ledger[index]?.type === "Refund" ? (
                                           <>
                                             <b>Amount</b>
                                             <br />
@@ -483,7 +485,7 @@ const TenantFinancial = () => {
                                             <>
                                               {Ledger[index]?.type ===
                                                 "Charge" ||
-                                              Ledger[index]?.type === "Refund"
+                                                Ledger[index]?.type === "Refund"
                                                 ? "$" + data?.amount
                                                 : ""}
                                               <br />
@@ -634,7 +636,7 @@ const TenantFinancial = () => {
           <CreditCardForm
             tenantId={accessType?.tenant_id}
             closeModal={closeModal}
-            //getCreditCard={getCreditCard}
+          //getCreditCard={getCreditCard}
           />
         </ModalBody>
       </Modal>

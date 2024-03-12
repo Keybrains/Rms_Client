@@ -67,47 +67,53 @@ const RentRollDetail = () => {
   const [leaseData, setLeaseData] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
   const fetchLeaseData = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get(
-        `${baseUrl}/leases/lease_summary/${lease_id}`
-      );
-      setLeaseData(res.data.data);
-    } catch (error) {
-      console.error("Error: ", error.message);
-    } finally {
-      setLoading(false);
+    if (lease_id) {
+      setLoading(true);
+      try {
+        const res = await axios.get(
+          `${baseUrl}/leases/lease_summary/${lease_id}`
+        );
+        setLeaseData(res.data.data);
+      } catch (error) {
+        console.error("Error: ", error.message);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   //set financial data
   const [financialData, setFinancialData] = useState([]);
   const fetchfinancialData = async () => {
-    setLoader(true);
-    try {
-      const url = `${baseUrl}/payment/charges_payments/${lease_id}`;
-      const res = await axios.get(url);
-      setFinancialData(res.data.data);
-      setTotalAmount(res.data.totalBalance);
-    } catch (error) {
-      console.error("Error: ", error.message);
-    } finally {
-      setLoader(false);
+    if (lease_id) {
+      setLoader(true);
+      try {
+        const url = `${baseUrl}/payment/charges_payments/${lease_id}`;
+        const res = await axios.get(url);
+        setFinancialData(res.data.data);
+        setTotalAmount(res.data.totalBalance);
+      } catch (error) {
+        console.error("Error: ", error.message);
+      } finally {
+        setLoader(false);
+      }
     }
   };
 
   const [tenantDetails, setTenantDetails] = useState([]);
   const [tenantId, setTenantId] = useState("");
   const fetchTenantsData = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get(`${baseUrl}/tenants/leases/${lease_id}`);
-      setTenantDetails(res.data.data);
-      setTenantId(res.data.data[0].tenant_id);
-    } catch (error) {
-      console.error("Error: ", error.message);
-    } finally {
-      setLoading(false);
+    if (lease_id) {
+      setLoading(true);
+      try {
+        const res = await axios.get(`${baseUrl}/tenants/leases/${lease_id}`);
+        setTenantDetails(res.data.data);
+        setTenantId(res.data.data[0].tenant_id);
+      } catch (error) {
+        console.error("Error: ", error.message);
+      } finally {
+        setLoading(false);
+      }
     }
   };
   useEffect(() => {
@@ -280,33 +286,35 @@ const RentRollDetail = () => {
   });
 
   const fetchData = async (id) => {
-    try {
-      const response = await axios.get(`${baseUrl}/payment/payment/${id}`);
+    if (id) {
+      try {
+        const response = await axios.get(`${baseUrl}/payment/payment/${id}`);
 
-      if (response.data.statusCode === 200) {
-        // setFile(response.data.data.charges_attachment);
-        setResponseData(response.data.data);
-        generalledgerFormik.setValues({
-          date: response.data.data[0].entry[0].date,
-          amount: response.data.data[0].total_amount,
-          payment_type: response.data.data[0].payment_type,
-          customer_vault_id: response.data.data[0].customer_vault_id,
-          billing_id: response.data.data[0].billing_id,
-          charges_attachment: response.data.data[0].charges_attachment,
+        if (response.data.statusCode === 200) {
+          // setFile(response.data.data.charges_attachment);
+          setResponseData(response.data.data);
+          generalledgerFormik.setValues({
+            date: response.data.data[0].entry[0].date,
+            amount: response.data.data[0].total_amount,
+            payment_type: response.data.data[0].payment_type,
+            customer_vault_id: response.data.data[0].customer_vault_id,
+            billing_id: response.data.data[0].billing_id,
+            charges_attachment: response.data.data[0].charges_attachment,
 
-          entry: [
-            {
-              account: response.data.data[0].account || "",
-              amount: response.data.data[0].amount || "",
-              // balance: response.data.data[0].amount || "",
-            },
-          ],
-        });
-      } else {
-        console.error("Error:", response.data.message);
+            entry: [
+              {
+                account: response.data.data[0].account || "",
+                amount: response.data.data[0].amount || "",
+                // balance: response.data.data[0].amount || "",
+              },
+            ],
+          });
+        } else {
+          console.error("Error:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Network error:", error);
       }
-    } catch (error) {
-      console.error("Network error:", error);
     }
   };
 
@@ -406,7 +414,7 @@ const RentRollDetail = () => {
           position: "top-center",
           autoClose: 1000,
         });
-       
+
       }
     } finally {
       setPaymentLoader(false);
@@ -487,8 +495,8 @@ const RentRollDetail = () => {
                     {getStatus(leaseData?.start_date, leaseData?.end_date)} |{" "}
                     {leaseData?.rental_adress ? leaseData?.rental_adress : " "}
                     {leaseData?.rental_unit &&
-                    leaseData?.rental_unit !== undefined &&
-                    leaseData?.rental_unit !== ""
+                      leaseData?.rental_unit !== undefined &&
+                      leaseData?.rental_unit !== ""
                       ? ` - ${leaseData?.rental_unit}`
                       : ""}
                   </h5>
@@ -605,8 +613,8 @@ const RentRollDetail = () => {
                                         <Col>
                                           {leaseData?.rentalOwner_firstName
                                             ? leaseData?.rentalOwner_firstName +
-                                              " " +
-                                              leaseData?.rentalOwner_lastName
+                                            " " +
+                                            leaseData?.rentalOwner_lastName
                                             : "N/A"}
                                         </Col>
                                         <Col>
@@ -728,8 +736,8 @@ const RentRollDetail = () => {
                                         {totalAmount
                                           ? totalAmount < 0
                                             ? `$(${Math.abs(
-                                                totalAmount?.toFixed(2)
-                                              )})`
+                                              totalAmount?.toFixed(2)
+                                            )})`
                                             : `$${totalAmount?.toFixed(2)}`
                                           : "$ 0.00"}
                                       </Typography>
@@ -976,10 +984,9 @@ const RentRollDetail = () => {
                                       (generalledger, index) => (
                                         <>
                                           <tr
-                                            key={`${
-                                              generalledger?.payment_id ||
+                                            key={`${generalledger?.payment_id ||
                                               generalledger?.charge_id
-                                            }`}
+                                              }`}
                                           >
                                             <td>
                                               {generalledger?.entry[0]?.date ||
@@ -993,7 +1000,7 @@ const RentRollDetail = () => {
                                               style={{
                                                 cursor:
                                                   generalledger?.entry?.length >
-                                                  1
+                                                    1
                                                     ? "pointer"
                                                     : "",
                                               }}
@@ -1002,7 +1009,7 @@ const RentRollDetail = () => {
                                                   generalledger?.entry?.length >
                                                   1 &&
                                                   generalledger?.type !==
-                                                    "Refund"
+                                                  "Refund"
                                                 ) {
                                                   openAccount(
                                                     generalledger,
@@ -1025,23 +1032,23 @@ const RentRollDetail = () => {
                                                 color:
                                                   generalledger.type ===
                                                     "Payment" &&
-                                                  generalledger.response ===
+                                                    generalledger.response ===
                                                     "SUCCESS"
                                                     ? "#50975E"
                                                     : generalledger.type ===
-                                                        "Refund" &&
+                                                      "Refund" &&
                                                       generalledger.response ===
-                                                        "SUCCESS"
-                                                    ? "#ffc40c"
-                                                    : generalledger.response ===
-                                                      "FAILURE"
-                                                    ? "#AA3322"
-                                                    : "inherit",
+                                                      "SUCCESS"
+                                                      ? "#ffc40c"
+                                                      : generalledger.response ===
+                                                        "FAILURE"
+                                                        ? "#AA3322"
+                                                        : "inherit",
                                                 fontWeight: "bold",
                                               }}
                                             >
                                               {generalledger.response &&
-                                              generalledger.payment_type
+                                                generalledger.payment_type
                                                 ? `Manual ${generalledger.type} ${generalledger.response} for ${generalledger.payment_type}`
                                                 : "- - - - - - - - - - - - - - - - -"}
                                               {generalledger.transaction_id
@@ -1051,29 +1058,29 @@ const RentRollDetail = () => {
                                             <td>
                                               {generalledger.type ===
                                                 "Charge" ||
-                                              generalledger.type === "Refund"
+                                                generalledger.type === "Refund"
                                                 ? "$" +
-                                                  generalledger.total_amount
+                                                generalledger.total_amount
                                                 : "-"}
                                             </td>
                                             <td>
                                               {generalledger.type === "Payment"
                                                 ? "$" +
-                                                  generalledger.total_amount
+                                                generalledger.total_amount
                                                 : "-"}
                                             </td>
                                             <td>
                                               {generalledger.balance !==
-                                              undefined
+                                                undefined
                                                 ? generalledger.balance >= 0
                                                   ? `$${generalledger?.balance?.toFixed(
-                                                      2
-                                                    )}`
+                                                    2
+                                                  )}`
                                                   : `$(${Math.abs(
-                                                      generalledger?.balance?.toFixed(
-                                                        2
-                                                      )
-                                                    )})`
+                                                    generalledger?.balance?.toFixed(
+                                                      2
+                                                    )
+                                                  )})`
                                                 : "0"}
                                             </td>
                                             <td>
@@ -1085,7 +1092,7 @@ const RentRollDetail = () => {
                                               >
                                                 {generalledger?.response !==
                                                   "FAILURE" &&
-                                                generalledger?.type !==
+                                                  generalledger?.type !==
                                                   "Refund" ? (
                                                   <UncontrolledDropdown nav>
                                                     <DropdownToggle
@@ -1123,67 +1130,67 @@ const RentRollDetail = () => {
                                                     <DropdownMenu className="dropdown-menu-arrow">
                                                       {generalledger?.payment_id ===
                                                         showOptionsId && (
-                                                        <div>
-                                                          {generalledger?.response ===
-                                                            "SUCCESS" && (
-                                                            <DropdownItem
-                                                              // style={{color:'black'}}
-                                                              onClick={() => {
-                                                                fetchData(
-                                                                  generalledger.payment_id
-                                                                );
-                                                                setIsRefundOpen(
-                                                                  true
-                                                                );
-                                                                setRefund(true);
-                                                              }}
-                                                            >
-                                                              Refund
-                                                            </DropdownItem>
-                                                          )}
-                                                          {(generalledger?.response ===
-                                                            "PENDING" ||
-                                                            generalledger?.payment_type ===
+                                                          <div>
+                                                            {generalledger?.response ===
+                                                              "SUCCESS" && (
+                                                                <DropdownItem
+                                                                  // style={{color:'black'}}
+                                                                  onClick={() => {
+                                                                    fetchData(
+                                                                      generalledger.payment_id
+                                                                    );
+                                                                    setIsRefundOpen(
+                                                                      true
+                                                                    );
+                                                                    setRefund(true);
+                                                                  }}
+                                                                >
+                                                                  Refund
+                                                                </DropdownItem>
+                                                              )}
+                                                            {(generalledger?.response ===
+                                                              "PENDING" ||
+                                                              generalledger?.payment_type ===
                                                               "Cash" ||
-                                                            generalledger?.payment_type ===
+                                                              generalledger?.payment_type ===
                                                               "Check" ||
-                                                            generalledger?.type ===
+                                                              generalledger?.type ===
                                                               "Charge") && (
-                                                            <DropdownItem
-                                                              tag="div"
-                                                              onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                if (
-                                                                  generalledger?.type ===
-                                                                  "Charge"
-                                                                ) {
-                                                                  navigate(
-                                                                    `/${admin}/AddCharge/${lease_id}/${generalledger.charge_id}`
-                                                                  );
-                                                                } else {
-                                                                  navigate(
-                                                                    `/${admin}/AddPayment/${lease_id}/${generalledger.payment_id}`
-                                                                  );
-                                                                }
-                                                              }}
-                                                            >
-                                                              Edit
-                                                            </DropdownItem> 
-                                                          )}
-                                                          {generalledger?.type ===
-                                                            "Charge" && (
-                                                            <DropdownItem
-                                                              // style={{color:'black'}}
-                                                              onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                deleteTenant(generalledger.charge_id);
-                                                              }}
-                                                            >
-                                                              Delete
-                                                            </DropdownItem>
-                                                          )}
-                                                        </div>
-                                                      )}
+                                                                <DropdownItem
+                                                                  tag="div"
+                                                                  onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    if (
+                                                                      generalledger?.type ===
+                                                                      "Charge"
+                                                                    ) {
+                                                                      navigate(
+                                                                        `/${admin}/AddCharge/${lease_id}/${generalledger.charge_id}`
+                                                                      );
+                                                                    } else {
+                                                                      navigate(
+                                                                        `/${admin}/AddPayment/${lease_id}/${generalledger.payment_id}`
+                                                                      );
+                                                                    }
+                                                                  }}
+                                                                >
+                                                                  Edit
+                                                                </DropdownItem>
+                                                              )}
+                                                            {generalledger?.type ===
+                                                              "Charge" && (
+                                                                <DropdownItem
+                                                                  // style={{color:'black'}}
+                                                                  onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    deleteTenant(generalledger.charge_id);
+                                                                  }}
+                                                                >
+                                                                  Delete
+                                                                </DropdownItem>
+                                                              )}
+                                                          </div>
+                                                        )}
                                                     </DropdownMenu>
                                                   </UncontrolledDropdown>
                                                 ) : (
@@ -1238,7 +1245,7 @@ const RentRollDetail = () => {
                                               >
                                                 {financialData[index]?.type ===
                                                   "Charge" ||
-                                                financialData[index]?.type ===
+                                                  financialData[index]?.type ===
                                                   "Refund" ? (
                                                   <>
                                                     <b>Amount</b>
@@ -1252,8 +1259,8 @@ const RentRollDetail = () => {
                                                     <>
                                                       {financialData[index]
                                                         ?.type === "Charge" ||
-                                                      financialData[index]
-                                                        ?.type === "Refund"
+                                                        financialData[index]
+                                                          ?.type === "Refund"
                                                         ? "$" + data?.amount
                                                         : ""}
                                                       <br />
@@ -1266,7 +1273,7 @@ const RentRollDetail = () => {
                                                 style={{ border: "0" }}
                                               >
                                                 {financialData[index]?.type ===
-                                                "Payment" ? (
+                                                  "Payment" ? (
                                                   <>
                                                     <b>Amount</b>
                                                     <br />
@@ -1291,7 +1298,7 @@ const RentRollDetail = () => {
                                                 style={{ border: "0" }}
                                               ></td>
                                               <td></td>
-                                             
+
                                             </tr>
                                           )}
                                         </>
@@ -1493,7 +1500,7 @@ const RentRollDetail = () => {
                                         <br></br>
                                         {tenant.rental_adress}
                                         {tenant.rental_unit !== "" &&
-                                        tenant.rental_unit !== undefined
+                                          tenant.rental_unit !== undefined
                                           ? ` - ${tenant.rental_unit}`
                                           : null}
                                       </div>
@@ -1550,13 +1557,13 @@ const RentRollDetail = () => {
                                         style={
                                           tenant.moveout_notice_given_date
                                             ? {
-                                                display: "flex",
-                                                flexDirection: "row",
-                                                marginTop: "10px",
-                                              }
+                                              display: "flex",
+                                              flexDirection: "row",
+                                              marginTop: "10px",
+                                            }
                                             : {
-                                                display: "none",
-                                              }
+                                              display: "none",
+                                            }
                                         }
                                       >
                                         <Typography
@@ -1574,13 +1581,13 @@ const RentRollDetail = () => {
                                         style={
                                           tenant.moveout_date
                                             ? {
-                                                display: "flex",
-                                                flexDirection: "row",
-                                                marginTop: "10px",
-                                              }
+                                              display: "flex",
+                                              flexDirection: "row",
+                                              marginTop: "10px",
+                                            }
                                             : {
-                                                display: "none",
-                                              }
+                                              display: "none",
+                                            }
                                         }
                                       >
                                         <Typography
@@ -1888,7 +1895,7 @@ const RentRollDetail = () => {
                     value={generalledgerFormik.values.date}
                   />
                   {generalledgerFormik.touched.date &&
-                  generalledgerFormik.errors.date ? (
+                    generalledgerFormik.errors.date ? (
                     <div style={{ color: "red" }}>
                       {generalledgerFormik.errors.date}
                     </div>
@@ -1954,7 +1961,7 @@ const RentRollDetail = () => {
                   />
 
                   {generalledgerFormik.touched.memo &&
-                  generalledgerFormik.errors.memo ? (
+                    generalledgerFormik.errors.memo ? (
                     <div style={{ color: "red" }}>
                       {generalledgerFormik.errors.memo}
                     </div>
@@ -1997,7 +2004,7 @@ const RentRollDetail = () => {
           <CreditCardForm
             tenantId={tenantId}
             closeModal={closeModal}
-            //getCreditCard={getCreditCard}
+          //getCreditCard={getCreditCard}
           />
         </ModalBody>
       </Modal>

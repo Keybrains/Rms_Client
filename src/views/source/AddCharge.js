@@ -50,7 +50,7 @@ const AddCharge = () => {
       navigate("/auth/login");
     }
   }, [navigate]);
-  
+
   const [loader, setLoader] = useState(false);
 
   const generalledgerFormik = useFormik({
@@ -125,7 +125,7 @@ const AddCharge = () => {
 
     const object = {
       charge_id: charge_id,
-      admin_id: accessType.admin_id,
+      admin_id: accessType?.admin_id,
       tenant_id: tenantData?.tenant_id,
       lease_id: lease_id,
 
@@ -213,7 +213,7 @@ const AddCharge = () => {
     }
 
     const object = {
-      admin_id: accessType.admin_id,
+      admin_id: accessType?.admin_id,
       tenant_id: tenantData?.tenant_id,
       lease_id: lease_id,
 
@@ -261,36 +261,40 @@ const AddCharge = () => {
   const [recAccounts, setRecAccounts] = useState([]);
   const [oneTimeAccounts, setoneTimeAccounts] = useState([]);
   const fetchAccounts = async () => {
-    try {
-      const res = await axios.get(
-        `${baseUrl}/accounts/accounts/${accessType.admin_id}`
-      );
-      if (res.data.statusCode === 200) {
-        const filteredData1 = res.data.data.filter(
-          (item) => item.charge_type === "Recurring Charge"
+    if (accessType?.admin_id) {
+      try {
+        const res = await axios.get(
+          `${baseUrl}/accounts/accounts/${accessType?.admin_id}`
         );
-        const filteredData2 = res.data.data.filter(
-          (item) => item.charge_type === "One Time Charge"
-        );
-        setRecAccounts(filteredData1);
-        setoneTimeAccounts(filteredData2);
-      } else if (res.data.statusCode === 201) {
-        setRecAccounts();
-        setoneTimeAccounts();
+        if (res.data.statusCode === 200) {
+          const filteredData1 = res.data.data.filter(
+            (item) => item.charge_type === "Recurring Charge"
+          );
+          const filteredData2 = res.data.data.filter(
+            (item) => item.charge_type === "One Time Charge"
+          );
+          setRecAccounts(filteredData1);
+          setoneTimeAccounts(filteredData2);
+        } else if (res.data.statusCode === 201) {
+          setRecAccounts();
+          setoneTimeAccounts();
+        }
+      } catch (error) {
+        console.error("Error:", error.message);
       }
-    } catch (error) {
-      console.error("Error:", error.message);
     }
   };
 
   const fetchTenant = async () => {
-    try {
-      const res = await axios.get(`${baseUrl}/leases/lease_tenant/${lease_id}`);
-      if (res.data.statusCode === 200) {
-        setTenantData(res.data.data);
+    if (lease_id) {
+      try {
+        const res = await axios.get(`${baseUrl}/leases/lease_tenant/${lease_id}`);
+        if (res.data.statusCode === 200) {
+          setTenantData(res.data.data);
+        }
+      } catch (error) {
+        console.error("Error: ", error.message);
       }
-    } catch (error) {
-      console.error("Error: ", error.message);
     }
   };
 
@@ -519,7 +523,7 @@ const AddCharge = () => {
                           value={generalledgerFormik.values.date}
                         />
                         {generalledgerFormik.touched.date &&
-                        generalledgerFormik.errors.date ? (
+                          generalledgerFormik.errors.date ? (
                           <div style={{ color: "red" }}>
                             {generalledgerFormik.errors.date}
                           </div>
@@ -547,7 +551,7 @@ const AddCharge = () => {
                           value={generalledgerFormik.values.total_amount}
                         />
                         {generalledgerFormik.touched.total_amount &&
-                        generalledgerFormik.errors.total_amount ? (
+                          generalledgerFormik.errors.total_amount ? (
                           <div style={{ color: "red" }}>
                             {generalledgerFormik.errors.total_amount}
                           </div>
@@ -575,7 +579,7 @@ const AddCharge = () => {
                           value={generalledgerFormik.values.charges_memo}
                         />
                         {generalledgerFormik.touched.charges_memo &&
-                        generalledgerFormik.errors.charges_memo ? (
+                          generalledgerFormik.errors.charges_memo ? (
                           <div style={{ color: "red" }}>
                             {generalledgerFormik.errors.charges_memo}
                           </div>
@@ -784,16 +788,16 @@ const AddCharge = () => {
                                           value={charges.amount}
                                         />
                                         {generalledgerFormik.touched.charges &&
-                                        generalledgerFormik.touched.charges[
+                                          generalledgerFormik.touched.charges[
                                           index
-                                        ] &&
-                                        generalledgerFormik.errors.charges &&
-                                        generalledgerFormik.errors.charges[
+                                          ] &&
+                                          generalledgerFormik.errors.charges &&
+                                          generalledgerFormik.errors.charges[
                                           index
-                                        ] &&
-                                        generalledgerFormik.errors.charges[
-                                          index
-                                        ].amount ? (
+                                          ] &&
+                                          generalledgerFormik.errors.charges[
+                                            index
+                                          ].amount ? (
                                           <div style={{ color: "red" }}>
                                             {
                                               generalledgerFormik.errors
@@ -919,8 +923,8 @@ const AddCharge = () => {
                                         ? "..."
                                         : null
                                       : file?.length > 5
-                                      ? "..."
-                                      : null}
+                                        ? "..."
+                                        : null}
                                   </p>
                                   <CloseIcon
                                     style={{

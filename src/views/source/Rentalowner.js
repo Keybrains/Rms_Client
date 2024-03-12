@@ -65,7 +65,7 @@ const Rentals = () => {
 
   async function handleSubmit(values) {
     try {
-      values["admin_id"] = accessType.admin_id;
+      values["admin_id"] = accessType?.admin_id;
 
       if (id === undefined) {
         const res = await axios.post(
@@ -88,19 +88,20 @@ const Rentals = () => {
 
   useEffect(() => {
     const fetchPropertyData = async () => {
-      try {
-        const response = await axios.get(
-          `${baseUrl}/rentals/rentals/${accessType.admin_id}`
-        );
+      if (accessType?.admin_id) {
+        try {
+          const response = await axios.get(
+            `${baseUrl}/rentals/rentals/${accessType?.admin_id}`
+          );
 
-        setPropertyData(response.data.data);
-      } catch (error) {
-        console.error("Error fetching countries:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
+          setPropertyData(response.data.data);
+        } catch (error) {
+          console.error("Error fetching countries:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+    }
     fetchPropertyData();
   }, []);
 
@@ -638,16 +639,16 @@ const Rentals = () => {
                               }}
                             />
                           </div>
-                            {rentalsFormik.touched.rentalOwner_phoneNumber &&
-                              rentalsFormik.errors.rentalOwner_phoneNumber ? (
-                              <div
-                                style={{
-                                  color: "red",
-                                }}
-                              >
-                                {rentalsFormik.errors.rentalOwner_phoneNumber}
-                              </div>
-                            ) : null}
+                          {rentalsFormik.touched.rentalOwner_phoneNumber &&
+                            rentalsFormik.errors.rentalOwner_phoneNumber ? (
+                            <div
+                              style={{
+                                color: "red",
+                              }}
+                            >
+                              {rentalsFormik.errors.rentalOwner_phoneNumber}
+                            </div>
+                          ) : null}
                         </Col>
                         {/* <br /> */}
                         <Col lg="3">
@@ -1155,11 +1156,11 @@ const Rentals = () => {
                         </button>
                       </div>
                       <div className="pl-lg-4">
-                      {!rentalsFormik.isValid && (
-                    <div style={{ color: 'red', marginTop: '10px' }}>
-                      Please fill in all fields correctly.
-                    </div>
-                  )}</div>
+                        {!rentalsFormik.isValid && (
+                          <div style={{ color: 'red', marginTop: '10px' }}>
+                            Please fill in all fields correctly.
+                          </div>
+                        )}</div>
                     </Row>
                   </Col>
                 </Form>

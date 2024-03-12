@@ -62,36 +62,42 @@ const TenantsTable = () => {
   const navigateToTenantsDetails = (tenantId) => {
     navigate(`/${admin}/tenantdetail/${tenantId}`);
   };
-
   let getTenantsData = async () => {
-    try {
-      let response = await axios.get(
-        `${baseUrl}/tenants/tenants/${accessType.admin_id}`
-      );
-      if (response.data.statusCode === 200) {
-        let data = response.data.data;
-        let reversedData = data.reverse();
-        setTenantsDate(reversedData);
-        setTotalPages(Math.ceil(reversedData.length / pageItem));
-        setLoader(false);
-      } else {
-        console.log(response.data.message);
+    if (accessType?.admin_id) {
+      try {
+        let response = await axios.get(
+          `${baseUrl}/tenants/tenants/${accessType?.admin_id}`
+        );
+        if (response.data.statusCode === 200) {
+          let data = response.data.data;
+          let reversedData = data.reverse();
+          setTenantsDate(reversedData);
+          setTotalPages(Math.ceil(reversedData.length / pageItem));
+          // setLoader(false);
+        } else {
+          console.log(response.data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching tenants data:", error);
       }
-    } catch (error) {
-      console.error("Error fetching tenants data:", error);
+      finally {
+        setLoader(false);
+
+      }
     }
   };
 
   const [countRes, setCountRes] = useState("");
   const getTenantsLimit = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/tenants/limitation/${accessType.admin_id}`
-      );
-      console.log(response.data, "yash");
-      setCountRes(response.data);
-    } catch (error) {
-      console.error("Error fetching rental data:", error);
+    if (accessType?.admin_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/tenants/limitation/${accessType?.admin_id}`
+        );
+        setCountRes(response.data);
+      } catch (error) {
+        console.error("Error fetching rental data:", error);
+      }
     }
   };
 
@@ -123,6 +129,7 @@ const TenantsTable = () => {
         console.log(res);
         if (res.data.statusCode === 200) {
           getTenantsData();
+          getTenantsLimit();
           toast.success(res.data.message, {
             position: "top-center",
             autoClose: 800,
@@ -522,7 +529,7 @@ const TenantsTable = () => {
                   {tentalsData.length === 0 ? (
                     <tbody>
                       <tr className="text-center">
-                        <td colSpan="5" style={{ fontSize: "15px" }}>
+                        <td colSpan="8" style={{ fontSize: "15px" }}>
                           No Tenants Added
                         </td>
                       </tr>

@@ -3,7 +3,7 @@ import { NavLink as NavLinkRRD, Link } from "react-router-dom";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { PropTypes } from "prop-types";
 import Cookies from "universal-cookie";
-import { useNavigate,  useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Drawer from '@mui/material/Drawer';
 // import Button from '@mui/material/Button';
@@ -63,17 +63,17 @@ const TenantSidebar = (props) => {
     return () => {
       window.removeEventListener('resize', handleWindowResize);
     };
-  }, []); 
+  }, []);
 
   const notificationIconStyle = {
-    display: isMobile ? 'block' : 'none', 
+    display: isMobile ? 'block' : 'none',
     cursor: 'pointer',
     position: 'relative',
     marginRight: '-60px'
   };
 
 
-  
+
   let navigate = useNavigate();
   let cookies = new Cookies();
   let Logout = () => {
@@ -112,69 +112,71 @@ const TenantSidebar = (props) => {
   const [rental_adress, setRentalAddress] = useState("");
   let [loader, setLoader] = React.useState(true);
   const [workData, setWorkData] = useState([]);
-const [rentalAddress, setRentalAddresses] = useState([]);
- 
-useEffect(() => {
-  fetchNotification();
-}, [rental_adress]);
+  const [rentalAddress, setRentalAddresses] = useState([]);
+
+  useEffect(() => {
+    fetchNotification();
+  }, [rental_adress]);
 
 
-const fetchNotification = async () => {
-  // Fetch notification data when rental_adress changes
-  if (rental_adress) {
-    // fetch(`${baseUrl}/notification/tenantnotification/tenant/${rental_adress}`)
-    //   .then((response) => {
-    //     if (response.status === 200) {
-    //       return response.json();
-         
-    //     } else {
-    //       throw new Error('Response status is not 200');
-    //     }
-    //   })
-    //   .then((data) => {
-    //     setNotificationData(data.data);
-    //     console.log("Notification",data.data)
-    //     setNotificationCount(data.data.length);
-    //     console.log("Notification Count",data.data.length)
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error:", error);
-    //     // Handle the error, display a message to the user, or take other appropriate action.
-    //   });
-    axios.get(`${baseUrl}/notification/tenantnotification/tenant/${rental_adress}`).then((response) => {
-      if (response.status === 200) {
-        // console.log(response.data.data,'asfhuiasfjkouhygtyuhij')
-        setNotificationData(response.data.data);
-        setNotificationCount(response.data.data.length);
-      }
-    }).catch((error) => {
-      console.error("Error:", error);
-    })
-  }
-};
+  const fetchNotification = async () => {
+    // Fetch notification data when rental_adress changes
+    if (rental_adress) {
+      // fetch(`${baseUrl}/notification/tenantnotification/tenant/${rental_adress}`)
+      //   .then((response) => {
+      //     if (response.status === 200) {
+      //       return response.json();
 
-const getRentalData = async (addresses) => {
-  try {
-    const response = await axios.get(`${baseUrl}/notification/tenantnotification/tenant/${addresses}`);
-
-    if (Array.isArray(response.data.data)) {
-      // Filter the notifications with isTenantread set to false
-      const unreadNotifications = response.data.data.filter(notification => !notification.isTenantread);
-
-      // Update the state with the filtered unread notifications
-      setWorkData((prevData) => [...prevData, ...unreadNotifications]);
-      setNotificationData((prevNotificationData) => [...prevNotificationData, ...response.data.data]);
-      setNotificationCount(unreadNotifications.length);
-    } else if (typeof response.data.data === 'object') {
-      setWorkData((prevData) => [...prevData, response.data.data]);
-      setNotificationData((prevNotificationData) => [...prevNotificationData, response.data.data]);
-    } else {
-      console.error("Response data is not an array or object:", response.data.data);
+      //     } else {
+      //       throw new Error('Response status is not 200');
+      //     }
+      //   })
+      //   .then((data) => {
+      //     setNotificationData(data.data);
+      //     console.log("Notification",data.data)
+      //     setNotificationCount(data.data.length);
+      //     console.log("Notification Count",data.data.length)
+      //   })
+      //   .catch((error) => {
+      //     console.error("Error:", error);
+      //     // Handle the error, display a message to the user, or take other appropriate action.
+      //   });
+      axios.get(`${baseUrl}/notification/tenantnotification/tenant/${rental_adress}`).then((response) => {
+        if (response.status === 200) {
+          // console.log(response.data.data,'asfhuiasfjkouhygtyuhij')
+          setNotificationData(response.data.data);
+          setNotificationCount(response.data.data.length);
+        }
+      }).catch((error) => {
+        console.error("Error:", error);
+      })
     }
-  } catch (error) {
-    console.error("Error fetching work order data:", error);
-  }
-};
+  };
+
+  const getRentalData = async (addresses) => {
+    if (addresses) {
+      try {
+        const response = await axios.get(`${baseUrl}/notification/tenantnotification/tenant/${addresses}`);
+
+        if (Array.isArray(response.data.data)) {
+          // Filter the notifications with isTenantread set to false
+          const unreadNotifications = response.data.data.filter(notification => !notification.isTenantread);
+
+          // Update the state with the filtered unread notifications
+          setWorkData((prevData) => [...prevData, ...unreadNotifications]);
+          setNotificationData((prevNotificationData) => [...prevNotificationData, ...response.data.data]);
+          setNotificationCount(unreadNotifications.length);
+        } else if (typeof response.data.data === 'object') {
+          setWorkData((prevData) => [...prevData, response.data.data]);
+          setNotificationData((prevNotificationData) => [...prevNotificationData, response.data.data]);
+        } else {
+          console.error("Response data is not an array or object:", response.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching work order data:", error);
+      }
+    }
+  };
 
   React.useEffect(() => {
     if (rentalAddress && rentalAddress.length > 0) {
@@ -183,23 +185,25 @@ const getRentalData = async (addresses) => {
   }, [rentalAddress]);
 
   const getVendorDetails = async () => {
-    try {
-      const response = await axios.get(`${baseUrl}/tenant/tenant_summary/${cookie_id}`);
-      const entries = response.data.data.entries;
-  
-      if (entries.length > 0) {
-        const rentalAddresses = entries.map(entry => entry.rental_adress).join('-');
-        setVendorDetails(response.data.data);
-        getRentalData(rentalAddresses);
-        //getVendorDetails(rentalAddresses);
-      } else {
-        console.error("No rental addresses found.");
+    if (cookie_id) {
+      try {
+        const response = await axios.get(`${baseUrl}/tenant/tenant_summary/${cookie_id}`);
+        const entries = response.data.data.entries;
+
+        if (entries.length > 0) {
+          const rentalAddresses = entries.map(entry => entry.rental_adress).join('-');
+          setVendorDetails(response.data.data);
+          getRentalData(rentalAddresses);
+          //getVendorDetails(rentalAddresses);
+        } else {
+          console.error("No rental addresses found.");
+        }
+
+        setLoader(false);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+        setLoader(false);
       }
-  
-      setLoader(false);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setLoader(false);
     }
   };
 
@@ -212,8 +216,9 @@ const getRentalData = async (addresses) => {
 
 
   const navigateToDetails = (workorder_id) => {
-    // Make a DELETE request to delete the notification
-    axios.get(`${baseUrl}/notification/notification/${workorder_id}?role=tenant`)
+    if (workorder_id) {
+      // Make a DELETE request to delete the notification
+      axios.get(`${baseUrl}/notification/notification/${workorder_id}?role=tenant`)
         .then((response) => {
           if (response.status === 200) {
             const updatedNotificationData = notificationData.map(notification => {
@@ -228,15 +233,16 @@ const getRentalData = async (addresses) => {
             // console.log(`Notification with workorder_id ${workorder_id} marked as read.`);
             fetchNotification();
           } else {
-          console.error(`Failed to delete notification with workorder_id ${workorder_id}.`);
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  
-    // Continue with navigating to the details page
-    navigate(`/tenant/tworkorderdetail/${workorder_id}`);
+            console.error(`Failed to delete notification with workorder_id ${workorder_id}.`);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+
+      // Continue with navigating to the details page
+      navigate(`/tenant/tworkorderdetail/${workorder_id}`);
+    }
   };
 
   // creates the links that appear in the left menu / Sidebar
@@ -300,67 +306,67 @@ const getRentalData = async (addresses) => {
           </NavbarBrand>
         ) : null}
 
-          <FormGroup className="mb-0" style={notificationIconStyle} onClick={toggleSidebar}>
-             <NotificationsIcon style={{color:'black',fontSize:'30px'}}/>
-             {unreadNotificationCount > 0 && (
-              <div className="notification-circle" style={{position: 'absolute',top: '-15px',right: '-20px',background: 'red',borderRadius: '50%',padding: '0.1px 8px'}}>
-                <span className="notification-count" style={{color:'white',fontSize:"13px"}}>{unreadNotificationCount}</span>
-              </div>
-               )}
-          </FormGroup>
+        <FormGroup className="mb-0" style={notificationIconStyle} onClick={toggleSidebar}>
+          <NotificationsIcon style={{ color: 'black', fontSize: '30px' }} />
+          {unreadNotificationCount > 0 && (
+            <div className="notification-circle" style={{ position: 'absolute', top: '-15px', right: '-20px', background: 'red', borderRadius: '50%', padding: '0.1px 8px' }}>
+              <span className="notification-count" style={{ color: 'white', fontSize: "13px" }}>{unreadNotificationCount}</span>
+            </div>
+          )}
+        </FormGroup>
 
-          <Nav className="align-items-center d-none d-md-flex" navbar>
-            
-            <Drawer anchor="right" open={isSidebarOpen} onClose={toggleSidebar}>
-              <div
-                role="presentation"
-                onClick={toggleSidebar}
-                onKeyDown={toggleSidebar}
-              >
-                <List style={{ width: '250px' }}>
-                  <h2 style={{color:'#263238',marginLeft:'15px'}}>
-                    Notifications
-                  </h2>
-                  <Divider />
-                  {/* {console.log(notificationData, "notificationData")} */}
-                  {notificationData.map((data) => {
-                    if(data.isTenantread === true){
-                      return null
-                    }
-                    else  {
+        <Nav className="align-items-center d-none d-md-flex" navbar>
+
+          <Drawer anchor="right" open={isSidebarOpen} onClose={toggleSidebar}>
+            <div
+              role="presentation"
+              onClick={toggleSidebar}
+              onKeyDown={toggleSidebar}
+            >
+              <List style={{ width: '250px' }}>
+                <h2 style={{ color: '#263238', marginLeft: '15px' }}>
+                  Notifications
+                </h2>
+                <Divider />
+                {/* {console.log(notificationData, "notificationData")} */}
+                {notificationData.map((data) => {
+                  if (data.isTenantread === true) {
+                    return null
+                  }
+                  else {
                     const notificationTitle =
                       data.notification_title || 'No Title Available';
                     const notificationDetails =
                       data.notification_details || 'No Details Available';
-                    const notificationTime = new Date(data.notification_time).toLocaleString(); 
+                    const notificationTime = new Date(data.notification_time).toLocaleString();
 
                     return (
                       <div key={data._id}>
-                      <ListItem
+                        <ListItem
 
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => handlePropertySelect(data)}
-                      >
-                        <div>
-                          <h4>{notificationTitle}</h4>
-                          <p>{notificationDetails}</p>
-                          <Row>
-                            <Col lg="8">
-                               <p>{notificationTime}</p>
-                            </Col>
-                            <Col>
-                              <Button
-                              variant="contained"
-                             
-                              style={{ background:'#263238',color:'white',textTransform: 'none', fontSize: '12px' }}
-                              onClick={() => navigateToDetails(data.workorder_id)}
-                            >
-                              View
-                            </Button>
-                            </Col>
-                          </Row>
-                       </div>
-                        {/* <ListItemText
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => handlePropertySelect(data)}
+                        >
+                          <div>
+                            <h4>{notificationTitle}</h4>
+                            <p>{notificationDetails}</p>
+                            <Row>
+                              <Col lg="8">
+                                <p>{notificationTime}</p>
+                              </Col>
+                              <Col>
+                                <Button
+                                  variant="contained"
+
+                                  style={{ background: '#263238', color: 'white', textTransform: 'none', fontSize: '12px' }}
+                                  onClick={() => navigateToDetails(data.workorder_id)}
+                                >
+                                  View
+                                </Button>
+                              </Col>
+                            </Row>
+                          </div>
+                          {/* <ListItemText
                           primary={notificationTitle}
                           secondary={notificationTime}
                         />
@@ -368,21 +374,21 @@ const getRentalData = async (addresses) => {
                           primary={notificationDetails}
                           secondary="Notification Details"
                         /> */}
-                      </ListItem>
-                      <Divider/>
-                     </div> 
+                        </ListItem>
+                        <Divider />
+                      </div>
                     );
-                      }
-                  })}
-                  
-                </List>
-                
-                <Divider />
-                
-              </div>
-            </Drawer>
+                  }
+                })}
 
-          </Nav>
+              </List>
+
+              <Divider />
+
+            </div>
+          </Drawer>
+
+        </Nav>
         {/* User */}
         <Nav className="align-items-center d-md-none">
           {/* <UncontrolledDropdown nav>
@@ -433,14 +439,14 @@ const getRentalData = async (addresses) => {
               </DropdownItem> */}
               <DropdownItem divider />
               <DropdownItem
-              //  href="#rms"
-               to="/auth/login"
-               onClick={() => {
+                //  href="#rms"
+                to="/auth/login"
+                onClick={() => {
                   Logout();
-                // localStorage.removeItem("token");
-                // localStorage.removeItem("Tenant ID");
-                // // navigate("/login");
-            }} tag={Link} >
+                  // localStorage.removeItem("token");
+                  // localStorage.removeItem("Tenant ID");
+                  // // navigate("/login");
+                }} tag={Link} >
                 <i className="ni ni-user-run" />
                 <span>Logout</span>
               </DropdownItem>
@@ -517,7 +523,7 @@ const getRentalData = async (addresses) => {
               </DropdownItem>
             </DropdownMenu>
           </UncontrolledDropdown> */}
-          
+
           {/* <Nav navbar>
           <UncontrolledDropdown nav>
             <DropdownToggle nav caret>
@@ -539,7 +545,7 @@ const getRentalData = async (addresses) => {
             </DropdownMenu>
           </UncontrolledDropdown>
           </Nav> */}
-            
+
           {/* Divider */}
           {/* <hr className="my-3" /> */}
           {/* Heading */}

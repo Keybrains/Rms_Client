@@ -68,7 +68,7 @@ const Leaseing = () => {
       tenant_phoneNumber: yup.number().required("Required"),
       tenant_email: yup.string().required("Requied").email("Invalid email address")
         .required("Email is required"),
-        tenant_alternativeEmail: yup.string().email("Invalid email address"),
+      tenant_alternativeEmail: yup.string().email("Invalid email address"),
 
       emergency_contact: yup.object().shape({
         email: yup.string().email("Invalid email address")
@@ -95,7 +95,7 @@ const Leaseing = () => {
   });
 
   const addTenant = async () => {
-    const object = { ...tenantFormik.values, admin_id: accessType.admin_id };
+    const object = { ...tenantFormik.values, admin_id: accessType?.admin_id };
 
     try {
       setLoader(true);
@@ -151,15 +151,17 @@ const Leaseing = () => {
   };
 
   const fetchTenantData = async () => {
-    try {
-      const res = await axios.get(`${baseUrl}/tenants/get_tenant/${tenant_id}`);
-      if (res.data.statusCode === 200) {
-        tenantFormik.setValues(res.data.data);
-      } else if (res.data.statusCode === 201) {
-        tenantFormik.resetForm();
+    if (tenant_id) {
+      try {
+        const res = await axios.get(`${baseUrl}/tenants/get_tenant/${tenant_id}`);
+        if (res.data.statusCode === 200) {
+          tenantFormik.setValues(res.data.data);
+        } else if (res.data.statusCode === 201) {
+          tenantFormik.resetForm();
+        }
+      } catch (error) {
+        console.error("Error:", error.message);
       }
-    } catch (error) {
-      console.error("Error:", error.message);
     }
   };
 
@@ -402,7 +404,7 @@ const Leaseing = () => {
                                     tenantFormik.values.tenant_alternativeEmail
                                   }
                                 />
-                                  {tenantFormik.touched.tenant_alternativeEmail &&
+                                {tenantFormik.touched.tenant_alternativeEmail &&
                                   tenantFormik.errors.tenant_alternativeEmail ? (
                                   <div style={{ color: "red" }}>
                                     {tenantFormik.errors.tenant_alternativeEmail}
@@ -692,63 +694,63 @@ const Leaseing = () => {
                     </Row>
                   </div>
                   <Row>
-                  <div className="pl-lg-4">
-                    {loader ? (
+                    <div className="pl-lg-4">
+                      {loader ? (
+                        <button
+                          type="submit"
+                          className="btn btn-primary"
+                          style={{ background: "green", cursor: "not-allowed" }}
+                          disabled
+                        >
+                          Loading...
+                        </button>
+                      ) : tenant_id ? (
+                        <button
+                          type="submit"
+                          className="btn btn-primary"
+                          style={{ background: "green", cursor: "pointer" }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            tenantFormik.handleSubmit();
+                          }}
+                        >
+                          Update Tenant
+                        </button>
+                      ) : (
+                        <button
+                          type="submit"
+                          className="btn btn-primary "
+                          style={{ background: "green", cursor: "pointer" }}
+                          disabled={!tenantFormik.isValid}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            tenantFormik.handleSubmit();
+                          }}
+                        >
+                          Add Tenant
+                        </button>
+                      )}
                       <button
-                        type="submit"
-                        className="btn btn-primary"
-                        style={{ background: "green", cursor: "not-allowed" }}
-                        disabled
-                      >
-                        Loading...
-                      </button>
-                    ) : tenant_id ? (
-                      <button
-                        type="submit"
-                        className="btn btn-primary"
-                        style={{ background: "green", cursor: "pointer" }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          tenantFormik.handleSubmit();
+                        // color="primary"
+                        onClick={handleCloseButtonClick}
+                        className="btn btn-success"
+                        style={{
+                          background: "white",
+                          color: "black",
+                          cursor: "pointer",
                         }}
                       >
-                        Update Tenant
+                        Cancel
                       </button>
-                    ) : (
-                      <button
-                        type="submit"
-                        className="btn btn-primary "
-                        style={{ background: "green", cursor: "pointer" }}
-                        disabled={!tenantFormik.isValid}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          tenantFormik.handleSubmit();
-                        }}
-                      >
-                        Add Tenant
-                      </button>
-                    )}
-                    <button
-                      // color="primary"
-                      onClick={handleCloseButtonClick}
-                      className="btn btn-success"
-                      style={{
-                        background: "white",
-                        color: "black",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Cancel
-                    </button>
                     </div>
                     <div className="ml-3">
-                         {/* Conditional message */}
-                  {!tenantFormik.isValid && (
-                    <div style={{ color: 'red', marginTop: '10px' }}>
-                      Please fill in all fields correctly.
+                      {/* Conditional message */}
+                      {!tenantFormik.isValid && (
+                        <div style={{ color: 'red', marginTop: '10px' }}>
+                          Please fill in all fields correctly.
+                        </div>
+                      )}
                     </div>
-                  )}
-                  </div>
                   </Row>
                 </Form>
               </CardBody>

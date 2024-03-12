@@ -77,15 +77,17 @@ const SurchargeTable = () => {
   }, [navigate]);
 
   const getsurChargeData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/surcharge/surcharge/${accessType.admin_id}`
-      );
-      setLoader(false);
-      setSurChargeData(response.data.data);
-      setTotalPages(Math.ceil(response.data.data.length / pageItem));
-    } catch (error) {
-      console.error("Error fetching data:", error);
+    if (accessType?.admin_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/surcharge/surcharge/${accessType?.admin_id}`
+        );
+        setLoader(false);
+        setSurChargeData(response.data.data);
+        setTotalPages(Math.ceil(response.data.data.length / pageItem));
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     }
   };
 

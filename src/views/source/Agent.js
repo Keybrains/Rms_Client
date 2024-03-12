@@ -97,6 +97,7 @@ const Agent = () => {
   };
 
   const getAgentData = async () => {
+    
     try {
       const response = await axios.get(
         `${baseUrl}/addagent/addagent`

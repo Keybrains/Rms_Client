@@ -87,16 +87,18 @@ const TenantWork = () => {
   };
 
   const getRentalData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/work-order/tenant_work/${accessType.tenant_id}`
-      );
+    if (accessType?.tenant_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/work-order/tenant_work/${accessType.tenant_id}`
+        );
 
-      setTotalPages(Math.ceil(response.data.data.length / pageItem));
-      setWorkData(response.data.data);
-      setLoader(false);
-    } catch (error) {
-      console.error("Error fetching work order data:", error);
+        setTotalPages(Math.ceil(response.data.data.length / pageItem));
+        setWorkData(response.data.data);
+        setLoader(false);
+      } catch (error) {
+        console.error("Error fetching work order data:", error);
+      }
     }
   };
 

@@ -244,18 +244,20 @@ const VendorAddWork = () => {
   const [vendorname, setVendorname] = useState("");
 
   const getVendorDetails = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/vendor/vendor_summary/${cookie_id}`
-      );
-      // console.log(response.data.data);
-      // setVendorDetails(response.data.data);
-      setVendorname(response.data.data.vendor_name);
-      // setLoading(false);
-    } catch (error) {
-      console.error("Error fetching vendor details:", error);
-      // setError(error);
-      // setLoading(false);
+    if (cookie_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/vendor/vendor_summary/${cookie_id}`
+        );
+        // console.log(response.data.data);
+        // setVendorDetails(response.data.data);
+        setVendorname(response.data.data.vendor_name);
+        // setLoading(false);
+      } catch (error) {
+        console.error("Error fetching vendor details:", error);
+        // setError(error);
+        // setLoading(false);
+      }
     }
   };
 
@@ -271,7 +273,7 @@ const VendorAddWork = () => {
 
   let navigate = useNavigate();
   const handleCloseButtonClick = () => {
-    navigate("../VendorWorkTable");
+    navigate("/vendor/vendorworktable");
   };
 
   const handleAddRow = () => {
@@ -312,30 +314,33 @@ const VendorAddWork = () => {
   const [selectedAccount, setSelectedAccount] = useState("");
   const [outstandDetails, setoutstandDetails] = useState({});
   const getOutstandData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/workorder/workorder_summary/${id}`
-      );
-      setoutstandDetails(response.data.data);
-      // setWorkOrderStatus(response.data.data.workorder_status.reverse());
-      setSelectedStatus(response.data.data.status);
-      setSelecteduser(response.data.data.staffmember_name);
-      // updateWorkorderFormik.setValues({
-      //   status: response.data.data.status,
-      //   // staffmember_name: response.data.data.staffmember_name,
-      //   due_date: response.data.data.due_date,
-      //   assigned_to: response.data.data.staffmember_name,
-      //   message: response.data.data.message ? response.data.data.message : "",
-      //   statusUpdatedBy: response.data.data.statusUpdatedBy
-      //     ? response.data.data.statusUpdatedBy
-      //     : "Admin",
-      // });
-      // setLoading(false);
-      // setImageDetails(response.data.data.workOrderImage);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      // setError(error);
-      // setLoading(false);
+    if (id) {
+      try {
+        const response = await axios.get(
+
+          `${baseUrl}/workorder/workorder_summary/${id}`
+        );
+        setoutstandDetails(response.data.data);
+        // setWorkOrderStatus(response.data.data.workorder_status.reverse());
+        setSelectedStatus(response.data.data.status);
+        setSelecteduser(response.data.data.staffmember_name);
+        // updateWorkorderFormik.setValues({
+        //   status: response.data.data.status,
+        //   // staffmember_name: response.data.data.staffmember_name,
+        //   due_date: response.data.data.due_date,
+        //   assigned_to: response.data.data.staffmember_name,
+        //   message: response.data.data.message ? response.data.data.message : "",
+        //   statusUpdatedBy: response.data.data.statusUpdatedBy
+        //     ? response.data.data.statusUpdatedBy
+        //     : "Admin",
+        // });
+        // setLoading(false);
+        // setImageDetails(response.data.data.workOrderImage);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+        // setError(error);
+        // setLoading(false);
+      }
     }
   };
 
@@ -417,7 +422,7 @@ const VendorAddWork = () => {
           setSelectedFiles(response.data.data.workOrder_images || []);
           setSelectedTenant(
             tenant_data.tenant_firstName + " " + tenant_data.tenant_lastName ||
-              "Select"
+            "Select"
           );
 
           WorkFormik.setValues({
@@ -438,8 +443,8 @@ const VendorAddWork = () => {
             tenant_id: tenant_data?.tenant_id || "",
             tenant_name:
               tenant_data?.tenant_firstName +
-                " " +
-                tenant_data?.tenant_lastName || "",
+              " " +
+              tenant_data?.tenant_lastName || "",
             invoice_number: "",
             work_charge: response.data.data?.work_charge_to || "",
             entry_allowed:
@@ -624,7 +629,7 @@ const VendorAddWork = () => {
 
     const object = {
       workOrder: {
-        // admin_id: accessType.admin_id || "",
+        // admin_id: accessType?.admin_id || "",
         rental_id: WorkFormik.values.rental_id || "",
         unit_id: WorkFormik.values.unit_id || "",
         vendor_id: WorkFormik.values.vendor_id || "",
@@ -662,7 +667,7 @@ const VendorAddWork = () => {
             autoClose: 1000,
             // onClose: () => navigate(`/${admin}/Workorder`),
           });
-          navigate("../VendorWorkTable");
+          navigate("/vendor/vendorworktable");
         } else {
           console.log(res.data, "res.data");
           toast.error(res.data.message, {
@@ -837,7 +842,7 @@ const VendorAddWork = () => {
 
     const object = {
       workOrder: {
-        // admin_id: accessType.admin_id || "",
+        // admin_id: accessType?.admin_id || "",
         workOrder_id: id,
         rental_id: WorkFormik.values.rental_id || "",
         unit_id: WorkFormik.values.unit_id || "",
@@ -855,7 +860,7 @@ const VendorAddWork = () => {
         work_charge_to: WorkFormik.values.work_charge || "",
         status: WorkFormik.values.status || "",
         date: WorkFormik.values.due_date || "",
-        // updated_by: { admin_id: accessType.admin_id },
+        // updated_by: { admin_id: accessType?.admin_id },
       },
       parts: WorkFormik.values.entries.map((item) => {
         return {
@@ -876,8 +881,8 @@ const VendorAddWork = () => {
         object
       );
       console.log(res);
-        navigate("../VendorWorkTable");
-    } catch (error) {}
+      navigate("/vendor/vendorworktable");
+    } catch (error) { }
     setLoader(false);
   };
   // const fileData = async (file, name, index) => {
@@ -962,6 +967,7 @@ const VendorAddWork = () => {
   });
   useEffect(() => {
     const fetchVendorNames = async () => {
+      if (id) {
       try {
         const response = await axios.get(
           `${baseUrl}/workorder/workorder/vendor/${id}`
@@ -971,6 +977,7 @@ const VendorAddWork = () => {
       } catch (error) {
         console.error("Error fetching vendor names:", error);
       }
+    }
     };
 
     fetchVendorNames();
@@ -1027,7 +1034,7 @@ const VendorAddWork = () => {
                             value={WorkFormik.values.work_subject}
                           />
                           {WorkFormik.touched.work_subject &&
-                          WorkFormik.errors.work_subject ? (
+                            WorkFormik.errors.work_subject ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.work_subject}
                             </div>
@@ -1614,7 +1621,7 @@ const VendorAddWork = () => {
                             value={WorkFormik.values.work_performed}
                           />
                           {WorkFormik.touched.work_performed &&
-                          WorkFormik.errors.work_performed ? (
+                            WorkFormik.errors.work_performed ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.work_performed}
                             </div>
@@ -1667,11 +1674,11 @@ const VendorAddWork = () => {
                                         value={entry.part_qty}
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .part_qty ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .part_qty ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -1884,11 +1891,11 @@ const VendorAddWork = () => {
                                         value={entry.description}
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .description ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .description ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -1916,11 +1923,11 @@ const VendorAddWork = () => {
                                         }}
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .part_price ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .part_price ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -1942,11 +1949,11 @@ const VendorAddWork = () => {
                                         disabled // Disable the input
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .total_amount ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .total_amount ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -2063,7 +2070,7 @@ const VendorAddWork = () => {
                             value={WorkFormik.values.vendor_note}
                           />
                           {WorkFormik.touched.vendor_note &&
-                          WorkFormik.errors.vendor_note ? (
+                            WorkFormik.errors.vendor_note ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.vendor_note}
                             </div>
@@ -2210,7 +2217,7 @@ const VendorAddWork = () => {
                             readOnly
                           />
                           {WorkFormik.touched.due_date &&
-                          WorkFormik.errors.due_date ? (
+                            WorkFormik.errors.due_date ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.due_date}
                             </div>
@@ -2233,16 +2240,16 @@ const VendorAddWork = () => {
                     </button>
                   ) : id ? (
                     <button
-                    type="submit"
-                    className="btn btn-primary"
-                    style={{ background: "green", cursor: "pointer" }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      editworkorder(vid);
-                    }}
-                  >
-                    Update Work Order
-                  </button>
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ background: "green", cursor: "pointer" }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        editworkorder(vid);
+                      }}
+                    >
+                      Update Work Order
+                    </button>
                   ) : (
                     <button
                       type="submit"

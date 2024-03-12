@@ -67,26 +67,34 @@ const RentalownerTable = () => {
   }, [navigate]);
 
   const fetchRentalsData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/rentals/rental-owners/${accessType.admin_id}`
-      );
-      if (response.status === 200) {
-        setRentalsData(response.data);
+    if (accessType?.admin_id) {
+      // setLoader(true);
+
+      try {
+        const response = await axios.get(
+          `${baseUrl}/rentals/rental-owners/${accessType?.admin_id}`
+        );
+        if (response.status === 200) {
+          setRentalsData(response.data);
+          console.log('response.data', response.data)
+        } else {
+          console.error("Invalid API response structure: ", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching rentals data: ", error);
+      } finally {
         setLoader(false);
-      } else {
-        console.error("Invalid API response structure: ", response.data);
-        setLoader(false);
+
       }
-    } catch (error) {
-      console.error("Error fetching rentals data: ", error);
     }
   };
-
   useEffect(() => {
-    fetchRentalsData();
-    getRentalOwnersLimit();
+    if (accessType?.admin_id) {
+      fetchRentalsData();
+      getRentalOwnersLimit();
+    }
   }, [accessType]);
+
 
   function navigateToRentRollDetails(rentalowner_id) {
     navigate(`/${admin}/rentalownerdetail/${rentalowner_id}`);
@@ -166,14 +174,16 @@ const RentalownerTable = () => {
 
   const [countRes, setCountRes] = useState("");
   const getRentalOwnersLimit = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/rental_owner/limitation/${accessType.admin_id}`
-      );
-      console.log(response.data, "yash");
-      setCountRes(response.data);
-    } catch (error) {
-      console.error("Error fetching rental data:", error);
+    if (accessType?.admin_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/rental_owner/limitation/${accessType?.admin_id}`
+        );
+        console.log(response.data, "yash");
+        setCountRes(response.data);
+      } catch (error) {
+        console.error("Error fetching rental data:", error);
+      }
     }
   };
 
@@ -279,7 +289,7 @@ const RentalownerTable = () => {
                       <th scope="col">Action</th>
                     </tr>
                   </thead>
-                  {rentalsData.length === 0 ? (
+                  {rentalsData.length === 0 ?(
                     <tbody>
                       <tr className="text-center">
                         <td colSpan="5" style={{ fontSize: "15px" }}>
@@ -331,6 +341,7 @@ const RentalownerTable = () => {
                       ))}
                     </tbody>
                   )}
+
                 </Table>
               </Card>
             )}
