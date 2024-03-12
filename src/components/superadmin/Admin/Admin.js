@@ -54,6 +54,9 @@ const headCells = [
     label: "Name",
   },
   {
+    label: "Plan Name",
+  },
+  {
     label: "Company Name",
   },
   {
@@ -68,9 +71,7 @@ const headCells = [
   {
     label: "end date",
   },
-  {
-    label: "Plan Name",
-  },
+
   {
     label: "Action",
   },
@@ -124,6 +125,10 @@ function Rows(props) {
         <TableCell align="left">
           <img src={ProfileIcon} /> {row?.first_name} {row?.last_name}
         </TableCell>
+        <TableCell align="left">
+          {row?.planName}
+        </TableCell>
+
         <TableCell align="left">{row?.company_name}</TableCell>
         <TableCell align="left">{row?.phone_number}</TableCell>
         <TableCell align="left">{row?.email}</TableCell>
@@ -146,10 +151,7 @@ function Rows(props) {
               `}
         </TableCell>
 
-        <TableCell align="left">
-          {row?.subscription?.status === "active" ? "Paid" : "Free"}
-        </TableCell>
-
+ 
         <TableCell align="center">
           <div className="d-flex">
             <div onClick={() => seletedEditData(row)} title="Edit">
