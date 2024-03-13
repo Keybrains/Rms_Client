@@ -90,8 +90,8 @@ const Workorder = () => {
             status: item?.workOrderData?.status,
             createdAt: item?.workOrderData?.createdAt,
             updateAt: item?.workOrderData?.updatedAt,
-            rental_id: item?.rentalAdress?.rental_id,
-            rental_adress: item?.rentalAdress?.rental_adress,
+            rental_id: item?.rentalAddress?.rental_id,
+            rental_adress: item?.rentalAddress?.rental_adress,
             unit_id: item?.rentalUnit?.unit_id,
             rental_unit: item?.rentalUnit?.rental_unit,
             staffmember_id: item?.staffMember?.staffmember_id,
@@ -99,21 +99,18 @@ const Workorder = () => {
           }));
           setWorkData(filteredData);
           setTotalPages(Math.ceil(filteredData.length / pageItem));
-          // setLoader(false);
         } else {
           setWorkData([]);
           setTotalPages(0);
         }
       } catch (error) {
-        // setLoader(false);
         console.error("Error fetching data:", error);
-      }
-      finally {
-        setLoader(false); 
+      } finally {
+        setLoader(false);
       }
     }
   };
-
+  
   const [accessType, setAccessType] = useState();
 
   useEffect(() => {

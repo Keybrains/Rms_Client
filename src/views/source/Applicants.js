@@ -46,6 +46,16 @@ import { jwtDecode } from "jwt-decode";
 const Applicants = () => {
   const { admin } = useParams();
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const [accessType, setAccessType] = useState(null);
+
+  React.useEffect(() => {
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
+      setAccessType(jwt);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
   const [rentalsData, setRentalsData] = useState([]);
   const [loader, setLoader] = useState(true);
   const [btnLoader, setBtnLoader] = useState(false);
@@ -58,10 +68,8 @@ const Applicants = () => {
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
-  // Step 1: Create state to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [selectedTenantData, setSelectedTenantData] = useState([]);
   const [selectedTenants, setSelectedTenants] = useState([]);
 
   const [propertyData, setPropertyData] = useState([]);
@@ -71,7 +79,6 @@ const Applicants = () => {
   const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [selectedPropertyId, setselectedPropertyId] = useState("");
-  // const [searchQuery, setSearchQuery] = useState("");
   const [upArrow, setUpArrow] = useState([]);
   const [sortBy, setSortBy] = useState([]);
   const [selectedApplicant, setSelectedApplicant] = useState(null);
@@ -93,7 +100,6 @@ const Applicants = () => {
         `${baseUrl}/propertyunit/rentals_property/${propertyType}`
       );
       const data = await response.json();
-      // Ensure that units are extracted correctly and set as an array
       const units = data?.data || [];
       return units;
     } catch (error) {
@@ -101,9 +107,7 @@ const Applicants = () => {
       return [];
     }
   };
-  const [ownerData, setOwnerData] = useState([]);
-  // const [selectedOwner, setSelectedOwner] = useState(null);
-  // Function to handle property selection
+
 
   const fetchUnitData = async (rental_id) => {
     if (rental_id) {
@@ -130,12 +134,11 @@ const Applicants = () => {
     setSelectedPropertyType(property.rental_adress);
     setselectedPropertyId(property.rental_id);
     applicantFormik.setFieldValue("rental_adress", property.rental_adress);
-    setSelectedUnit(""); // Reset selected unit when a new property is selected
+    setSelectedUnit("");
     try {
       const units = await fetchUnitsByProperty(property.rental_adress);
-      setOwnerData(property);
-      // console.log(units, "units"); // Check the received units in the console
-      setUnitData(units); // Set the received units in the unitData state
+      // setOwnerData(property);
+      setUnitData(units);
 
       fetchUnitData(property.rental_id);
     } catch (error) {
@@ -147,7 +150,7 @@ const Applicants = () => {
   const handleUnitSelect = (selectedUnit) => {
     setSelectedUnit(selectedUnit.rental_unit);
     setUnitId(selectedUnit.unit_id);
-    applicantFormik.setFieldValue("rental_unit", selectedUnit.rental_unit); // Update the formik state here
+    applicantFormik.setFieldValue("rental_unit", selectedUnit.rental_unit);
   };
 
   const openModal = () => {
@@ -160,7 +163,7 @@ const Applicants = () => {
 
   const handleEdit = (applicant) => {
     setSelectedApplicant(applicant);
-    openModal(); // Open the modal when an applicant is selected for editing
+    openModal();
   };
 
   const handleSelectedApplicantChange = (e) => {
@@ -173,7 +176,6 @@ const Applicants = () => {
 
   const updateApplicantData = async () => {
     try {
-      // Your selected applicant data
       const selectedApplicantData = {
         applicant_firstName: selectedApplicant.applicant_firstName,
         applicant_lastName: selectedApplicant.applicant_lastName,
@@ -184,11 +186,8 @@ const Applicants = () => {
         applicant_telephoneNumber: selectedApplicant.applicant_telephoneNumber,
       };
 
-      // API endpoint for updating applicant data
-      // const apiUrl = `${baseUrl}/applicant/applicant/1708005396068`;
       const apiUrl = `${baseUrl}/applicant/applicant/${selectedApplicant.applicant_id}`;
 
-      // Send PUT request to update the data
       const response = await axios.put(apiUrl, selectedApplicantData);
 
       if (response.data.statusCode === 200) {
@@ -202,39 +201,37 @@ const Applicants = () => {
           position: "top-center",
         });
       }
-
-      // You can handle any success actions here, such as showing a success message or updating state.
     } catch (error) {
-      // Handle error
       console.error("Error updating applicant data:", error);
       toast.error(error, {
         position: "top-center",
       });
-
-      // You can handle any error actions here, such as showing an error message or logging the error.
     } finally {
-      setBtnLoader(false); // Reset the button loader state after API call
+      setBtnLoader(false);
     }
   };
 
   const getTableData = async () => {
-    if (admin) {
+    if (accessType?.admin_id) {
       try {
         const response = await axios.get(
-          `${baseUrl}/applicant/applicant/${admin}`
+          `${baseUrl}/applicant/applicant/${accessType?.admin_id}`
         );
-        setTotalPages(Math.ceil(response.data.data.length / pageItem));
-        setRentalsData(response.data.data);
+        console.log('first', response.data.data)
+        setLoader(false);
+        if (response.data.statusCode === 200) {
+          setTotalPages(Math.ceil(response.data.data.length / pageItem));
+          setRentalsData(response.data.data);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     }
   };
-
   useEffect(() => {
     getTableData();
     getApplicatsLimit();
-  }, [pageItem]);
+  }, [accessType]);
 
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
@@ -246,9 +243,6 @@ const Applicants = () => {
     setCurrentPage(page);
   };
 
-  const [selectedRentalOwnerData, setSelectedRentalOwnerData] = useState([]);
-  //console.log(selectedRentalOwnerData, "selectedRentalOwnerData");
-  const [selectedrentalOwners, setSelectedrentalOwners] = useState([]);
   const [showRentalOwnerTable, setshowRentalOwnerTable] = useState(false);
   const [checkedCheckbox, setCheckedCheckbox] = useState();
   const [rentalownerData, setRentalownerData] = useState([]);
@@ -261,14 +255,11 @@ const Applicants = () => {
     console.warn(tenantInfo, "tenantInfo");
 
     if (checkedCheckbox === mobileNumber) {
-      // If the checkbox is already checked, uncheck it
       setCheckedCheckbox(null);
     } else {
-      // Otherwise, check the checkbox
       setCheckedCheckbox(mobileNumber);
     }
 
-    // Toggle the selected tenants in the state when their checkboxes are clicked
     if (event.target.checked) {
       setSelectedTenants([tenantInfo, ...selectedTenants]);
       applicantFormik.setValues({
@@ -301,47 +292,6 @@ const Applicants = () => {
   const handleCloseButtonClick = () => {
     navigate("../Agent");
   };
-
-  let cookies = new Cookies();
-  // Check Authe(token)
-  // let chackAuth = async () => {
-  // if (localStorage.getItem("token")) {
-  // let authConfig = {
-  // headers: {
-  // Authorization: `Bearer ${localStorage.getItem("token")}`,
-  // token: localStorage.getItem("token"),
-  // },
-  // };
-  // // auth post method
-  // let res = await axios.post(
-  // "http://192.168.1.10:4000/api/register/auth",
-  // { purpose: "validate access" },
-  // authConfig
-  // );
-  // if (res.data.statusCode !== 200) {
-  // // localStorage.removeItem("token");
-  // navigate("/auth/login");
-  // }
-  // } else {
-  // navigate("/auth/login");
-  // };
-  // }
-
-  // React.useEffect(() => {
-  // chackAuth();
-  // }, [localStorage.getItem("token")]);
-
-  const [accessType, setAccessType] = useState(null);
-  const [manager, setManager] = useState("");
-  React.useEffect(() => {
-    if (localStorage.getItem("token")) {
-      const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt);
-      setManager(jwt.userName);
-    } else {
-      navigate("/auth/login");
-    }
-  }, [navigate]);
 
   const applicantFormik = useFormik({
     initialValues: {
@@ -450,13 +400,12 @@ const Applicants = () => {
   }, [accessType]);
 
   const fetchExistingPropetiesData = async () => {
-    // Make an HTTP GET request to your Express API endpoint
     fetch(`${baseUrl}/applicant/applicant/${accessType?.admin_id}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
           setRentalownerData(data.data);
-          // //console.log("here is my data", data.data);
+          console.log("here is my data", data.data);
         } else {
           // Handle error
           // console.error("Error:", data.message);
@@ -480,7 +429,6 @@ const Applicants = () => {
       })
       .catch((err) => {
         console.log(err);
-        // setLoader(false);
       });
   };
   useEffect(() => {
@@ -529,6 +477,7 @@ const Applicants = () => {
       }
     });
   };
+
   const filterApplicantsBySearch = () => {
     let filteredData = rentalsData;
 
@@ -647,6 +596,7 @@ const Applicants = () => {
     const paginatedData = filteredData.slice(startIndex, endIndex);
     return paginatedData;
   };
+
   const sortData = (value) => {
     if (!sortBy.includes(value)) {
       setSortBy([...sortBy, value]);
@@ -657,8 +607,6 @@ const Applicants = () => {
       setUpArrow(upArrow.filter((sort) => sort !== value));
       filterTenantsBySearchAndPage();
     }
-    //console.log(value);
-    // setOnClickUpArrow(!onClickUpArrow);
   };
   const [countRes, setCountRes] = useState("");
 
@@ -680,10 +628,10 @@ const Applicants = () => {
     getApplicatsLimit();
   }, [rentalsData]);
 
+  console.log(filterTenantsBySearchAndPage(), "yashu")
   return (
     <>
       <Header />
-      {/* Page content */}
       <Container className="mt--8" fluid>
         <Row>
           <Col xs="12" sm="6">
@@ -924,10 +872,10 @@ const Applicants = () => {
                             <td>{applicant?.applicant_email}</td>
                             <td>{applicant?.applicant_phoneNumber}</td>
                             <td>
-                              {applicant?.rental_data?.rental_adress}{" "}
-                              {applicant?.unit_data &&
-                                applicant?.unit_data?.rental_unit
-                                ? " - " + applicant?.unit_data?.rental_unit
+                              {applicant?.rentalData?.rental_adress}
+                              {applicant?.unitData&&
+                                applicant?.unitData?.rental_unit
+                                ? " - " + applicant?.unitData?.rental_unit
                                 : null}
                             </td>
 
