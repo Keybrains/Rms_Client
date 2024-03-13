@@ -92,6 +92,7 @@ const Settings = () => {
   const surchargeFormik = useFormik({
     initialValues: {
       surcharge_percent: "",
+      surcharge_percent_debit: "",
     },
     validationSchema: yup.object({
       surcharge_percent: yup.number().required("Required"),
@@ -111,6 +112,7 @@ const Settings = () => {
         setSurchargeId(Data.surcharge_id);
         surchargeFormik.setValues({
           surcharge_percent: Data.surcharge_percent || "",
+          surcharge_percent_debit: Data.surcharge_percent_debit || "",
         });
       })
       .catch((error) => {
@@ -124,6 +126,7 @@ const Settings = () => {
       const object = {
         admin_id: accessType?.admin_id,
         surcharge_percent: surchargeFormik.values.surcharge_percent,
+        surcharge_percent_debit: surchargeFormik.values.surcharge_percent_debit,
       };
 
       if (!surcharge_id) {
@@ -440,7 +443,7 @@ const Settings = () => {
                                         className="form-control-label"
                                         htmlFor="input-property"
                                       >
-                                        Surcharge Percent
+                                        Credit Card Surcharge Percent
                                       </label>
                                       <br />
                                       <br />
@@ -461,8 +464,36 @@ const Settings = () => {
                                     </FormGroup>
                                   </Col>
                                 </Row>
-                                <br />
+                            
+                                <Row className="mt-4">
+                                  <Col lg="6">
+                                    <FormGroup>
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-property"
+                                      >
+                                        Debit Card Surcharge Percent
+                                      </label>
+                                      <br />
+                                      <br />
+                                      <Input
+                                        className="form-control-alternative"
+                                        id="input-protype"
+                                        placeholder="Surcharge %"
+                                        type="number"
+                                        name="surcharge_percent_debit"
+                                        onBlur={surchargeFormik.handleBlur}
+                                        onChange={surchargeFormik.handleChange}
+                                        value={
+                                          surchargeFormik.values
+                                            .surcharge_percent_debit
+                                        }
+                                      />
+                                    </FormGroup>
+                                  </Col>
+                                </Row>
                               </div>
+                              <br/>
                               <Row>
                                 {submitLoader ? (
                                   <Button

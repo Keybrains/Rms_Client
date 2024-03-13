@@ -88,7 +88,6 @@ function CreditCardForm(props) {
         }
       );
 
-      console.log("vaibhav", response.data.data);
 
       // Check if customer.billing is an array
       const billingData = response.data.data.customer.billing;
@@ -99,11 +98,35 @@ function CreditCardForm(props) {
           cc_number: item.cc_number,
           cc_exp: item.cc_exp,
           cc_type: item.cc_type,
+          cc_bin: item.cc_bin,
           customer_vault_id: item.customer_vault_id,
         }));
 
+        for (const card of extractedData) {
+          const options = {
+            method: 'POST',
+            url: `https://bin-ip-checker.p.rapidapi.com/?bin=${card.cc_bin}`,
+
+            headers: {
+              'content-type': 'application/json',
+              'X-RapidAPI-Key':
+                '1bd772d3c3msh11c1022dee1c2aep1557bajsn0ac41ea04ef7',
+              'X-RapidAPI-Host': 'bin-ip-checker.p.rapidapi.com',
+            },
+            // data: {bin: '448590'}
+          };
+
+          try {
+            const response = await axios.request(options);
+            card.binType = response.data.BIN.type;
+          } catch (error) {
+            console.error(error, "error in bin check");
+          }
+        }
+
         setPaymentLoader(false);
         setCardDetails(extractedData);
+
         console.log("objectss", extractedData);
       } else if (billingData) {
         // If there's only one record, create an array with a single item
@@ -113,23 +136,44 @@ function CreditCardForm(props) {
             cc_number: billingData.cc_number,
             cc_exp: billingData.cc_exp,
             cc_type: billingData.cc_type,
+            cc_bin: billingData.cc_bin,
             customer_vault_id: billingData.customer_vault_id,
           },
         ];
 
-        setPaymentLoader(false);
+        for (const card of extractedData) {
+          const options = {
+            method: "POST",
+            url: `https://bin-ip-checker.p.rapidapi.com/?bin=${card.cc_bin}`,
+
+            headers: {
+              "content-type": "application/json",
+              "X-RapidAPI-Key":
+                "1bd772d3c3msh11c1022dee1c2aep1557bajsn0ac41ea04ef7",
+              "X-RapidAPI-Host": "bin-ip-checker.p.rapidapi.com",
+            },
+            // data: {bin: '448590'}
+          };
+
+          try {
+            const response = await axios.request(options);
+            card.binType = response.data.BIN.type;
+          } catch (error) {
+            console.error(error, "error in bin check");
+          }
+        }
+
+        // setPaymentLoader(false);
         setCardDetails(extractedData);
-        console.log("objectss", extractedData);
+        console.log("object", extractedData);
       } else {
         console.error(
           "Invalid response structure - customer.billing is not an array"
         );
-        setPaymentLoader(false);
-        setCardDetails([]);
       }
     } catch (error) {
       console.error("Error fetching multiple customer vault records:", error);
-      setPaymentLoader(false);
+      // setPaymentLoader(false);
     }
   };
   useEffect(() => {
@@ -196,41 +240,41 @@ function CreditCardForm(props) {
 
     const requestBody = isBilling
       ? {
-        first_name: values.first_name,
-        last_name: values.last_name,
-        ccnumber: values.card_number,
-        ccexp: values.exp_date,
-        address1: values.address1,
-        address2: values.address2,
-        city: values.city,
-        state: values.state,
-        zip: values.zip,
-        country: values.country,
-        company: values.company,
-        phone: values.phone,
-        email: values.email,
-        customer_vault_id: vaultId,
-        billing_id: random10DigitNumber,
-      }
+          first_name: values.first_name,
+          last_name: values.last_name,
+          ccnumber: values.card_number,
+          ccexp: values.exp_date,
+          address1: values.address1,
+          address2: values.address2,
+          city: values.city,
+          state: values.state,
+          zip: values.zip,
+          country: values.country,
+          company: values.company,
+          phone: values.phone,
+          email: values.email,
+          customer_vault_id: vaultId,
+          billing_id: random10DigitNumber,
+        }
       : {
-        first_name: values.first_name,
-        last_name: values.last_name,
-        ccnumber: values.card_number,
-        ccexp: values.exp_date,
-        address1: values.address1,
-        address2: values.address2,
-        city: values.city,
-        state: values.state,
-        zip: values.zip,
-        country: values.country,
-        company: values.company,
-        phone: values.phone,
-        email: values.email,
-        billing_id: random10DigitNumber,
-      };
+          first_name: values.first_name,
+          last_name: values.last_name,
+          ccnumber: values.card_number,
+          ccexp: values.exp_date,
+          address1: values.address1,
+          address2: values.address2,
+          city: values.city,
+          state: values.state,
+          zip: values.zip,
+          country: values.country,
+          company: values.company,
+          phone: values.phone,
+          email: values.email,
+          billing_id: random10DigitNumber,
+        };
 
     if (!isValidCard) {
-      toast.error("Invalid Credit Card Number", {
+      toast.error("Invalid Card Number", {
         position: "top-center",
         autoClose: 500,
       });
@@ -275,10 +319,9 @@ function CreditCardForm(props) {
 
           setTimeout(() => {
             closeModal();
-          }, 2000)
+          }, 2000);
           getCreditCard();
           getMultipleCustomerVault();
-
         } else {
           toast.error(creditCardResponse.data.message, {
             position: "top-center",
@@ -287,10 +330,13 @@ function CreditCardForm(props) {
         }
       } else {
         // Handle the case where the response structure is not as expected
-        toast.error("Unexpected response format from create-customer-vault API", {
-          position: "top-center",
-          autoClose: 500,
-        });
+        toast.error(
+          "Unexpected response format from create-customer-vault API",
+          {
+            position: "top-center",
+            autoClose: 500,
+          }
+        );
       }
     } catch (error) {
       console.error("Error:", error);
@@ -339,7 +385,6 @@ function CreditCardForm(props) {
 
   const [paymentLoader, setPaymentLoader] = useState(false);
 
-
   return (
     <div style={{ maxHeight: "530px", overflowY: "auto", overflowX: "hidden" }}>
       <Row>
@@ -373,8 +418,6 @@ function CreditCardForm(props) {
           >
             {/* {({ isSubmitting }) => ( */}
             <Form>
-              {/* Form Fields */}
-
               <Row className="mb--2">
                 <Col xs="12" sm="6">
                   <FormGroup>
@@ -610,7 +653,7 @@ function CreditCardForm(props) {
               <div
                 style={{
                   display: "flex",
-                  marginTop: "14px"
+                  marginTop: "14px",
                 }}
               >
                 <button
@@ -666,7 +709,7 @@ function CreditCardForm(props) {
                 color="text.secondary"
                 gutterBottom
               >
-                Credit Cards
+                Cards
               </Typography>
               {/* Card Details */}
               {paymentLoader ? (
@@ -705,6 +748,7 @@ function CreditCardForm(props) {
                             {item.cc_number}
                           </Typography>
                         </td>
+                        {console.log("mansi", item.binType)}
                         <td>
                           <Typography
                             sx={{
@@ -714,7 +758,7 @@ function CreditCardForm(props) {
                             color="text.secondary"
                             gutterBottom
                           >
-                            {item.cc_type}
+                            {item.binType}
                             {item.cc_type && (
                               <img
                                 src={`https://logo.clearbit.com/${item.cc_type.toLowerCase()}.com`}

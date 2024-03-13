@@ -1998,7 +1998,7 @@ const RentRollDetail = () => {
         style={{ maxWidth: "1000px" }}
       >
         <ModalHeader toggle={closeModal} className="bg-secondary text-white">
-          <strong style={{ fontSize: 18 }}>Add Credit Card</strong>
+          <strong style={{ fontSize: 18 }}>Add Card</strong>
         </ModalHeader>
         <ModalBody>
           <CreditCardForm
