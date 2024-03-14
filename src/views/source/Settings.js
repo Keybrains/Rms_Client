@@ -552,7 +552,7 @@ const Settings = () => {
                                         className="form-control-label"
                                         htmlFor="input-property"
                                       >
-                                       Amount 
+                                       Percentage 
                                       </label>
                                       <br />
                                       <br />
