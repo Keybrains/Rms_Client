@@ -152,6 +152,7 @@ function Planpurches() {
               if (resp.data.statusCode === 200) {
                 console.log(resp, "res");
                 navigate(`/${admin}/index`);
+                window.location.reload();
                 toast.success(resp.data.message, {
                   position: "top-center",
                   autoClose: 1000,
