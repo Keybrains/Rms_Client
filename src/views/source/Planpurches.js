@@ -40,24 +40,18 @@ function Planpurches() {
   }, [navigate]);
   console.log(accessType, "accesstype");
 
-  // const [continueClicked, setContinue] = useState(false);
   const location = useLocation();
   const receivedData = location.state?.plan || "No data received";
+  console.log("receivedData", receivedData);
   useEffect(() => {
-    // Fetch data from the API
     fetch("https://restcountries.com/v3.1/all?fields=name")
       .then((response) => response.json())
       .then((data) => {
         console.log("Fetched data:", data);
-        // Extract states and countries from the API response
         const statesList = data.map((country) => country.subregion);
         const countriesList = data.map((country) => country.name.common);
-
-        // Remove duplicate values
         const uniqueStates = Array.from(new Set(statesList));
         const uniqueCountries = Array.from(new Set(countriesList));
-
-        // Update state
         setStates(uniqueStates);
         setCountries(uniqueCountries);
       })
@@ -74,20 +68,16 @@ function Planpurches() {
         );
         if (response.status === 200) {
           setCardLogo(response.config.url);
-          // setCardLogo(cardType);
         } else {
           setCardLogo("");
         }
-        // console.log(cardType, "cardLogo");
         planPurchaseFormik.setFieldValue("card_type", cardType.type);
       } else {
         planPurchaseFormik.setFieldValue("card_type", " ");
         setCardLogo("");
       }
     } catch (error) {
-      // Handle error (e.g., card type not found)
       console.error("Error fetching name:", error);
-      // setCardLogo(""); // Set to a default logo or leave it empty
     }
   };
   console.log(cardLogo, "cardLogo");
@@ -182,7 +172,48 @@ function Planpurches() {
         }
       });
   };
-  // console.log(receivedData, "receivedData");
+  const billingIntervalNumber = parseInt(receivedData.billing_interval);
+
+  const currentDate = new Date();
+
+  const endDate = new Date(currentDate);
+  endDate.setMonth(currentDate.getMonth() + billingIntervalNumber);
+
+  const formatDate = (date) => {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return date.toLocaleDateString(undefined, options);
+  };
+
+  const planDuration = `Plan - ${formatDate(currentDate)} to ${formatDate(
+    endDate
+  )}`;
+
+  console.log(planDuration);
+
+  const calculateTotal = (data) => {
+    if (data.is_annual_discount && data.annual_discount) {
+      const discountAmount = (data.plan_price * data.annual_discount) / 100;
+      return data.plan_price - discountAmount;
+    }
+    return data.plan_price;
+  };
+
+  const total = calculateTotal(receivedData);
+
+  console.log(total);
+  const monthOptions = Array.from({ length: 12 }, (_, i) => ({
+    value: (i + 1).toString().padStart(2, "0"),
+    label: (i + 1).toString().padStart(2, "0"),
+  }));
+
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: 12 }, (_, i) => ({
+    value: currentYear + i,
+    label: currentYear + i,
+  }));
+  const discountAmount =
+    (receivedData.plan_price * receivedData.annual_discount) / 100;
+
   return (
     <>
       <RentalHeader />
@@ -310,15 +341,23 @@ function Planpurches() {
                       </div>
                       <FormGroup>
                         <label
-                          className="form-control-label "
+                          className="form-control-label"
                           htmlFor="input-member"
                         >
                           COUNTRY
                         </label>
-
                         <Input
                           className="mb-1 add"
-                          style={{ width: "60%" }}
+                          style={{
+                            width: "60%",
+                            backgroundColor: "#f8f9fa",
+                            borderColor: "#ced4da",
+                            borderRadius: "0.375rem",
+                            color: "#495057",
+                            padding: "0.375rem 0.75rem",
+                            fontSize: "1rem",
+                            boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                          }}
                           type="select"
                           required
                           onChange={planPurchaseFormik.handleChange}
@@ -335,6 +374,7 @@ function Planpurches() {
                           ))}
                         </Input>
                       </FormGroup>
+
                       <Button
                         size="sm"
                         style={{
@@ -354,10 +394,10 @@ function Planpurches() {
                       <>
                         <b style={{ color: "rgb(10, 37, 59)" }}>
                           <h2>
-                            {" "}
                             2. Review subscription & enter payment information
                           </h2>
                         </b>
+
                         <div
                           className="card  premium-cards"
                           style={{
@@ -374,12 +414,32 @@ function Planpurches() {
                               <hr />
                             </b>
                             <div className="d-flex justify-content-between">
-                              <p>Growth - Annual Subscription 10% Discount</p>
-                              <p>$1,880.00</p>
+                              <p>Plan Price:</p>
+                              <p>{receivedData.plan_price}</p>
                             </div>
-                            <p className="mb-5">
-                              10 unit plan - 2/6/2024 to 2/5/2025
-                            </p>
+                            <div className="d-flex justify-content-between">
+                              {receivedData.is_annual_discount === true ? (
+                                <p>
+                                  {receivedData.billing_interval} - Annual
+                                  Subscription{" "}
+                                  <span style={{ fontWeight: "bold" }}>
+                                    {receivedData.annual_discount}% Discount
+                                  </span>
+                                </p>
+                              ) : (
+                                <p>
+                                  {receivedData.billing_interval} Subscription
+                                </p>
+                              )}
+                              {receivedData.is_annual_discount === true ? (
+                                <p>
+                                  <p>{discountAmount}</p>
+                                </p>
+                              ) : (
+                                <p></p>
+                              )}
+                            </div>
+                            <p className="mb-5">{planDuration}</p>
                             <div className="d-flex justify-content-between">
                               <p style={{ fontWeight: "bolder" }}>TOTAL:</p>
                               <p
@@ -388,7 +448,7 @@ function Planpurches() {
                                   fontWeight: "bolder",
                                 }}
                               >
-                                $1,880.00
+                                {total}
                               </p>
                             </div>
                           </div>
@@ -415,7 +475,7 @@ function Planpurches() {
                                 planPurchaseFormik.handleSubmit();
                               }}
                             >
-                              <div className="d-flex carddd">
+                              {/* <div className="d-flex carddd">
                                 <label
                                   className="form-control-label  mb-3"
                                   htmlFor="input-member"
@@ -434,7 +494,7 @@ function Planpurches() {
                                   onBlur={planPurchaseFormik.handleBlur}
                                   disabled
                                 />
-                              </div>
+                              </div> */}
                               <div className="d-flex carddd">
                                 <label
                                   className="form-control-label mb-3"
@@ -485,9 +545,9 @@ function Planpurches() {
                                   className="form-control-label "
                                   htmlFor="input-member"
                                 >
-                                  Expiration Date{" "}
+                                  Expiration Date
                                 </label>
-                                <div className=" d-flex" style={{}}>
+                                <div className="d-flex">
                                   <Input
                                     className="mb-3 dateyear"
                                     onChange={planPurchaseFormik.handleChange}
@@ -497,23 +557,22 @@ function Planpurches() {
                                       planPurchaseFormik.values.expiration_month
                                     }
                                     onBlur={planPurchaseFormik.handleBlur}
-                                    style={{ width: "80%", marginLeft: "36px" }}
+                                    style={{
+                                      width: "100%",
+                                      marginLeft: "36px",
+                                    }}
                                     type="select"
                                     required
                                   >
                                     <option value="">-Month-</option>
-                                    <option value="01">01</option>
-                                    <option value="02">02</option>
-                                    <option value="03">03</option>
-                                    <option value="04">04</option>
-                                    <option value="05">05</option>
-                                    <option value="06">06</option>
-                                    <option value="07">07</option>
-                                    <option value="08">08</option>
-                                    <option value="09">09</option>
-                                    <option value="10">10</option>
-                                    <option value="11">11</option>
-                                    <option value="12">12</option>
+                                    {monthOptions.map((month) => (
+                                      <option
+                                        key={month.value}
+                                        value={month.value}
+                                      >
+                                        {month.label}
+                                      </option>
+                                    ))}
                                   </Input>
                                   <p
                                     style={{
@@ -526,8 +585,8 @@ function Planpurches() {
                                   </p>
                                   <Input
                                     className="mb-3 dateyear"
-                                    style={{ width: "80%" }}
-                                    type="text"
+                                    style={{ width: "100%" }}
+                                    type="select"
                                     name="expiration_year"
                                     id="expiration_year"
                                     value={
@@ -535,14 +594,18 @@ function Planpurches() {
                                     }
                                     onBlur={planPurchaseFormik.handleBlur}
                                     onChange={planPurchaseFormik.handleChange}
-                                    maxLength={4}
-                                    onInput={(e) =>
-                                      (e.target.value = e.target.value
-                                        .replace(/[^0-9]/g, "")
-                                        .replace(/(\..*)\./g, "$1"))
-                                    }
                                     required
-                                  />
+                                  >
+                                    <option value="">-Year-</option>
+                                    {yearOptions.map((year) => (
+                                      <option
+                                        key={year.value}
+                                        value={year.value}
+                                      >
+                                        {year.label}
+                                      </option>
+                                    ))}
+                                  </Input>
                                 </div>
                               </div>
                               <div className="d-flex carddd">
