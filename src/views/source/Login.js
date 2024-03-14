@@ -85,6 +85,10 @@ const Login = () => {
             toast.error(" Invalid Admin Password. Please try again.", {
               position: "top-center",
             });
+          } else if (adminData.statusCode === 204) {
+            toast.error("Account is deactivated. Please contact support.", {
+              position: "top-center",
+            });
           } else {
             const superAdminRes = await axios.post(
               `${baseUrl}/admin/superadmin_login`,

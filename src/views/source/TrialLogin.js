@@ -12,10 +12,13 @@ import {
   DialogContent,
   DialogActions,
   Typography,
+  IconButton
 } from "@mui/material";
+
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { makeStyles } from "@mui/styles";
-import { Card, CardBody, Col, Input } from "reactstrap";
+import { Card, CardBody, Col, Input ,InputGroup } from "reactstrap";
 // import { Grid } from 'react-loader-spinner';
 import { Grid } from "@mui/material";
 import { Diversity1Sharp } from "@mui/icons-material";
@@ -84,8 +87,9 @@ const TrialLogin = () => {
 
     try {
       const response = await axios.post(`${baseUrl}/admin/register`, object);
+      console.log(response.data, "yash")
       if (response.data.statusCode === 200) {
-        toast.success("Lease Added Successfully", {
+        toast.success("Logged in Successfully", {
           position: "top-center",
           autoClose: 1000,
         });
@@ -157,6 +161,7 @@ const TrialLogin = () => {
       }
     },
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <>
@@ -337,7 +342,7 @@ const TrialLogin = () => {
                           className="formInput"
                           style={{ margin: "10px 10px" }}
                         >
-                          <Input
+                          {/* <Input
                             className="form-control-alternative"
                             id="input-password"
                             placeholder="Password"
@@ -347,7 +352,28 @@ const TrialLogin = () => {
                             onChange={(e) => {
                               loginformik.handleChange(e);
                             }}
-                          />
+                          /> */}
+                          <InputGroup className="input-group-alternative">
+                            <Input
+                              id="standard-adornment-password"
+                              autoComplete="new-password"
+                              name="password"
+                              placeholder="Password"
+                              type={showPassword ? "text" : "password"}
+                              value={loginformik.values.password}
+                              onChange={(e) => {
+                                loginformik.handleChange(e);
+                              }}
+                            />
+
+                            <IconButton
+                              type="button"
+                              style={{ padding: "7px" }}
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              {<VisibilityIcon />}
+                            </IconButton>
+                          </InputGroup>
                         </div>
                       </Grid>
                       <Grid item xs={12}>
@@ -528,7 +554,7 @@ const TrialLogin = () => {
                 <DialogContent>
                   <div className="text-center">
                     <p className="text-center">
-                      <strong>Your trial account is ready!</strong>
+                      <strong>Your trial account is being ready!</strong>
                     </p>
                   </div>
                   <div
