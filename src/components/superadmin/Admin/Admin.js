@@ -16,7 +16,8 @@ import axios from "axios";
 import Checkbox from "@mui/material/Checkbox";
 import EditIcon from "@mui/icons-material/Edit";
 import Tooltip from "@mui/material/Tooltip";
-import { Button } from "react-bootstrap";
+// import { Button } from "react-bootstrap";
+import { Button, DialogActions } from "@mui/material";
 import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import swal from "sweetalert";
@@ -71,21 +72,29 @@ const headCells = [
   {
     label: "end date",
   },
-
+  {
+    label: "Status",
+  },
   {
     label: "Action",
   },
 ];
 
 function Rows(props) {
-  const { row, handleClick, isItemSelected, labelId, seletedEditData } = props;
+  const {
+    row,
+    handleClick,
+    isItemSelected,
+    labelId,
+    seletedEditData,
+    getData,
+  } = props;
   const navigate = useNavigate();
   const baseUrl = process.env.REACT_APP_BASE_URL;
 
   const handleLoginButtonClick = async () => {
     if (row.admin_id) {
       try {
-        // Make an HTTP request to your API endpoint with the adminId
         await axios.get(`${baseUrl}/login/${row.admin_id}`);
         console.log("API called successfully");
       } catch (error) {
@@ -93,6 +102,45 @@ function Rows(props) {
       }
     }
   };
+  const toggleAdminStatusWithConfirmation = (admin) => {
+    const currentAction = admin.status === "activate" ? "deactivate" : "activate";
+    const confirmMessage = `Are you sure you want to ${currentAction} ${admin.first_name} ${admin.last_name}? This action cannot be undone.`;
+  
+    swal({
+      title: "Are you sure?",
+      text: confirmMessage,
+      icon: "warning",
+      buttons: [
+        "Cancel",
+        `${currentAction.charAt(0).toUpperCase() + currentAction.slice(1)}`,
+      ],
+      dangerMode: true,
+    }).then((willToggle) => {
+      if (willToggle) {
+        const newStatus = admin.status === "activate" ? "deactivate" : "activate";
+        axios
+          .put(`${baseUrl}/admin/togglestatus/${admin.admin_id}`, {
+            status: newStatus,
+          })
+          .then((response) => {
+            if (response.data.success) {
+              swal("Success", `Admin status updated to ${newStatus}.`, "success");
+              getData();
+            } else {
+              swal("Error", response.data.message || "There was an error updating the admin status.", "error");
+            }
+          })
+          .catch((error) => {
+            console.error("Error toggling admin status:", error);
+            swal("Error", "Error toggling admin status", "error");
+          });
+      } else {
+        swal(`${admin.first_name} ${admin.last_name}'s status remains unchanged.`);
+      }
+    });
+  };
+  
+  
 
   return (
     <React.Fragment>
@@ -100,7 +148,7 @@ function Rows(props) {
         hover
         onClick={(event) => {
           handleClick(event, row.admin_id);
-          // navigate(`/superadmin/staffmember/${row?.admin_id}`); 
+          // navigate(`/superadmin/staffmember/${row?.admin_id}`);
         }}
         style={{ cursor: "pointer" }}
         role="checkbox"
@@ -125,9 +173,7 @@ function Rows(props) {
         <TableCell align="left">
           <img src={ProfileIcon} /> {row?.first_name} {row?.last_name}
         </TableCell>
-        <TableCell align="left">
-          {row?.planName}
-        </TableCell>
+        <TableCell align="left">{row?.planName}</TableCell>
 
         <TableCell align="left">{row?.company_name}</TableCell>
         <TableCell align="left">{row?.phone_number}</TableCell>
@@ -147,11 +193,26 @@ function Rows(props) {
             ? `${moment(row.subscription?.end_date, "YYYY-MM-DD").format(
                 "DD-MM-YYYY"
               )} `
-            : `${moment(row.trial?.end_date, "YYYY-MM-DD").format("DD-MM-YYYY")} 
+            : `${moment(row.trial?.end_date, "YYYY-MM-DD").format(
+                "DD-MM-YYYY"
+              )} 
               `}
         </TableCell>
 
- 
+        <TableCell>
+          <Button
+            size="small"
+            variant="outlined"
+            sx={{ borderRadius: "80px" }}
+            color={row.status === "activate" ? "success" : "error"}
+            onClick={(event) => {
+              event.stopPropagation();
+              toggleAdminStatusWithConfirmation(row);
+            }}
+          >
+            {row.status === "activate" ? "Active" : "Inactive"}
+          </Button>
+        </TableCell>
         <TableCell align="center">
           <div className="d-flex">
             <div onClick={() => seletedEditData(row)} title="Edit">
@@ -185,6 +246,25 @@ function Rows(props) {
           <button onClick={handleLoginClick}>Login</button>
         </TableCell> */}
       </TableRow>
+      {/* <Dialog
+        open={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+      >
+        <DialogTitle>Confirm Action</DialogTitle>
+        <DialogContent>
+          Are you sure you want to{" "}
+          {selectedAdmin?.status === "activate" ? "deactivate" : "activate"}{" "}
+          {selectedAdmin?.first_name} {selectedAdmin?.last_name}?
+          {console.log(selectedAdmin?.status, "status")}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleStatusChangeConfirm} color="primary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog> */}
+      <ToastContainer />
     </React.Fragment>
   );
 }
@@ -550,6 +630,7 @@ export default function Admin() {
                               selected={selected}
                               index={index}
                               seletedEditData={seletedEditData}
+                              getData={getData}
                             />
                           );
                         })}
@@ -750,6 +831,7 @@ export default function Admin() {
             </Dialog>
           </Col>
         </Row>
+
         <ToastContainer />
       </Container>
     </>
