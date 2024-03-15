@@ -20,7 +20,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-const Changepassword = () => {
+const CreatePassword = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [email, setEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -122,14 +122,14 @@ const Changepassword = () => {
         <Card className="bg-secondary shadow border-0">
         <CardBody className="px-lg-5 py-lg-5">
         
-          {tokenExpired ? (
+          {/* {tokenExpired ? (
             <div className="text-danger">
               The password reset link has expired. Please request a new one.
             </div>
-          ) : (
+          ) : ( */}
           <div>
           <div className="text-center text-muted mb-4">
-            <big>Change Password</big>
+            <big>Create Password</big>
           </div>
         
           <Form role="form" onSubmit={handleSubmit}>
@@ -210,7 +210,7 @@ const Changepassword = () => {
                 color="primary"
                 //onClick={handleChangePassword}
               >
-                {isLoading ? <CircularProgress size={24} /> : "Change Password"}
+                {isLoading ? <CircularProgress size={24} /> : "Create Password"}
               </Button>
               <Button
                 variant="contained"
@@ -223,7 +223,7 @@ const Changepassword = () => {
             </div>
           </Form>
           </div>
-           )}
+           {/* )} */}
         </CardBody>
       </Card>
       <ToastContainer />
@@ -231,4 +231,4 @@ const Changepassword = () => {
   );
 };
 
-export default Changepassword;
+export default CreatePassword;
