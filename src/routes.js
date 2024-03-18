@@ -89,6 +89,7 @@ import SuperAdminVendor from "components/superadmin/Admin/Vendor";
 import SuperAdminEmailForm from "components/superadmin/Email/EmailForm";
 import SuperAdminEmailTable from "components/superadmin/Email/EmailTable";
 import ResetPassword from "views/source/Resetpassword";
+import CreatePassword from "views/source/CreatePassword";
 
 var routes = [
   {
@@ -229,6 +230,12 @@ var routes = [
     path: "/Resetpassword",
     name: "Reset password",
     component: <ResetPassword />,
+    layout: "/auth",
+  },
+  {
+    path: "/createpassword",
+    name: "Create Password",
+    component: <CreatePassword />,
     layout: "/auth",
   },
   {

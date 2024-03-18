@@ -55,7 +55,7 @@ const Forgetmail = () => {
       try {
         setIsLoading(true)
         const response = await fetch(
-          `${baseUrl}/tenant/reset_password/${email}`,
+          `${baseUrl}/admin/reset_password/${email}`,
           {
             method: "PUT",
             headers: {
@@ -88,7 +88,7 @@ const Forgetmail = () => {
   };
 
   const handleSubmit = (event) => {
-    event.preventDefault(); // Prevent default form submission behavior
+    event.preventDefault(); 
     handleSendMail();
   };
 
@@ -105,7 +105,7 @@ const Forgetmail = () => {
       const data = {
         tenant_email: mail
       };
-      const res = await axios.post(`${baseUrl}/tenants/passwordmail`, data);
+      const res = await axios.post(`${baseUrl}/admin/passwordmail`, data);
       if (res.status === 200) {
         toast.success('Mail Sent Successfully', {
           position: 'top-center',
