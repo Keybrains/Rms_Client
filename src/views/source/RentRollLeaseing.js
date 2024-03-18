@@ -657,7 +657,7 @@ const RentRollLeaseing = () => {
       cosignerData: { ...cosignerFormik.values, admin_id: accessType?.admin_id },
       chargeData: {
         admin_id: accessType?.admin_id,
-        is_leaseAdded: true,
+          is_leaseAdded: true,
         entry: entryData,
       },
     };

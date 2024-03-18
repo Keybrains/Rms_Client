@@ -101,7 +101,7 @@ const AddWorkorder = () => {
           `${baseUrl}/unit/rental_unit/${propertyType}`
         );
 
-        const units = response.data.data || [];
+        const units = response?.data?.data || [];
 
         return units;
       } catch (error) {
@@ -220,7 +220,7 @@ const AddWorkorder = () => {
     axios
       .get(`${baseUrl}/vendor/vendors/${accessType?.admin_id}`)
       .then((res) => {
-        setAllVendors(res.data.data);
+        setAllVendors(res.data?.data);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -246,52 +246,52 @@ const AddWorkorder = () => {
             staff_data,
             vendor_data,
             tenant_data,
-          } = response.data.data;
-          setWorkOrderData(response.data.data);
+          } = response?.data?.data;
+          setWorkOrderData(response?.data?.data);
 
-          const formattedDueDate = response.data.data.date
-            ? new Date(response.data.data.date).toISOString().split("T")[0]
+          const formattedDueDate = response?.data?.data?.date
+            ? new Date(response?.data?.data?.date).toISOString().split("T")[0]
             : "";
 
-          setVid(response.data.data.workOrder_id);
+          setVid(response?.data?.data?.workOrder_id);
 
           try {
-            const units = await fetchUnitsByProperty(property_data.rental_id);
+            const units = await fetchUnitsByProperty(property_data?.rental_id);
             setUnitData(units);
           } catch (error) {
             console.error(error, "error");
           }
 
-          setSelectedUnit(unit_data.rental_unit || "Select");
-          setSelectedProp(property_data.rental_adress || "Select");
-          setSelectedCategory(response.data.data.work_category || "Select");
-          setSelectedVendor(vendor_data.vendor_name || "Select");
-          setSelectedCharge(response.data.data.work_charge_to || "Select");
+          setSelectedUnit(unit_data?.rental_unit || "Select");
+          setSelectedProp(property_data?.rental_adress || "Select");
+          setSelectedCategory(response?.data?.data?.work_category || "Select");
+          setSelectedVendor(vendor_data?.vendor_name || "Select");
+          setSelectedCharge(response?.data?.data?.work_charge_to || "Select");
           setSelectedEntry(
-            response.data.data.entry_allowed === true ? "Yes" : "No" || "Select"
+            response?.data?.data?.entry_allowed === true ? "Yes" : "No" || "Select"
           );
-          setSelecteduser(staff_data.staffmember_name || "Select");
-          setSelectedStatus(response.data.data.status || "Select");
-          setSelectedPriority(response.data.data.priority || "Select");
-          setWorkOrderImage(response.data.data.workOrder_images || []);
-          setSelectedFiles(response.data.data.workOrder_images || []);
+          setSelecteduser(staff_data?.staffmember_name || "Select");
+          setSelectedStatus(response?.data?.data?.status || "Select");
+          setSelectedPriority(response?.data?.data?.priority || "Select");
+          setWorkOrderImage(response?.data?.data?.workOrder_images || []);
+          setSelectedFiles(response?.data?.data?.workOrder_images || []);
           setSelectedTenant(
-            tenant_data.tenant_firstName + " " + tenant_data.tenant_lastName ||
+            tenant_data?.tenant_firstName + " " + tenant_data?.tenant_lastName ||
             "Select"
           );
 
           WorkFormik.setValues({
-            invoice_number: response.data.data?.invoice_number || "",
-            work_charge_to: response.data.data?.work_charge_to || "",
-            detail: response.data.data?.detail || "",
-            entry_contact: response.data.data?.entry_contact || "",
-            final_total_amount: response.data.data?.final_total_amount || "",
+            invoice_number: response?.data?.data?.invoice_number || "",
+            work_charge_to: response?.data?.data?.work_charge_to || "",
+            detail: response?.data?.data?.detail || "",
+            entry_contact: response?.data?.data?.entry_contact || "",
+            final_total_amount: response?.data?.data?.final_total_amount || "",
 
-            work_subject: response.data.data?.work_subject || "",
+            work_subject: response?.data?.data?.work_subject || "",
             rental_adress: property_data?.rental_adress || "",
             rental_unit: unit_data?.rental_unit || "",
-            rental_id: property_data.rental_id || "",
-            work_category: response.data.data?.work_category || "",
+            rental_id: property_data?.rental_id || "",
+            work_category: response?.data?.data?.work_category || "",
             vendor_name: vendor_data?.vendor_name || "",
             vendor_id: vendor_data?.vendor_id || "",
             unit_id: unit_data?.unit_id || "",
@@ -301,22 +301,22 @@ const AddWorkorder = () => {
               " " +
               tenant_data?.tenant_lastName || "",
             invoice_number: "",
-            work_charge: response.data.data?.work_charge_to || "",
+            work_charge: response?.data?.data?.work_charge_to || "",
             entry_allowed:
-              response.data.data.entry_allowed === true ? "Yes" : "No" || "",
+              response?.data?.data?.entry_allowed === true ? "Yes" : "No" || "",
             detail: "",
             entry_contact: "",
-            work_performed: response.data.data?.work_performed || "",
-            vendor_note: response.data.data?.vendor_notes || "",
+            work_performed: response?.data?.data?.work_performed || "",
+            vendor_note: response?.data?.data?.vendor_notes || "",
             staffmember_name: staff_data?.staffmember_name || "",
             staffmember_id: staff_data?.staffmember_id || "",
-            status: response.data.data?.status || "",
+            status: response?.data?.data?.status || "",
             due_date: formattedDueDate || "",
-            priority: response.data.data?.priority || "",
-            workOrderImage: response.data.data?.workOrder_images || "",
+            priority: response?.data?.data?.priority || "",
+            workOrderImage: response?.data?.data?.workOrder_images || "",
             final_total_amount: "",
             statusUpdatedBy: "Admin",
-            entries: partsandcharge_data.map((part) => ({
+            entries: partsandcharge_data?.map((part) => ({
               part_qty: part?.parts_quantity || "",
               parts_id: part?.parts_id || "",
               account_type: part?.account || "Select",
@@ -355,11 +355,11 @@ const AddWorkorder = () => {
               if (
                 res &&
                 res.data &&
-                res.data.files &&
-                res.data.files.length > 0
+                res.data?.files &&
+                res.data?.files.length > 0
               ) {
-                fileItem = res.data.files[0].filename;
-                image[i] = res.data.files[0].filename;
+                fileItem = res.data?.files[0].filename;
+                image[i] = res.data?.files[0].filename;
               } else {
                 console.error("Unexpected response format:", res);
               }
@@ -395,6 +395,7 @@ const AddWorkorder = () => {
         work_charge_to: WorkFormik.values.work_charge || "",
         status: WorkFormik.values.status || "",
         date: WorkFormik.values.due_date || "",
+        statusUpdatedBy: "Admin",
       },
       parts: WorkFormik.values.entries.map((item) => {
         return {
@@ -411,7 +412,7 @@ const AddWorkorder = () => {
     try {
       const res = await axios.post(`${baseUrl}/work-order/work-order`, object);
       if (res.status === 200) {
-        if (res.data.statusCode === 200) {
+        if (res.data?.statusCode === 200) {
           toast.success("Work Order Added Successfully.", {
             position: "top-center",
             autoClose: 1000,
@@ -423,7 +424,7 @@ const AddWorkorder = () => {
           }, 2000);
         } else {
           console.log(res.data, "res.data");
-          toast.error(res.data.message, {
+          toast.error(res.data?.message, {
             position: "top-center",
             autoClose: 1000,
           });
@@ -503,9 +504,9 @@ const AddWorkorder = () => {
         const res = await axios.get(
           `${baseUrl}/rentals/rentals/${accessType?.admin_id}`
         );
-        if (res.data.statusCode === 200) {
-          setPropertyData(res.data.data);
-        } else if (res.data.statusCode === 201) {
+        if (res.data?.statusCode === 200) {
+          setPropertyData(res.data?.data);
+        } else if (res.data?.statusCode === 201) {
           setPropertyData([]);
         }
       } catch (error) {
@@ -516,13 +517,13 @@ const AddWorkorder = () => {
 
   const fetchStaffData = () => {
     fetch(`${baseUrl}/staffmember/staff_member/${accessType?.admin_id}`)
-      .then((response) => response.json())
+      .then((response) => response?.json())
       .then((data) => {
-        if (data.statusCode === 200) {
-          setstaffData(data.data);
-          console.log(data.data, "---------------------------------");
+        if (data?.statusCode === 200) {
+          setstaffData(data?.data);
+          console.log(data?.data, "---------------------------------");
         } else {
-          console.error("Error:", data.message);
+          console.error("Error:", data?.message);
         }
       })
       .catch((error) => {
@@ -605,11 +606,11 @@ const AddWorkorder = () => {
               if (
                 res &&
                 res.data &&
-                res.data.files &&
-                res.data.files.length > 0
+                res.data?.files &&
+                res.data?.files.length > 0
               ) {
-                fileItem = res.data.files[0].filename;
-                image[i] = res.data.files[0].filename;
+                fileItem = res.data?.files[0].filename;
+                image[i] = res.data?.files[0].filename;
               } else {
                 console.error("Unexpected response format:", res);
               }
@@ -636,6 +637,7 @@ const AddWorkorder = () => {
         vendor_id: WorkFormik.values.vendor_id || "",
         tenant_id: WorkFormik.values.tenant_id || "",
         staffmember_id: WorkFormik.values.staffmember_id || "",
+        staffmember_name: WorkFormik.values.staffmember_name || "",
         work_subject: WorkFormik.values.work_subject || "",
         work_category: WorkFormik.values.work_category || "",
         entry_allowed:
@@ -648,6 +650,7 @@ const AddWorkorder = () => {
         status: WorkFormik.values.status || "",
         date: WorkFormik.values.due_date || "",
         updated_by: { admin_id: accessType?.admin_id },
+        statusUpdatedBy: "Admin",
       },
       parts: WorkFormik.values.entries.map((item) => {
         return {
@@ -667,7 +670,7 @@ const AddWorkorder = () => {
         `${baseUrl}/work-order/work-order/${id}`,
         object
       );
-      if (res.data.statusCode === 200) {
+      if (res.data?.statusCode === 200) {
         toast.success("Workorder Updated Successfully", {
           position: "top-center",
           autoClose: 1000,
@@ -676,7 +679,7 @@ const AddWorkorder = () => {
           navigate("/" + admin + "/Workorder");
         }, 2000);
       } else {
-        toast.warning(res.data.message, {
+        toast.warning(res.data?.message, {
           position: "top-center",
           autoClose: 1000,
         });
@@ -703,7 +706,7 @@ const AddWorkorder = () => {
         const response = await axios.get(
           `${baseUrl}/leases/get_tenants/${rental_id}/${unit_id}`
         );
-        setTenantsDetails(response.data.data);
+        setTenantsDetails(response?.data?.data);
       } catch (error) {
         console.error("Error fetching tenant details:", error);
       }

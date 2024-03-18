@@ -28,6 +28,7 @@ import {
 
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
+import { useFormik } from "formik";
 // import { Grid } from "react-loader-spinner";
 
 const VendorWorkDetail = () => {
@@ -50,17 +51,59 @@ const VendorWorkDetail = () => {
     setUpdateButton(true);
   };
   let navigate = useNavigate();
-
+  const updateWorkorderFormik = useFormik({
+    initialValues: {
+      status: "",
+      staffmember_name: "",
+      date: "",
+      staffmember_id: "",
+      message: "",
+      statusUpdatedBy: "",
+    },
+    onSubmit: (values) => {
+      //console.log(values);
+      // updateValues()
+      // updateWorkorder(values);
+    },
+  });
   const getOutstandData = async () => {
     if (workorder_id) {
       try {
-        const url = `${baseUrl}/work-order/workorder_details/${workorder_id}`;
-        const response = await axios.get(url);
-        console.log(response.data.data);
-        setoutstandDetails(response.data.data);
+        const response = await axios.get(
+          `${baseUrl}/work-order/workorder_details/${workorder_id}`
+        );
+        setoutstandDetails(response?.data?.data);
+
+        if (
+          response?.data?.data?.workorder_updates &&
+          response.data.data.workorder_updates.length > 0
+        ) {
+          const reversedUpdates = [
+            ...response?.data?.data?.workorder_updates,
+          ].reverse();
+
+          const latestUpdate = reversedUpdates[0];
+
+          setWorkOrderStatus(reversedUpdates);
+
+          updateWorkorderFormik.setValues({
+            status: response?.data?.data?.status,
+            staffmember_name: latestUpdate?.staffmember_name,
+            date: response?.data?.data?.date,
+            assigned_to: response?.data?.data.staff_data?.staffmember_name,
+            message: response?.data?.data?.message
+              ? response?.data?.data?.message
+              : "",
+            statusUpdatedBy: latestUpdate?.statusUpdatedBy
+              ? latestUpdate?.statusUpdatedBy
+              : "Admin",
+          });
+        } else {
+          console.log("No updates found in workorder_updates");
+        }
+
         setLoading(false);
-        //setWorkOrderStatus(response.data.data.workorder_status.reverse());
-        setImageDetails(response.data.data.workOrder_images);
+        setImageDetails(response?.data?.data?.workOrder_images);
       } catch (error) {
         console.error("Error fetching tenant details:", error);
         setError(error);
@@ -490,7 +533,7 @@ const VendorWorkDetail = () => {
                               </Box>
                             </Box>
                             {outstandDetails?.partsandcharge_data?.length > 0 &&
-                              outstandDetails?.partsandcharge_data ? (
+                            outstandDetails?.partsandcharge_data ? (
                               <Box
                                 border="1px solid #ccc"
                                 borderRadius="8px"
@@ -605,10 +648,12 @@ const VendorWorkDetail = () => {
                                 </h2>
                               </Grid>
 
-                              {outstandDetails.workorder_status &&
-                                outstandDetails.workorder_status.length > 0 &&
+                              {outstandDetails?.workorder_updates &&
+                                outstandDetails.workorder_updates.length > 0 &&
                                 workOrderStatus.map((item, index) => (
-                                  <Grid item xs={12}>
+                                  <Grid item xs={12} key={index}>
+                                    {" "}
+                                    {console.log("item", item)}
                                     <Box
                                       padding="12px"
                                       maxWidth="700px"
@@ -625,12 +670,18 @@ const VendorWorkDetail = () => {
                                         }}
                                       >
                                         <div style={{ fontWeight: "bold" }}>
-                                          {item.statusUpdatedBy}{" "}
-                                          {item.createdAt
-                                            ? "Created this work order"
-                                            : "Updated this work order"}
+                                          {item.statusUpdatedBy}
+                                          {item.createdAt &&
+                                          (!item.updatedAt ||
+                                            item.createdAt === item.updatedAt)
+                                            ? " created this work order"
+                                            : " updated this work order"}
                                           <span style={{ fontSize: "13px" }}>
-                                            &nbsp;({item.updateAt})
+                                            &nbsp;(
+                                            {item.updatedAt
+                                              ? item.updatedAt
+                                              : item.createdAt}
+                                            )
                                           </span>
                                         </div>
                                       </div>
@@ -640,71 +691,33 @@ const VendorWorkDetail = () => {
                                           marginBottom: "0px",
                                         }}
                                       />
-
-                                      {console.log(item, "item")}
                                       <Grid container>
-                                        {!Object.keys(item).includes(
-                                          "status"
-                                        ) ||
-                                          Object.keys(item).includes(
-                                            "due_date"
-                                          ) ||
-                                          item.status !== (" " || "") ||
-                                          item.due_date !== (" " || "") ||
-                                          item.staffmember_name !==
-                                          (" " || "") ? (
+                                        {(item.status && item.status.trim()) ||
+                                        (item.date && item.date.trim()) ||
+                                        (item.staffmember_name &&
+                                          item.staffmember_name.trim()) ? (
                                           <>
-                                            <Grid
-                                              item
-                                              xs={4}
-                                              style={
-                                                !Object.keys(item).includes(
-                                                  "status"
-                                                ) ||
-                                                  item.status === (" " || null)
-                                                  ? { display: "none" }
-                                                  : { display: "block" }
-                                              }
-                                            >
-                                              Status: {item.status}
-                                            </Grid>
-                                            <Grid
-                                              itemx
-                                              xs={4}
-                                              style={
-                                                !Object.keys(item).includes(
-                                                  "due_date"
-                                                ) ||
-                                                  item.due_date === (" " || null)
-                                                  ? { display: "none" }
-                                                  : { display: "block" }
-                                              }
-                                            >
-                                              Due Date: {item.due_date}
-                                            </Grid>
-                                            <Grid
-                                              item
-                                              xs={4}
-                                              style={{
-                                                display:
-                                                  item.staffmember_name &&
-                                                    item.staffmember_name.trim() !==
-                                                    ""
-                                                    ? "block"
-                                                    : "none",
-                                              }}
-                                            >
-                                              Assigned To:{" "}
-                                              {item.staffmember_name}
-                                            </Grid>
+                                            {item.status && (
+                                              <Grid item xs={4}>
+                                                Status: {item.status}
+                                              </Grid>
+                                            )}
+                                            {item.date && (
+                                              <Grid item xs={4}>
+                                                Due Date: {item.date}
+                                              </Grid>
+                                            )}
+                                            {item.staffmember_name && (
+                                              <Grid item xs={4}>
+                                                Assigned To:{" "}
+                                                {item.staffmember_name}
+                                              </Grid>
+                                            )}
                                           </>
                                         ) : (
-                                          <>
-                                            <Grid item>
-                                              {" "}
-                                              Work Order Is Updated
-                                            </Grid>
-                                          </>
+                                          <Grid item>
+                                            Work Order Is Created
+                                          </Grid>
                                         )}
                                       </Grid>
                                     </Box>
@@ -769,7 +782,7 @@ const VendorWorkDetail = () => {
                               </Box>
                             </Box>
                             {tenantsDetails &&
-                              typeof tenantsDetails === "object" ? (
+                            typeof tenantsDetails === "object" ? (
                               <Box
                                 style={{
                                   display: "flex",
@@ -1010,10 +1023,10 @@ const VendorWorkDetail = () => {
                                     outstandDetails.priority === "High"
                                       ? "red"
                                       : outstandDetails.priority === "Medium"
-                                        ? "green"
-                                        : outstandDetails.priority === "Low"
-                                          ? "#FFD700"
-                                          : "inherit",
+                                      ? "green"
+                                      : outstandDetails.priority === "Low"
+                                      ? "#FFD700"
+                                      : "inherit",
                                   borderRadius: "15px",
                                   padding: "2px",
                                   fontSize: "15px",
@@ -1021,10 +1034,10 @@ const VendorWorkDetail = () => {
                                     outstandDetails.priority === "High"
                                       ? "red"
                                       : outstandDetails.priority === "Medium"
-                                        ? "green"
-                                        : outstandDetails.priority === "Low"
-                                          ? "#FFD700"
-                                          : "inherit",
+                                      ? "green"
+                                      : outstandDetails.priority === "Low"
+                                      ? "#FFD700"
+                                      : "inherit",
                                 }}
                               >
                                 &nbsp;{outstandDetails.priority}&nbsp;
@@ -1163,7 +1176,7 @@ const VendorWorkDetail = () => {
                               </Box>
 
                               {outstandDetails?.workOrder_images &&
-                                outstandDetails?.workOrder_images.length > 0 ? (
+                              outstandDetails?.workOrder_images.length > 0 ? (
                                 <Box
                                   style={{
                                     width: "100%",
