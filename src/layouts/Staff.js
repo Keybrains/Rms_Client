@@ -53,7 +53,7 @@ const Staff = (props) => {
         routes={routes}
         logo={{
           innerLink: "/staff/StaffdashBoard",
-          imgSrc: require("../assets/img/brand/rms.jpeg"),
+          imgSrc: require("../assets/img/icons/common/site-logo-1 5.png"),
           imgAlt: "...",
         }}
       />

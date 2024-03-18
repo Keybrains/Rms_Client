@@ -69,18 +69,18 @@
             padding-right: $navbar-padding-x;
             font-size: $navbar-nav-link-font-size;
 
-            &.active {
-                position: relative;
+            // &.active {
+            //     position: relative;
 
-                &:before {
-                    content: '';
-                    position: absolute;
-                    left: 0;
-                    top: $nav-link-padding-y;
-                    bottom: $nav-link-padding-y;
-                    border-left: 2px solid $primary;
-                }
-            }
+            //     &:before {
+            //         content: '';
+            //         position: absolute;
+            //         left: 0;
+            //         top: $nav-link-padding-y;
+            //         bottom: $nav-link-padding-y;
+            //         border-left: 2px solid $primary;
+            //     }
+            // }
 
 
             // Icon
@@ -224,20 +224,20 @@
                         margin-right: -$navbar-vertical-padding-x;
                     }
 
-                    .navbar-nav .nav-link {
-                        padding: $navbar-vertical-nav-link-padding-y $navbar-vertical-nav-link-padding-x;
+                    // .navbar-nav .nav-link {
+                    //     padding: $navbar-vertical-nav-link-padding-y $navbar-vertical-nav-link-padding-x;
 
-                        &.active {
-                            &:before {
-                                top: $nav-link-padding-y;
-                                bottom: $nav-link-padding-y;
-                                left: 0;
-                                right: auto;
-                                border-left: 2px solid $primary;
-                                border-bottom: 0;
-                            }
-                        }
-                    }
+                    //     &.active {
+                    //         &:before {
+                    //             top: $nav-link-padding-y;
+                    //             bottom: $nav-link-padding-y;
+                    //             left: 0;
+                    //             right: auto;
+                    //             border-left: 2px solid $primary;
+                    //             border-bottom: 0;
+                    //         }
+                    //     }
+                    // }
 
 
                     // Second level

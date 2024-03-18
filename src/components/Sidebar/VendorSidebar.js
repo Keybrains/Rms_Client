@@ -199,16 +199,39 @@ const VendorSidebar = (props) => {
     );
     return filteredRoutes.map((prop, key) => {
       return (
-        <NavItem key={key}>
+        <NavItem key={key} style={{ marginBottom: "30px" }}>
           <NavLink
             to={prop.layout + prop.path}
             tag={NavLinkRRD}
             onClick={closeCollapse}
+            style={({ isActive }) => {
+              return isActive
+                ? {
+                  color: "#fff",
+                  fontFamily: "Poppins",
+                  fontSize: "18px",
+                  backgroundColor: "rgba(21, 43, 81, 1)",
+                  borderRadius: "16px",
+                  margin: "0 24px",
+                  padding: "12px",
+                }
+                : {
+                  color: "#000",
+                  fontFamily: "Poppins",
+                  fontSize: "18px",
+                  margin: "0 24px",
+                  padding: "12px",
+                };
+            }}
+            className="sidebar-nav"
+            activeClassName="active"
           >
-            <i className={prop.icon} />
+            <img src={prop.icon} width={25} height={25} style={{ marginRight: "10px", color: 'white' }} />
             {prop.name}
           </NavLink>
         </NavItem>
+
+
       );
     });
   };
@@ -253,13 +276,13 @@ const VendorSidebar = (props) => {
           </NavbarBrand>
         ) : null}
 
-        <FormGroup
-          className="mb-0"
+        {/* <FormGroup
+          className="mb-0 mr-4"
           style={notificationIconStyle}
           onClick={toggleSidebar}
         >
-          <NotificationsIcon style={{ color: "black", fontSize: "30px" }} />
-          {notificationCount > 0 && (
+          <NotificationsIcon style={{ color: "black", fontSize: "30px" }} />s
+          {2 > 0 && (
             <div
               className="notification-circle"
               style={{
@@ -275,11 +298,11 @@ const VendorSidebar = (props) => {
                 className="notification-count"
                 style={{ color: "white", fontSize: "13px" }}
               >
-                {notificationCount}
+                {2}
               </span>
             </div>
           )}
-        </FormGroup>
+        </FormGroup> */}
 
         <Nav className="align-items-center d-none d-md-flex" navbar>
           <Drawer anchor="right" open={isSidebarOpen} onClose={toggleSidebar}>

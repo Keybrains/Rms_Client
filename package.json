@@ -91,6 +91,7 @@
     "react-select-country-list": "^2.2.3",
     "react-toastify": "^10.0.4",
     "reactstrap": "8.10.0",
+    "recharts": "^2.12.3",
     "sass": "1.62.1",
     "spinner": "^0.3.4",
     "sweetalert": "^2.1.2",

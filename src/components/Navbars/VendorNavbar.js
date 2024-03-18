@@ -25,6 +25,7 @@ import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { jwtDecode } from "jwt-decode";
+import notify from '../../assets/img/icons/common/notify.svg';
 
 const VendorNavbar = (props) => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -112,38 +113,24 @@ const VendorNavbar = (props) => {
           }}
         >
           <Link
-            className="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block"
+            className="h4 mb-0 d-none d-lg-inline-block"
             to="/vendor/VendordashBoard"
+            style={{ color: "rgba(82, 84, 89, 1)", fontFamily: "Manrope", fontSize: "18px", fontWeight: "400" }}
           >
-            {props.brandText}
+            Hello {accessType?.vendor_name}, Welcome Back !
+            {/* My {props.brandText} */}
           </Link>
 
-          <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
+          <Form className="navbar-search navbar-search-dark form-inline mr-5 d-none d-md-flex ml-lg-auto">
             <FormGroup
               className="mb-0"
               onClick={toggleSidebar}
               style={{ cursor: "pointer", position: "relative" }}
             >
-              <NotificationsIcon style={{ color: "white", fontSize: "30px" }} />
-              {notificationCount > 0 && (
-                <div
-                  className="notification-circle"
-                  style={{
-                    position: "absolute",
-                    top: "-15px",
-                    right: "-20px",
-                    background: "red",
-                    borderRadius: "50%",
-                    padding: "0.1px 8px",
-                  }}
-                >
-                  <span
-                    className="notification-count"
-                    style={{ color: "white", fontSize: "13px" }}
-                  >
-                    {notificationCount}
-                  </span>
-                </div>
+              {notificationCount === 0 ? (
+                <i className="far fa-bell" style={{ fontSize: "30px" }}></i>
+              ) : (
+                <img src={notify} width={30} height={30} />
               )}
             </FormGroup>
           </Form>
@@ -215,12 +202,15 @@ const VendorNavbar = (props) => {
             </Drawer>
           </Nav>
 
-          <Nav className="align-items-center d-none d-md-flex" navbar>
+          <Nav className="align-items-center d-none d-md-flex" navbar style={{
+            backgroundColor: "rgba(54, 159, 255, 0.1)",
+            borderRadius: "16px",
+          }}>
             <UncontrolledDropdown nav>
-              <DropdownToggle className="pr-0" nav>
-                <Media className="align-items-center">
-                  <Media className="ml-2 d-none d-lg-block">
-                    <span className="avatar avatar-sm rounded-circle">
+              <DropdownToggle className="" nav>
+                <Media className="align-items-center" style={{ gap: "15px" }}>
+                  <Media className="ml-2 d-none d-lg-block" >
+                    <span className="avatar avatar-sm " >
                       {/* <img
                       alt="..."
                       src={require("../../assets/img/theme/team-4-800x800.jpg")}
@@ -233,14 +223,19 @@ const VendorNavbar = (props) => {
 
                   </Media>
                   <Media className="ml-2 d-none d-lg-block">
-                    <span className="mb-0 text-sm font-weight-bold">
+                    <span className="mb-0 text-sm font-weight-bold" style={{ color: "#152B51" }}>
                       {accessType?.vendor_name}
                     </span>
+                    <br />
+                    <span style={{ color: "#152B51",fontSize:"14px" }}>Vendor</span>
                   </Media>
+                  <span style={{ color: "#152B51" }} className="">
 
+                    <i className="fa-solid fa-angle-down"></i>
+                  </span>
                 </Media>
               </DropdownToggle>
-              <DropdownMenu className="dropdown-menu-arrow" right>
+              <DropdownMenu className="dropdown-menu-arrow w-100" right>
                 <DropdownItem className="noti-title" header tag="div">
                   <h6 className="text-overflow m-0">Welcome</h6>
                 </DropdownItem>

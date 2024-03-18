@@ -90,6 +90,18 @@ import SuperAdminEmailForm from "components/superadmin/Email/EmailForm";
 import SuperAdminEmailTable from "components/superadmin/Email/EmailTable";
 import ResetPassword from "views/source/Resetpassword";
 
+// =================== svg files ======================
+// ===============Vendor==========================
+import vendordashboard from './assets/img/icons/common/dashboard.svg';
+import vendorprofile from './assets/img/icons/common/profile.svg';
+import vendorworder from './assets/img/icons/common/workorder.svg';
+
+// ===============Staffmember==========================
+import staffdashboard from './assets/img/icons/common/dashboard.svg';
+import staffprofile from './assets/img/icons/common/profile.svg';
+import staffproperty from './assets/img/icons/common/propertyhome.svg';
+import staffworder from './assets/img/icons/common/workorder.svg';
+
 var routes = [
   {
     path: "/index",
@@ -389,21 +401,21 @@ var routes = [
   {
     path: "/StaffdashBoard",
     name: "DashBoard",
-    icon: "ni ni-tv-2 text-primary",
+    icon: staffdashboard,
     component: <StaffDashBoard />,
     layout: "/staff",
   },
   {
     path: "/VendordashBoard",
     name: "DashBoard",
-    icon: "ni ni-tv-2 text-primary",
+    icon: vendordashboard,
     component: <VendorDashBoard />,
     layout: "/vendor",
   },
   {
     path: "/vendorprofile",
     name: "Profile",
-    icon: "ni ni-single-02 text-yellow",
+    icon: vendorprofile,
     component: <VendorProfile />,
     layout: "/vendor",
   },
@@ -442,7 +454,7 @@ var routes = [
   {
     path: "/staffprofile",
     name: "Profile",
-    icon: "ni ni-single-02 text-yellow",
+    icon: staffprofile,
     component: <StaffProfile />,
     layout: "/staff",
   },
@@ -450,7 +462,7 @@ var routes = [
   {
     path: "/staffproperty",
     name: "Property",
-    icon: "ni ni-pin-3 text-orange",
+    icon: staffproperty,
     component: <StaffPropertyDashboard />,
     layout: "/staff",
   },
@@ -465,7 +477,7 @@ var routes = [
   {
     path: "/vendorworktable",
     name: "Work Order",
-    icon: "ni ni-badge text-green",
+    icon: vendorworder,
     component: <VendorWorkTable />,
     layout: "/vendor",
   },
@@ -486,7 +498,7 @@ var routes = [
   {
     path: "/staffworktable",
     name: "Work Order",
-    icon: "ni ni-badge text-green",
+    icon: staffworder,
     component: <StaffWorkTable />,
     layout: "/staff",
   },

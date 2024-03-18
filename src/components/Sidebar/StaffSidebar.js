@@ -159,29 +159,29 @@ const StaffSidebar = (props) => {
 
   const navigateToDetails = (workorder_id) => {
     if (workorder_id) {
-    axios.get(`${baseUrl}/notification/notification/${workorder_id}?role=staff`)
-      .then((response) => {
-        if (response.status === 200) {
-          const updatedNotificationData = notificationData.map(notification => {
-            if (notification.workorder_id === workorder_id) {
-              return { ...notification, isStaffread: true };
-            }
-            return notification;
-          });
-          setNotificationData(updatedNotificationData);
-          setNotificationCount(updatedNotificationData.length);
-          fetchNotification();
-          //console.log(`Notification with workorder_id ${workorder_id} deleted successfully.`);
-        } else {
-          console.error(`Failed to mark notification with workorder_id ${workorder_id} as read.`);
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+      axios.get(`${baseUrl}/notification/notification/${workorder_id}?role=staff`)
+        .then((response) => {
+          if (response.status === 200) {
+            const updatedNotificationData = notificationData.map(notification => {
+              if (notification.workorder_id === workorder_id) {
+                return { ...notification, isStaffread: true };
+              }
+              return notification;
+            });
+            setNotificationData(updatedNotificationData);
+            setNotificationCount(updatedNotificationData.length);
+            fetchNotification();
+            //console.log(`Notification with workorder_id ${workorder_id} deleted successfully.`);
+          } else {
+            console.error(`Failed to mark notification with workorder_id ${workorder_id} as read.`);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
 
-    // Continue with navigating to the details page
-    navigate(`/staff/staffworkdetails/${workorder_id}`);
+      // Continue with navigating to the details page
+      navigate(`/staff/staffworkdetails/${workorder_id}`);
     }
   };
 
@@ -197,13 +197,34 @@ const StaffSidebar = (props) => {
     );
     return filteredRoutes.map((prop, key) => {
       return (
-        <NavItem key={key}>
+        <NavItem key={key} style={{ marginBottom: "30px" }}>
           <NavLink
             to={prop.layout + prop.path}
             tag={NavLinkRRD}
             onClick={closeCollapse}
+            style={({ isActive }) => {
+              return isActive
+                ? {
+                  color: "#fff",
+                  fontFamily: "Poppins",
+                  fontSize: "18px",
+                  backgroundColor: "rgba(21, 43, 81, 1)",
+                  borderRadius: "16px",
+                  margin: "0 24px",
+                  padding: "12px",
+                }
+                : {
+                  color: "#000",
+                  fontFamily: "Poppins",
+                  fontSize: "18px",
+                  margin: "0 24px",
+                  padding: "12px",
+                };
+            }}
+            className="sidebar-nav"
+            activeClassName="active"
           >
-            <i className={prop.icon} />
+            <img src={prop.icon} width={25} height={25} style={{ marginRight: "10px", color: 'white' }} />
             {prop.name}
           </NavLink>
         </NavItem>
