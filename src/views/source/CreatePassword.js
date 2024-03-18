@@ -36,13 +36,13 @@ const CreatePassword = () => {
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const token = searchParams.get("token");
-
+  
     // Make a request to check the token's expiration status
     fetch(`${baseUrl}/admin/check_token_status/${token}`)
       .then((response) => response.json())
       .then((data) => {
         setIsLoading(false);
-
+        console.log("token",data)
         if (data.expired) {
           setTokenExpired(true);
         }
@@ -59,7 +59,7 @@ const CreatePassword = () => {
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
+  console.log("maill",email)
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match");
@@ -84,16 +84,16 @@ const CreatePassword = () => {
         const data = await response.json();
 
         if (response.ok) {
-          toast.success('Password Changed Successfully', {
+          toast.success('Password Set Successfully', {
             position: 'top-center',
             // autoClose: 1000
           })
-          console.log("res",data)
+          console.log("res",data);
           console.log("Navigating to URL:", data.url);
           navigate(data.url);
         } else {
           setError(data.message);
-          toast.error('Failed To Change Password', {
+          toast.error('Failed To Set Password', {
             position: 'top-center',
             autoClose: 1000
           })
