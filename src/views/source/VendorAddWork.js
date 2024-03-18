@@ -60,6 +60,16 @@ const VendorAddWork = () => {
   const [selectedCharge, setSelectedCharge] = useState("Select");
   const [selectedTenant, setSelectedTenant] = useState("Select");
 
+  const [accessType, setAccessType] = useState(null);
+  console.log('accessType', accessType)
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
+      setAccessType(jwt);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
 
 
   const toggle11 = () => {
@@ -135,50 +145,50 @@ const VendorAddWork = () => {
           const response = await axios.get(
             `${baseUrl}/workorder/workorder_summary/${id}`
           );
-          setImageDetails(response.data.data.workOrderImage);
-          const vendorData = response.data.data;
+          setImageDetails(response?.data?.data?.workOrderImage);
+          const vendorData = response?.data?.data;
           setWorkOrderData(vendorData);
 
-          const formattedDueDate = vendorData.due_date
-            ? new Date(vendorData.due_date).toISOString().split("T")[0]
+          const formattedDueDate = vendorData?.date
+            ? new Date(vendorData?.date).toISOString().split("T")[0]
             : "";
 
           setVid(vendorData._id);
-          if (vendorData && vendorData.entries.length > 0) {
-            setentriesID(vendorData.entries._id);
+          if (vendorData && vendorData?.entries.length > 0) {
+            setentriesID(vendorData?.entries._id);
           }
 
           try {
-            const units = await fetchUnitsByProperty(vendorData.rental_adress);
+            const units = await fetchUnitsByProperty(vendorData?.rental_adress);
             setUnitData(units);
           } catch (error) {
             console.log(error, "error");
           }
-          setSelectedUnit(vendorData.rental_units || "Select");
-          setSelectedProp(vendorData.rental_adress || "Select");
-          setSelectedCategory(vendorData.work_category || "Select");
-          setSelectedVendor(vendorData.vendor_name || "Select");
-          setSelectedEntry(vendorData.entry_allowed || "Select");
-          setSelecteduser(vendorData.staffmember_name || "Select");
-          setSelectedStatus(vendorData.status || "Select");
-          setSelectedPriority(vendorData.priority || "Select");
-          setSelectedAccount(vendorData.account_type || "Select");
-          setWorkOrderImage(vendorData.workOrderImage || []);
+          setSelectedUnit(vendorData?.rental_units || "Select");
+          setSelectedProp(vendorData?.rental_adress || "Select");
+          setSelectedCategory(vendorData?.work_category || "Select");
+          setSelectedVendor(vendorData?.vendor_name || "Select");
+          setSelectedEntry(vendorData?.entry_allowed || "Select");
+          setSelecteduser(vendorData?.staffmember_name || "Select");
+          setSelectedStatus(vendorData?.status || "Select");
+          setSelectedPriority(vendorData?.priority || "Select");
+          setSelectedAccount(vendorData?.account_type || "Select");
+          setWorkOrderImage(vendorData?.workOrderImage || []);
 
-          const entriesData = vendorData.entries || []; // Make sure entries is an array
-          console.log(vendorData.work_subject, "vendorData");
+          const entriesData = vendorData?.entries || []; // Make sure entries is an array
+          console.log(vendorData?.work_subject, "vendorData");
           WorkFormik.setValues({
-            work_subject: vendorData.work_subject || "",
-            rental_units: vendorData.rental_units || "",
-            invoice_number: vendorData.invoice_number || "",
-            work_charge: vendorData.work_charge || "",
-            detail: vendorData.detail || "",
-            entry_contact: vendorData.entry_contact || "",
-            work_performed: vendorData.work_performed || "",
-            vendor_note: vendorData.vendor_note || "",
-            due_date: formattedDueDate,
-            final_total_amount: vendorData.final_total_amount || "",
-            entries: entriesData.map((entry) => ({
+            work_subject: vendorData?.work_subject || "",
+            rental_units: vendorData?.rental_units || "",
+            invoice_number: vendorData?.invoice_number || "",
+            work_charge: vendorData?.work_charge || "",
+            detail: vendorData?.detail || "",
+            entry_contact: vendorData?.entry_contact || "",
+            work_performed: vendorData?.work_performed || "",
+            vendor_note: vendorData?.vendor_note || "",
+            date: formattedDueDate,
+            final_total_amount: vendorData?.final_total_amount || "",
+            entries: entriesData?.map((entry) => ({
               part_qty: entry.part_qty || "",
               account_type: entry.account_type || "Select",
               description: entry.description || "",
@@ -238,8 +248,6 @@ const VendorAddWork = () => {
   let cookies = new Cookies();
   let cookie_id = localStorage.getItem("Vendor ID");
 
-  const [accessType, setAccessType] = useState(null);
-  console.log(accessType, "accessType");
   // const [vendorDetails, setVendorDetails] = useState({});
   const [vendorname, setVendorname] = useState("");
 
@@ -261,15 +269,7 @@ const VendorAddWork = () => {
     }
   };
 
-  React.useEffect(() => {
-    if (localStorage.getItem("token")) {
-      const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
-      console.log(jwt.accessType, "jwt.accessType");
-    } else {
-      navigate("/auth/login");
-    }
-  }, [navigate]);
+
 
   let navigate = useNavigate();
   const handleCloseButtonClick = () => {
@@ -327,7 +327,7 @@ const VendorAddWork = () => {
         // updateWorkorderFormik.setValues({
         //   status: response.data.data.status,
         //   // staffmember_name: response.data.data.staffmember_name,
-        //   due_date: response.data.data.due_date,
+        //   date: response.data.data.date,
         //   assigned_to: response.data.data.staffmember_name,
         //   message: response.data.data.message ? response.data.data.message : "",
         //   statusUpdatedBy: response.data.data.statusUpdatedBy
@@ -394,49 +394,49 @@ const VendorAddWork = () => {
           } = response.data.data;
           setWorkOrderData(response.data.data);
 
-          const formattedDueDate = response.data.data.date
-            ? new Date(response.data.data.date).toISOString().split("T")[0]
+          const formattedDueDate = response?.data?.data?.date
+            ? new Date(response?.data?.data?.date).toISOString().split("T")[0]
             : "";
 
-          setVid(response.data.data.workOrder_id);
+          setVid(response?.data?.data?.workOrder_id);
 
           try {
-            const units = await fetchUnitsByProperty(property_data.rental_id);
+            const units = await fetchUnitsByProperty(property_data?.rental_id);
             setUnitData(units);
           } catch (error) {
             console.error(error, "error");
           }
 
-          setSelectedUnit(unit_data.rental_unit || "Select");
-          setSelectedProp(property_data.rental_adress || "Select");
-          setSelectedCategory(response.data.data.work_category || "Select");
-          setSelectedVendor(vendor_data.vendor_name || "Select");
-          setSelectedCharge(response.data.data.work_charge_to || "Select");
+          setSelectedUnit(unit_data?.rental_unit || "Select");
+          setSelectedProp(property_data?.rental_adress || "Select");
+          setSelectedCategory(response?.data?.data?.work_category || "Select");
+          setSelectedVendor(vendor_data?.vendor_name || "Select");
+          setSelectedCharge(response?.data?.data?.work_charge_to || "Select");
           setSelectedEntry(
-            response.data.data.entry_allowed === true ? "Yes" : "No" || "Select"
+            response?.data?.data?.entry_allowed === true ? "Yes" : "No" || "Select"
           );
-          setSelecteduser(staff_data.staffmember_name || "Select");
-          setSelectedStatus(response.data.data.status || "Select");
-          setSelectedPriority(response.data.data.priority || "Select");
-          setWorkOrderImage(response.data.data.workOrder_images || []);
-          setSelectedFiles(response.data.data.workOrder_images || []);
+          setSelecteduser(staff_data?.staffmember_name || "Select");
+          setSelectedStatus(response?.data.data.status || "Select");
+          setSelectedPriority(response?.data?.data?.priority || "Select");
+          setWorkOrderImage(response?.data?.data?.workOrder_images || []);
+          setSelectedFiles(response?.data?.data?.workOrder_images || []);
           setSelectedTenant(
-            tenant_data.tenant_firstName + " " + tenant_data.tenant_lastName ||
+            tenant_data?.tenant_firstName + " " + tenant_data?.tenant_lastName ||
             "Select"
           );
 
           WorkFormik.setValues({
-            invoice_number: response.data.data?.invoice_number || "",
-            work_charge_to: response.data.data?.work_charge_to || "",
-            detail: response.data.data?.detail || "",
+            invoice_number: response?.data?.data?.invoice_number || "",
+            work_charge_to: response?.data?.data?.work_charge_to || "",
+            detail: response?.data?.data?.detail || "",
             entry_contact: response.data.data?.entry_contact || "",
-            final_total_amount: response.data.data?.final_total_amount || "",
+            final_total_amount: response?.data?.data?.final_total_amount || "",
 
-            work_subject: response.data.data?.work_subject || "",
+            work_subject: response?.data?.data?.work_subject || "",
             rental_adress: property_data?.rental_adress || "",
             rental_unit: unit_data?.rental_unit || "",
-            rental_id: property_data.rental_id || "",
-            work_category: response.data.data?.work_category || "",
+            rental_id: property_data?.rental_id || "",
+            work_category: response?.data.data?.work_category || "",
             vendor_name: vendor_data?.vendor_name || "",
             vendor_id: vendor_data?.vendor_id || "",
             unit_id: unit_data?.unit_id || "",
@@ -446,22 +446,22 @@ const VendorAddWork = () => {
               " " +
               tenant_data?.tenant_lastName || "",
             invoice_number: "",
-            work_charge: response.data.data?.work_charge_to || "",
+            work_charge: response?.data?.data?.work_charge_to || "",
             entry_allowed:
-              response.data.data.entry_allowed === true ? "Yes" : "No" || "",
+              response?.data?.data?.entry_allowed === true ? "Yes" : "No" || "",
             detail: "",
             entry_contact: "",
-            work_performed: response.data.data?.work_performed || "",
-            vendor_note: response.data.data?.vendor_notes || "",
+            work_performed: response?.data?.data?.work_performed || "",
+            vendor_note: response?.data?.data?.vendor_notes || "",
             staffmember_name: staff_data?.staffmember_name || "",
             staffmember_id: staff_data?.staffmember_id || "",
-            status: response.data.data?.status || "",
-            due_date: formattedDueDate || "",
-            priority: response.data.data?.priority || "",
-            workOrderImage: response.data.data?.workOrder_images || "",
+            status: response?.data?.data?.status || "",
+            date: formattedDueDate || "",
+            priority: response?.data?.data?.priority || "",
+            workOrderImage: response?.data?.data?.workOrder_images || "",
             final_total_amount: "",
-            statusUpdatedBy: "Admin",
-            entries: partsandcharge_data.map((part) => ({
+            statusUpdatedBy: accessType?.vendor_name + "(Vendor)",
+            entries: partsandcharge_data?.map((part) => ({
               part_qty: part?.parts_quantity || "",
               parts_id: part?.parts_id || "",
               account_type: part?.account || "Select",
@@ -644,7 +644,7 @@ const VendorAddWork = () => {
         priority: WorkFormik.values.priority || "",
         work_charge_to: WorkFormik.values.work_charge || "",
         status: WorkFormik.values.status || "",
-        date: WorkFormik.values.due_date || "",
+        date: WorkFormik.values.date || "",
       },
       parts: WorkFormik.values.entries.map((item) => {
         return {
@@ -718,7 +718,7 @@ const VendorAddWork = () => {
       vendor_note: "",
       staffmember_name: "",
       status: "",
-      due_date: "",
+      date: "",
       priority: "",
       final_total_amount: "",
       workOrderImage: [],
@@ -842,13 +842,14 @@ const VendorAddWork = () => {
 
     const object = {
       workOrder: {
-        // admin_id: accessType?.admin_id || "",
+        admin_id: accessType?.admin_id || "",
         workOrder_id: id,
         rental_id: WorkFormik.values.rental_id || "",
         unit_id: WorkFormik.values.unit_id || "",
         vendor_id: WorkFormik.values.vendor_id || "",
         tenant_id: WorkFormik.values.tenant_id || "",
         staffmember_id: WorkFormik.values.staffmember_id || "",
+        staffmember_name: WorkFormik.values.staffmember_name || "",
         work_subject: WorkFormik.values.work_subject || "",
         work_category: WorkFormik.values.work_category || "",
         entry_allowed:
@@ -859,8 +860,10 @@ const VendorAddWork = () => {
         priority: WorkFormik.values.priority || "",
         work_charge_to: WorkFormik.values.work_charge || "",
         status: WorkFormik.values.status || "",
-        date: WorkFormik.values.due_date || "",
+        date: WorkFormik.values.date || "",
         // updated_by: { admin_id: accessType?.admin_id },
+        statusUpdatedBy: accessType?.vendor_name + "(Vendor)",
+        is_vendor: true,
       },
       parts: WorkFormik.values.entries.map((item) => {
         return {
@@ -2210,16 +2213,16 @@ const VendorAddWork = () => {
                             className="form-control-alternative"
                             id="input-unitadd"
                             type="date"
-                            name="due_date"
+                            name="date"
                             onBlur={WorkFormik.handleBlur}
                             onChange={WorkFormik.handleChange}
-                            value={WorkFormik.values.due_date}
+                            value={WorkFormik.values.date}
                             readOnly
                           />
-                          {WorkFormik.touched.due_date &&
-                            WorkFormik.errors.due_date ? (
+                          {WorkFormik.touched.date &&
+                            WorkFormik.errors.date ? (
                             <div style={{ color: "red" }}>
-                              {WorkFormik.errors.due_date}
+                              {WorkFormik.errors.date}
                             </div>
                           ) : null}
                         </FormGroup>

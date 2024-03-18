@@ -49,8 +49,19 @@ const WorkOrderDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const imageGetUrl = process.env.REACT_APP_IMAGE_GET_URL;
   const { workorder_id, admin } = useParams();
+  const [accessType, setAccessType] = useState(null);
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
+      setAccessType(jwt);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
   const [outstandDetails, setoutstandDetails] = useState({});
-  const [workOrderStatus, setWorkOrderStatus] = useState("");
+  const [workOrderStatus, setWorkOrderStatus] = useState([]);
+
   const [showTenantTable, setShowTenantTable] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -81,17 +92,47 @@ const WorkOrderDetails = () => {
     // Add any logic or state changes you need when the dialog is closed
     setOpenDialog(false);
   };
-
   const getOutstandData = async () => {
     if (workorder_id) {
       try {
         const response = await axios.get(
           `${baseUrl}/work-order/workorder_details/${workorder_id}`
         );
-        setoutstandDetails(response.data.data);
-        setWorkOrderStatus(response.data.data);
+        setoutstandDetails(response?.data?.data);
+
+        if (
+          response?.data?.data?.workorder_updates &&
+          response.data.data.workorder_updates.length > 0
+        ) {
+          const reversedUpdates = [
+            ...response?.data?.data?.workorder_updates,
+          ].reverse();
+
+          const latestUpdate = reversedUpdates[0];
+
+          setWorkOrderStatus(reversedUpdates);
+
+          setSelectedStatus(latestUpdate?.status);
+          setSelecteduser(latestUpdate?.staffmember_name);
+
+          updateWorkorderFormik.setValues({
+            status: response?.data?.data?.status,
+            staffmember_name: latestUpdate?.staffmember_name,
+            date: response?.data?.data?.date,
+            assigned_to: response?.data?.data.staff_data?.staffmember_name,
+            message: response?.data?.data?.message
+              ? response?.data?.data?.message
+              : "",
+            statusUpdatedBy: latestUpdate?.statusUpdatedBy
+              ? latestUpdate?.statusUpdatedBy
+              : "Admin",
+          });
+        } else {
+          console.log("No updates found in workorder_updates");
+        }
+
         setLoading(false);
-        setImageDetails(response.data.data.workOrderImage);
+        setImageDetails(response?.data?.data?.workOrder_images);
       } catch (error) {
         console.error("Error fetching tenant details:", error);
         setError(error);
@@ -99,14 +140,35 @@ const WorkOrderDetails = () => {
       }
     }
   };
-
+  useEffect(() => {
+    getOutstandData();
+    axios
+      .get(`${baseUrl}/staffmember/staff_member/${accessType?.admin_id}`)
+      .then((response) => {
+        const data = response.data;
+        console.log(data, "data");
+        if (data.statusCode === 200) {
+          setstaffData(data.data);
+          console.log("firsttttttttttt", data.data);
+        } else {
+          console.error("Error:", data.message);
+        }
+      })
+      .catch((error) => {
+        console.error(
+          "Network error:",
+          error.response ? error.response.data : error
+        );
+      });
+  }, [accessType?.admin_id]);
   // const getOutstandData = async () => {
   //   try {
   //     const response = await axios.get(
   //       `${baseUrl}/work-order/workorder_details/${workorder_id}`
   //     );
   //     setoutstandDetails(response.data.data);
-  //     setWorkOrderStatus(response.data.data.workorder_status.reverse());
+  //     setWorkOrderStatus(response.data.data.workorder_updates);
+  //     console.log(response.data.data.workorder_updates, "------------");
   //     setSelectedStatus(response.data.data.status);
   //     setSelecteduser(response.data.data.staffmember_name);
   //     updateWorkorderFormik.setValues({
@@ -149,8 +211,8 @@ const WorkOrderDetails = () => {
     initialValues: {
       status: "",
       staffmember_name: "",
-      due_date: "",
-      // assigned_to: "",
+      date: "",
+      staffmember_id: "",
       message: "",
       statusUpdatedBy: "",
     },
@@ -164,41 +226,25 @@ const WorkOrderDetails = () => {
   const updateValues = async () => {
     console.log(selectedStatus, "selected status");
     handleDialogClose();
-    const formatedDate = updateWorkorderFormik.values.due_date
-      ? new Date(updateWorkorderFormik.values.due_date)
-        .toISOString()
-        .split("T")[0]
+    const formattedDate = updateWorkorderFormik.values.date
+      ? new Date(updateWorkorderFormik.values.date).toISOString().split("T")[0]
       : "";
-    await axios
-      .put(`${baseUrl}/workorder/updateworkorder/${outstandDetails._id}`, {
-        due_date: formatedDate,
-        staffmember_name: selecteduser,
+
+    const workOrderData = {
+      workOrder: {
+        date: formattedDate,
+        staffmember_name: updateWorkorderFormik.values.staffmember_name,
+        staffmember_id: updateWorkorderFormik.values.staffmember_id, // Ensure this line is correct
         message: updateWorkorderFormik.values.message,
         status: selectedStatus,
-      })
-      .then((res) => {
-        console.log(res.data, "the wgike put");
-        getOutstandData();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+        statusUpdatedBy: "Admin",
+      },
+    };
 
     await axios
-      .put(`${baseUrl}/workorder/workorder/${outstandDetails._id}/status`, {
-        statusUpdatedBy: user,
-        status:
-          selectedStatus !== outstandDetails.status ? selectedStatus : " ",
-        due_date:
-          formatedDate !== outstandDetails.due_date ? formatedDate : " ",
-        staffmember_name:
-          selecteduser !== outstandDetails.staffmember_name
-            ? selecteduser
-            : " ",
-        // updateAt: updatedAt,
-      })
+      .put(`${baseUrl}/work-order/work-order/${workorder_id}`, workOrderData)
       .then((res) => {
-        console.log(res.data, "the status put");
+        console.log(res.data, "the wgike put");
         getOutstandData();
       })
       .catch((err) => {
@@ -233,9 +279,14 @@ const WorkOrderDetails = () => {
     // WorkFormik.values.status = status;
   };
 
-  const handleStaffSelect = (staff) => {
-    setSelecteduser(staff);
-    // WorkFormik.values.staffmember_name = staff;
+  const handleStaffSelect = (staffName, staffId) => {
+    setSelecteduser(staffName);
+    updateWorkorderFormik.setValues((prevValues) => ({
+      ...prevValues,
+      staffmember_name: staffName,
+      staffmember_id: staffId,
+    }));
+    console.log("Selected Staff:", staffName, "ID:", staffId);
   };
 
   function formatDateWithoutTime(dateString) {
@@ -247,42 +298,24 @@ const WorkOrderDetails = () => {
     return `${month}-${day}-${year}`;
   }
 
-  React.useEffect(() => {
-    getOutstandData();
-    fetch(`${baseUrl}/addstaffmember/find_staffmember`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.statusCode === 200) {
-          setstaffData(data.data);
-        } else {
-          // Handle error
-          console.error("Error:", data.message);
-        }
-      })
-      .catch((error) => {
-        // Handle network error
-        console.error("Network error:", error);
-      });
-  }, [workorder_id]);
-
   const [propertyDetails, setPropertyDetails] = useState({});
 
   const getPropertyData = async () => {
     if (outstandDetails?.rental_units === "") {
       try {
         const response = await axios.get(
-          `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}`
+          `${baseUrl}/propertyunit/property/${outstandDetails?.rental_adress}`
         );
-        setPropertyDetails(response.data[0]);
+        setPropertyDetails(response?.data[0]);
       } catch (error) {
         console.error("Error fetching tenant details:", error);
       }
-    } else if (outstandDetails.rental_adress && outstandDetails.rental_units) {
+    } else if (outstandDetails?.rental_adress && outstandDetails?.rental_units) {
       try {
         const response = await axios.get(
-          `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}/${outstandDetails.rental_units}`
+          `${baseUrl}/propertyunit/property/${outstandDetails?.rental_adress}/${outstandDetails?.rental_units}`
         );
-        setPropertyDetails(response.data[0]);
+        setPropertyDetails(response?.data[0]);
       } catch (error) {
         console.error("Error fetching tenant details:", error);
       }
@@ -610,8 +643,7 @@ const WorkOrderDetails = () => {
                                       <SmallSummaryCard
                                         label="Assignees"
                                         value={
-                                          outstandDetails?.staff_data
-                                            .staffmember_name || "N/A"
+                                          outstandDetails?.staff_data?.staffmember_name || "N/A"
                                         }
                                         textTruncate // add this prop to enable text truncation
                                       />
@@ -621,7 +653,7 @@ const WorkOrderDetails = () => {
                               </Box>
                             </Box>
                             {outstandDetails?.partsandcharge_data?.length > 0 &&
-                              outstandDetails?.partsandcharge_data ? (
+                            outstandDetails?.partsandcharge_data ? (
                               <Box
                                 border="1px solid #ccc"
                                 borderRadius="8px"
@@ -715,7 +747,7 @@ const WorkOrderDetails = () => {
                                 </Box>
                               </Box>
                             ) : null}
-                            {/* <Grid
+                            <Grid
                               container
                               border="1px solid #ccc"
                               borderRadius="8px"
@@ -728,18 +760,25 @@ const WorkOrderDetails = () => {
                               }} // Center the box horizontally
                             >
                               <Grid item xs={3} sm={3.5} md={3} lg={2} xl={2}>
-                                <h2
-                                  className="text-lg"
-                                  style={{ color: "blue" }}
-                                >
+                                <h2 className="text-primary text-lg">
                                   Updates
                                 </h2>
                               </Grid>
+                              <Grid item xs={3}>
+                                <Button
+                                  size="sm"
+                                  onClick={handleUpdateButtonClick}
+                                >
+                                  Update
+                                </Button>
+                              </Grid>
 
-                              {outstandDetails?.workorder_status &&
-                                outstandDetails?.workorder_status.length > 0 &&
+                              {outstandDetails?.workorder_updates &&
+                                outstandDetails.workorder_updates.length > 0 &&
                                 workOrderStatus.map((item, index) => (
-                                  <Grid item xs={12}>
+                                  <Grid item xs={12} key={index}>
+                                    {" "}
+                                    {console.log("item",item)}
                                     <Box
                                       padding="12px"
                                       maxWidth="700px"
@@ -756,12 +795,18 @@ const WorkOrderDetails = () => {
                                         }}
                                       >
                                         <div style={{ fontWeight: "bold" }}>
-                                          {item.statusUpdatedBy}{" "}
-                                          {item.createdAt
-                                            ? "Created this work order"
-                                            : "Updated this work order"}
+                                          {item.statusUpdatedBy}
+                                          {item.createdAt &&
+                                          (!item.updatedAt ||
+                                            item.createdAt === item.updatedAt)
+                                            ? " created this work order"
+                                            : " updated this work order"}
                                           <span style={{ fontSize: "13px" }}>
-                                            &nbsp;({item.updateAt})
+                                            &nbsp;(
+                                            {item.updatedAt
+                                              ? item.updatedAt
+                                              : item.createdAt}
+                                            )
                                           </span>
                                         </div>
                                       </div>
@@ -771,77 +816,40 @@ const WorkOrderDetails = () => {
                                           marginBottom: "0px",
                                         }}
                                       />
-
-                                      {console.log(item, "item")}
                                       <Grid container>
-                                        {!Object.keys(item).includes(
-                                          "status"
-                                        ) ||
-                                        Object.keys(item).includes(
-                                          "due_date"
-                                        ) ||
-                                        item.status !== (" " || "") ||
-                                        item.due_date !== (" " || "") ||
-                                        item.staffmember_name !==
-                                          (" " || "") ? (
+                                        {(item.status && item.status.trim()) ||
+                                        (item.date &&
+                                          item.date.trim()) ||
+                                        (item.staffmember_name &&
+                                          item.staffmember_name.trim()) ? (
                                           <>
-                                            <Grid
-                                              item
-                                              xs={4}
-                                              style={
-                                                !Object.keys(item).includes(
-                                                  "status"
-                                                ) ||
-                                                item.status === (" " || null)
-                                                  ? { display: "none" }
-                                                  : { display: "block" }
-                                              }
-                                            >
-                                              Status: {item.status}
-                                            </Grid>
-                                            <Grid
-                                              itemx
-                                              xs={4}
-                                              style={
-                                                !Object.keys(item).includes(
-                                                  "due_date"
-                                                ) ||
-                                                item.due_date === (" " || null)
-                                                  ? { display: "none" }
-                                                  : { display: "block" }
-                                              }
-                                            >
-                                              Due Date: {item.due_date}
-                                            </Grid>
-                                            <Grid
-                                              item
-                                              xs={4}
-                                              style={{
-                                                display:
-                                                  item.staffmember_name &&
-                                                  item.staffmember_name.trim() !==
-                                                    ""
-                                                    ? "block"
-                                                    : "none",
-                                              }}
-                                            >
-                                              Assigned To:{" "}
-                                              {item.staffmember_name}
-                                            </Grid>
+                                            {item.status && (
+                                              <Grid item xs={4}>
+                                                Status: {item.status}
+                                              </Grid>
+                                            )}
+                                            {item.date && (
+                                              <Grid item xs={4}>
+                                                Due Date: {item.date}
+                                              </Grid>
+                                            )}
+                                            {item.staffmember_name && (
+                                              <Grid item xs={4}>
+                                                Assigned To:{" "}
+                                                {item.staffmember_name}
+                                              </Grid>
+                                            )}
                                           </>
                                         ) : (
-                                          <>
-                                            <Grid item>
-                                              {" "}
-                                              Work Order Is Updated
-                                            </Grid>
-                                          </>
+                                          <Grid item>
+                                            Work Order Is Created
+                                          </Grid>
                                         )}
                                       </Grid>
                                     </Box>
                                   </Grid>
                                 ))}
-                            </Grid> */}
+                            </Grid>
                           </>
                         ) : (
                           <div>No details found.</div>
@@ -895,13 +903,13 @@ const WorkOrderDetails = () => {
                               >
                                 <span style={detailstyle}>Vendor</span> <br />
                                 <span>
-                                  {outstandDetails?.vendor_data.vendor_name ||
+                                  {outstandDetails?.vendor_data?.vendor_name ||
                                     "N/A"}
                                 </span>
                               </Box>
                             </Box>
                             {outstandDetails?.tenant_data &&
-                              typeof outstandDetails?.tenant_data === "object" ? (
+                            typeof outstandDetails?.tenant_data === "object" ? (
                               <Box
                                 style={{
                                   display: "flex",
@@ -1082,6 +1090,204 @@ const WorkOrderDetails = () => {
                         )}
                       </Col>
                     </Row>
+                    {updateButton && (
+                      <Form onSubmit={updateWorkorderFormik.handleSubmit}>
+                        <Dialog open={openDialog} onClose={handleDialogClose}>
+                          <DialogTitle>Update Dialog</DialogTitle>
+                          <DialogContent>
+                            <Grid container spacing={2}>
+                              <Grid item xs={4}>
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-desg"
+                                  >
+                                    Status *
+                                  </label>
+                                  <FormGroup>
+                                    <Dropdown
+                                      isOpen={statusdropdownOpen}
+                                      toggle={toggle6}
+                                    >
+                                      <DropdownToggle caret>
+                                        {selectedStatus
+                                          ? selectedStatus
+                                          : "Select"}
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                      </DropdownToggle>
+                                      <DropdownMenu
+                                        style={{
+                                          width: "100%",
+                                          maxHeight: "200px",
+                                          overflowY: "auto",
+                                        }}
+                                      >
+                                        <DropdownItem
+                                          onClick={() =>
+                                            handleStatusSelect("New")
+                                          }
+                                        >
+                                          New
+                                        </DropdownItem>
+                                        <DropdownItem
+                                          onClick={() =>
+                                            handleStatusSelect("In Progress")
+                                          }
+                                        >
+                                          In Progress
+                                        </DropdownItem>
+                                        <DropdownItem
+                                          onClick={() =>
+                                            handleStatusSelect("On Hold")
+                                          }
+                                        >
+                                          On Hold
+                                        </DropdownItem>
+                                        <DropdownItem
+                                          onClick={() =>
+                                            handleStatusSelect("Complete")
+                                          }
+                                        >
+                                          Complete
+                                        </DropdownItem>
+                                      </DropdownMenu>
+                                      {/* {WorkFormik.errors &&
+                                WorkFormik.errors?.status &&
+                                WorkFormik.touched &&
+                                WorkFormik.touched?.status &&
+                                WorkFormik.values.status === "" ? (
+                                <div style={{ color: "red" }}>
+                                  {WorkFormik.errors.status}
+                                </div>
+                              ) : null} */}
+                                    </Dropdown>
+                                  </FormGroup>
+                                </FormGroup>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-unitadd"
+                                  >
+                                    Due Date
+                                  </label>
+                                  <Input
+                                    className="form-control-alternative"
+                                    id="input-unitadd"
+                                    type="date"
+                                    name="date"
+                                    value={updateWorkorderFormik.values.date}
+                                    onChange={
+                                      updateWorkorderFormik.handleChange
+                                    }
+                                    onBlur={updateWorkorderFormik.handleBlur}
+                                  />
+                                  {/* {WorkFormik.touched.due_date &&
+                            WorkFormik.errors.due_date ? (
+                            <div style={{ color: "red" }}>
+                              {WorkFormik.errors.due_date}
+                            </div>
+                          ) : null} */}
+                                </FormGroup>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-desg"
+                                  >
+                                    Assigned To *
+                                  </label>
+                                  <FormGroup>
+                                    <Dropdown
+                                      isOpen={userdropdownOpen}
+                                      toggle={toggle5}
+                                    >
+                                      <DropdownToggle caret>
+                                        {selecteduser ? selecteduser : "Select"}
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                      </DropdownToggle>
+                                      <DropdownMenu
+                                        style={{
+                                          width: "100%",
+                                          maxHeight: "200px",
+                                          overflowY: "auto",
+                                        }}
+                                      >
+                                        <DropdownItem
+                                          header
+                                          style={{ color: "blue" }}
+                                        >
+                                          Staff
+                                        </DropdownItem>
+                                        {staffData.map((user) => (
+                                          <DropdownItem
+                                            key={user._id}
+                                            onClick={() =>
+                                              handleStaffSelect(
+                                                user.staffmember_name,
+                                                user.staffmember_id
+                                              )
+                                            }
+                                          >
+                                            {user.staffmember_name}
+                                          </DropdownItem>
+                                        ))}
+                                      </DropdownMenu>
+                                      {/* {WorkFormik.errors &&
+                                WorkFormik.errors?.staffmember_name &&
+                                WorkFormik.touched &&
+                                WorkFormik.touched?.staffmember_name &&
+                                WorkFormik.values.staffmember_name === "" ? (
+                                <div style={{ color: "red" }}>
+                                  {WorkFormik.errors.staffmember_name}
+                                </div>
+                              ) : null} */}
+                                    </Dropdown>
+                                  </FormGroup>
+                                </FormGroup>
+                              </Grid>
+                              <Grid item xs={12}>
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-unitadd"
+                                  >
+                                    Message
+                                  </label>
+                                  <Input
+                                    className="form-control-alternative"
+                                    id="input-unitadd"
+                                    type="textarea"
+                                    name="message"
+                                    value={updateWorkorderFormik.values.message}
+                                    onChange={
+                                      updateWorkorderFormik.handleChange
+                                    }
+                                    onBlur={updateWorkorderFormik.handleBlur}
+                                  />
+                                  {/* {WorkFormik.touched.due_date &&
+                            WorkFormik.errors.due_date ? (
+                            <div style={{ color: "red" }}>
+                              {WorkFormik.errors.due_date}
+                            </div>
+                          ) : null} */}
+                                </FormGroup>
+                              </Grid>
+                            </Grid>
+                          </DialogContent>
+                          <DialogActions>
+                            <Button onClick={handleDialogClose} color="primary">
+                              Cancel
+                            </Button>
+                            <Button color="primary" onClick={updateValues}>
+                              Save
+                            </Button>
+                          </DialogActions>
+                        </Dialog>
+                      </Form>
+                    )}
                   </div>
                 )}
 
@@ -1120,10 +1326,10 @@ const WorkOrderDetails = () => {
                                     outstandDetails?.priority === "High"
                                       ? "red"
                                       : outstandDetails?.priority === "Medium"
-                                        ? "green"
-                                        : outstandDetails?.priority === "Low"
-                                          ? "#FFD700"
-                                          : "inherit",
+                                      ? "green"
+                                      : outstandDetails?.priority === "Low"
+                                      ? "#FFD700"
+                                      : "inherit",
                                   borderRadius: "15px",
                                   padding: "2px",
                                   fontSize: "15px",
@@ -1131,10 +1337,10 @@ const WorkOrderDetails = () => {
                                     outstandDetails?.priority === "High"
                                       ? "red"
                                       : outstandDetails?.priority === "Medium"
-                                        ? "green"
-                                        : outstandDetails?.priority === "Low"
-                                          ? "#FFD700"
-                                          : "inherit",
+                                      ? "green"
+                                      : outstandDetails?.priority === "Low"
+                                      ? "#FFD700"
+                                      : "inherit",
                                 }}
                               >
                                 &nbsp;{outstandDetails?.priority}&nbsp;
@@ -1269,7 +1475,7 @@ const WorkOrderDetails = () => {
                                 </h2>
                               </Box>
                               {outstandDetails?.workOrder_images &&
-                                outstandDetails?.workOrder_images.length > 0 ? (
+                              outstandDetails?.workOrder_images.length > 0 ? (
                                 <Box
                                   style={{
                                     width: "100%",
