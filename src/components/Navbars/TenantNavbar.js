@@ -93,7 +93,7 @@ const TenantNavbar = (props) => {
     if (accessType?.tenant_id) {
       try {
         const response = await axios.get(
-          `${baseUrl}/notification/${accessType?.tenant_id}`
+          `${baseUrl}/notification/tenant/${accessType?.tenant_id}`
         );
         if (response.status === 200) {
           const data = response.data.data;

@@ -137,7 +137,7 @@ const AdminNavbar = (props) => {
   // };
 
   const [accessType, setAccessType] = useState({});
-
+  console.log('accessType', accessType)
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
@@ -157,14 +157,55 @@ const AdminNavbar = (props) => {
         if (res.data.statusCode === 200) {
           setPlan(res.data.data);
         }
-      } catch (error) { }
+      } catch (error) {}
     }
   };
 
   useEffect(() => {
     getPlan();
-  }, [accessType?.admin_id]); 
+  }, [accessType?.admin_id]);
 
+  //  Working
+  const [adminNotification, setAdminNotification] = useState([]);
+  const adminNotificationData = async (addresses, units) => {
+    if (accessType?.admin_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/notification/admin/${accessType?.admin_id}`
+        );
+        if (response.status === 200) {
+          const data = response.data.data;
+          setAdminNotification(data);
+          // Process the data as needed
+        } else {
+          console.error("Response status is not 200");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        // Handle the error, display a message to the user, or take other appropriate action.
+      }
+    }
+  };
+
+  useEffect(() => {
+    adminNotificationData();
+  }, [accessType?.admin_id]);
+
+  const readAdminNotification = async (notification_id) => {
+    try {
+      const response = await axios.put(
+        `${baseUrl}/notification/admin_notification/${notification_id}`
+      );
+      if (response.status === 200) {
+        adminNotificationData();
+        // Process the data as needed
+      } else {
+        console.error("Response status is not 200");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   return (
     <>
       <Navbar className="navbar-top navbar-dark" expand="md" id="navbar-main">
@@ -191,7 +232,7 @@ const AdminNavbar = (props) => {
                   color: "#fff",
                   marginRight: "20px",
                 }}
-              // disabled={plan?.plan_detail?.plan_name}
+                // disabled={plan?.plan_detail?.plan_name}
               >
                 {plan?.plan_detail?.plan_name &&
                 plan?.plan_detail?.plan_name !== "Free Plan"
@@ -242,57 +283,84 @@ const AdminNavbar = (props) => {
                     Notifications
                   </h2>
                   <Divider />
-                  {notificationData.map((data) => {
-                    const notificationTitle =
-                      data.notification_title || "No Title Available";
-                    const notificationDetails =
-                      data.notification_details || "No Details Available";
-                    const notificationTime = new Date(
-                      data.notification_time
-                    ).toLocaleString();
-
-                    return (
-                      <div key={data._id}>
-                        <ListItem
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handlePropertySelect(data)}
+                  {adminNotification?.map((data) => {
+                    if (data?.is_admin_read) {
+                      return null;
+                    } else {
+                      const notificationTitle =
+                        data?.notification_title || "No Title Available";
+                      const notificationDetails =
+                        data?.notification_detail || "No Details Available";
+                      const notificationTime = new Date(
+                        data?.createdAt
+                      ).toLocaleString();
+                      {console.log("data",data)}
+                      {console.log("data--------------",data.notification_type.workorder_id)}
+                      return (
+                        <div
+                          key={data._id}
+                          // style={{ backgroundColor: "#abccba" }}
                         >
-                          <div>
-                            <h4>{notificationTitle}</h4>
-                            <p>{notificationDetails}</p>
-                            <Row>
-                              <Col lg="8">
-                                <p>{notificationTime}</p>
-                              </Col>
-                              <Col>
-                                <Button
-                                  variant="contained"
-                                  color="primary"
-                                  style={{
-                                    textTransform: "none",
-                                    fontSize: "12px",
-                                  }}
-                                  onClick={() =>
-                                    navigateToDetails(data.workorder_id)
-                                  }
-                                >
-                                  View
-                                </Button>
-                              </Col>
-                            </Row>
-                          </div>
-                          {/* <ListItemText
+                          <ListItem onClick={() => handlePropertySelect(data)}>
+                            <div>
+                              <h4>{notificationTitle}</h4>
+                              <p>{notificationDetails}</p>
+                              <Row>
+                                <Col lg="8">
+                                  <p>{notificationTime}</p>
+                                </Col>
+                                <Col>
+                                  <Button
+                                    variant="contained"
+                                    color="primary"
+                                    style={{
+                                      // background: "#263238",
+                                      color: "white",
+                                      textTransform: "none",
+                                      fontSize: "12px",
+                                    }}
+                                    // onClick={() =>
+                                    //   navigateToDetails(data.notification_type)
+                                    // }
+                                    onClick={() => {
+                                      {
+                                        readAdminNotification(
+                                          data.notification_id
+                                        );
+
+                                        if (data.is_workorder) {
+                                          navigate(
+                                            `/${accessType.company_name}/workorderdetail/${data.notification_type.workorder_id}`
+                                          );
+                                        } else if (data.is_lease) {
+                                          navigate(
+                                            `/tenant/tenantpropertydetail/${data.notification_type.lease_id}`
+                                          );
+                                        } else {
+                                          navigate(`/tenant/tenantFinancial`);
+                                        }
+                                      }
+                                    }}
+                                  >
+                                    View
+                                  </Button>
+                                </Col>
+                              </Row>
+                            </div>
+
+                            {/* <ListItemText
                           primary={notificationTitle}
                           secondary={notificationTime}
                         />
                         <ListItemText
-                          primary={notificationDetails}
-                          secondary="Notification Details"
-                        /> */}
-                        </ListItem>
-                        <Divider />
-                      </div>
-                    );
+                        primary={notificationDetails}
+                        secondary="Notification Details"
+                      /> */}
+                          </ListItem>
+                          <Divider />
+                        </div>
+                      );
+                    }
                   })}
                 </List>
 

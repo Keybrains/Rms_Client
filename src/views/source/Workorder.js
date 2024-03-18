@@ -83,7 +83,7 @@ const Workorder = () => {
           `${baseUrl}/work-order/work-orders/${accessType?.admin_id}`
         );
         if (response?.data?.data) {
-          const filteredData = response.data.data.map((item) => ({
+          const filteredData = response.data.data?.map((item) => ({
             workOrder_id: item?.workOrderData?.workOrder_id,
             work_subject: item?.workOrderData?.work_subject,
             work_category: item?.workOrderData?.work_category,
@@ -407,7 +407,7 @@ const Workorder = () => {
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
-                  {workData.length === 0 ? (
+                  {workData?.length === 0 ? (
                     <tbody>
                       <tr className="text-center">
                         <td colSpan="8" style={{ fontSize: "15px" }}>

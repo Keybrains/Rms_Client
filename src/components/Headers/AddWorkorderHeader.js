@@ -18,7 +18,7 @@ const AddWorkorderHeader = () => {
         <Container className=" align-items-center" fluid>
           <Row>
             <Col lg="7" md="10">
-              <h1 className="display-2 text-white">Add Work Order</h1>
+              <h1 className="display-2 text-white">New Work Order</h1>
             </Col>
           </Row>
         </Container>
