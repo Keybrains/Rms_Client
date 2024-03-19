@@ -1,4 +1,4 @@
-import Index from "views/Index.js";
+import Index from "views/Index copy.js";
 import Profile from "views/source/Profile.js";
 import Rentals from "views/source/Rentals.js";
 import PropertiesTable from "views/source/PropertiesTable";
