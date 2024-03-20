@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import Cookies from "universal-cookie";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   DropdownMenu,
@@ -17,20 +16,13 @@ import {
   Row,
   Col,
 } from "reactstrap";
-import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import Button from "@mui/material/Button";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import { makeStyles } from "@mui/styles";
 import { jwtDecode } from "jwt-decode";
+import notify from "../../assets/icons/notify.svg";
 
 const TenantNavbar = (props) => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -47,40 +39,15 @@ const TenantNavbar = (props) => {
     }
   }, [navigate]);
 
-  let [loader, setLoader] = React.useState(true);
-
-  let cookies = new Cookies();
   let Logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("Tenant ID");
   };
-  const { id } = useParams();
-  //console.log(id);
-  const [vendorDetails, setVendorDetails] = useState({});
-  const [rental_adress, setRentalAddress] = useState("");
-  const [rental_units, setRentalUnit] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-
   let navigate = useNavigate();
-
-  let cookie_id = localStorage.getItem("Tenant ID");
-  //console.log(cookie_id)
-
-  // const {vendor_name}= useParams();
-  // const ENDPOINT = 'http://64.225.8.160:4001/notification/vendornotification/:vendor_name';
-  const [notification, setNotification] = useState("");
-  const [notificationCount, setNotificationCount] = useState(0);
-  const [notificationData, setNotificationData] = useState([]);
-  const [workData, setWorkData] = useState([]);
-  const [rentalAddress, setRentalAddresses] = useState([]);
-  const [rentalUnit, setRentalUnits] = useState([]);
-
   const [selectedProp, setSelectedProp] = useState("Select");
 
   const handlePropertySelect = (property) => {
@@ -89,7 +56,7 @@ const TenantNavbar = (props) => {
 
   //  Working
   const [tenantNotification, setTenantNotification] = useState([]);
-  const tenantNotificationData = async (addresses, units) => {
+  const tenantNotificationData = async () => {
     if (accessType?.tenant_id) {
       try {
         const response = await axios.get(
@@ -98,13 +65,11 @@ const TenantNavbar = (props) => {
         if (response.status === 200) {
           const data = response.data.data;
           setTenantNotification(data);
-          // Process the data as needed
         } else {
           console.error("Response status is not 200");
         }
       } catch (error) {
         console.error("Error:", error);
-        // Handle the error, display a message to the user, or take other appropriate action.
       }
     }
   };
@@ -120,7 +85,6 @@ const TenantNavbar = (props) => {
       );
       if (response.status === 200) {
         tenantNotificationData();
-        // Process the data as needed
       } else {
         console.error("Response status is not 200");
       }
@@ -129,103 +93,118 @@ const TenantNavbar = (props) => {
     }
   };
 
-  console.log(accessType, "accessType")
-
   return (
     <>
-      <Navbar className="navbar-top navbar-dark" expand="md" id="navbar-main">
-        <Container fluid>
-          <Link
-            className="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block"
-            to="/tenant/tenantdashboard"
+      <Navbar
+        className="navbar-top navbar-dark px-5 pt-5"
+        expand="md"
+        id="navbar-main"
+      >
+        <Link
+          className="h4 mb-0 d-none d-lg-inline-block"
+          to="/tenant/tenantdashboard"
+          style={{
+            color: "rgba(82, 84, 89, 1)",
+            fontFamily: "Manrope",
+            fontSize: "18px",
+            fontWeight: "400",
+          }}
+        >
+          Hello
+          {accessType?.tenant_firstName + " " + accessType?.tenant_lastName},
+          Welcome Back!
+        </Link>
+        <Form className="navbar-search navbar-search-dark form-inline mr-5 d-none d-md-flex ml-lg-auto">
+          <FormGroup
+            className="mb-0"
+            onClick={toggleSidebar}
+            style={{ cursor: "pointer", position: "relative" }}
           >
-            {props.brandText}
-          </Link>
-          <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
-            <FormGroup
-              className="mb-0"
+            {tenantNotification?.length === 0 ? (
+              <i className="far fa-bell" style={{ fontSize: "30px" }}></i>
+            ) : (
+              <img src={notify} width={30} height={30} />
+            )}
+          </FormGroup>
+        </Form>
+
+        <Nav className="align-items-center d-none d-md-flex" navbar>
+          <Drawer anchor="right" open={isSidebarOpen} onClose={toggleSidebar}>
+            <div
+              role="presentation"
               onClick={toggleSidebar}
-              style={{ cursor: "pointer", position: "relative" }}
+              onKeyDown={toggleSidebar}
             >
-              <NotificationsIcon style={{ color: "white", fontSize: "30px" }} />
-            </FormGroup>
-          </Form>
+              <List style={{ width: "350px" }}>
+                <h2 style={{ color: "#263238", marginLeft: "15px" }}>
+                  Notifications
+                </h2>
+                <Divider />
+                {tenantNotification.map((data) => {
+                  if (data.isTenantread) {
+                    return null;
+                  } else {
+                    const notificationTitle =
+                      data.notification_title || "No Title Available";
+                    const notificationDetails =
+                      data.notification_detail || "No Details Available";
+                    const notificationTime = new Date(
+                      data.createdAt
+                    ).toLocaleString();
 
-          <Nav className="align-items-center d-none d-md-flex" navbar>
-            <Drawer anchor="right" open={isSidebarOpen} onClose={toggleSidebar}>
-              <div
-                role="presentation"
-                onClick={toggleSidebar}
-                onKeyDown={toggleSidebar}
-              >
-                <List style={{ width: "350px" }}>
-                  <h2 style={{ color: "#263238", marginLeft: "15px" }}>
-                    Notifications
-                  </h2>
-                  <Divider />
-                  {tenantNotification.map((data) => {
-                    if (data.isTenantread) {
-                      return null;
-                    } else {
-                      const notificationTitle =
-                        data.notification_title || "No Title Available";
-                      const notificationDetails =
-                        data.notification_detail || "No Details Available";
-                      const notificationTime = new Date(
-                        data.createdAt
-                      ).toLocaleString();
+                    return (
+                      <div
+                        key={data._id}
+                        style={{ backgroundColor: "#abccba" }}
+                      >
+                        <ListItem onClick={() => handlePropertySelect(data)}>
+                          <div>
+                            <h4>{notificationTitle}</h4>
+                            <p>{notificationDetails}</p>
+                            <Row>
+                              <Col lg="8">
+                                <p>{notificationTime}</p>
+                              </Col>
+                              <Col>
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  style={{
+                                    background: "#263238",
+                                    color: "white",
+                                    textTransform: "none",
+                                    fontSize: "12px",
+                                  }}
+                                  // onClick={() =>
+                                  //   navigateToDetails(data.notification_type)
+                                  // }
+                                  onClick={() => {
+                                    {
+                                      readTenantNotification(
+                                        data.notification_id
+                                      );
 
-                      return (
-                        <div
-                          key={data._id}
-                          style={{ backgroundColor: "#abccba" }}
-                        >
-                          <ListItem onClick={() => handlePropertySelect(data)}>
-                            <div>
-                              <h4>{notificationTitle}</h4>
-                              <p>{notificationDetails}</p>
-                              <Row>
-                                <Col lg="8">
-                                  <p>{notificationTime}</p>
-                                </Col>
-                                <Col>
-                                  <Button
-                                    variant="contained"
-                                    color="primary"
-                                    style={{
-                                      background: "#263238",
-                                      color: "white",
-                                      textTransform: "none",
-                                      fontSize: "12px",
-                                    }}
-                                    // onClick={() =>
-                                    //   navigateToDetails(data.notification_type)
-                                    // }
-                                    onClick={() => {
-                                      {
-                                        readTenantNotification(
-                                          data.notification_id
+                                      if (data.is_workorder) {
+                                        navigate(
+                                          `/tenant/Tworkorderdetail/${data.notification_type.workOrder_id}`
                                         );
-
-                                        if (data.is_workorder) {
-                                          navigate(
-                                            `/tenant/Tworkorderdetail/${data.notification_type.workOrder_id}`
-                                          );
-                                        } else if (data.is_lease) {
-                                          navigate(
-                                            `/tenant/tenantpropertydetail/${data.notification_type.lease_id}`
-                                          );
-                                        }
+                                      } else if (data.is_lease) {
+                                        navigate(
+                                          `/tenant/tenantpropertydetail/${data.notification_type.lease_id}`
+                                        );
+                                      } else {
+                                        navigate(`/tenant/tenantFinancial`);
                                       }
-                                    }}
-                                  >
-                                    View
-                                  </Button>
-                                </Col>
-                              </Row>
-                            </div>
+                                    }
+                                  }}
+                                >
+                                  View
+                                </Button>
+                              </Col>
+                            </Row>
+                          </div>
 
-                            {/* <ListItemText
+                          {/* <ListItemText
                           primary={notificationTitle}
                           secondary={notificationTime}
                         />
@@ -233,80 +212,120 @@ const TenantNavbar = (props) => {
                         primary={notificationDetails}
                         secondary="Notification Details"
                       /> */}
-                          </ListItem>
-                          <Divider />
-                        </div>
-                      );
-                    }
-                  })}
-                </List>
-                <Divider />
-                {/* Other sidebar content goes here */}
-              </div>
-            </Drawer>
-          </Nav>
+                        </ListItem>
+                        <Divider />
+                      </div>
+                    );
+                  }
+                })}
+              </List>
+              <Divider />
+              {/* Other sidebar content goes here */}
+            </div>
+          </Drawer>
+        </Nav>
 
-          <Nav className="align-items-center d-none d-md-flex" navbar>
-            <UncontrolledDropdown nav>
-              <DropdownToggle className="pr-0" nav>
-                <Media className="align-items-center">
-
-                  <span className="avatar avatar-sm rounded-circle">
-                    {/* <img
-                      alt="..."
-                      src={require("../../assets/img/theme/team-4-800x800.jpg")}
-                    /> */}
-
-                    {`${accessType?.tenant_firstName
-                      ?.slice(0, 1)
-                      .toUpperCase()}${accessType?.tenant_lastName
-                        ?.slice(0, 1)
-                        .toUpperCase()}`}
-
-                  </span>
-                  <Media className="ml-2 d-none d-lg-block">
-                    <span className="mb-0 text-sm font-weight-bold">
-                      {accessType?.tenant_firstName} {accessType?.tenant_lastName}
-                    </span>
-                  </Media>
-                </Media>
-              </DropdownToggle>
-              <DropdownMenu className="dropdown-menu-arrow" right>
-                <DropdownItem className="noti-title" header tag="div">
-                  <h6 className="text-overflow m-0">Welcome</h6>
-                </DropdownItem>
-                {/* <DropdownItem to="/admin/user-profile" tag={Link}>
-                  <i className="ni ni-single-02" />
-                  <span>My profile</span>
-                </DropdownItem>
-                <DropdownItem to="/admin/user-profile" tag={Link}>
-                  <i className="ni ni-settings-gear-65" />
-                  <span>Settings</span>
-                </DropdownItem>
-                <DropdownItem to="/admin/user-profile" tag={Link}>
-                  <i className="ni ni-calendar-grid-58" />
-                  <span>Activity</span>
-                </DropdownItem>
-                <DropdownItem to="/admin/user-profile" tag={Link}>
-                  <i className="ni ni-support-16" />
-                  <span>Support</span> 
-                </DropdownItem>*/}
-                <DropdownItem divider />
-                <DropdownItem
-                  //  href="#rms"
-                  to="/auth/login"
-                  onClick={() => {
-                    Logout();
+        <Nav
+          className="align-items-center d-none d-md-flex"
+          navbar
+        >
+          <UncontrolledDropdown
+            style={{
+              border: "none",
+              background: "none",
+              boxShadow: "none",
+            }}
+          >
+            <DropdownToggle
+              className="px-4"
+              style={{
+                border: "none",
+                background: "rgba(54, 159, 255, 0.1)",
+                boxShadow: "none",
+              }}
+            >
+              <Media className="align-items-center">
+                <span
+                  className="d-flex justify-content-center align-items-center p-1"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    backgroundColor: "rgba(82, 84, 89, 1)",
+                    borderRadius: "12px",
                   }}
-                  tag={Link}
                 >
-                  <i className="ni ni-user-run" />
-                  <span>Logout</span>
-                </DropdownItem>
-              </DropdownMenu>
-            </UncontrolledDropdown>
-          </Nav>
-        </Container>
+                  {`${accessType?.tenant_firstName
+                    ?.slice(0, 1)
+                    .toUpperCase()}${accessType?.tenant_lastName
+                    ?.slice(0, 1)
+                    .toUpperCase()}`}
+                </span>
+                <Media className="ml-3 d-none d-lg-flex flex-column mx-1">
+                  <span
+                    className="mb-0 font-weight-bold text-dark"
+                    style={{
+                      fontSize: "14px",
+                      fontFamily: "Manrope",
+                    }}
+                  >
+                    {accessType?.tenant_firstName} {accessType?.tenant_lastName}
+                  </span>
+                  <span
+                    className="mb-0 font-weight-bold"
+                    style={{
+                      fontSize: "12px",
+                      fontFamily: "Manrope",
+                      color: "rgba(54, 159, 255, 1)",
+                    }}
+                  >
+                    Tenant
+                  </span>
+                </Media>
+                <span
+                  className="d-flex justify-content-center align-items-center"
+                  style={{
+                    fontSize: "20px",
+                    color: "#000",
+                    marginLeft: "35px",
+                  }}
+                >
+                  <i class="fa-solid fa-angle-down"></i>
+                </span>
+              </Media>
+            </DropdownToggle>
+            <DropdownMenu className="dropdown-menu-arrow w-100" right>
+              <DropdownItem className="noti-title w-100" header tag="div">
+                <h6
+                  className="text-overflow m-0"
+                  style={{
+                    fontSize: "14px",
+                    color: "#000",
+                    marginLeft: "35px",
+                  }}
+                >
+                  Welcome
+                </h6>
+              </DropdownItem>
+              <DropdownItem divider />
+              <DropdownItem
+                style={{
+                  fontSize: "14px",
+                  color: "#000",
+                  marginLeft: "35px",
+                }}
+                className="text-overflow m-0"
+                to="/auth/login"
+                onClick={() => {
+                  Logout();
+                }}
+                tag={Link}
+              >
+                <i className="ni ni-user-run" />
+                <span>Logout</span>
+              </DropdownItem>
+            </DropdownMenu>
+          </UncontrolledDropdown>
+        </Nav>
       </Navbar>
     </>
   );

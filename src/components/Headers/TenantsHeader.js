@@ -1,20 +1,25 @@
 import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
 
-const TenantsHeader = () => {
+const TenantsHeader = ({ prop }) => {
   return (
     <>
-      <div className="header pb-8 pt-5 pt-md-8" style={{
-          background: '#263238'
-        }}>
-        <Container fluid>
-          <div className="header-body">
-           
-          </div>
-        </Container>
+      <div className="header pb-3 pt-1 px-5 d-flex align-items-center">
+        <Row>
+          <Col>
+            <h1
+              style={{
+                fontFamily: "manrope",
+                fontSize: "30px",
+                fontWeight: "700",
+              }}
+            >
+              {prop}
+            </h1>
+          </Col>
+        </Row>
       </div>
     </>
   );
 };
 
 export default TenantsHeader;
-  

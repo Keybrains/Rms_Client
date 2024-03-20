@@ -1,4 +1,4 @@
-import Index from "views/Index.js";
+import Index from "views/Index copy";
 import Profile from "views/source/Profile.js";
 import Rentals from "views/source/Rentals.js";
 import PropertiesTable from "views/source/PropertiesTable";
@@ -24,14 +24,14 @@ import RentalOwnerDetail from "views/source/RentalOwnerDetail";
 import OutstandDetails from "views/source/OutstandDetails";
 import PropDetails from "views/source/PropDetails";
 import RentRollLeaseing from "views/source/RentRollLeaseing";
-import TenantDashBoard from "views/source/TenantDashBoard";
+import TenantDashBoard from "views/source/TenantDashBoard copy";
 import TenantProfile from "views/source/TenantProfile";
 import TenantProperty from "views/source/TenantProperty";
 import AddAgent from "views/source/AddAgent";
 import Agent from "views/source/Agent";
 import AgentdashBoard from "views/source/AgentdashBoard";
 import StaffDashBoard from "views/source/StaffDashBoard";
-import VendorDashBoard from "views/source/VendorDashBoard";
+import VendorDashBoard from "views/source/VendorDashBoard copy";
 import VendorProfile from "views/source/VendorProfile";
 import VenorWorkOrder from "views/source/VenorWorkOrder";
 import TenantWork from "views/source/TenantWork";
@@ -74,7 +74,7 @@ import Purchaseplan from "views/source/purchaseplandetail";
 
 // ==========================  Super Admin ===================================================
 
-import SuperAdminDashBoard from "../src/components/superadmin/Dashboard/DashBoard";
+import SuperAdminDashBoard from "../src/components/superadmin/Dashboard/DashBoard copy";
 import SuperAdminPlanList from "components/superadmin/Plan/PlanList";
 import SuperAdminAddplan from "components/superadmin/Plan/Addplan";
 import SuperAdminAdmin from "components/superadmin/Admin/Admin";
@@ -90,11 +90,29 @@ import SuperAdminEmailForm from "components/superadmin/Email/EmailForm";
 import SuperAdminEmailTable from "components/superadmin/Email/EmailTable";
 import ResetPassword from "views/source/Resetpassword";
 
+//  ====================== admin sidebar icons ======================
+import Dashboard from "./assets/icons/AdminSidebar/dashboard.svg";
+import Dashboard2 from "./assets/icons/AdminSidebar/dashboard2.svg";
+import Property from "./assets/icons/AdminSidebar/Property.svg";
+import Property2 from "./assets/icons/AdminSidebar/Property2.svg";
+import Staffmember from "./assets/icons/AdminSidebar/Staffmember.svg";
+import Staffmember2 from "./assets/icons/AdminSidebar/Staffmember2.svg";
+
+import Plan from "./assets/icons/Plans.svg";
+import Plan2 from "./assets/icons/Plans2.svg";
+import Admin from "./assets/icons/Admin.svg";
+import admin2 from "./assets/icons/admin2.svg";
+import Financial from "./assets/icons/Financial.svg";
+import Financial2 from "./assets/icons/Financial2.svg";
+import Work from "./assets/icons/Work.svg";
+import Work2 from "./assets/icons/Work Light.svg";
+
 var routes = [
   {
     path: "/index",
     name: "Dashboard",
-    icon: "ni ni-tv-2 text-primary",
+    icon: Dashboard,
+    icon2: Dashboard2,
     component: <Index />,
     layout: "/admin",
   },
@@ -131,14 +149,20 @@ var routes = [
   },
   {
     path: "/propertiesTable",
-    name: "Property table",
+    name: "Property Table",
     icon: "ni ni-bullet-list-67 text-red",
     component: <PropertiesTable />,
     layout: "/admin",
   },
   {
+    name: "Rentalowner Table",
+    path: "/RentalownerTable",
+    component: <RentalownerTable />,
+    layout: "/admin",
+  },
+  {
+    name: "Tenants Table",
     path: "/TenantsTable",
-    name: "Tenants",
     icon: "ni ni-bullet-list-67 text-red",
     component: <TenantsTable />,
     layout: "/admin",
@@ -159,8 +183,9 @@ var routes = [
   },
   {
     path: "/PropertyType",
-    name: "Add Property Type",
-    icon: "ni ni-building",
+    name: "Property Type",
+    icon: Property,
+    icon2: Property2,
     component: <PropertyType />,
     layout: "/admin",
   },
@@ -172,14 +197,15 @@ var routes = [
   },
   {
     path: "/AddStaffMember",
-    name: "Staff Member",
+    name: "Add Staff Member",
     component: <AddStaffMember />,
     layout: "/admin",
   },
   {
     path: "/StaffMember",
-    name: "Add Staff Member",
-    icon: "ni ni-badge text-green",
+    name: "Staff Member",
+    icon: Staffmember,
+    icon2: Staffmember2,
     component: <StaffMember />,
     layout: "/admin",
   },
@@ -191,11 +217,6 @@ var routes = [
   {
     path: "/Rentalowner/:id",
     component: <Rentalowner />,
-    layout: "/admin",
-  },
-  {
-    path: "/RentalownerTable",
-    component: <RentalownerTable />,
     layout: "/admin",
   },
 
@@ -233,7 +254,7 @@ var routes = [
   },
   {
     path: "/RentRoll",
-    name: "RentRoll",
+    name: "Rent Roll",
     icon: "ni ni-home-3 text-orange",
     component: <RentRoll />,
     layout: "/admin",
@@ -245,7 +266,6 @@ var routes = [
     component: <DemoPayment />,
     layout: "/admin",
   },
-
   {
     path: "/Listings",
     name: "listings",
@@ -255,33 +275,23 @@ var routes = [
   },
   {
     path: "/Applicants",
-    name: "applicants",
+    name: "Applicants",
     icon: "ni ni-home-3 text-orange",
     component: <Applicants />,
     layout: "/admin",
   },
-
-  // {
-  //   path: "/SumProperties",
-  //   name: "SumProperties",
-  //   component: <SumProperties />,
-  //   layout: "/admin",
-  // },
-
   {
     path: "/OutstandingBalance",
 
     component: <OutstandingBalance />,
     layout: "/admin",
   },
-
   {
     path: "/tenantdetail/:id",
     name: "Tenant Detail",
     component: <TenantDetailPage />,
     layout: "/admin",
   },
-
   {
     path: "/rentrolldetail/:lease_id",
     name: "Rent Roll Detail",
@@ -294,7 +304,6 @@ var routes = [
     component: <RentalOwnerDetail />,
     layout: "/admin",
   },
-
   {
     path: "/PropDetails/:rental_id",
     name: "Prop Details",
@@ -338,32 +347,35 @@ var routes = [
   {
     path: "/tenantdashboard",
     name: "DashBoard",
-    icon: "ni ni-tv-2 text-primary",
+    icon: Dashboard,
+    icon2: Dashboard2,
     component: <TenantDashBoard />,
     layout: "/tenant",
   },
   {
     path: "/profile",
     name: "Profile",
-    icon: "ni ni-single-02 text-yellow",
+    icon: Admin,
+    icon2: admin2,
     component: <TenantProfile />,
     layout: "/tenant",
   },
   {
     path: "/tenantproperty",
     name: "Property",
-    icon: "ni ni-pin-3 text-orange",
+    icon: Property,
+    icon2: Property2,
     component: <TenantProperty />,
     layout: "/tenant",
   },
   {
     path: "/tenantFinancial",
     name: "Financial",
-    icon: "ni ni-money-coins text-purple",
+    icon: Financial,
+    icon2: Financial2,
     component: <TenantFinancial />,
     layout: "/tenant",
   },
-
   {
     path: "/Agent",
     name: "Add Agent",
@@ -396,43 +408,50 @@ var routes = [
   {
     path: "/VendordashBoard",
     name: "DashBoard",
-    icon: "ni ni-tv-2 text-primary",
+    icon: Dashboard,
+    icon2: Dashboard2,
     component: <VendorDashBoard />,
     layout: "/vendor",
   },
   {
     path: "/vendorprofile",
     name: "Profile",
-    icon: "ni ni-single-02 text-yellow",
+    icon: Admin,
+    icon2: admin2,
     component: <VendorProfile />,
     layout: "/vendor",
   },
-  {
-    path: "/vendorworkorder",
-    name: "Work Order",
-    icon: "ni ni-badge text-green",
-    component: <VenorWorkOrder />,
-    layout: "/vendor",
-  },
+  // {
+  //   path: "/vendorworkorder",
+  //   name: "Work Order",
+  //   icon: Work,
+  //   icon2: Work2,
+  //   component: <VenorWorkOrder />,
+  //   layout: "/vendor",
+  // },
   {
     path: "/tenantwork",
     name: "Work Order",
-    icon: "ni ni-badge text-green",
+    icon: Work,
+    icon2: Work2,
+    component: <TenantWork />,
+    layout: "/tenant",
+  },
+  {
+    path: "/tenantwork?status",
+    name: "Work Order",
+    icon: Work,
+    icon2: Work2,
     component: <TenantWork />,
     layout: "/tenant",
   },
   {
     path: "/taddwork",
     name: "Work Order",
-    icon: "ni ni-badge text-green",
+    icon: Work,
+    icon2: Work2,
     component: <TAddWork />,
     layout: "/tenant",
-  },
-  {
-    path: "/Workorder",
-    name: "Work Order",
-    component: <Workorder />,
-    layout: "/admin",
   },
   {
     path: "/addworkorder",
@@ -465,7 +484,8 @@ var routes = [
   {
     path: "/vendorworktable",
     name: "Work Order",
-    icon: "ni ni-badge text-green",
+    icon: Work,
+    icon2: Work2,
     component: <VendorWorkTable />,
     layout: "/vendor",
   },
@@ -500,9 +520,10 @@ var routes = [
   {
     path: "/vendorworktable?status",
     name: "Work Order",
-    icon: "ni ni-badge text-green",
+    icon: Work,
+    icon2: Work2,
     component: <VendoeWorkTable />,
-    layout: "/vendoe",
+    layout: "/vendor",
   },
 
   {
@@ -514,6 +535,12 @@ var routes = [
     path: "/vendor",
     name: "Vendor",
     component: <Vendor />,
+    layout: "/admin",
+  },
+  {
+    path: "/Workorder",
+    name: "Work Order",
+    component: <Workorder />,
     layout: "/admin",
   },
   {
@@ -554,7 +581,7 @@ var routes = [
   },
   {
     path: "/AddStaffMember/:id",
-    name: "Staff Member",
+    name: "Add Staff Member",
     component: <AddStaffMember />,
     layout: "/admin",
   },
@@ -572,16 +599,9 @@ var routes = [
     component: <GeneralLedger />,
     layout: "/admin",
   },
-
-  {
-    path: "/AddPropertyType/:id",
-    name: "Add Property",
-    component: <AddPropertyType />,
-    layout: "/admin",
-  },
   {
     path: "/AddStaffMember/:id",
-    name: "Staff Member",
+    name: "Add Staff Member",
     component: <AddStaffMember />,
     layout: "/admin",
   },
@@ -719,7 +739,8 @@ var routes = [
   {
     path: "/dashboard",
     name: "Dashboard",
-    icon: "ni ni-tv-2 text-primary",
+    icon: Dashboard,
+    icon2: Dashboard2,
     component: <SuperAdminDashBoard />,
     layout: "/superadmin",
   },
@@ -727,7 +748,8 @@ var routes = [
   {
     path: "/plans",
     name: "Plans",
-    icon: "ni ni-app text-orange",
+    icon: Plan,
+    icon2: Plan2,
     component: <SuperAdminPlanList />,
     layout: "/superadmin",
   },
@@ -752,13 +774,14 @@ var routes = [
   {
     path: "/admin",
     name: "Admin",
-    icon: "ni ni-collection text-green",
+    icon: Admin,
+    icon2: admin2,
     component: <SuperAdminAdmin />,
     layout: "/superadmin",
   },
   {
     path: "/propertytype/:admin_id",
-    name: "Property Type",
+    name: "Add Property Type",
     icon: "ni ni-pin-3 text-orange",
     component: <SuperAdminPropertyType />,
     layout: "/superadmin",

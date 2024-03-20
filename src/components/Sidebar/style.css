@@ -1,0 +1,123 @@
+/* ========== admin ========== */
+.sidebar {
+  height: 100vh;
+  width: 345px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #f8f9fa;
+  padding-top: 10px;
+  display: flex;
+  justify-content: center;
+  border-right: 2px solid #333;
+  z-index: 9;
+}
+
+.sidebar-active {
+  height: 100vh;
+  width: 146px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #f8f9fa;
+  padding-top: 10px;
+  display: flex;
+  justify-content: center;
+  border-right: 2px solid #333;
+  z-index: 9;
+}
+
+.sidebar a,
+.sidebar-active a {
+  text-decoration: none;
+}
+
+.sidebar span.collapse-btn {
+  color: #fff;
+  font-size: 20px;
+  position: absolute;
+  top: 55px;
+  left: 325px;
+  border-radius: 50%;
+  background-color: rgba(21, 43, 81, 1);
+  padding: 5px 10px;
+  cursor: pointer;
+  z-index: 99;
+}
+
+.sidebar-active span.collapse-btn-active {
+  color: #fff;
+  font-size: 18px;
+  position: absolute;
+  top: 55px;
+  left: 125px;
+  border-radius: 50%;
+  background-color: rgba(21, 43, 81, 1);
+  padding: 5px 10px;
+  cursor: pointer;
+  z-index: 99;
+}
+
+.content {
+  margin-left: 345px;
+  padding: 0 0;
+}
+
+.content-active {
+  margin-left: 146px;
+  padding: 0 0;
+}
+
+.nav-link {
+  color: #737791;
+  font-size: 18px;
+  font-weight: 500;
+  font-family: "Poppins", sans-serif;
+  padding: 15px 15px;
+  margin-top: 25px;
+}
+
+.nav-link span {
+  color: #737791;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.nav-link.active {
+  font-weight: 400;
+  color: #fff;
+  background-color: rgba(21, 43, 81, 1);
+  border-radius: 12px;
+}
+
+.nav-link.active span {
+  color: #fff;
+  background-color: rgba(21, 43, 81, 1);
+}
+
+.my-nav-links {
+  color: #737791;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: "Poppins", sans-serif;
+  padding: 10px 15px;
+  margin-top: 0px;
+}
+
+.my-nav-links span {
+  color: #737791;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.my-nav-links.active {
+  font-weight: 400;
+  color: #fff;
+  background-color: rgba(21, 43, 81, 1);
+  border-radius: 6px;
+}
+
+.my-nav-links.active span {
+  color: #fff;
+  background-color: rgba(21, 43, 81, 1);
+}

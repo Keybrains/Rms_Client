@@ -403,10 +403,13 @@ const RentRollDetail = () => {
           });
         }
       } else {
-        toast.warning("Refund is only available for Credit Card, Cash, or Check payments.", {
-          position: "top-center",
-          autoClose: 1000,
-        });
+        toast.warning(
+          "Refund is only available for Credit Card, Cash, or Check payments.",
+          {
+            position: "top-center",
+            autoClose: 1000,
+          }
+        );
       }
     } catch (error) {
       if (error?.response?.data?.statusCode === 400) {
@@ -414,7 +417,6 @@ const RentRollDetail = () => {
           position: "top-center",
           autoClose: 1000,
         });
-
       }
     } finally {
       setPaymentLoader(false);
@@ -433,6 +435,15 @@ const RentRollDetail = () => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${month}-${day}-${year}`;
   }
+
+  const [status, setStatus] = useState("");
+
+  useEffect(() => {
+    if (leaseData) {
+      const state = getStatus(leaseData.start_date, leaseData.end_date);
+      setStatus(state);
+    }
+  }, [leaseData]);
 
   const getStatus = (startDate, endDate) => {
     const today = new Date();
@@ -495,8 +506,8 @@ const RentRollDetail = () => {
                     {getStatus(leaseData?.start_date, leaseData?.end_date)} |{" "}
                     {leaseData?.rental_adress ? leaseData?.rental_adress : " "}
                     {leaseData?.rental_unit &&
-                      leaseData?.rental_unit !== undefined &&
-                      leaseData?.rental_unit !== ""
+                    leaseData?.rental_unit !== undefined &&
+                    leaseData?.rental_unit !== ""
                       ? ` - ${leaseData?.rental_unit}`
                       : ""}
                   </h5>
@@ -613,8 +624,8 @@ const RentRollDetail = () => {
                                         <Col>
                                           {leaseData?.rentalOwner_firstName
                                             ? leaseData?.rentalOwner_firstName +
-                                            " " +
-                                            leaseData?.rentalOwner_lastName
+                                              " " +
+                                              leaseData?.rentalOwner_lastName
                                             : "N/A"}
                                         </Col>
                                         <Col>
@@ -707,69 +718,101 @@ const RentRollDetail = () => {
                                 </div>
                               </div>
 
-                              <div className="col-md-4 mt-3">
-                                <Card style={{ background: "#F4F6FF" }}>
-                                  <CardContent>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                      }}
-                                    >
-                                      <Typography
-                                        sx={{
-                                          fontSize: 14,
-                                          fontWeight: "bold",
-                                        }}
-                                        color="text.secondary"
-                                        gutterBottom
-                                      >
-                                        Credit balance:
-                                      </Typography>
-                                      <Typography
-                                        sx={{
-                                          fontSize: 14,
-                                          marginLeft: "10px",
-                                          fontWeight: "bold",
+                              {status === "Active" && (
+                                <div className="col-md-4 mt-3">
+                                  <Card style={{ background: "#F4F6FF" }}>
+                                    <CardContent>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          flexDirection: "row",
                                         }}
                                       >
-                                        {totalAmount
-                                          ? totalAmount < 0
-                                            ? `$(${Math.abs(
-                                              totalAmount?.toFixed(2)
-                                            )})`
-                                            : `$${totalAmount?.toFixed(2)}`
-                                          : "$ 0.00"}
-                                      </Typography>
-                                    </div>
-                                    <hr
-                                      style={{
-                                        marginTop: "2px",
-                                        marginBottom: "6px",
-                                      }}
-                                    />
+                                        <Typography
+                                          sx={{
+                                            fontSize: 14,
+                                            fontWeight: "bold",
+                                          }}
+                                          color="text.secondary"
+                                          gutterBottom
+                                        >
+                                          Credit balance:
+                                        </Typography>
+                                        <Typography
+                                          sx={{
+                                            fontSize: 14,
+                                            marginLeft: "10px",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          {totalAmount
+                                            ? totalAmount < 0
+                                              ? `$(${Math.abs(
+                                                  totalAmount?.toFixed(2)
+                                                )})`
+                                              : `$${totalAmount?.toFixed(2)}`
+                                            : "$ 0.00"}
+                                        </Typography>
+                                      </div>
+                                      <hr
+                                        style={{
+                                          marginTop: "2px",
+                                          marginBottom: "6px",
+                                        }}
+                                      />
 
-                                    <>
-                                      <div>
-                                        <div className="entry-container">
+                                      <>
+                                        <div>
+                                          <div className="entry-container">
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                alignItems: "center",
+                                                marginBottom: "5px",
+                                              }}
+                                            >
+                                              <Typography
+                                                sx={{
+                                                  fontSize: 14,
+                                                  fontWeight: "bold",
+                                                  marginRight: "10px",
+                                                }}
+                                                color="text.secondary"
+                                                gutterBottom
+                                              >
+                                                Rent:
+                                              </Typography>
+                                              <Typography
+                                                sx={{
+                                                  fontSize: 14,
+                                                  fontWeight: "bold",
+                                                  marginRight: "10px",
+                                                }}
+                                                color="text.secondary"
+                                                gutterBottom
+                                              >
+                                                {leaseData?.amount}
+                                              </Typography>
+                                            </div>
+                                          </div>
                                           <div
                                             style={{
                                               display: "flex",
                                               flexDirection: "row",
-                                              alignItems: "center",
-                                              marginBottom: "5px",
+                                              marginTop: "10px",
+                                              marginRight: "10px",
                                             }}
                                           >
                                             <Typography
                                               sx={{
                                                 fontSize: 14,
                                                 fontWeight: "bold",
-                                                marginRight: "10px",
                                               }}
                                               color="text.secondary"
                                               gutterBottom
                                             >
-                                              Rent:
+                                              Due date:
                                             </Typography>
                                             <Typography
                                               sx={{
@@ -780,84 +823,56 @@ const RentRollDetail = () => {
                                               color="text.secondary"
                                               gutterBottom
                                             >
-                                              {leaseData?.amount}
+                                              {leaseData?.date}
                                             </Typography>
                                           </div>
                                         </div>
-                                        <div
+                                      </>
+
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          flexDirection: "row",
+                                          marginTop: "10px",
+                                        }}
+                                      >
+                                        <Button
+                                          color="primary"
+                                          onClick={() =>
+                                            navigate(
+                                              `/${admin}/AddPayment/${lease_id}`
+                                            )
+                                          }
                                           style={{
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            marginTop: "10px",
+                                            background: "white",
+                                            color: "blue",
                                             marginRight: "10px",
                                           }}
                                         >
-                                          <Typography
-                                            sx={{
-                                              fontSize: 14,
-                                              fontWeight: "bold",
-                                            }}
-                                            color="text.secondary"
-                                            gutterBottom
-                                          >
-                                            Due date:
-                                          </Typography>
-                                          <Typography
-                                            sx={{
-                                              fontSize: 14,
-                                              fontWeight: "bold",
-                                              marginRight: "10px",
-                                            }}
-                                            color="text.secondary"
-                                            gutterBottom
-                                          >
-                                            {leaseData?.date}
-                                          </Typography>
-                                        </div>
-                                      </div>
-                                    </>
-
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        marginTop: "10px",
-                                      }}
-                                    >
-                                      <Button
-                                        color="primary"
-                                        onClick={() =>
-                                          navigate(
-                                            `/${admin}/AddPayment/${lease_id}`
-                                          )
-                                        }
-                                        style={{
-                                          background: "white",
-                                          color: "blue",
-                                          marginRight: "10px",
-                                        }}
-                                      >
-                                        Receive Payment
-                                      </Button>
-                                      <Typography
-                                        sx={{
-                                          fontSize: 14,
-                                          marginLeft: "10px",
-                                          paddingTop: "10px",
-                                          cursor: "pointer",
-                                          color: "blue",
-                                        }}
-                                      >
-                                        <div
-                                          onClick={() => setValue(`Financial`)}
+                                          Receive Payment
+                                        </Button>
+                                        <Typography
+                                          sx={{
+                                            fontSize: 14,
+                                            marginLeft: "10px",
+                                            paddingTop: "10px",
+                                            cursor: "pointer",
+                                            color: "blue",
+                                          }}
                                         >
-                                          Lease Ledger
-                                        </div>
-                                      </Typography>
-                                    </div>
-                                  </CardContent>
-                                </Card>
-                              </div>
+                                          <div
+                                            onClick={() =>
+                                              setValue(`Financial`)
+                                            }
+                                          >
+                                            Lease Ledger
+                                          </div>
+                                        </Typography>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </Card>
@@ -867,48 +882,50 @@ const RentRollDetail = () => {
 
                   <TabPanel value="Financial">
                     <Container className="mt--10" fluid>
-                      <Row>
-                        <Col xs="12" sm="6"></Col>
-                        <Col
-                          className="d-flex justify-content-end"
-                          xs="12"
-                          sm="6"
-                        >
-                          <Button
-                            color="primary"
-                            onClick={() => openCardForm()}
-                            style={{
-                              background: "white",
-                              color: "blue",
-                              marginRight: "10px",
-                            }}
+                      {status === "Active" && (
+                        <Row>
+                          <Col xs="12" sm="6"></Col>
+                          <Col
+                            className="d-flex justify-content-end"
+                            xs="12"
+                            sm="6"
                           >
-                            Add Cards
-                          </Button>
-                          <Button
-                            color="primary"
-                            onClick={() =>
-                              navigate(`/${admin}/AddPayment/${lease_id}`)
-                            }
-                            style={{
-                              background: "white",
-                              color: "blue",
-                              marginRight: "10px",
-                            }}
-                          >
-                            Receive Payment
-                          </Button>
-                          <Button
-                            color="primary"
-                            onClick={() =>
-                              navigate(`/${admin}/AddCharge/${lease_id}`)
-                            }
-                            style={{ background: "white", color: "blue" }}
-                          >
-                            Enter Charge
-                          </Button>
-                        </Col>
-                      </Row>
+                            <Button
+                              color="primary"
+                              onClick={() => openCardForm()}
+                              style={{
+                                background: "white",
+                                color: "blue",
+                                marginRight: "10px",
+                              }}
+                            >
+                              Add Cards
+                            </Button>
+                            <Button
+                              color="primary"
+                              onClick={() =>
+                                navigate(`/${admin}/AddPayment/${lease_id}`)
+                              }
+                              style={{
+                                background: "white",
+                                color: "blue",
+                                marginRight: "10px",
+                              }}
+                            >
+                              Receive Payment
+                            </Button>
+                            <Button
+                              color="primary"
+                              onClick={() =>
+                                navigate(`/${admin}/AddCharge/${lease_id}`)
+                              }
+                              style={{ background: "white", color: "blue" }}
+                            >
+                              Enter Charge
+                            </Button>
+                          </Col>
+                        </Row>
+                      )}
                       <br />
                       {/* <Row
                         style={{ display: "flex", justifyContent: "flex-end" }}
@@ -984,9 +1001,10 @@ const RentRollDetail = () => {
                                       (generalledger, index) => (
                                         <>
                                           <tr
-                                            key={`${generalledger?.payment_id ||
+                                            key={`${
+                                              generalledger?.payment_id ||
                                               generalledger?.charge_id
-                                              }`}
+                                            }`}
                                           >
                                             <td>
                                               {generalledger?.entry[0]?.date ||
@@ -1000,16 +1018,16 @@ const RentRollDetail = () => {
                                               style={{
                                                 cursor:
                                                   generalledger?.entry?.length >
-                                                    1
+                                                  1
                                                     ? "pointer"
                                                     : "",
                                               }}
                                               onClick={() => {
                                                 if (
                                                   generalledger?.entry?.length >
-                                                  1 &&
+                                                    1 &&
                                                   generalledger?.type !==
-                                                  "Refund"
+                                                    "Refund"
                                                 ) {
                                                   openAccount(
                                                     generalledger,
@@ -1032,23 +1050,23 @@ const RentRollDetail = () => {
                                                 color:
                                                   generalledger.type ===
                                                     "Payment" &&
-                                                    generalledger.response ===
+                                                  generalledger.response ===
                                                     "SUCCESS"
                                                     ? "#50975E"
                                                     : generalledger.type ===
-                                                      "Refund" &&
+                                                        "Refund" &&
                                                       generalledger.response ===
-                                                      "SUCCESS"
-                                                      ? "#ffc40c"
-                                                      : generalledger.response ===
-                                                        "FAILURE"
-                                                        ? "#AA3322"
-                                                        : "inherit",
+                                                        "SUCCESS"
+                                                    ? "#ffc40c"
+                                                    : generalledger.response ===
+                                                      "FAILURE"
+                                                    ? "#AA3322"
+                                                    : "inherit",
                                                 fontWeight: "bold",
                                               }}
                                             >
                                               {generalledger.response &&
-                                                generalledger.payment_type
+                                              generalledger.payment_type
                                                 ? `Manual ${generalledger.type} ${generalledger.response} for ${generalledger.payment_type}`
                                                 : "- - - - - - - - - - - - - - - - -"}
                                               {generalledger.transaction_id
@@ -1058,29 +1076,29 @@ const RentRollDetail = () => {
                                             <td>
                                               {generalledger.type ===
                                                 "Charge" ||
-                                                generalledger.type === "Refund"
+                                              generalledger.type === "Refund"
                                                 ? "$" +
-                                                generalledger.total_amount
+                                                  generalledger.total_amount
                                                 : "-"}
                                             </td>
                                             <td>
                                               {generalledger.type === "Payment"
                                                 ? "$" +
-                                                generalledger.total_amount
+                                                  generalledger.total_amount
                                                 : "-"}
                                             </td>
                                             <td>
                                               {generalledger.balance !==
-                                                undefined
+                                              undefined
                                                 ? generalledger.balance >= 0
                                                   ? `$${generalledger?.balance?.toFixed(
-                                                    2
-                                                  )}`
-                                                  : `$(${Math.abs(
-                                                    generalledger?.balance?.toFixed(
                                                       2
-                                                    )
-                                                  )})`
+                                                    )}`
+                                                  : `$(${Math.abs(
+                                                      generalledger?.balance?.toFixed(
+                                                        2
+                                                      )
+                                                    )})`
                                                 : "0"}
                                             </td>
                                             <td>
@@ -1092,7 +1110,7 @@ const RentRollDetail = () => {
                                               >
                                                 {generalledger?.response !==
                                                   "FAILURE" &&
-                                                  generalledger?.type !==
+                                                generalledger?.type !==
                                                   "Refund" ? (
                                                   <UncontrolledDropdown nav>
                                                     <DropdownToggle
@@ -1130,67 +1148,69 @@ const RentRollDetail = () => {
                                                     <DropdownMenu className="dropdown-menu-arrow">
                                                       {generalledger?.payment_id ===
                                                         showOptionsId && (
-                                                          <div>
-                                                            {generalledger?.response ===
-                                                              "SUCCESS" && (
-                                                                <DropdownItem
-                                                                  // style={{color:'black'}}
-                                                                  onClick={() => {
-                                                                    fetchData(
-                                                                      generalledger.payment_id
-                                                                    );
-                                                                    setIsRefundOpen(
-                                                                      true
-                                                                    );
-                                                                    setRefund(true);
-                                                                  }}
-                                                                >
-                                                                  Refund
-                                                                </DropdownItem>
-                                                              )}
-                                                            {(generalledger?.response ===
-                                                              "PENDING" ||
-                                                              generalledger?.payment_type ===
+                                                        <div>
+                                                          {generalledger?.response ===
+                                                            "SUCCESS" && (
+                                                            <DropdownItem
+                                                              // style={{color:'black'}}
+                                                              onClick={() => {
+                                                                fetchData(
+                                                                  generalledger.payment_id
+                                                                );
+                                                                setIsRefundOpen(
+                                                                  true
+                                                                );
+                                                                setRefund(true);
+                                                              }}
+                                                            >
+                                                              Refund
+                                                            </DropdownItem>
+                                                          )}
+                                                          {(generalledger?.response ===
+                                                            "PENDING" ||
+                                                            generalledger?.payment_type ===
                                                               "Cash" ||
-                                                              generalledger?.payment_type ===
+                                                            generalledger?.payment_type ===
                                                               "Check" ||
-                                                              generalledger?.type ===
+                                                            generalledger?.type ===
                                                               "Charge") && (
-                                                                <DropdownItem
-                                                                  tag="div"
-                                                                  onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    if (
-                                                                      generalledger?.type ===
-                                                                      "Charge"
-                                                                    ) {
-                                                                      navigate(
-                                                                        `/${admin}/AddCharge/${lease_id}/${generalledger.charge_id}`
-                                                                      );
-                                                                    } else {
-                                                                      navigate(
-                                                                        `/${admin}/AddPayment/${lease_id}/${generalledger.payment_id}`
-                                                                      );
-                                                                    }
-                                                                  }}
-                                                                >
-                                                                  Edit
-                                                                </DropdownItem>
-                                                              )}
-                                                            {generalledger?.type ===
-                                                              "Charge" && (
-                                                                <DropdownItem
-                                                                  // style={{color:'black'}}
-                                                                  onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    deleteTenant(generalledger.charge_id);
-                                                                  }}
-                                                                >
-                                                                  Delete
-                                                                </DropdownItem>
-                                                              )}
-                                                          </div>
-                                                        )}
+                                                            <DropdownItem
+                                                              tag="div"
+                                                              onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                if (
+                                                                  generalledger?.type ===
+                                                                  "Charge"
+                                                                ) {
+                                                                  navigate(
+                                                                    `/${admin}/AddCharge/${lease_id}/${generalledger.charge_id}`
+                                                                  );
+                                                                } else {
+                                                                  navigate(
+                                                                    `/${admin}/AddPayment/${lease_id}/${generalledger.payment_id}`
+                                                                  );
+                                                                }
+                                                              }}
+                                                            >
+                                                              Edit
+                                                            </DropdownItem>
+                                                          )}
+                                                          {generalledger?.type ===
+                                                            "Charge" && (
+                                                            <DropdownItem
+                                                              // style={{color:'black'}}
+                                                              onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                deleteTenant(
+                                                                  generalledger.charge_id
+                                                                );
+                                                              }}
+                                                            >
+                                                              Delete
+                                                            </DropdownItem>
+                                                          )}
+                                                        </div>
+                                                      )}
                                                     </DropdownMenu>
                                                   </UncontrolledDropdown>
                                                 ) : (
@@ -1245,7 +1265,7 @@ const RentRollDetail = () => {
                                               >
                                                 {financialData[index]?.type ===
                                                   "Charge" ||
-                                                  financialData[index]?.type ===
+                                                financialData[index]?.type ===
                                                   "Refund" ? (
                                                   <>
                                                     <b>Amount</b>
@@ -1259,8 +1279,8 @@ const RentRollDetail = () => {
                                                     <>
                                                       {financialData[index]
                                                         ?.type === "Charge" ||
-                                                        financialData[index]
-                                                          ?.type === "Refund"
+                                                      financialData[index]
+                                                        ?.type === "Refund"
                                                         ? "$" + data?.amount
                                                         : ""}
                                                       <br />
@@ -1273,7 +1293,7 @@ const RentRollDetail = () => {
                                                 style={{ border: "0" }}
                                               >
                                                 {financialData[index]?.type ===
-                                                  "Payment" ? (
+                                                "Payment" ? (
                                                   <>
                                                     <b>Amount</b>
                                                     <br />
@@ -1298,7 +1318,6 @@ const RentRollDetail = () => {
                                                 style={{ border: "0" }}
                                               ></td>
                                               <td></td>
-
                                             </tr>
                                           )}
                                         </>
@@ -1500,7 +1519,7 @@ const RentRollDetail = () => {
                                         <br></br>
                                         {tenant.rental_adress}
                                         {tenant.rental_unit !== "" &&
-                                          tenant.rental_unit !== undefined
+                                        tenant.rental_unit !== undefined
                                           ? ` - ${tenant.rental_unit}`
                                           : null}
                                       </div>
@@ -1557,13 +1576,13 @@ const RentRollDetail = () => {
                                         style={
                                           tenant.moveout_notice_given_date
                                             ? {
-                                              display: "flex",
-                                              flexDirection: "row",
-                                              marginTop: "10px",
-                                            }
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                marginTop: "10px",
+                                              }
                                             : {
-                                              display: "none",
-                                            }
+                                                display: "none",
+                                              }
                                         }
                                       >
                                         <Typography
@@ -1581,13 +1600,13 @@ const RentRollDetail = () => {
                                         style={
                                           tenant.moveout_date
                                             ? {
-                                              display: "flex",
-                                              flexDirection: "row",
-                                              marginTop: "10px",
-                                            }
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                marginTop: "10px",
+                                              }
                                             : {
-                                              display: "none",
-                                            }
+                                                display: "none",
+                                              }
                                         }
                                       >
                                         <Typography
@@ -1612,67 +1631,101 @@ const RentRollDetail = () => {
                       </Col>
 
                       {/* <Col xs="12" md="6" lg="4" xl="3"> */}
-                      <div className="col-md-4 mt-3">
-                        <Card style={{ background: "#F4F6FF" }}>
-                          <CardContent>
-                            <div
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                              }}
-                            >
-                              <Typography
-                                sx={{
-                                  fontSize: 14,
-                                  fontWeight: "bold",
-                                }}
-                                color="text.secondary"
-                                gutterBottom
-                              >
-                                Credit balance:
-                              </Typography>
-                              <Typography
-                                sx={{
-                                  fontSize: 14,
-                                  marginLeft: "10px",
-                                  fontWeight: "bold",
+                      {status === "Active" && (
+                        <div className="col-md-4 mt-3">
+                          <Card style={{ background: "#F4F6FF" }}>
+                            <CardContent>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "row",
                                 }}
                               >
-                                {totalAmount
-                                  ? totalAmount < 0
-                                    ? `$(${Math.abs(totalAmount?.toFixed(2))})`
-                                    : `$${totalAmount?.toFixed(2)}`
-                                  : "$ 0.00"}
-                              </Typography>
-                            </div>
-                            <hr
-                              style={{
-                                marginTop: "2px",
-                                marginBottom: "6px",
-                              }}
-                            />
+                                <Typography
+                                  sx={{
+                                    fontSize: 14,
+                                    fontWeight: "bold",
+                                  }}
+                                  color="text.secondary"
+                                  gutterBottom
+                                >
+                                  Credit balance:
+                                </Typography>
+                                <Typography
+                                  sx={{
+                                    fontSize: 14,
+                                    marginLeft: "10px",
+                                    fontWeight: "bold",
+                                  }}
+                                >
+                                  {totalAmount
+                                    ? totalAmount < 0
+                                      ? `$(${Math.abs(
+                                          totalAmount?.toFixed(2)
+                                        )})`
+                                      : `$${totalAmount?.toFixed(2)}`
+                                    : "$ 0.00"}
+                                </Typography>
+                              </div>
+                              <hr
+                                style={{
+                                  marginTop: "2px",
+                                  marginBottom: "6px",
+                                }}
+                              />
 
-                            <>
-                              <div>
-                                <div className="entry-container">
+                              <>
+                                <div>
+                                  <div className="entry-container">
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        marginBottom: "5px",
+                                      }}
+                                    >
+                                      <Typography
+                                        sx={{
+                                          fontSize: 14,
+                                          fontWeight: "bold",
+                                          marginRight: "10px",
+                                        }}
+                                        color="text.secondary"
+                                        gutterBottom
+                                      >
+                                        Rent:
+                                      </Typography>
+                                      <Typography
+                                        sx={{
+                                          fontSize: 14,
+                                          fontWeight: "bold",
+                                          marginRight: "10px",
+                                        }}
+                                        color="text.secondary"
+                                        gutterBottom
+                                      >
+                                        {leaseData?.amount}
+                                      </Typography>
+                                    </div>
+                                  </div>
                                   <div
                                     style={{
                                       display: "flex",
                                       flexDirection: "row",
-                                      alignItems: "center",
-                                      marginBottom: "5px",
+                                      marginTop: "10px",
+                                      marginRight: "10px",
                                     }}
                                   >
                                     <Typography
                                       sx={{
                                         fontSize: 14,
                                         fontWeight: "bold",
-                                        marginRight: "10px",
                                       }}
                                       color="text.secondary"
                                       gutterBottom
                                     >
-                                      Rent:
+                                      Due date:
                                     </Typography>
                                     <Typography
                                       sx={{
@@ -1683,81 +1736,50 @@ const RentRollDetail = () => {
                                       color="text.secondary"
                                       gutterBottom
                                     >
-                                      {leaseData?.amount}
+                                      {leaseData?.date}
                                     </Typography>
                                   </div>
                                 </div>
-                                <div
+                              </>
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  marginTop: "10px",
+                                }}
+                              >
+                                <Button
+                                  color="primary"
+                                  onClick={() =>
+                                    navigate(`/${admin}/AddPayment/${lease_id}`)
+                                  }
                                   style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    marginTop: "10px",
+                                    background: "white",
+                                    color: "blue",
                                     marginRight: "10px",
                                   }}
                                 >
-                                  <Typography
-                                    sx={{
-                                      fontSize: 14,
-                                      fontWeight: "bold",
-                                    }}
-                                    color="text.secondary"
-                                    gutterBottom
-                                  >
-                                    Due date:
-                                  </Typography>
-                                  <Typography
-                                    sx={{
-                                      fontSize: 14,
-                                      fontWeight: "bold",
-                                      marginRight: "10px",
-                                    }}
-                                    color="text.secondary"
-                                    gutterBottom
-                                  >
-                                    {leaseData?.date}
-                                  </Typography>
-                                </div>
+                                  Receive Payment
+                                </Button>
+                                <Typography
+                                  // key={index}
+                                  sx={{
+                                    fontSize: 14,
+                                    marginLeft: "10px",
+                                    paddingTop: "10px",
+                                    cursor: "pointer",
+                                    color: "blue",
+                                  }}
+                                >
+                                  <div onClick={() => setValue(`Financial`)}>
+                                    Lease Ledger
+                                  </div>
+                                </Typography>
                               </div>
-                            </>
-
-                            <div
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                marginTop: "10px",
-                              }}
-                            >
-                              <Button
-                                color="primary"
-                                onClick={() =>
-                                  navigate(`/${admin}/AddPayment/${lease_id}`)
-                                }
-                                style={{
-                                  background: "white",
-                                  color: "blue",
-                                  marginRight: "10px",
-                                }}
-                              >
-                                Receive Payment
-                              </Button>
-                              <Typography
-                                // key={index}
-                                sx={{
-                                  fontSize: 14,
-                                  marginLeft: "10px",
-                                  paddingTop: "10px",
-                                  cursor: "pointer",
-                                  color: "blue",
-                                }}
-                              >
-                                <div onClick={() => setValue(`Financial`)}>
-                                  Lease Ledger
-                                </div>
-                              </Typography>
-                            </div>
-                          </CardContent>
-                        </Card>
-                        {/* <Card
+                            </CardContent>
+                          </Card>
+                          {/* <Card
                                   className="w-100 mt-3"
                                   style={{ background: "#F4F6FF" }}
                                 >
@@ -1854,7 +1876,8 @@ const RentRollDetail = () => {
                                     </div>
                                   </CardContent>
                                 </Card> */}
-                      </div>
+                        </div>
+                      )}
                       {/* </Col> */}
                     </Row>
                   </TabPanel>
@@ -1895,7 +1918,7 @@ const RentRollDetail = () => {
                     value={generalledgerFormik.values.date}
                   />
                   {generalledgerFormik.touched.date &&
-                    generalledgerFormik.errors.date ? (
+                  generalledgerFormik.errors.date ? (
                     <div style={{ color: "red" }}>
                       {generalledgerFormik.errors.date}
                     </div>
@@ -1961,7 +1984,7 @@ const RentRollDetail = () => {
                   />
 
                   {generalledgerFormik.touched.memo &&
-                    generalledgerFormik.errors.memo ? (
+                  generalledgerFormik.errors.memo ? (
                     <div style={{ color: "red" }}>
                       {generalledgerFormik.errors.memo}
                     </div>
@@ -2004,7 +2027,7 @@ const RentRollDetail = () => {
           <CreditCardForm
             tenantId={tenantId}
             closeModal={closeModal}
-          //getCreditCard={getCreditCard}
+            //getCreditCard={getCreditCard}
           />
         </ModalBody>
       </Modal>

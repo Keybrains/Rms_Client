@@ -1,38 +1,27 @@
-/*!
-
-=========================================================
-* Argon Dashboard React - v1.2.3
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/argon-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/argon-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-import React from "react";
-import { useLocation, Route, Routes, Navigate } from "react-router-dom";
-// reactstrap components
-import { Container } from "reactstrap";
-// core components
+import React, { useEffect, useRef, useState } from "react";
+import {
+  useLocation,
+  Route,
+  Routes,
+  Navigate,
+  useParams,
+} from "react-router-dom";
+import Sidebar from "components/Sidebar/Sidebar copy";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
-import AdminFooter from "components/Footers/AdminFooter.js";
-import Sidebar from "components/Sidebar/Sidebar.js";
-import { useParams } from "react-router-dom";
 
 import routes from "routes.js";
 
 const Admin = (props) => {
-  const mainContent = React.useRef(null);
+  const mainContent = useRef(null);
   const location = useLocation();
-  const {admin} = useParams();
+  const { admin } = useParams();
 
-  React.useEffect(() => {
+  const [isCollapse, setIsCollapse] = useState(window.innerWidth <= 768);
+  const toggleCollapse = () => {
+    setIsCollapse(!isCollapse);
+  };
+
+  useEffect(() => {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
     mainContent.current.scrollTop = 0;
@@ -50,7 +39,7 @@ const Admin = (props) => {
     });
   };
 
-  const getBrandText = (path) => {
+  const getBrandText = () => {
     for (let i = 0; i < routes.length; i++) {
       if (
         props?.location?.pathname.indexOf(routes[i].layout + routes[i].path) !==
@@ -63,30 +52,36 @@ const Admin = (props) => {
   };
 
   return (
-    <>
+    <div style={{ backgroundColor: "#fff", height: "100%" }}>
       <Sidebar
-        {...props}
         routes={routes}
         logo={{
-          innerLink: "/"+admin+"/index",
-          imgSrc: require("../assets/img/brand/rms.jpeg"),
+          innerLink: "/" + admin + "/index",
+          imgSrc: require("../assets/icons/site-logo_saas.png"),
+          imgSrc2: require("../assets/icons/site-logo-1 7.png"),
           imgAlt: "...",
         }}
+        isCollapse={isCollapse}
+        setIsCollapse={setIsCollapse}
+        toggleCollapse={toggleCollapse}
       />
-      <div className="main-content" ref={mainContent}>
+      <div
+        className={!isCollapse ? `content` : `content-active`}
+        ref={mainContent}
+      >
         <AdminNavbar
           {...props}
           brandText={getBrandText(props?.location?.pathname)}
         />
         <Routes>
           {getRoutes(routes)}
-          <Route path="*" element={<Navigate to={`/${admin}/index`} replace />} />
+          <Route
+            path="*"
+            element={<Navigate to={`/${admin}/index`} replace />}
+          />
         </Routes>
-        <Container fluid>
-          <AdminFooter />
-        </Container>
       </div>
-    </>
+    </div>
   );
 };
 

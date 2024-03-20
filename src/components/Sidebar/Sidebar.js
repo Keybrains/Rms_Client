@@ -6,37 +6,24 @@ import Cookies from "universal-cookie";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Drawer from "@mui/material/Drawer";
-// import Button from '@mui/material/Button';
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
 import { jwtDecode } from "jwt-decode";
-// reactstrap components
 import {
   Button,
-  Card,
-  CardHeader,
-  CardBody,
-  CardTitle,
   Collapse,
   DropdownMenu,
   DropdownItem,
   UncontrolledDropdown,
   DropdownToggle,
   FormGroup,
-  Form,
-  Input,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroup,
   Media,
   NavbarBrand,
   Navbar,
   NavItem,
   NavLink,
   Nav,
-  Progress,
-  Table,
   Container,
   Row,
   Col,
@@ -70,13 +57,9 @@ const Sidebar = (props) => {
   };
 
   let navigate = useNavigate();
-  let cookies = new Cookies();
   let Logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("Tenant ID");
-    // localStorage.removeItem("name");
-    // localStorage.removeItem("id");
-    // navigate("/login");
   };
 
   const { admin } = useParams();
@@ -90,16 +73,6 @@ const Sidebar = (props) => {
   const closeCollapse = () => {
     setCollapseOpen(false);
   };
-
-  // verifies if routeName is the one active (in browser input)
-  const activeRoute = (routeName) => {
-    return props.location.pathname.indexOf(routeName) > -1 ? "active" : "";
-  };
-
-  // // toggles collapse between opened and closed (true/false)
-  // const toggleCollapse = () => {
-  //   setCollapseOpen((data) => !data);
-  // };
 
   const handlePropertySelect = (property) => {
     setSelectedProp(property);
@@ -125,18 +98,15 @@ const Sidebar = (props) => {
           setNotificationData(unreadNotifications);
           setNotificationCount(unreadNotifications.length);
         } else {
-          // Handle error
           console.error("Error:", data.message);
         }
       })
       .catch((error) => {
-        // Handle network error
         console.error("Network error:", error);
       });
   };
 
   const navigateToDetails = (workorder_id) => {
-    // Make a DELETE request to delete the notification
     axios
       .get(`${baseUrl}/notification/notification/${workorder_id}?role=admin `)
       .then((response) => {
@@ -150,9 +120,7 @@ const Sidebar = (props) => {
             }
           );
           setNotificationData(updatedNotificationData);
-          //console.log("updatedNotificationData", updatedNotificationData)
           setNotificationCount(updatedNotificationData.length);
-          //console.log(`Notification with workorder_id ${workorder_id} marked as read.`);
           fetchNotification();
         } else {
           console.error(
@@ -164,10 +132,9 @@ const Sidebar = (props) => {
         console.error("Error:", error);
       });
 
-    // Continue with navigating to the details pagenavigate(`/admin/addworkorder/${id}`);
     navigate(`/admin/addworkorder/${workorder_id}`);
   };
-  // creates the links that appear in the left menu / Sidebar
+
   const createLinks = (routes) => {
     const filteredRoutes = routes.filter(
       (prop) =>
@@ -176,7 +143,6 @@ const Sidebar = (props) => {
           prop.name === "Add Property Type" ||
           prop.name === "Add Staff Member") &&
         prop.layout !== "/superadmin"
-      // prop.name === "Add Agent"
     );
     return filteredRoutes.map((prop, key) => {
       const path = prop.layout == "/" + admin + "" ? "/" + admin : "/" + admin;
@@ -246,15 +212,14 @@ const Sidebar = (props) => {
       id="sidenav-main"
     >
       <Container fluid>
-        {/* Toggler */}
         <button
-          className="navbar-toggler"
           type="button"
-          onClick={toggleCollapse}
+          class="btn btn-primary"
+          data-toggle="collapse"
+          data-target="#sidebar"
         >
-          <span className="navbar-toggler-icon" />
+          Toggle Sidebar
         </button>
-        {/* Brand */}
         {logo ? (
           <NavbarBrand className="pt-0" {...navbarBrandProps}>
             <img
@@ -264,7 +229,6 @@ const Sidebar = (props) => {
             />
           </NavbarBrand>
         ) : null}
-        {/* User */}
 
         <FormGroup
           className="mb-0"

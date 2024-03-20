@@ -38,16 +38,18 @@ import Cookies from "universal-cookie";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import { useEffect } from "react";
+import moment from "moment";
 
 const TenantWork = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const status = urlParams.get("status");
 
   useEffect(() => {
-    if (status === "Over Due") {
-      setSearchQuery2("Over Due");
+    if (status) {
+      setSearchQuery2(status);
     }
   }, [status]);
+
   const baseUrl = process.env.REACT_APP_BASE_URL;
   let navigate = useNavigate();
   const [workData, setWorkData] = useState([]);
@@ -109,83 +111,24 @@ const TenantWork = () => {
   const navigateToDetails = (tenantId) => {
     navigate(`/tenant/Tworkorderdetail/${tenantId}`);
   };
-  console.log("first", workData)
-
-  // const filterRentalsBySearch = () => {
-  //   let filteredData = [...workData]; // Create a copy of workData to avoid mutating the original array
-
-  //   if (searchQuery) {
-  //     const lowerCaseSearchQuery = searchQuery.toString().toLowerCase();
-  //     filteredData = filteredData.filter((work) => {
-  //       return (
-  //         (work.rental_adress &&
-  //           work.rental_adress.toLowerCase().includes(lowerCaseSearchQuery)) ||
-  //         (work.work_subject &&
-  //           work.work_subject.toLowerCase().includes(lowerCaseSearchQuery)) ||
-  //         (work.work_category &&
-  //           work.work_category.toLowerCase().includes(lowerCaseSearchQuery)) ||
-  //         (work.staffmember_name &&
-  //           work.staffmember_name.toLowerCase().includes(lowerCaseSearchQuery)) ||
-  //           (work.status &&
-  //             work.status.toLowerCase().includes(lowerCaseSearchQuery)) 
-  //       );
-  //     });
-  //   }
-
-  //   if (searchQuery2 && !searchQuery) {
-  //     if (searchQuery2 === "All") {
-  //       return filteredData;
-  //     }
-  //     const lowerCaseSearchQuery = searchQuery2.toLowerCase();
-  //     filteredData = filteredData.filter((status) => {
-  //       const isStatusTypeMatch = status?.status
-  //         .toLowerCase()
-  //         .includes(lowerCaseSearchQuery);
-
-  //       return isStatusTypeMatch;
-  //     });
-  //   }
-
-  //   if (upArrow.length > 0) {
-  //     const sortingArrows = upArrow;
-  //     sortingArrows.forEach((value) => {
-  //       switch (value) {
-  //         case "rental_adress":
-  //           filteredData.sort((a, b) =>
-  //             a.rental_adress.localeCompare(b.rental_adress)
-  //           );
-  //           break;
-  //         case "work_subject":
-  //           filteredData.sort((a, b) =>
-  //             a.work_subject.localeCompare(b.work_subject)
-  //           );
-  //           break;
-  //         case "work_category":
-  //           filteredData.sort((a, b) =>
-  //             a.work_category.localeCompare(b.work_category)
-  //           );
-  //           break;
-  //         case "staffmember_name":
-  //           filteredData.sort((a, b) =>
-  //             a.staffmember_name.localeCompare(b.staffmember_name)
-  //           );
-  //           break;
-  //       }
-  //     });
-  //   }
-  //   return filteredData;
-  // };
 
   const filterRentalsBySearch = () => {
     if (searchQuery2 && !searchQuery) {
       if (searchQuery2 === "All") {
         return workData;
-      } else if (searchQuery2 === "Over Due") {
+      } else if (searchQuery2 === "Overdue") {
         return workData.filter((rental) => {
-          let currentDate = new Date();
-          let rentalDate = new Date(rental.date);
-          console.log(rental.date, "yash");
-          return rentalDate < currentDate && rental.status !== "Complete";
+          return (
+            moment(rental.date).format("YYYY-MM-DD") <
+              moment().format("YYYY-MM-DD") && rental.status !== "Complete"
+          );
+        });
+      } else if (searchQuery2 === "New") {
+        return workData.filter((rental) => {
+          return (
+            moment(rental.date).format("YYYY-MM-DD") >=
+              moment().format("YYYY-MM-DD") && rental.status !== "Complete"
+          );
         });
       } else {
         return workData.filter((rental) => {
@@ -194,6 +137,7 @@ const TenantWork = () => {
         });
       }
     }
+
     if (!searchQuery && !searchQuery2) {
       return workData;
     }
@@ -489,7 +433,6 @@ const TenantWork = () => {
                         <th scope="col">Updated At</th>
                       </tr>
                     </thead>
-
                     <tbody>
                       {filterTenantsBySearchAndPage().map((rental) => (
                         <tr

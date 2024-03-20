@@ -33,16 +33,17 @@ const ApplicantForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (id) {
-      try {
-        const response = await axios.get(
-          `${baseUrl}/applicant/applicant_details/${id}`
-        );
-      } catch (error) {
-        console.error("Error fetching data:", error);
+        try {
+          const response = await axios.get(
+            `${baseUrl}/applicant/applicant_details/${id}`
+          );
+          console.log(response, "yashu");
+          setFormData(response.data.data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
       }
     };
-
-  }
     fetchData();
   }, [id]);
 
@@ -168,7 +169,7 @@ const ApplicantForm = () => {
                         className="form-control"
                         placeholder="First name"
                         name="applicant_firstName"
-                        value={formData.applicant_firstName}
+                        value={formData?.applicant_firstName}
                         onChange={handleApplicantChange}
                       />
                     </div>
@@ -179,7 +180,7 @@ const ApplicantForm = () => {
                         className="form-control"
                         placeholder="Last name"
                         name="applicant_lastName"
-                        value={formData.applicant_lastName}
+                        value={formData?.applicant_lastName}
                         onChange={handleApplicantChange}
                       />
                     </div>
@@ -192,7 +193,7 @@ const ApplicantForm = () => {
                         className="form-control"
                         placeholder="Applicant email"
                         name="applicant_email"
-                        value={formData.applicant_email}
+                        value={formData?.applicant_email}
                         onChange={handleApplicantChange}
                       />
                     </div>
@@ -202,7 +203,7 @@ const ApplicantForm = () => {
                         className="form-control"
                         placeholder="Applicant phone number"
                         name="applicant_phoneNumber"
-                        value={formData.applicant_phoneNumber}
+                        value={formData?.applicant_phoneNumber}
                         onChange={handleApplicantChange}
                       />
                     </div>
@@ -217,7 +218,7 @@ const ApplicantForm = () => {
                         className="form-control"
                         placeholder="First name"
                         name="applicant_birthDate"
-                        value={formData.applicant_birthDate}
+                        value={formData?.applicant_birthDate}
                         onChange={handleApplicantChange}
                       />
                     </div>
@@ -233,7 +234,7 @@ const ApplicantForm = () => {
                         className="form-control"
                         placeholder="Street Adress"
                         name="applicant_streetAddress"
-                        value={formData.applicant_streetAddress}
+                        value={formData?.applicant_streetAddress}
                         onChange={handleApplicantChange}
                       />
                     </div>
@@ -245,7 +246,7 @@ const ApplicantForm = () => {
                         className="form-control"
                         placeholder="City"
                         name="applicant_city"
-                        value={formData.applicant_city}
+                        value={formData?.applicant_city}
                         onChange={handleApplicantChange}
                       />
                     </div>
@@ -255,7 +256,7 @@ const ApplicantForm = () => {
                         className="form-control"
                         placeholder="State"
                         name="applicant_state"
-                        value={formData.applicant_state}
+                        value={formData?.applicant_state}
                         onChange={handleApplicantChange}
                       />
                     </div>
@@ -267,7 +268,7 @@ const ApplicantForm = () => {
                         className="form-control"
                         placeholder="Country"
                         name="applicant_country"
-                        value={formData.applicant_country}
+                        value={formData?.applicant_country}
                         onChange={handleApplicantChange}
                       />
                     </div>
@@ -277,7 +278,7 @@ const ApplicantForm = () => {
                         className="form-control"
                         placeholder="Zip"
                         name="applicant_postalCode"
-                        value={formData.applicant_postalCode}
+                        value={formData?.applicant_postalCode}
                         onChange={handleApplicantChange}
                       />
                     </div>
@@ -292,8 +293,8 @@ const ApplicantForm = () => {
                           type="text"
                           className="form-control"
                           placeholder="Enter first name"
-                          name="emergency_contact.first_name"
-                          value={formData.emergency_contact.first_name}
+                          name="emergency_contact?.first_name"
+                          value={formData?.emergency_contact?.first_name}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -304,8 +305,8 @@ const ApplicantForm = () => {
                           type="text"
                           className="form-control"
                           placeholder="Enter last name"
-                          name="emergency_contact.last_name"
-                          value={formData.emergency_contact.last_name}
+                          name="emergency_contact?.last_name"
+                          value={formData?.emergency_contact?.last_name}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -321,8 +322,8 @@ const ApplicantForm = () => {
                             type="text"
                             className="form-control"
                             placeholder="Enter relationship"
-                            name="emergency_contact.relationship"
-                            value={formData.emergency_contact.relationship}
+                            name="emergency_contact?.relationship"
+                            value={formData?.emergency_contact?.relationship}
                             onChange={handleApplicantChange}
                           />
                         </div>
@@ -339,8 +340,8 @@ const ApplicantForm = () => {
                             type="email"
                             className="form-control"
                             placeholder="Emergency contact email"
-                            name="emergency_contact.email"
-                            value={formData.emergency_contact.email}
+                            name="emergency_contact?.email"
+                            value={formData?.emergency_contact?.email}
                             onChange={handleApplicantChange}
                           />
                         </div>
@@ -352,8 +353,8 @@ const ApplicantForm = () => {
                             type="Number"
                             className="form-control"
                             placeholder="Emergency contact phone"
-                            name="emergency_contact.phone_number"
-                            value={formData.emergency_contact.phone_number}
+                            name="emergency_contact?.phone_number"
+                            value={formData?.emergency_contact?.phone_number}
                             onChange={handleApplicantChange}
                           />
                         </div>
@@ -369,8 +370,8 @@ const ApplicantForm = () => {
                           type="text"
                           className="form-control"
                           placeholder="Street Adress"
-                          name="rental_history.rental_adress"
-                          value={formData.rental_history.rental_adress}
+                          name="rental_history?.rental_adress"
+                          value={formData?.rental_history?.rental_adress}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -381,8 +382,8 @@ const ApplicantForm = () => {
                           type="text"
                           className="form-control"
                           placeholder="City"
-                          name="rental_history.rental_city"
-                          value={formData.rental_history.rental_city}
+                          name="rental_history?.rental_city"
+                          value={formData?.rental_history?.rental_city}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -391,8 +392,8 @@ const ApplicantForm = () => {
                           type="text"
                           className="form-control"
                           placeholder="State"
-                          name="rental_history.rental_state"
-                          value={formData.rental_history.rental_state}
+                          name="rental_history?.rental_state"
+                          value={formData?.rental_history?.rental_state}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -403,8 +404,8 @@ const ApplicantForm = () => {
                           type="text"
                           className="form-control"
                           placeholder="Street Adress"
-                          name="rental_history.rental_country"
-                          value={formData.rental_history.rental_country}
+                          name="rental_history?.rental_country"
+                          value={formData?.rental_history?.rental_country}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -413,8 +414,8 @@ const ApplicantForm = () => {
                           type="text"
                           className="form-control"
                           placeholder="Zip"
-                          name="rental_history.rental_postcode"
-                          value={formData.rental_history.rental_postcode}
+                          name="rental_history?.rental_postcode"
+                          value={formData?.rental_history?.rental_postcode}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -428,7 +429,7 @@ const ApplicantForm = () => {
                           placeholder="Enter first name"
                           id="firstName"
                           name="rental_data_from"
-                          value={formData.rental_data_from}
+                          value={formData?.rental_data_from}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -440,7 +441,7 @@ const ApplicantForm = () => {
                           placeholder="Enter last name"
                           id="lastName"
                           name="rental_date_to"
-                          value={formData.rental_date_to}
+                          value={formData?.rental_date_to}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -457,7 +458,7 @@ const ApplicantForm = () => {
                             className="form-control"
                             placeholder=" Monthly rent"
                             name="rental_monthlyRent"
-                            value={formData.rental_monthlyRent}
+                            value={formData?.rental_monthlyRent}
                             onChange={handleApplicantChange}
                           />
                         </div>
@@ -475,7 +476,7 @@ const ApplicantForm = () => {
                             className="form-control"
                             placeholder="Reason for leaving"
                             name="rental_resaonForLeaving"
-                            value={formData.rental_resaonForLeaving}
+                            value={formData?.rental_resaonForLeaving}
                             onChange={handleApplicantChange}
                           />
                         </div>
@@ -492,8 +493,8 @@ const ApplicantForm = () => {
                           type="text"
                           className="form-control"
                           placeholder="Enter first name"
-                          name="rental_history.rentalOwner_firstName"
-                          value={formData.rental_history.rentalOwner_firstName}
+                          name="rental_history?.rentalOwner_firstName"
+                          value={formData?.rental_history?.rentalOwner_firstName}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -503,8 +504,8 @@ const ApplicantForm = () => {
                           type="text"
                           className="form-control"
                           placeholder="Enter last name"
-                          name="rental_history.rentalOwner_lastName"
-                          value={formData.rental_history.rentalOwner_lastName}
+                          name="rental_history?.rentalOwner_lastName"
+                          value={formData?.rental_history?.rentalOwner_lastName}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -519,9 +520,9 @@ const ApplicantForm = () => {
                           type="email"
                           className="form-control"
                           placeholder="Rental owner email"
-                          name="rental_history.rentalOwner_primaryEmail"
+                          name="rental_history?.rentalOwner_primaryEmail"
                           value={
-                            formData.rental_history.rentalOwner_primaryEmail
+                            formData?.rental_history?.rentalOwner_primaryEmail
                           }
                           onChange={handleApplicantChange}
                         />
@@ -534,9 +535,9 @@ const ApplicantForm = () => {
                           type="number"
                           className="form-control"
                           placeholder="Rental owner phone number"
-                          name="rental_history.rentalOwner_phoneNumber"
+                          name="rental_history?.rentalOwner_phoneNumber"
                           value={
-                            formData.rental_history.rentalOwner_phoneNumber
+                            formData?.rental_history?.rentalOwner_phoneNumber
                           }
                           onChange={handleApplicantChange}
                         />
@@ -556,8 +557,8 @@ const ApplicantForm = () => {
                             type="text"
                             className="form-control"
                             placeholder="Employer name"
-                            name="employment.name"
-                            value={formData.employment.name}
+                            name="rental_history?.name"
+                            value={formData?.rental_history?.name}
                             onChange={handleApplicantChange}
                           />
                         </div>
@@ -572,8 +573,8 @@ const ApplicantForm = () => {
                           type="text"
                           className="form-control"
                           placeholder="Street Adress"
-                          name="employment.streetAddress"
-                          value={formData.employment.streetAddress}
+                          name="rental_history?.streetAddress"
+                          value={formData?.rental_history?.streetAddress}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -584,8 +585,8 @@ const ApplicantForm = () => {
                           type="text"
                           className="form-control"
                           placeholder="City"
-                          name="employment.city"
-                          value={formData.employment.city}
+                          name="rental_history?.city"
+                          value={formData?.rental_history?.city}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -594,8 +595,8 @@ const ApplicantForm = () => {
                           type="text"
                           className="form-control"
                           placeholder="State"
-                          name="employment.state"
-                          value={formData.employment.state}
+                          name="rental_history?.state"
+                          value={formData?.rental_history?.state}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -606,8 +607,8 @@ const ApplicantForm = () => {
                           type="text"
                           className="form-control"
                           placeholder="Country"
-                          name="employment.country"
-                          value={formData.employment.country}
+                          name="rental_history?.country"
+                          value={formData?.rental_history?.country}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -616,8 +617,8 @@ const ApplicantForm = () => {
                           type="text"
                           className="form-control"
                           placeholder="Zip"
-                          name="employment.postalCode"
-                          value={formData.employment.postalCode}
+                          name="rental_history?.postalCode"
+                          value={formData?.rental_history?.postalCode}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -631,8 +632,8 @@ const ApplicantForm = () => {
                           type="email"
                           className="form-control"
                           placeholder="Employer email"
-                          name="employment.employment_primaryEmail"
-                          value={formData.employment.employment_primaryEmail}
+                          name="rental_history?.employment_primaryEmail"
+                          value={formData?.rental_history?.employment_primaryEmail}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -642,8 +643,8 @@ const ApplicantForm = () => {
                           type="number"
                           className="form-control"
                           placeholder="Employer phone number"
-                          name="employment.employment_phoneNumber"
-                          value={formData.employment.employment_phoneNumber}
+                          name="rental_history?.employment_phoneNumber"
+                          value={formData?.rental_history?.employment_phoneNumber}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -659,8 +660,8 @@ const ApplicantForm = () => {
                             type="text"
                             className="form-control"
                             placeholder="Position held"
-                            name="employment.employment_position"
-                            value={formData.employment.employment_position}
+                            name="rental_history?.employment_position"
+                            value={formData?.rental_history?.employment_position}
                             onChange={handleApplicantChange}
                           />
                         </div>
@@ -674,8 +675,8 @@ const ApplicantForm = () => {
                           type="text"
                           className="form-control"
                           placeholder="Enter first name"
-                          name="employment.supervisor_firstName"
-                          value={formData.employment.supervisor_firstName}
+                          name="rental_history?.supervisor_firstName"
+                          value={formData?.rental_history?.supervisor_firstName}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -685,8 +686,8 @@ const ApplicantForm = () => {
                           type="text"
                           className="form-control"
                           placeholder="Enter last name"
-                          name="employment.supervisor_lastName"
-                          value={formData.employment.supervisor_lastName}
+                          name="rental_history?.supervisor_lastName"
+                          value={formData?.rental_history?.supervisor_lastName}
                           onChange={handleApplicantChange}
                         />
                       </div>
@@ -702,8 +703,8 @@ const ApplicantForm = () => {
                             type="email"
                             className="form-control"
                             placeholder="Supervisor title"
-                            name="employment.supervisor_title"
-                            value={formData.employment.supervisor_title}
+                            name="rental_history?.supervisor_title"
+                            value={formData?.rental_history?.supervisor_title}
                             onChange={handleApplicantChange}
                           />
                         </div>
@@ -758,7 +759,7 @@ const ApplicantForm = () => {
                             className="form-control"
                             placeholder="Agreed by"
                             name="agreeBy"
-                            value={formData.agreeBy}
+                            value={formData?.agreeBy}
                             onChange={handleApplicantChange}
                           />
                         </div>

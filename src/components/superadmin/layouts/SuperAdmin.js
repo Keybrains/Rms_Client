@@ -1,20 +1,19 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, Route, Routes, Navigate } from "react-router-dom";
-
-import { Container } from "reactstrap";
-
-// import AdminNavbar from "components/Navbars/AdminNavbar.js";
-// import AdminFooter from "components/Footers/AdminFooter.js";
-import SuperAdminSidebar from "components/superadmin/Sidebar/SuperAdminSidebar";
-import SuperAdminNavbar from "components/superadmin/Navbar/SuperAdminNavbar";
-
 import routes from "routes.js";
+import SuperAdminSidebar from "../Sidebar/SuperAdminSidebar";
+import SuperAdminNavbar from "../Navbar/SuperAdminNavbar";
 
 const SuperAdmin = (props) => {
-  const mainContent = React.useRef(null);
+  const mainContent = useRef(null);
   const location = useLocation();
 
-  React.useEffect(() => {
+  const [isCollapse, setIsCollapse] = useState(window.innerWidth <= 768);
+  const toggleCollapse = () => {
+    setIsCollapse(!isCollapse);
+  };
+
+  useEffect(() => {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
     mainContent.current.scrollTop = 0;
@@ -45,28 +44,36 @@ const SuperAdmin = (props) => {
   };
 
   return (
-    <>
+    <div style={{ backgroundColor: "#fff", height: "100%" }}>
       <SuperAdminSidebar
-        {...props}
         routes={routes}
         logo={{
-          innerLink: "/superadmin",
-          imgSrc: require("../../../assets/img/brand/rms.jpeg"),
+          innerLink: "/tenant/tenantdashboard",
+          imgSrc: require("../../../assets/icons/site-logo_saas.png"),
+          imgSrc2: require("../../../assets/icons/site-logo-1 7.png"),
           imgAlt: "...",
         }}
+        isCollapse={isCollapse}
+        setIsCollapse={setIsCollapse}
+        toggleCollapse={toggleCollapse}
       />
-      <div className="main-content" ref={mainContent}>
+      <div
+        className={!isCollapse ? `content` : `content-active`}
+        ref={mainContent}
+      >
         <SuperAdminNavbar
           {...props}
           brandText={getBrandText(props?.location?.pathname)}
         />
         <Routes>
           {getRoutes(routes)}
-          <Route path="*" element={<Navigate to="/superadmin/dashboard" replace />} />
+          <Route
+            path="*"
+            element={<Navigate to={`/tenant/tenantdashboard`} replace />}
+          />
         </Routes>
-        <Container fluid>{/* <AdminFooter /> */}</Container>
       </div>
-    </>
+    </div>
   );
 };
 
