@@ -175,6 +175,7 @@ function AddPayment() {
         `${baseUrl}/nmipayment/get-billing-customer-vault`,
         {
           customer_vault_id: customerVaultIds,
+          admin_id : accessType?.admin_id,
         }
       );
 
@@ -414,6 +415,7 @@ function AddPayment() {
               account: entry.account,
               amount: entry.amount,
               balance: entry.amount,
+              memo: responseData.memo,
               charge_type: entry.charge_type,
             })),
             payments_attachment: responseData.payment_attachment,
@@ -619,6 +621,7 @@ function AddPayment() {
           // First, make the call to baseUrl/nmipayment/sale
           const url = `${baseUrl}/nmipayment/sale`;
           const postObject = {
+            admin_id : accessType?.admin_id,
             first_name: tenantData.tenant_firstName,
             last_name: tenantData.tenant_lastName,
             email_name: tenantData.tenant_email,
@@ -1082,7 +1085,7 @@ function AddPayment() {
                           <DropdownToggle caret style={{ width: "100%" }}>
                             {selectedPaymentMethod
                               ? selectedPaymentMethod
-                              : "Selcet Method"}
+                              : "Select Method"}
                           </DropdownToggle>
                           <DropdownMenu
                             style={{

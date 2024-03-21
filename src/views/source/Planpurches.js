@@ -130,6 +130,7 @@ function Planpurches() {
     };
 
     const nmiObject = {
+      admin_id : accessType?.admin_id,
       planId: receivedData?.plan_id,
       ccnumber: values.card_number,
       ccexp: values.expiration_month + "/" + values.expiration_year,

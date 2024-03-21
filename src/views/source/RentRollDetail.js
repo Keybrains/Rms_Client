@@ -328,6 +328,7 @@ const RentRollDetail = () => {
       // Assuming 'item' is a prop or state variable
       const { payment_id, payment_type } = ResponseData[0];
       const commonData = {
+        admin_id : accessType?.admin_id,
         transactionId: ResponseData[0].transaction_id,
         customer_vault_id: ResponseData[0].customer_vault_id,
         billing_id: ResponseData[0].billing_id,

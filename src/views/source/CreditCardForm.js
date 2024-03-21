@@ -17,12 +17,25 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { RotatingLines } from "react-loader-spinner";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { jwtDecode } from "jwt-decode";
+import {  useNavigate } from "react-router-dom";
 
 function CreditCardForm(props) {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { tenantId, closeModal } = props;
   const [isSubmitting, setSubmitting] = useState(false);
   const [cardLogo, setCardLogo] = useState("");
+  const navigate = useNavigate();
+  const [accessType, setAccessType] = useState(null);
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
+      setAccessType(jwt);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
 
   const fetchCardLogo = async (cardType) => {
     try {
@@ -85,14 +98,15 @@ function CreditCardForm(props) {
         `${baseUrl}/nmipayment/get-billing-customer-vault`,
         {
           customer_vault_id: customerVaultIds,
+          admin_id: accessType?.admin_id
         }
       );
 
 
       // Check if customer.billing is an array
-      const billingData = response.data.data.customer.billing;
+      const billingData = response.data?.data?.customer?.billing;
 
-      if (Array.isArray(billingData)) {
+      if (billingData && Array.isArray(billingData)) {
         const extractedData = billingData.map((item) => ({
           billing_id: item["@attributes"].id,
           cc_number: item.cc_number,
@@ -167,13 +181,15 @@ function CreditCardForm(props) {
         setCardDetails(extractedData);
         console.log("object", extractedData);
       } else {
-        console.error(
-          "Invalid response structure - customer.billing is not an array"
-        );
+        // console.error(
+        //   "Invalid response structure - customer.billing is not an array"
+        // );
+        console.error('Invalid response structure - billingData is not an array or is undefined/null');
       }
     } catch (error) {
       console.error("Error fetching multiple customer vault records:", error);
       // setPaymentLoader(false);
+      throw error;
     }
   };
   useEffect(() => {
@@ -253,6 +269,7 @@ function CreditCardForm(props) {
           company: values.company,
           phone: values.phone,
           email: values.email,
+          admin_id: accessType?.admin_id,
           customer_vault_id: vaultId,
           billing_id: random10DigitNumber,
         }
@@ -270,6 +287,7 @@ function CreditCardForm(props) {
           company: values.company,
           phone: values.phone,
           email: values.email,
+          admin_id: accessType?.admin_id,
           billing_id: random10DigitNumber,
         };
 
@@ -348,6 +366,7 @@ function CreditCardForm(props) {
       setSubmitting(false);
     }
   };
+  console.log("mansuuuuuuuuuu",accessType?.admin_id)
 
   const handleDeleteCard = async (customerVaultId, billingId) => {
     try {
@@ -357,6 +376,7 @@ function CreditCardForm(props) {
         axios.post(`${baseUrl}/nmipayment/delete-customer-billing`, {
           customer_vault_id: customerVaultId,
           billing_id: billingId,
+          admin_id: accessType?.admin_id
         }),
       ]);
 
