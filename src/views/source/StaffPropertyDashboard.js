@@ -15,6 +15,8 @@ import {
 } from "reactstrap";
 
 import { useNavigate, useParams } from "react-router-dom";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
@@ -22,6 +24,7 @@ import { RotatingLines } from "react-loader-spinner";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import moment from "moment";
+import "./Staffdashboard.css";
 
 const StaffPropertyDashboard = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -80,9 +83,14 @@ const StaffPropertyDashboard = () => {
       const lowerCaseSearchQuery = searchQuery.toLowerCase();
       filteredData = filteredData.filter((tenant) => {
         return (
-          (tenant.rental_adress && tenant.rental_adress.toLowerCase().includes(lowerCaseSearchQuery)) ||
-          (tenant.start_date && tenant.start_date.toLowerCase().includes(lowerCaseSearchQuery)) ||
-          (tenant.end_date && tenant.end_date.toLowerCase().includes(lowerCaseSearchQuery))
+          (tenant.rental_adress &&
+            tenant.rental_adress
+              .toLowerCase()
+              .includes(lowerCaseSearchQuery)) ||
+          (tenant.start_date &&
+            tenant.start_date.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (tenant.end_date &&
+            tenant.end_date.toLowerCase().includes(lowerCaseSearchQuery))
         );
       });
     }
@@ -94,6 +102,18 @@ const StaffPropertyDashboard = () => {
           case "rental_adress":
             filteredData.sort((a, b) =>
               a.rental_adress.localeCompare(b.rental_adress)
+            );
+            break;
+          case "propertysub_type":
+            console.log(filteredData, "yashu")
+            filteredData.sort((a, b) =>
+              a?.propertysub_type.localeCompare(b?.propertysub_type)
+            );
+            break;
+          case "rental_city":
+            console.log(filteredData, "yashu")
+            filteredData.sort((a, b) =>
+              a?.rental_city.localeCompare(b?.rental_city)
             );
             break;
           case "start_date":
@@ -116,7 +136,6 @@ const StaffPropertyDashboard = () => {
     return filteredData;
   };
 
-
   const sortData = (value) => {
     if (!sortBy.includes(value)) {
       setSortBy([...sortBy, value]);
@@ -136,148 +155,178 @@ const StaffPropertyDashboard = () => {
   return (
     <>
       <StaffHeader />
-      <Container className="mt--8 ml--10" fluid>
-        <Row>
-          <Col xs="12" sm="6">
-            <FormGroup className="">
-              <h1 style={{ color: "white" }}>Properties</h1>
-            </FormGroup>
-          </Col>
-        </Row>
+      <Container className=" " fluid style={{ padding: "0px 50px 0px 50px " }}>
         <Row>
           <div className="col">
-            <Card className="shadow">
-              <CardHeader className="border-0">
-                <Row>
-                  <Col xs="12" sm="6">
-                    <FormGroup className="">
-                      <Input
-                        fullWidth
-                        type="text"
-                        placeholder="Search"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        style={{
-                          width: "100%",
-                          maxWidth: "200px",
-                          minWidth: "200px",
-                        }}
-                      />
-                    </FormGroup>
+            <Card className="shadow " style={{ backgroundColor: "#152B51" }}>
+              <Row>
+                <Col
+                  xs="12"
+                  sm="4"
+                  style={{ display: "flex", justifyContent: "left" }}
+                >
+                  <FormGroup
+                    className=""
+                    style={{ display: "flex", alignItems: "center" }}
+                  >
+                    <h1
+                      style={{
+                        color: "white",
+                        paddingLeft: "20px",
+                        fontSize: "20px",
+                        marginTop: "10px",
+                        fontFamily: "Poppins",
+                      }}
+                    >
+                      Properties
+                    </h1>
+                  </FormGroup>
+                </Col>
+              </Row>
+            </Card>
+            <>
+              <Row>
+                <Col xs="12" sm="6">
+                  <FormGroup className="">
+                    <Input
+                      fullWidth
+                      type="text"
+                      placeholder="Search here..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      style={{
+                        width: "100%",
+                        maxWidth: "200px",
+                        minWidth: "200px",
+                        marginTop: "20px",
+                        boxShadow: "0px 4px 4px 0px #00000040",
+                      }}
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+              {!loader || rental_adress?.length > 0 ? (
+                <Row
+                  className="mx-2 mt-3 d-flex align-items-center py-1"
+                  style={{ borderRadius: "10px", height: "69px" }}
+                >
+                  <Col>
+                    <Row
+                      className="d-flex align-items-center"
+                      style={{
+                        border: "2px solid rgba(50, 69, 103, 1)",
+                        borderTopLeftRadius: "12px",
+                        borderTopRightRadius: "12px",
+                        height: "45px",
+                      }}
+                    >
+                      <Col style={{color:"#152B51"}}>
+                        Rental Address {console.log(sortBy, "yash", upArrow)}
+                        {sortBy.includes("rental_adress") ? (
+                          upArrow.includes("rental_adress") ? (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("rental_adress")}
+                            />
+                          ) : (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("rental_adress")}
+                            />
+                          )
+                        ) : (
+                          <ArrowDropDownIcon
+                            onClick={() => sortData("rental_adress")}
+                          />
+                        )}
+                      </Col>
+                      <Col style={{color:"#152B51"}}>
+                        Property Subtype{" "}
+                        {sortBy.includes("propertysub_type") ? (
+                          upArrow.includes("propertysub_type") ? (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("propertysub_type")}
+                            />
+                          ) : (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("propertysub_type")}
+                            />
+                          )
+                        ) : (
+                          <ArrowDropDownIcon
+                            onClick={() => sortData("propertysub_type")}
+                          />
+                        )}
+                      </Col>
+                      <Col style={{color:"#152B51"}}>
+                        Locality{" "}
+                        {sortBy.includes("rental_city") ? (
+                          upArrow.includes("rental_city") ? (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("rental_city")}
+                            />
+                          ) : (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("rental_city")}
+                            />
+                          )
+                        ) : (
+                          <ArrowDropDownIcon
+                            onClick={() => sortData("rental_city")}
+                          />
+                        )}
+                      </Col>
+                      <Col style={{color:"#152B51"}}>CreatedAt</Col>
+                    </Row>
+                    <Row
+                      className="mt-3"
+                      style={{
+                        border: "0.5px solid rgba(50, 69, 103, 1)",
+                        borderBottomLeftRadius: "12px",
+                        borderBottomRightRadius: "12px",
+                        overflow: "hidden",
+                        fontSize: "16px",
+                        fontWeight: "600",
+                        lineHeight: "19.12px",
+                      }}
+                    >
+                      <Col>
+                        {filterTenantsBySearchAndPage().map(
+                          (address, index) => (
+                            <Row
+                              key={index}
+                              className="d-flex align-items-center"
+                              // onClick={() => navigateToDetails(vendor?.workOrder_id)}
+                              onClick={() =>
+                                navigate(
+                                  // `/staff/staffpropertydetail/1708425958731`
+                                  `/staff/staffpropertydetail/${address?.rental_id}`
+                                )
+                              }
+                              style={{
+                                cursor: "pointer",
+                                border: "0.5px solid rgba(50, 69, 103, 1)",
+                                fontSize: "12px",
+                                height: "40px",
+                                fontFamily: "poppins",
+                                fontWeight: "600",
+                                lineHeight: "10.93px",
+                              }}
+                            >
+                              <Col style={{color:"#152B51"}}>{address?.rental_adress} </Col>
+                              <Col style={{color:"#152B51"}}>{address?.propertysub_type}</Col>
+                              <Col style={{color:"#152B51"}}>{address?.rental_city}</Col>
+                              <Col style={{color:"#152B51"}}>
+                                {" "}
+                                {moment(address?.createdAt).format(
+                                  "DD-MM-YYYY"
+                                )}
+                              </Col>
+                            </Row>
+                          )
+                        )}
+                      </Col>
+                    </Row>
                   </Col>
                 </Row>
-              </CardHeader>
-              {!loader || rental_adress?.length > 0 ? (
-                <div className="table-responsive">
-                  <>
-                    <Table
-                      className="align-items-center table-flush"
-                      responsive
-                    // style={{
-                    //   width: "100%",
-                    //   border: "1px solid #e5e5e5",
-                    //   borderRadius: "8px",
-                    //   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                    // }}
-                    >
-                      <thead className="thead-light">
-                        <tr>
-                          <th>
-                            Rental Address
-                            {sortBy.includes("rental_adress") ? (
-                              upArrow.includes("rental_adress") ? (
-                                <ArrowDownwardIcon
-                                  onClick={() => sortData("rental_adress")}
-                                />
-                              ) : (
-                                <ArrowUpwardIcon
-                                  onClick={() => sortData("rental_adress")}
-                                />
-                              )
-                            ) : (
-                              <ArrowUpwardIcon
-                                onClick={() => sortData("rental_adress")}
-                              />
-                            )}
-                          </th>
-                          <th>
-                            Property Subtype
-                            {sortBy.includes("start_date") ? (
-                              upArrow.includes("start_date") ? (
-                                <ArrowDownwardIcon
-                                  onClick={() => sortData("start_date")}
-                                />
-                              ) : (
-                                <ArrowUpwardIcon
-                                  onClick={() => sortData("start_date")}
-                                />
-                              )
-                            ) : (
-                              <ArrowUpwardIcon
-                                onClick={() => sortData("start_date")}
-                              />
-                            )}
-                          </th>
-                          <th>
-                            Locality
-                            {sortBy.includes("end_date") ? (
-                              upArrow.includes("end_date") ? (
-                                <ArrowDownwardIcon
-                                  onClick={() => sortData("end_date")}
-                                />
-                              ) : (
-                                <ArrowUpwardIcon
-                                  onClick={() => sortData("end_date")}
-                                />
-                              )
-                            ) : (
-                              <ArrowUpwardIcon
-                                onClick={() => sortData("end_date")}
-                              />
-                            )}
-                          </th>
-                          <th>CreatedAt</th>
-                        </tr>
-                      </thead>
-                      {propertyDetails.length === 0 ? (
-                        <tbody>
-                          <tr className="text-center">
-                            <td colSpan="8" style={{ fontSize: "15px" }}>No Property Added</td>
-                          </tr>
-                        </tbody>
-                      ) : (
-                        <tbody>
-                          {filterTenantsBySearchAndPage().map(
-                            (address, index) => (
-                              <>
-                                <tr
-                                  key={index}
-                                  onClick={() =>
-                                    navigate(
-                                      // `/staff/staffpropertydetail/1708425958731`
-                                      `/staff/staffpropertydetail/${address?.rental_id}`
-                                    )
-                                  }
-                                  style={{ cursor: "pointer" }}
-                                >
-                                  <td>{address?.rental_adress} </td>
-
-                                  <td>{address?.propertysub_type}</td>
-                                  <td>{address?.rental_city}</td>
-                                  <td>
-                                    {moment(address?.createdAt).format(
-                                      "DD-MM-YYYY"
-                                    )}
-                                  </td>
-                                </tr>
-                              </>
-                            )
-                          )}
-                        </tbody>
-                      )}
-                    </Table>
-                  </>
-                </div>
               ) : (
                 <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
                   <RotatingLines
@@ -289,7 +338,7 @@ const StaffPropertyDashboard = () => {
                   />
                 </div>
               )}
-            </Card>
+            </>
           </div>
         </Row>
       </Container>

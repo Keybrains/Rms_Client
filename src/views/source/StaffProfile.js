@@ -14,13 +14,7 @@ import {
   Col,
 } from "reactstrap"; // Import other necessary components from 'reactstrap'
 import { jwtDecode } from "jwt-decode";
-
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import "./Staffdashboard.css";
 
 const StaffProfile = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -65,28 +59,11 @@ const StaffProfile = () => {
     getStaffData();
   }, [accessType]);
 
-  function createData(
-    // name: string,
-    calories: number,
-    fat: number,
-    carbs: number,
-    protein: number
-  ) {
-    return { calories, fat, carbs, protein };
-  }
-  const rows = [
-    createData(159, 6.0, 24, 4.0),
-    createData(237, 9.0, 37, 4.3),
-    createData(262, 16.0, 24, 6.0),
-    createData(305, 3.7, 67, 4.3),
-    createData(356, 16.0, 49, 3.9),
-  ];
-
   return (
     <>
       <StaffHeader />
       {/* Page content */}
-      <Container className="mt--7" fluid>
+      <Container className="" fluid style={{ marginTop: "4rem" }}>
         <Row>
           <div className="col">
             <Card
@@ -95,49 +72,181 @@ const StaffProfile = () => {
                 backgroundColor: "#152B51",
                 padding: "20px",
                 borderRadius: "20px",
+                paddingRight: "90px",
+                paddingLeftL: "90px",
               }}
             >
               <h2 className="mb-0" style={{ color: "white" }}>
                 Personal Details
               </h2>
             </Card>
-            <TableContainer component={Paper}>
-              <Table className="" sx={{ minWidth: 650,  }} style={{minHeight:"10px"}} aria-label="simple table">
-                <TableHead >
-                  <TableRow style={{alignItems:"center"}}>
-                    <TableCell align="left" style={{border:"none"}}>Calories</TableCell>
-                    <TableCell align="left" style={{border:"none"}}>Fat&nbsp;(g)</TableCell>
-                    <TableCell align="left" style={{border:"none"}}>Carbs&nbsp;(g)</TableCell>
-                    <TableCell align="left" style={{border:"none"}}>Protein&nbsp;(g)</TableCell>
-                  </TableRow>
-                </TableHead>
-              </Table>
-            </TableContainer>
-            <TableContainer component={Paper} style={{marginTop:"20px"}}>
-              <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                {/* <TableHead> */}
-                  {/* <TableRow>
-                    <TableCell align="left">Calories</TableCell>
-                    <TableCell align="left">Fat&nbsp;(g)</TableCell>
-                    <TableCell align="left">Carbs&nbsp;(g)</TableCell>
-                    <TableCell align="left">Protein&nbsp;(g)</TableCell>
-                  </TableRow> */}
-                {/* </TableHead> */}
-                <TableBody>
-                  {rows.map((row) => (
-                    <TableRow
-                      key={row.name}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+            {/* <Table
+                className="align-items-center table-flush"
+                responsive
+                style={{ width: "100%" }}
+              >
+                {loading ? (
+                  <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+                    <RotatingLines
+                      strokeColor="grey"
+                      strokeWidth="5"
+                      animationDuration="0.75"
+                      width="50"
+                      visible={loading}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <tbody
+                      className="tbbody p-0 m-0"
+                      style={{
+                        borderTopRightRadius: "5px",
+                        borderTopLeftRadius: "5px",
+                        borderBottomLeftRadius: "5px",
+                        borderBottomRightRadius: "5px",
+                      }}
                     >
-                      <TableCell align="left">{row.calories}</TableCell>
-                      <TableCell align="left">{row.fat}</TableCell>
-                      <TableCell align="left">{row.carbs}</TableCell>
-                      <TableCell align="left">{row.protein}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                      <tr className="header">
+                        <th>First name</th>
+                        <th>Designation</th>
+                        <th>Phone Number</th>
+                        <th>Email</th>
+                      </tr>
+                      <>
+                        <>
+                          {!staffDetails ? (
+                            <tbody>
+                              <tr className="text-center">
+                                <td colSpan="8" style={{ fontSize: "15px" }}>
+                                  No Data Added
+                                </td>
+                              </tr>
+                            </tbody>
+                          ) : (
+                            <tr className="body">
+                              <td>{staffDetails?.staffmember_name}</td>
+                              <td>{staffDetails?.staffmember_designation}</td>
+                              <td>{staffDetails?.staffmember_phoneNumber}</td>
+                              <td>{staffDetails?.staffmember_email}</td>
+                            </tr>
+                          )}
+                        </>
+                      </>
+                    </tbody>
+                  </>
+                )}
+              </Table> */}
+            {/* <table class="rwd-table">
+                <tbody> */}
+            <Row
+              className="mx-3 py-0 mt-3"
+              style={{
+                border: ".5px solid rgba(50, 69, 103, 1)",
+                borderTopLeftRadius: "12px",
+                borderTopRightRadius: "12px",
+                height: "45px",
+                alignItems: "center",
+                borderBottom:"0px",
+                color:"#152B51"
+              }}
+            >
+              <Col
+                style={{
+                  borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                  height: "100%",
+                  alignItems: "center",
+                  display: "flex",
+                }}
+              >
+                First Name
+              </Col>
+              <Col
+                style={{
+                  borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                  height: "100%",
+                  alignItems: "center",
+                  display: "flex",
+                }}
+              >
+                Designation
+              </Col>
+              <Col
+                style={{
+                  borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                  height: "100%",
+                  alignItems: "center",
+                  display: "flex",
+                }}
+              >
+                Phone Number
+              </Col>
+              <Col
+                style={{
+                  height: "100%",
+                  alignItems: "center",
+                  display: "flex",
+                }}
+              >
+                Email
+              </Col>
+            </Row>
+            <Row
+              className="mx-3 py-0"
+              style={{
+                border: ".5px solid rgba(50, 69, 103, 1)",
+                borderBottomLeftRadius: "12px",
+                borderBottomRightRadius: "12px",
+                height: "45px",
+                alignItems: "center",
+                color:"#152B51"
+              }}
+            >
+              <Col
+                style={{
+                  borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                  height: "100%",
+                  alignItems: "center",
+                  display: "flex",
+                  fontSize:"12px"
+                }}
+              >
+                {staffDetails?.staffmember_name}
+              </Col>
+              <Col
+                style={{
+                  borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                  height: "100%",
+                  alignItems: "center",
+                  display: "flex",
+                  fontSize:"12px"
+                }}
+              >
+                {staffDetails?.staffmember_designation}
+              </Col>
+              <Col
+                style={{
+                  borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                  height: "100%",
+                  alignItems: "center",
+                  display: "flex",
+                  fontSize:"12px"
+                }}
+              >
+                {staffDetails?.staffmember_phoneNumber}
+              </Col>
+              <Col
+                style={{
+                  height: "100%",
+                  alignItems: "center",
+                  display: "flex",
+                  fontSize:"12px"
+                }}
+              >
+                {staffDetails?.staffmember_email}
+              </Col>
+            </Row>
+            {/* </tbody>
+              </table> */}
           </div>
         </Row>
       </Container>
