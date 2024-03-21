@@ -886,6 +886,7 @@ export default function Admin() {
                           className="mt-3 mx-3"
                           variant="primary"
                           style={{ color: "#152B51", fontFamily: "Poppins" }}
+                          onClick={() => setModalShowForPopupForm(false)}
                         >
                           Cancel
                         </Button>

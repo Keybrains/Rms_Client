@@ -219,6 +219,7 @@ const VendorNavbar = (props) => {
                     height: "40px",
                     backgroundColor: "rgba(82, 84, 89, 1)",
                     borderRadius: "12px",
+                    color: "#fff",
                   }}
                 >
                   {`${accessType?.vendor_name
