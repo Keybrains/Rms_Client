@@ -1,3 +1,52 @@
+.texmt{
+    font-family: "Poppins", sans-serif;
+}
+
+.swal-footer {
+    text-align: center;
+    padding-top: 13px;
+    margin-top: 13px;
+    padding: 13px 16px;
+    border-radius: inherit;
+      border-top-left-radius: inherit;
+      border-top-right-radius: inherit;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+  .swal-text {
+    font-size: 16px;
+    position: relative;
+    float: none;
+    line-height: normal;
+    vertical-align: top;
+    text-align: left;
+    display: inline-block;
+    margin: 0;
+      margin-top: 0px;
+    padding: 0 10px;
+    font-weight: 400;
+    color: #152B51;
+    max-width: calc(100% - 20px);
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+  }
+  .swal-button {
+    background-color: #152B51;
+    color: #fff;
+    border: none;
+    box-shadow: none;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 10px 24px;
+    margin: 0;
+    cursor: pointer;
+  }
+  .swal-button:hover {
+    background-color: #152B51 !important;
+  }
+
+  
 /* media  */
 
 /* 1680 */

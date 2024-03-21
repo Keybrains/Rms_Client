@@ -75,9 +75,9 @@ import Purchaseplan from "views/source/purchaseplandetail";
 // ==========================  Super Admin ===================================================
 
 import SuperAdminDashBoard from "../src/components/superadmin/Dashboard/DashBoard copy";
-import SuperAdminPlanList from "components/superadmin/Plan/PlanList";
-import SuperAdminAddplan from "components/superadmin/Plan/Addplan";
-import SuperAdminAdmin from "components/superadmin/Admin/Admin";
+import SuperAdminPlanList from "components/superadmin/Plan/PlanList copy";
+import SuperAdminAddplan from "components/superadmin/Plan/Addplan copy";
+import SuperAdminAdmin from "components/superadmin/Admin/Admin copy";
 import SuperAdminPropertyType from "components/superadmin/Admin/PropertyType";
 import SuperAdminStaffMember from "components/superadmin/Admin/StaffMember";
 import SuperAdminProperties from "components/superadmin/Admin/Properties";
