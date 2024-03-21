@@ -6,7 +6,7 @@ import { Nav, NavItem, NavLink } from "reactstrap";
 import routes from "routes";
 import "./style.css";
 
-const Sidebar = ({ logo, isCollapse, toggleCollapse }) => {
+const VendorSidebar = ({ logo, isCollapse, toggleCollapse }) => {
   const location = useLocation();
   const createLinks = () => {
     const filteredRoutes = routes.filter(
@@ -84,4 +84,4 @@ const Sidebar = ({ logo, isCollapse, toggleCollapse }) => {
   );
 };
 
-export default Sidebar;
+export default VendorSidebar;

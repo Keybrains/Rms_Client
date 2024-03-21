@@ -31,7 +31,7 @@ import AddAgent from "views/source/AddAgent";
 import Agent from "views/source/Agent";
 import AgentdashBoard from "views/source/AgentdashBoard";
 import StaffDashBoard from "views/source/StaffDashBoard";
-import VendorDashBoard from "views/source/VendorDashBoard copy";
+import VendorDashBoard from "views/source/VendorDashBoard (1)";
 import VendorProfile from "views/source/VendorProfile";
 import VenorWorkOrder from "views/source/VenorWorkOrder";
 import TenantWork from "views/source/TenantWork";
