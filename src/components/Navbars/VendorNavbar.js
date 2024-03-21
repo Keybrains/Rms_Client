@@ -92,7 +92,6 @@ const VendorNavbar = (props) => {
       );
       if (response.status === 200) {
         vendorNotificationData();
-        // Process the data as needed
       } else {
         console.error("Response status is not 200");
       }

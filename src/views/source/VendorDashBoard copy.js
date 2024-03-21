@@ -39,9 +39,18 @@ import React, { useState, useEffect } from "react";
 import VendorHeader from "components/Headers/VendorHeader";
 import { RotatingLines } from "react-loader-spinner";
 // import card1 from "../../assets/img/icons/common/Union.svg";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
-// import book from "../../assets/img/icons/common/bookpaper.svg";
-// import clock from "../../assets/img/icons/common/clock.svg";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from "recharts";
+import book from "../../assets/icons/bookpaper.svg";
+import clock from "../../assets/icons/clock.svg";
 // import { useMediaQuery } from "@material-ui/core";
 // import { BarChart, Bar, XAxis, ResponsiveContainer } from "recharts";
 // const RoundedBar = (props) => {
@@ -57,15 +66,16 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 // };
 
 const ComparisonGraph = ({ data }) => {
-
   // }
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={Object.keys(data).map(month => ({
-        month,
-        "Active Plans": data[month].activePlans,
-        "Inactive Plans": data[month].inactivePlans,
-      }))}>
+      <BarChart
+        data={Object.keys(data).map((month) => ({
+          month,
+          "Active Plans": data[month].activePlans,
+          "Inactive Plans": data[month].inactivePlans,
+        }))}
+      >
         {/* <CartesianGrid strokeDasharray="3 3"  vertical={false} /> */}
         {/* <XAxis dataKey="month" />    */}
         <Tooltip />
@@ -73,7 +83,6 @@ const ComparisonGraph = ({ data }) => {
         <Bar dataKey="Inactive Plans" fill="#5A86D5" barSize={20} />
         <XAxis dataKey="month" axisLine={false} tickLine={false} />
       </BarChart>
-
     </ResponsiveContainer>
   );
 };
@@ -94,16 +103,12 @@ const ComparisonChartContainer = () => {
     Dec: { activePlans: 45, inactivePlans: 20 },
   };
 
-
-
   return (
     <div style={{ maxWidth: "100%", overflowX: "auto" }}>
       <ComparisonGraph data={data} />
     </div>
   );
 };
-
-
 
 const VendorDashBoard = (props) => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -166,21 +171,21 @@ const VendorDashBoard = (props) => {
             const { data } = response.data;
             setNewWorkOrders(data.new_workorder);
             setOverdueWorkOrders(data.overdue_workorder);
-            console.log(data.new_workorder, data.overdue_workorder, "jack")
-            console.log(`${baseUrl}/vendor/dashboard_workorder/${accessType?.vendor_id}/${accessType?.admin_id}`, "jaaa")
-
+            console.log(data.new_workorder, data.overdue_workorder, "jack");
+            console.log(
+              `${baseUrl}/vendor/dashboard_workorder/${accessType?.vendor_id}/${accessType?.admin_id}`,
+              "jaaa"
+            );
           } else {
             console.error("Failed to fetch work orders");
           }
         } catch (error) {
           console.error("Error fetching work orders:", error);
-        }
-        finally {
+        } finally {
           setLoader(false);
         }
-
-      };
-    }
+      }
+    };
     fetchWorkOrders();
   }, [accessType]);
 
@@ -196,13 +201,9 @@ const VendorDashBoard = (props) => {
 
   return (
     <>
-      <VendorHeader />
-
-      <Container className="mt--10" fluid
-      // style={{ backgroundColor: "#fff" }}
-      >
+      <VendorHeader prop={"My Dashboard"} />
+      <Container className="px-5" fluid>
         <div>
-
           {loader ? (
             <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
               <RotatingLines
@@ -215,17 +216,17 @@ const VendorDashBoard = (props) => {
             </div>
           ) : (
             <>
-
               <Row>
                 <Col className="order-xl-1 mt-3" xl="12">
                   <Row>
-                    <Col lg={4}>
+                    <Col lg={5}>
                       <Row>
-                        <Col style={{
-                          fontFamily: "Poppins",
-                          color: "#fff",
-                        }}>
-
+                        <Col
+                          style={{
+                            fontFamily: "Poppins",
+                            color: "#fff",
+                          }}
+                        >
                           <Card
                             style={{
                               cursor: "pointer",
@@ -256,10 +257,11 @@ const VendorDashBoard = (props) => {
                                       borderRadius: "50%",
                                       fontSize: "20px",
                                       padding: "15px",
-                                      boxShadow: "rgba(0, 0, 0, 0.75) 0 4px 4px 0",
+                                      boxShadow:
+                                        "rgba(0, 0, 0, 0.75) 0 4px 4px 0",
                                     }}
                                   >
-                                    <img src={"book"} height={20} width={20} />
+                                    <img src={book} height={20} width={20} />
                                   </span>
                                 </Col>
                               </Row>
@@ -275,20 +277,23 @@ const VendorDashBoard = (props) => {
                                       fontWeight: "600",
                                     }}
                                   >
-
-                                    {newWorkOrders?.length.toString().padStart(2, "0")}
+                                    {newWorkOrders?.length
+                                      .toString()
+                                      .padStart(2, "0")}
                                   </span>
                                 </Col>
                               </Row>
                               <Row>
-                                <Col lg={12} className="pt-4 align-items-center">
+                                <Col
+                                  lg={12}
+                                  className="pt-4 align-items-center"
+                                >
                                   <span
                                     style={{
                                       fontFamily: "Poppins",
                                       fontSize: "14px",
                                       fontWeight: "500",
                                     }}
-
                                   >
                                     New Work Orders
                                   </span>
@@ -299,19 +304,37 @@ const VendorDashBoard = (props) => {
                           <label
                             className="d-flex justify-content-center mt-3"
                             style={{
-                              cursor: "pointer", color: "white", backgroundColor: "#152B51", height: "39px", width: "92%", marginLeft: "10px",
-                              borderRadius: "6px", padding: "8px", boxShadow: "rgba(0, 0, 0, 0.35) 0px 4px 4px 0",
+                              cursor: "pointer",
+                              color: "white",
+                              backgroundColor: "#152B51",
+                              height: "39px",
+                              width: "92%",
+                              marginLeft: "10px",
+                              borderRadius: "6px",
+                              padding: "8px",
+                              boxShadow: "rgba(0, 0, 0, 0.35) 0px 4px 4px 0",
                             }}
                             // onClick={handleViewMoreOverdueOrders}
                             onClick={() => navigate("/vendor/vendorworktable")}
                           >
-                            <span style={{ borderBottom: "2px solid #D7E0FF", fontFamily: "Poppins", fontWeight: "600" }}>  View All</span>
+                            <span
+                              style={{
+                                borderBottom: "2px solid #D7E0FF",
+                                fontFamily: "Poppins",
+                                fontWeight: "600",
+                              }}
+                            >
+                              {" "}
+                              View All
+                            </span>
                           </label>
                         </Col>
-                        <Col style={{
-                          fontFamily: "Poppins",
-                          color: "#fff",
-                        }} >
+                        <Col
+                          style={{
+                            fontFamily: "Poppins",
+                            color: "#fff",
+                          }}
+                        >
                           <Card
                             style={{
                               cursor: "pointer",
@@ -342,10 +365,11 @@ const VendorDashBoard = (props) => {
                                       borderRadius: "50%",
                                       fontSize: "20px",
                                       padding: "15px",
-                                      boxShadow: "rgba(0, 0, 0, 0.75) 0 4px 4px 0",
+                                      boxShadow:
+                                        "rgba(0, 0, 0, 0.75) 0 4px 4px 0",
                                     }}
                                   >
-                                    <img src={"clock"} height={20} width={20} />
+                                    <img src={clock} height={20} width={20} />
                                   </span>
                                 </Col>
                               </Row>
@@ -361,21 +385,23 @@ const VendorDashBoard = (props) => {
                                       fontWeight: "600",
                                     }}
                                   >
-
-                                    {overdueWorkOrders?.length.toString().padStart(2, "0")}
+                                    {overdueWorkOrders?.length
+                                      .toString()
+                                      .padStart(2, "0")}
                                   </span>
                                 </Col>
                               </Row>
                               <Row style={{ flex: 1 }}>
-                                <Col lg={12} className="pt-4 align-items-center">
-
+                                <Col
+                                  lg={12}
+                                  className="pt-4 align-items-center"
+                                >
                                   <span
                                     style={{
                                       fontFamily: "Poppins",
                                       fontSize: "14px",
                                       fontWeight: "500",
                                     }}
-
                                   >
                                     Overdue Work Orders
                                   </span>
@@ -386,45 +412,125 @@ const VendorDashBoard = (props) => {
                           <label
                             className="d-flex justify-content-center mt-3"
                             style={{
-                              cursor: "pointer", color: "white", backgroundColor: "#5A86D5", height: "39px", width: "92%", marginLeft: "10px",
-                              borderRadius: "6px", padding: "8px", boxShadow: "rgba(0, 0, 0, 0.35) 0px 4px 4px 0",
-
+                              cursor: "pointer",
+                              color: "white",
+                              backgroundColor: "#5A86D5",
+                              height: "39px",
+                              width: "92%",
+                              marginLeft: "10px",
+                              borderRadius: "6px",
+                              padding: "8px",
+                              boxShadow: "rgba(0, 0, 0, 0.35) 0px 4px 4px 0",
                             }}
                             onClick={() =>
-                              navigate("/vendor/vendorworktable?status=Over Due")
+                              navigate(
+                                "/vendor/vendorworktable?status=Over Due"
+                              )
                             }
                           >
-                            <span style={{ borderBottom: "2px solid #D7E0FF", fontFamily: "Poppins", fontWeight: "600" }}>  View All </span>
-
+                            <span
+                              style={{
+                                borderBottom: "2px solid #D7E0FF",
+                                fontFamily: "Poppins",
+                                fontWeight: "600",
+                              }}
+                            >
+                              {" "}
+                              View All{" "}
+                            </span>
                           </label>
                         </Col>
                       </Row>
                     </Col>
-
                   </Row>
                 </Col>
               </Row>
 
-              <Row style={{ fontFamily: "poppins" }} >
+              <Row style={{ fontFamily: "poppins" }}>
                 <Col xs={12} lg={10} sm={12} md={10}>
                   <div className="d-flex mt-3">
-                    <div className="mr-auto p-2" style={{ fontSize: "24px", fontWeight: "700", fontFamily: "Manrope", color: "#030303" }}>Statistics</div>
-                    <div className="px-1 py-0 d-flex align-items-center" style={{ backgroundColor: "#CEE9FF", borderRadius: "5px", width: "155px", height: "34px" }}>
-                      <i className="fa-solid fa-square mx-2" style={{ color: "#152B51" }}></i>
-                      <span style={{ color: "#1C1C1E", fontSize: "12px", fontFamily: "Poppins", fontWeight: "400" }}>New Work Orders</span>
+                    <div
+                      className="mr-auto p-2"
+                      style={{
+                        fontSize: "24px",
+                        fontWeight: "700",
+                        fontFamily: "Manrope",
+                        color: "#030303",
+                      }}
+                    >
+                      Statistics
                     </div>
-                    <div className="px-1 py-0 d-flex align-items-center ml-5" style={{ backgroundColor: "#CEE9FF", borderRadius: "5px", width: "182px", height: "34px" }}>
-                      <i className="fa-solid fa-square mx-2 " style={{ color: "#5A86D5" }}></i>
-                      <span style={{ color: "#1C1C1E", fontSize: "12px", fontFamily: "Poppins", fontWeight: "400" }}>Overdue Work Orders</span>
+                    <div
+                      className="px-1 py-0 d-flex align-items-center"
+                      style={{
+                        backgroundColor: "#CEE9FF",
+                        borderRadius: "5px",
+                        width: "155px",
+                        height: "34px",
+                      }}
+                    >
+                      <i
+                        className="fa-solid fa-square mx-2"
+                        style={{ color: "#152B51" }}
+                      ></i>
+                      <span
+                        style={{
+                          color: "#1C1C1E",
+                          fontSize: "12px",
+                          fontFamily: "Poppins",
+                          fontWeight: "400",
+                        }}
+                      >
+                        New Work Orders
+                      </span>
+                    </div>
+                    <div
+                      className="px-1 py-0 d-flex align-items-center ml-5"
+                      style={{
+                        backgroundColor: "#CEE9FF",
+                        borderRadius: "5px",
+                        width: "182px",
+                        height: "34px",
+                      }}
+                    >
+                      <i
+                        className="fa-solid fa-square mx-2 "
+                        style={{ color: "#5A86D5" }}
+                      ></i>
+                      <span
+                        style={{
+                          color: "#1C1C1E",
+                          fontSize: "12px",
+                          fontFamily: "Poppins",
+                          fontWeight: "400",
+                        }}
+                      >
+                        Overdue Work Orders
+                      </span>
                     </div>
                   </div>
                 </Col>
               </Row>
 
-              <Row className="mt-3 mb-3 mx-1"  >
-                <Col xs={12} lg={11} xl={10} sm={12} md={12} style={{ border: "0.5px Solid #A8A9AC", borderRadius: "20px", boxShadow: "rgba(0, 0, 0, 0.35) 0px 4px 4px 0", }}>
+              <Row className="mt-3 mb-3 mx-1">
+                <Col
+                  xs={12}
+                  lg={11}
+                  xl={10}
+                  sm={12}
+                  md={12}
+                  style={{
+                    border: "0.5px Solid #A8A9AC",
+                    borderRadius: "20px",
+                    boxShadow: "rgba(0, 0, 0, 0.35) 0px 4px 4px 0",
+                  }}
+                >
                   <Col className="d-flex justify-content-end mt-3 mb-3">
-                    <Dropdown isOpen={dropdownOpenPlan} toggle={togglePlan} style={{ width: "180px", borderRadius: "16px" }} >
+                    <Dropdown
+                      isOpen={dropdownOpenPlan}
+                      toggle={togglePlan}
+                      style={{ width: "180px", borderRadius: "16px" }}
+                    >
                       <DropdownToggle
                         caret
                         style={{
@@ -444,22 +550,35 @@ const VendorDashBoard = (props) => {
                       >
                         <DropdownItem
                           onClick={() => handleChangePlan("This Year")}
-                          style={{ color: "#fff", backgroundColor: "transparent" }}
-                          onMouseEnter={(e) => e.target.style.backgroundColor = "#5A86D5"}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = "transparent"}
+                          style={{
+                            color: "#fff",
+                            backgroundColor: "transparent",
+                          }}
+                          onMouseEnter={(e) =>
+                            (e.target.style.backgroundColor = "#5A86D5")
+                          }
+                          onMouseLeave={(e) =>
+                            (e.target.style.backgroundColor = "transparent")
+                          }
                         >
                           This Year
                         </DropdownItem>
                         <DropdownItem
                           onClick={() => handleChangePlan("Previous Year")}
-                          style={{ color: "#fff", backgroundColor: "transparent" }}
-                          onMouseEnter={(e) => e.target.style.backgroundColor = "#5A86D5"}
-                          onMouseLeave={(e) => e.target.style.backgroundColor = "transparent"}
+                          style={{
+                            color: "#fff",
+                            backgroundColor: "transparent",
+                          }}
+                          onMouseEnter={(e) =>
+                            (e.target.style.backgroundColor = "#5A86D5")
+                          }
+                          onMouseLeave={(e) =>
+                            (e.target.style.backgroundColor = "transparent")
+                          }
                         >
                           Previous Year
                         </DropdownItem>
                       </DropdownMenu>
-
                     </Dropdown>
                   </Col>
 
@@ -470,8 +589,6 @@ const VendorDashBoard = (props) => {
           )}
         </div>
       </Container>
-
-
     </>
   );
 };
