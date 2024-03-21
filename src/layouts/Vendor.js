@@ -5,7 +5,7 @@ import { useLocation, Route, Routes, Navigate } from "react-router-dom";
 import { Container } from "reactstrap";
 import routes from "routes.js";
 
-const Tenant = (props) => {
+const Vendor = (props) => {
   const mainContent = useRef(null);
   const location = useLocation();
 
@@ -75,4 +75,4 @@ const Tenant = (props) => {
   );
 };
 
-export default Tenant;
+export default Vendor;
