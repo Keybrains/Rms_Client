@@ -49,7 +49,7 @@ const StaffSidebar = ({ logo, isCollapse, toggleCollapse }) => {
 
   return (
     <>
-      <div className={!isCollapse ? "sidebar" : "sidebar-active"}>
+      <div className={!isCollapse ? "sidebar side-staff" : "sidebar-active side-staff"}>
         <Nav vertical>
           <Link
             to="/staff/StaffdashBoard"

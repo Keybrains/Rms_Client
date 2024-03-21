@@ -42,7 +42,7 @@ import StaffPropertyDashboard from "views/source/StaffPropertyDashboard";
 import StaffPropertyDetail from "views/source/StaffPropertyDetail";
 import AgentProfile from "views/source/AgentProfile";
 import VendorWorkTable from "views/source/VendorWorkTable";
-import StaffWorkTable from "views/source/StaffWorkTable";
+import StaffWorkTable from "views/source/StaffWorkTable copy";
 import VendoeWorkTable from "views/source/VendorWorkTable";
 import Vendor from "views/source/Vendor";
 import AddVendor from "views/source/AddVendor";

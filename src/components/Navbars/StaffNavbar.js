@@ -315,7 +315,7 @@ const StaffNavbar = (props) => {
                     style={{
                       fontSize: "12px",
                       fontFamily: "Manrope",
-                      color: "rgba(54, 159, 255, 1)",
+                      color: "rgba(21, 43, 81, 1)",
                     }}
                   >
                     Staff Member
