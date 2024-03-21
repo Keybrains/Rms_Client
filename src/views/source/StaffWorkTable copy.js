@@ -225,6 +225,8 @@ const StaffWorkTable = () => {
                     borderTopLeftRadius: "12px",
                     borderTopRightRadius: "12px",
                     height: "45px",
+                    fontSize: "18px",
+                    fontWeight: "700",
                   }}
                 >
                   <Col>Work Order</Col>

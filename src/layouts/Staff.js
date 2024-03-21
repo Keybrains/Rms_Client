@@ -63,6 +63,7 @@ const Staff = (props) => {
       <div
         className={!isCollapse ? `content` : `content-active`}
         ref={mainContent}
+        style={{ height: "100vh" }}
       >
         <StaffNavbar
           {...props}
@@ -70,7 +71,10 @@ const Staff = (props) => {
         />
         <Routes>
           {getRoutes(routes)}
-          <Route path="*" element={<Navigate to={`/staff/StaffdashBoard`} replace />} />
+          <Route
+            path="*"
+            element={<Navigate to={`/staff/StaffdashBoard`} replace />}
+          />
         </Routes>
       </div>
     </div>
