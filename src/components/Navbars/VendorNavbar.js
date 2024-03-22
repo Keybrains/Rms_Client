@@ -116,7 +116,6 @@ const VendorNavbar = (props) => {
 
         <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
           <FormGroup
-            className="mb-1 mr-3"
             onClick={toggleSidebar}
             style={{ cursor: "pointer", position: "relative" }}
           >
@@ -228,6 +227,7 @@ const VendorNavbar = (props) => {
                     height: "40px",
                     backgroundColor: "rgba(82, 84, 89, 1)",
                     borderRadius: "12px",
+                    color: "#fff",
                   }}
                 >
                   {`${accessType?.vendor_name

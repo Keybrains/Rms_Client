@@ -30,7 +30,7 @@ import TenantProperty from "views/source/TenantProperty";
 import AddAgent from "views/source/AddAgent";
 import Agent from "views/source/Agent";
 import AgentdashBoard from "views/source/AgentdashBoard";
-import StaffDashBoard from "views/source/StaffDashBoard";
+import StaffDashBoard from "views/source/StaffDashBoard (1)";
 import VendorDashBoard from "views/source/VendorDashBoard (1)";
 import VendorProfile from "views/source/VendorProfile (1)";
 import VenorWorkOrder from "views/source/VenorWorkOrder";
@@ -43,9 +43,8 @@ import StaffPropertyDashboard from "views/source/StaffPropertyDashboard";
 import StaffPropertyDetail from "views/source/StaffPropertyDetail";
 import AgentProfile from "views/source/AgentProfile";
 import VendorWorkTable from "views/source/VendorWorkTable";
-import StaffWorkTable from "views/source/StaffWorkTable";
+import StaffWorkTable from "views/source/StaffWorkTable copy";
 import VendoeWorkTable from "views/source/VendorWorkTable";
-import StaffWorkOrder from "views/source/StaffWorkorder";
 import Vendor from "views/source/Vendor";
 import AddVendor from "views/source/AddVendor";
 import GeneralLedger from "views/source/GeneralLedger";
@@ -61,7 +60,6 @@ import Payment from "views/source/Payment";
 import AddPayment from "views/source/AddPayment";
 import AddCharge from "views/source/AddCharge";
 import TenantFinancial from "views/source/TenantFinancial";
-import ApplicantForm from "views/source/ApplicantForm";
 import Changepassword from "views/source/Changepassword";
 import Forgetmail from "views/source/forgetmail";
 import TrialLogin from "views/source/TrialLogin";
@@ -401,7 +399,8 @@ var routes = [
   {
     path: "/StaffdashBoard",
     name: "DashBoard",
-    icon: "ni ni-tv-2 text-primary",
+    icon: Dashboard,
+    icon2: Dashboard2,
     component: <StaffDashBoard />,
     layout: "/staff",
   },
@@ -421,14 +420,6 @@ var routes = [
     component: <VendorProfile />,
     layout: "/vendor",
   },
-  // {
-  //   path: "/vendorworkorder",
-  //   name: "Work Order",
-  //   icon: Work,
-  //   icon2: Work2,
-  //   component: <VenorWorkOrder />,
-  //   layout: "/vendor",
-  // },
   {
     path: "/tenantwork",
     name: "Work Order",
@@ -461,19 +452,19 @@ var routes = [
   {
     path: "/staffprofile",
     name: "Profile",
-    icon: "ni ni-single-02 text-yellow",
+    icon: Admin,
+    icon2: admin2,
     component: <StaffProfile />,
     layout: "/staff",
   },
-
   {
     path: "/staffproperty",
     name: "Property",
-    icon: "ni ni-pin-3 text-orange",
+    icon: Property,
+    icon2: Property2,
     component: <StaffPropertyDashboard />,
     layout: "/staff",
   },
-
   {
     path: "/agentprofile",
     name: "Profile",
@@ -496,24 +487,18 @@ var routes = [
     layout: "/staff",
   },
   {
-    path: "/staffworkorder/:id",
-    name: "Work Order",
-    icon: "ni ni-badge text-green",
-    component: <StaffWorkOrder />,
-    layout: "/staff",
-  },
-
-  {
     path: "/staffworktable",
     name: "Work Order",
-    icon: "ni ni-badge text-green",
+    icon: Work,
+    icon2: Work2,
     component: <StaffWorkTable />,
     layout: "/staff",
   },
   {
     path: "/staffworktable?status",
     name: "Work Order",
-    icon: "ni ni-badge text-green",
+    icon: Work,
+    icon2: Work2,
     component: <StaffWorkTable />,
     layout: "/staff",
   },
