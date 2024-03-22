@@ -147,7 +147,9 @@ const StaffProfile = () => {
                 height: "45px",
                 alignItems: "center",
                 borderBottom:"0px",
-                color:"#152B51"
+                color:"#152B51",
+                
+
               }}
             >
               <Col
@@ -198,7 +200,8 @@ const StaffProfile = () => {
                 borderBottomRightRadius: "12px",
                 height: "45px",
                 alignItems: "center",
-                color:"#152B51"
+                color:"#152B51",
+                boxShadow: "0px 4px 4px 0px #00000040"
               }}
             >
               <Col
