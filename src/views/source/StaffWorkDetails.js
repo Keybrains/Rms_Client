@@ -7,6 +7,7 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import StaffHeader from "components/Headers/StaffHeader";
 import {
   Card,
@@ -143,30 +144,40 @@ const StaffWorkDetails = () => {
     <>
       <StaffHeader />
       {/* Page content */}
-      <Container className="mt--8" fluid>
-        <Row>
+      <Container className="" fluid>
+      <Row>
           <Col xs="12" sm="6">
             <FormGroup className="">
-              <h1 style={{ color: "white" }}>Work Order Details</h1>
+              <h1 style={{ color: "white" }}>Property Details</h1>
             </FormGroup>
           </Col>
-          <Col className="text-right">
+          <Col className="text-right" style={{ paddingRight: "40px" }}>
             <Button
               color="primary"
               //  href="#rms"
               onClick={() => navigate("/staff/staffworktable")}
               size="sm"
-              style={{ background: "white", color: "black" }}
+              style={{ background: "#152B51", color: "white" }}
             >
               Back
             </Button>
           </Col>
         </Row>
+        <div style={{ paddingLeft: "22px", paddingRight: "22px" }}>
+          <Card
+            className="shadow"
+            style={{ backgroundColor: "#152B51", padding: "15px" }}
+          >
+            <h3 className="mb-0 text-left" style={{ color: "#fff" }}>
+            Work Order Details
+            </h3>
+          </Card>
+        </div>
         <br />
         {/* Table */}
         <Row>
           <div className="col">
-            <Card className="shadow">
+            {/* <Card className="shadow"> */}
               <CardHeader className="border-0">
                 <ToggleButtonGroup
                   color="primary"
@@ -239,13 +250,13 @@ const StaffWorkDetails = () => {
                                   display="flex"
                                   alignItems="center"
                                   justifyContent="center"
-                                  backgroundColor="grey"
+                                  backgroundColor="#152B51"
                                   borderRadius="8px"
                                   color="white"
                                   fontSize="24px"
                                   marginRight="16px"
                                 >
-                                  <AssignmentOutlinedIcon />
+                                  <FormatListBulletedIcon />
                                 </Box>
                                 <Box flex="1">
                                   <h2
@@ -396,7 +407,7 @@ const StaffWorkDetails = () => {
                               </Box>
                             </Box>
                             {outstandDetails?.partsandcharge_data?.length > 0 &&
-                              outstandDetails?.partsandcharge_data ? (
+                            outstandDetails?.partsandcharge_data ? (
                               <Box
                                 border="1px solid #ccc"
                                 borderRadius="8px"
@@ -552,12 +563,12 @@ const StaffWorkDetails = () => {
                                         {!Object.keys(item).includes(
                                           "status"
                                         ) ||
-                                          Object.keys(item).includes(
-                                            "due_date"
-                                          ) ||
-                                          item.status !== (" " || "") ||
-                                          item.due_date !== (" " || "") ||
-                                          item.staffmember_name !==
+                                        Object.keys(item).includes(
+                                          "due_date"
+                                        ) ||
+                                        item.status !== (" " || "") ||
+                                        item.due_date !== (" " || "") ||
+                                        item.staffmember_name !==
                                           (" " || "") ? (
                                           <>
                                             <Grid
@@ -567,7 +578,7 @@ const StaffWorkDetails = () => {
                                                 !Object.keys(item).includes(
                                                   "status"
                                                 ) ||
-                                                  item.status === (" " || null)
+                                                item.status === (" " || null)
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
@@ -581,7 +592,7 @@ const StaffWorkDetails = () => {
                                                 !Object.keys(item).includes(
                                                   "due_date"
                                                 ) ||
-                                                  item.due_date === (" " || null)
+                                                item.due_date === (" " || null)
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
@@ -594,7 +605,7 @@ const StaffWorkDetails = () => {
                                               style={{
                                                 display:
                                                   item.staffmember_name &&
-                                                    item.staffmember_name.trim() !==
+                                                  item.staffmember_name.trim() !==
                                                     ""
                                                     ? "block"
                                                     : "none",
@@ -676,7 +687,7 @@ const StaffWorkDetails = () => {
                               </Box>
                             </Box>
                             {outstandDetails?.tenant_data &&
-                              typeof outstandDetails?.tenant_data === "object" ? (
+                            typeof outstandDetails?.tenant_data === "object" ? (
                               <Box
                                 style={{
                                   display: "flex",
@@ -901,35 +912,49 @@ const StaffWorkDetails = () => {
                           padding="16px"
                           maxWidth="700px"
                           margin={"20px"}
+                          boxShadow="0px 4px 4px 0px #00000040"
                         >
-                          <Row>
-                            <Col lg="2">
+                          <Row style={{justifyContent:"space-between"}}>
+                            <Col lg="8" className="d-flex" style={{alignItems:"center"}}>
                               <Box
                                 width="40px"
                                 height="40px"
                                 display="flex"
                                 alignItems="center"
                                 justifyContent="center"
-                                backgroundColor="grey"
+                                backgroundColor="#152B51"
                                 borderRadius="8px"
                                 color="white"
                                 fontSize="24px"
                               >
-                                <AssignmentOutlinedIcon />
+                                <FormatListBulletedIcon />
                               </Box>
+                              <Col>
+                              <h2
+                                className=""
+                                style={{ color: "#152B51",marginBottom: 0,fontFamily:"poppins" }}
+                              >
+                                {outstandDetails?.work_subject || "N/A"}
+                              </h2>
+
+                              <span className="my-o" style={{fontFamily:"poppins",color:"#8A95A8"}}>
+                                {outstandDetails?.property_data
+                                  ?.rental_adress || "N/A"}
+                              </span>
+                              </Col>
                             </Col>
-                            <Col lg="8">
-                              <span
+                            <Col lg="2" className="text-end">
+                            <span
                                 style={{
                                   border: "2px solid",
                                   borderColor:
                                     outstandDetails?.priority === "High"
                                       ? "red"
                                       : outstandDetails?.priority === "Medium"
-                                        ? "green"
-                                        : outstandDetails?.priority === "Low"
-                                          ? "#FFD700"
-                                          : "inherit",
+                                      ? "green"
+                                      : outstandDetails?.priority === "Low"
+                                      ? "#FFD700"
+                                      : "inherit",
                                   borderRadius: "15px",
                                   padding: "2px",
                                   fontSize: "15px",
@@ -937,26 +962,16 @@ const StaffWorkDetails = () => {
                                     outstandDetails?.priority === "High"
                                       ? "red"
                                       : outstandDetails?.priority === "Medium"
-                                        ? "green"
-                                        : outstandDetails?.priority === "Low"
-                                          ? "#FFD700"
-                                          : "inherit",
+                                      ? "green"
+                                      : outstandDetails?.priority === "Low"
+                                      ? "#FFD700"
+                                      : "inherit",
+                                      fontFamily:"poppins"
                                 }}
                               >
                                 &nbsp;{outstandDetails?.priority}&nbsp;
                               </span>
-                              <h2
-                                className="text-lg"
-                                style={{ color: "#033E3E" }}
-                              >
-                                {outstandDetails?.work_subject || "N/A"}
-                              </h2>
-
-                              <span className="">
-                                {outstandDetails?.property_data
-                                  ?.rental_adress || "N/A"}
-                              </span>
-                            </Col>
+                              </Col>
                           </Row>
                           <br />
                           <Row>
@@ -965,42 +980,45 @@ const StaffWorkDetails = () => {
                                 <label
                                   className="form-control-label"
                                   htmlFor="input-property"
+                                  style={{fontFamily:"poppins",color: "#152B51"}}
                                 >
                                   Description
                                 </label>
                                 <br />
-                                <span style={{ fontSize: "13px" }}>
+                                <span style={{ fontSize: "13px",colorr:"#8A95A8",fontFamily:"poppins" }}>
                                   {outstandDetails?.work_performed || "N/A"}
                                 </span>
                               </FormGroup>
                             </Col>
                           </Row>
                           <Row>
-                            <Col lg="6">
+                            <Col lg="8">
                               <FormGroup>
                                 <label
                                   className="form-control-label"
                                   htmlFor="input-property"
+                                  style={{color: "#152B51",fontFamily:"poppins"}}
                                 >
                                   Status
                                 </label>
                                 <br />
-                                <span style={{ fontSize: "13px" }}>
+                                <span style={{ fontSize: "13px" ,fontFamily:"poppins",color:"#8A95A8"}}>
                                   {outstandDetails?.status || "N/A"}
                                 </span>
                               </FormGroup>
                             </Col>
 
-                            <Col lg="6">
+                            <Col lg="4">
                               <FormGroup>
                                 <label
                                   className="form-control-label"
                                   htmlFor="input-property"
+                                  style={{color: "#152B51",fontFamily:"poppins"}}
                                 >
                                   Due Date
                                 </label>
                                 <br />
-                                <span style={{ fontSize: "13px" }}>
+                                <span style={{ fontSize: "13px",fontFamily:"poppins",color:"#8A95A8" }}>
                                   {formatDateWithoutTime(
                                     outstandDetails?.date
                                   ) || "N/A"}
@@ -1008,32 +1026,34 @@ const StaffWorkDetails = () => {
                               </FormGroup>
                             </Col>
                           </Row>
-                          <Row>
-                            <Col lg="6">
+                          <Row> 
+                            <Col lg="8">
                               <FormGroup>
                                 <label
                                   className="form-control-label"
                                   htmlFor="input-property"
+                                  style={{color: "#152B51",fontFamily:"poppins"}}
                                 >
                                   Assignees
                                 </label>
                                 <br />
-                                <span style={{ fontSize: "13px" }}>
+                                <span style={{ fontSize: "13px",fontFamily:"poppins",color:"8A95A8" }}>
                                   {outstandDetails?.staff_data
                                     .staffmember_name || "N/A"}
                                 </span>
                               </FormGroup>
                             </Col>
-                            <Col lg="6">
+                            <Col lg="4">
                               <FormGroup>
                                 <label
                                   className="form-control-label"
                                   htmlFor="input-property"
+                                  style={{color: "#152B51",fontFamily:"poppins"}}
                                 >
                                   Permission to enter
                                 </label>
                                 <br />
-                                <span style={{ fontSize: "13px" }}>
+                                <span style={{ fontSize: "13px",fontFamily:"poppins",color:"#8A95A8" }}>
                                   {outstandDetails?.entry_allowed
                                     ? "Yes"
                                     : "No"}{" "}
@@ -1063,26 +1083,29 @@ const StaffWorkDetails = () => {
                               display="flex"
                               flexDirection="column"
                               alignItems="center" // Center content horizontally
+                              boxShadow="0px 4px 4px 0px #00000040"
                             >
                               <Box
                                 borderBottom="1px solid #ccc"
                                 style={{
                                   width: "100%",
-                                  padding: "16px",
+                                  padding: "10px",
                                   textAlign: "left",
-                                  color: "#5e72e4",
+                                  color: "#152B51",
+                                  boxShadow: "0px 4px 4px 0px #00000040",
+                                  marginBottom:"10PX"
                                 }}
                               >
                                 <h2
                                   className="text"
-                                  style={{ color: "#033E3E" }}
+                                  style={{ color: "#152B51",fontFamily:"poppins", }}
                                 >
                                   Images
                                 </h2>
                               </Box>
 
                               {outstandDetails?.workOrder_images &&
-                                outstandDetails?.workOrder_images.length > 0 ? (
+                              outstandDetails?.workOrder_images.length > 0 ? (
                                 <Box
                                   style={{
                                     width: "100%",
@@ -1091,6 +1114,7 @@ const StaffWorkDetails = () => {
                                     display: "flex",
                                     flexWrap: "wrap",
                                     justifyContent: "center",
+                                    fontFamily:"poppins",
                                   }}
                                 >
                                   {outstandDetails?.workOrder_images.map(
@@ -1101,6 +1125,7 @@ const StaffWorkDetails = () => {
                                         style={{
                                           minWidth: "48%",
                                           margin: "1%",
+                                          
                                         }}
                                       >
                                         <img
@@ -1127,6 +1152,7 @@ const StaffWorkDetails = () => {
                                   padding: "5px 16px",
                                   display: "flex",
                                   alignItems: "center",
+                                  
                                 }}
                               >
                                 <Box
@@ -1136,7 +1162,7 @@ const StaffWorkDetails = () => {
                                     textAlign: "center",
                                   }}
                                 >
-                                  <span>
+                                  <span style={{}}>
                                     {outstandDetails?.property_data
                                       ?.rental_adress || "N/A"}{" "}
                                     ({outstandDetails?.unit_data?.rental_unit})
@@ -1222,7 +1248,7 @@ const StaffWorkDetails = () => {
                 )}
               </div>
               <br />
-            </Card>
+            {/* </Card> */}
           </div>
         </Row>
         <br />

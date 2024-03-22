@@ -47,169 +47,289 @@ const StaffPropertyDetail = () => {
   return (
     <>
       <StaffHeader />
-      <Container className="mt--8" fluid>
+      <Container className="" fluid>
         <Row>
           <Col xs="12" sm="6">
             <FormGroup className="">
               <h1 style={{ color: "white" }}>Property Details</h1>
             </FormGroup>
           </Col>
-          <Col className="text-right">
+          <Col className="text-right" style={{ paddingRight: "40px" }}>
             <Button
               color="primary"
               //  href="#rms"
               onClick={() => navigate("/staff/staffproperty")}
               size="sm"
-              style={{ background: "white", color: "#3B2F2F" }}
+              style={{ background: "#152B51", color: "white" }}
             >
               Back
             </Button>
           </Col>
         </Row>
+        <div style={{ paddingLeft: "22px", paddingRight: "22px" }}>
+          <Card
+            className="shadow"
+            style={{ backgroundColor: "#152B51", padding: "15px" }}
+          >
+            <h3 className="mb-0 text-left" style={{ color: "#fff" }}>
+              Property Details
+            </h3>
+          </Card>
+        </div>
         <br />
-        {/* Table */}
         <Row>
           <div className="col">
-            <Card className="shadow">
-              <CardHeader className="border-0">
-                <h3 className="mb-0">Summary</h3>
-              </CardHeader>
-              <div className="table-responsive">
-                <>
-                  <div className="row m-3">
-                    <div className="col-12">
-                      <div
-                        className="align-items-center table-flush"
-                        responsive
-                        style={{ width: "100%" }}
-                      >
-                        <div className="w-100">
-                          <div className="card mb-3 col-md-2">
-                            <div className="row g-0">
-                              <div className="col-md-4">
-                                <img
-                                  className="mt-2 mb-2"
-                                  src={
-                                    propertyDetails?.rental_image ? `${imageGetUrl}/${propertyDetails?.rental_image}` : ""
-                                  }
-                                  alt="Property Details"
-                                  style={{ maxWidth: "8rem" }}
-                                />
-                              </div>
-                            </div>
-                          </div>
+            <h3 className="mb-2 my-0 mx-5" style={{ color: "#152B51" }}>
+              Summary
+            </h3>
+            <div className="table-responsive">
+              <>
+                <div className="row m-2">
+                  <div className="col-12">
+                    <div
+                      className="align-items-center table-flush"
+                      responsive
+                      style={{ width: "100%" }}
+                    >
+                      <div className="w-100">
+                        <Card
+                          className="p-4 mb-5"
+                          style={{
+                            boxShadow: "0px 4px 4px 0px #00000040",
+                            border: "0.5px solid #152B51",
+                            borderRadius: "10px",
+                          }}
+                        >
                           <Row
-                            className="w-100 my-3 "
+                            className="w-100"
                             style={{
                               fontSize: "18px",
                               textTransform: "capitalize",
                               color: "#3B2F2F",
                               fontWeight: "600",
-                              borderBottom: "1px solid #ddd",
+                              // borderBottom: "1px solid #ddd",
                             }}
                           >
-                            <Col>Property Details</Col>
+                            <Col
+                              className="mb-2"
+                              style={{
+                                color: "#152B51",
+                                fontFamily: "Poppins",
+                              }}
+                            >
+                              Property Details
+                            </Col>
                           </Row>
-                          <Row
-                            className="mb-1 m-0 p-0"
-                            style={{ fontSize: "12px", color: "#000" }}
-                          >
-                            <Table>
-                              <tbody
-                                className="tbbody p-0 m-0"
-                                style={{
-                                  borderTopRightRadius: "5px",
-                                  borderTopLeftRadius: "5px",
-                                  borderBottomLeftRadius: "5px",
-                                  borderBottomRightRadius: "5px",
-                                }}
-                              >
-                                <tr className="header">
-                                  <th>Property Details</th>
-                                  <th>Address</th>
-                                  <th>City</th>
-                                  <th>Country</th>
-                                  <th>Post code</th>
-                                </tr>
 
-                                <tr className="body">
-                                  <td>
-                                    {" "}
-                                    {
-                                      propertyDetails?.property_type_data
-                                        ?.property_type
-                                    }
-                                  </td>
-                                  <td> {propertyDetails?.rental_adress}</td>
-                                  <td> {propertyDetails?.rental_city}</td>
-                                  <td> {propertyDetails?.rental_country}</td>
-                                  <td> {propertyDetails?.rental_postcode}</td>
-                                </tr>
-                              </tbody>
-                            </Table>
-                          </Row>
+                          <table
+                            class="table table-bordered"
+                            style={{ color: "#152B51", fontFamily: "Poppins" }}
+                          >
+                            <thead>
+                              <tr>
+                                <th
+                                  scope="col"
+                                  style={{
+                                    border: "0.5px solid #324567",
+                                    textTransform: "capitalize",
+                                    fontSize: "15px",
+                                  }}
+                                >
+                                  Property Details
+                                </th>
+                                <th
+                                  scope="col"
+                                  style={{
+                                    border: "0.5px solid #324567",
+                                    textTransform: "capitalize",
+                                    fontSize: "15px",
+                                  }}
+                                >
+                                  Address
+                                </th>
+                                <th
+                                  scope="col"
+                                  style={{
+                                    border: "0.5px solid #324567",
+                                    textTransform: "capitalize",
+                                    fontSize: "15px",
+                                  }}
+                                >
+                                  City
+                                </th>
+                                <th
+                                  scope="col"
+                                  style={{
+                                    border: "0.5px solid #324567",
+                                    textTransform: "capitalize",
+                                    fontSize: "15px",
+                                  }}
+                                >
+                                  Country
+                                </th>
+                                <th
+                                  scope="col"
+                                  style={{
+                                    border: "0.5px solid #324567",
+                                    textTransform: "capitalize",
+                                    fontSize: "15px",
+                                  }}
+                                >
+                                  Post code
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td
+                                  scope="row"
+                                  style={{ border: "0.5px solid #324567" }}
+                                >
+                                  {" "}
+                                  {
+                                    propertyDetails?.property_type_data
+                                      ?.property_type
+                                  }
+                                </td>
+                                <td style={{ border: "0.5px solid #324567" }}>
+                                  {propertyDetails?.rental_adress}
+                                </td>
+                                <td style={{ border: "0.5px solid #324567" }}>
+                                  {propertyDetails?.rental_city}
+                                </td>
+                                <td style={{ border: "0.5px solid #324567" }}>
+                                  {propertyDetails?.rental_country}
+                                </td>
+                                <td style={{ border: "0.5px solid #324567" }}>
+                                  {propertyDetails?.rental_postcode}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </Card>
+                        <Card
+                          className="p-4 mb-5"
+                          style={{
+                            boxShadow: "0px 4px 4px 0px #00000040",
+                            border: "0.5px solid #152B51",
+                            borderRadius: "10px",
+                          }}
+                        >
                           <Row
-                            className="w-100 my-3 "
+                            className="w-100"
                             style={{
                               fontSize: "18px",
                               textTransform: "capitalize",
-                              color: "#022d60",
+                              color: "#3B2F2F",
                               fontWeight: "600",
-                              borderBottom: "1px solid #ddd",
+                              // borderBottom: "1px solid #ddd",
                             }}
                           >
-                            <Col style={{ color: "#3B2F2F" }}>
-                              Rental owner detail
+                            <Col
+                              className="mb-2"
+                              style={{
+                                color: "#152B51",
+                                fontFamily: "Poppins",
+                              }}
+                            >
+                              Property Details
                             </Col>
                           </Row>
                           <Row
                             className="mb-1 m-0 p-0"
                             style={{ fontSize: "12px", color: "#000" }}
                           >
-                            <Table>
-                              <tbody
-                                className="tbbody p-0 m-0"
-                                style={{
-                                  borderTopRightRadius: "5px",
-                                  borderTopLeftRadius: "5px",
-                                  borderBottomLeftRadius: "5px",
-                                  borderBottomRightRadius: "5px",
-                                }}
-                              >
-                                <tr className="header">
-                                  <th>First name</th>
-                                  <th>Last name</th>
-                                  <th>Compnay name</th>
-                                  <th>Email</th>
-                                  <th>Phone no</th>
+                            <table
+                              class="table table-bordered"
+                              style={{
+                                color: "#152B51",
+                                fontFamily: "Poppins",
+                              }}
+                            >
+                              <thead>
+                                <tr>
+                                  <th
+                                    scope="col"
+                                    style={{
+                                      border: "0.5px solid #324567",
+                                      textTransform: "capitalize",
+                                      fontSize: "15px",
+                                    }}
+                                  >
+                                    First name
+                                  </th>
+                                  <th
+                                    scope="col"
+                                    style={{
+                                      border: "0.5px solid #324567",
+                                      textTransform: "capitalize",
+                                      fontSize: "15px",
+                                    }}
+                                  >
+                                    Last name
+                                  </th>
+                                  <th
+                                    scope="col"
+                                    style={{
+                                      border: "0.5px solid #324567",
+                                      textTransform: "capitalize",
+                                      fontSize: "15px",
+                                    }}
+                                  >
+                                    Compnay name
+                                  </th>
+                                  <th
+                                    scope="col"
+                                    style={{
+                                      border: "0.5px solid #324567",
+                                      textTransform: "capitalize",
+                                      fontSize: "15px",
+                                    }}
+                                  >
+                                    Email
+                                  </th>
+                                  <th
+                                    scope="col"
+                                    style={{
+                                      border: "0.5px solid #324567",
+                                      textTransform: "capitalize",
+                                      fontSize: "15px",
+                                    }}
+                                  >
+                                    Phone no
+                                  </th>
                                 </tr>
-
-                                <tr className="body">
-                                  <td>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td
+                                    scope="row"
+                                    style={{ border: "0.5px solid #324567" }}
+                                  >
                                     {
                                       propertyDetails?.rentalowner_data
                                         ?.rentalOwner_firstName
                                     }
                                   </td>
-                                  <td>
+                                  <td style={{ border: "0.5px solid #324567" }}>
                                     {
                                       propertyDetails?.rentalowner_data
                                         ?.rentalOwner_lastName
                                     }
                                   </td>
-                                  <td>
+                                  <td style={{ border: "0.5px solid #324567" }}>
                                     {
                                       propertyDetails?.rentalowner_data
                                         ?.rentalOwner_companyName
                                     }
                                   </td>
-                                  <td>
+                                  <td style={{ border: "0.5px solid #324567" }}>
                                     {
                                       propertyDetails?.rentalowner_data
                                         ?.rentalOwner_primaryEmail
                                     }
                                   </td>
-                                  <td>
+                                  <td style={{ border: "0.5px solid #324567" }}>
                                     {
                                       propertyDetails?.rentalowner_data
                                         ?.rentalOwner_phoneNumber
@@ -217,128 +337,220 @@ const StaffPropertyDetail = () => {
                                   </td>
                                 </tr>
                               </tbody>
-                            </Table>
+                            </table>
                           </Row>
+                        </Card>
 
+                        <Card
+                          className="p-4 mb-5"
+                          style={{
+                            boxShadow: "0px 4px 4px 0px #00000040",
+                            border: "0.5px solid #152B51",
+                            borderRadius: "10px",
+                          }}
+                        >
                           <Row
-                            className="w-100 my-3 "
+                            className="w-100"
                             style={{
                               fontSize: "18px",
                               textTransform: "capitalize",
                               color: "#3B2F2F",
                               fontWeight: "600",
-                              borderBottom: "1px solid #ddd",
+                              // borderBottom: "1px solid #ddd",
                             }}
                           >
-                            <Col>Staff Details</Col>
+                            <Col
+                              className="mb-2"
+                              style={{
+                                color: "#152B51",
+                                fontFamily: "Poppins",
+                              }}
+                            >
+                              Property Details
+                            </Col>
                           </Row>
                           <Row
                             className="mb-1 m-0 p-0"
                             style={{ fontSize: "12px", color: "#000" }}
                           >
-                            <Table>
-                              <tbody
-                                className="tbbody p-0 m-0"
-                                style={{
-                                  borderTopRightRadius: "5px",
-                                  borderTopLeftRadius: "5px",
-                                  borderBottomLeftRadius: "5px",
-                                  borderBottomRightRadius: "5px",
-                                }}
-                              >
-                                <tr className="header">
-                                  <th>Staff member</th>
+                            <table
+                              class="table table-bordered"
+                              style={{
+                                color: "#152B51",
+                                fontFamily: "Poppins",
+                              }}
+                            >
+                              <thead>
+                                <tr>
+                                  <th
+                                    scope="col"
+                                    style={{
+                                      border: "0.5px solid #324567",
+                                      fontSize: "18px",
+                                      textTransform: "capitalize",
+                                    }}
+                                  >
+                                    Staff member
+                                  </th>
                                 </tr>
-
-                                <tr className="body">
-                                  <td>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td
+                                    scope="row"
+                                    style={{
+                                      border: "0.5px solid #324567",
+                                      borderRight: "0.5px solid #324567",
+                                    }}
+                                  >
                                     {propertyDetails?.staffmember_data
                                       ?.staffmember_name ||
                                       "No staff member assigned"}
                                   </td>
                                 </tr>
                               </tbody>
-                            </Table>
+                            </table>
                           </Row>
+                        </Card>
+                        <Card
+                          className="p-4"
+                          style={{
+                            boxShadow: "0px 4px 4px 0px #00000040",
+                            border: "0.5px solid #152B51",
+                            borderRadius: "10px",
+                          }}
+                        >
                           <Row
-                            className="w-100 my-3 "
+                            className="w-100"
                             style={{
                               fontSize: "18px",
                               textTransform: "capitalize",
                               color: "#3B2F2F",
                               fontWeight: "600",
-                              borderBottom: "1px solid #ddd",
+                              // borderBottom: "1px solid #ddd",
                             }}
                           >
-                            <Col>Unit Details</Col>
+                            <Col
+                              className="mb-2"
+                              style={{
+                                color: "#152B51",
+                                fontFamily: "Poppins",
+                              }}
+                            >
+                              Property Details
+                            </Col>
                           </Row>
                           <Row
                             className="mb-1 m-0 p-0"
                             style={{ fontSize: "12px", color: "#000" }}
                           >
-                            <Table>
-                              <tbody
-                                className="tbbody p-0 m-0"
-                                style={{
-                                  borderTopRightRadius: "5px",
-                                  borderTopLeftRadius: "5px",
-                                  borderBottomLeftRadius: "5px",
-                                  borderBottomRightRadius: "5px",
-                                }}
-                              >
-                                <tr className="header">
-                                  <th>Unit</th>
-                                  <th>Unit address</th>
-                                  <th>Bed</th>
-                                  <th>Bath</th>
-                                  <th>Squrefit</th>
+                            <table
+                              class="table table-bordered"
+                              style={{
+                                color: "#152B51",
+                                fontFamily: "Poppins",
+                              }}
+                            >
+                              <thead>
+                                <tr>
+                                  <th
+                                    scope="col"
+                                    style={{
+                                      border: "0.5px solid #324567",
+                                      textTransform: "capitalize",
+                                      fontSize: "15px",
+                                    }}
+                                  >
+                                    Unit
+                                  </th>
+                                  <th
+                                    scope="col"
+                                    style={{
+                                      border: "0.5px solid #324567",
+                                      textTransform: "capitalize",
+                                      fontSize: "15px",
+                                    }}
+                                  >
+                                    Unit Address
+                                  </th>
+                                  <th
+                                    scope="col"
+                                    style={{
+                                      border: "0.5px solid #324567",
+                                      textTransform: "capitalize",
+                                      fontSize: "15px",
+                                    }}
+                                  >
+                                    Bed
+                                  </th>
+                                  <th
+                                    scope="col"
+                                    style={{
+                                      border: "0.5px solid #324567",
+                                      textTransform: "capitalize",
+                                      fontSize: "15px",
+                                    }}
+                                  >
+                                    Bath
+                                  </th>
+                                  <th
+                                    scope="col"
+                                    style={{
+                                      border: "0.5px solid #324567",
+                                      textTransform: "capitalize",
+                                      fontSize: "15px",
+                                    }}
+                                  >
+                                    Square Fit
+                                  </th>
                                 </tr>
-
+                              </thead>
+                              <tbody>
                                 <tr
-                                  // key={index}
-                                  // onClick={() => {
-                                  //   // setPropSummary(true);
-                                  //   setPropId(unit._id);
-                                  //   setClickedObject(unit);
-                                  // }}
-                                  style={{ cursor: "pointer" }}
+                                // key={index}
+                                // onClick={() => {
+                                //   setPropSummary(true);
+                                //   setPropId(unit._id);
+                                //   setClickedObject(unit);
+                                // }}
+                                // style={{ cursor: "pointer" }}
                                 >
-                                  <td>
+                                  <td
+                                    scope="row"
+                                    style={{ border: "0.5px solid #324567" }}
+                                  >
                                     {propertyDetails?.unit_data?.rental_unit ||
                                       "N/A"}
                                   </td>
-                                  <td>
+                                  <td style={{ border: "0.5px solid #324567" }}>
                                     {propertyDetails?.unit_data
                                       ?.rental_unit_adress || "N/A"}
                                   </td>
-                                  <td>
+                                  <td style={{ border: "0.5px solid #324567" }}>
                                     {propertyDetails?.unit_data?.rental_bed ||
                                       "N/A"}
                                   </td>
-
-                                  <td>
+                                  <td style={{ border: "0.5px solid #324567" }}>
                                     {propertyDetails?.unit_data?.rental_bath ||
                                       "N/A"}
                                   </td>
-                                  <td>
+                                  <td style={{ border: "0.5px solid #324567" }}>
                                     {propertyDetails?.unit_data?.rental_sqft ||
                                       "N/A"}
                                   </td>
                                 </tr>
                               </tbody>
-                            </Table>
+                            </table>
                           </Row>
-                        </div>
+                        </Card>
                       </div>
                     </div>
                   </div>
-                </>
-              </div>
-            </Card>
+                </div>
+              </>
+            </div>
           </div>
         </Row>
-        <br />
-        <br />
       </Container>
     </>
   );
