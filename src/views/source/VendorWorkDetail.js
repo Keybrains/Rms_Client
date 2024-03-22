@@ -8,6 +8,7 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import workorderdetail from "../../assets/img/icons/common/workordericon.svg";
+import profile from "../../assets/img/icons/common/profile1.svg";
 import VendorHeader from "components/Headers/VendorHeader";
 import {
   Card,
@@ -228,6 +229,7 @@ const VendorWorkDetail = () => {
           <Col className="text-right">
             <Button
               color="primary"
+              className="mr-4"
               //  href="#rms"
               onClick={() => navigate("/vendor/vendorworktable")}
               size="small"
@@ -242,7 +244,7 @@ const VendorWorkDetail = () => {
               {/* <h1 style={{ color: "red" }}>Work Order Details</h1> */}
             </FormGroup>
             <CardHeader
-              className=" mt-3"
+              className=" mt-3 mx-4"
               style={{
                 backgroundColor: "#152B51",
                 borderRadius: "10px",
@@ -345,10 +347,11 @@ const VendorWorkDetail = () => {
                       ) : outstandDetails?.workOrder_id ? (
                         <>
                           <Box
-                            border="1px solid #ccc"
+                            // border="1px solid #ccc"
+                            border="0.5px solid #737791"
                             borderRadius="8px"
                             padding="16px"
-                            maxWidth="700px"
+                            maxWidth="900px"
                             boxShadow=" 0px 4px 4px 0px #00000040"
 
                             margin="20px"
@@ -398,7 +401,7 @@ const VendorWorkDetail = () => {
                                 className={{ xs: "col-12", md: "col-7" }}
                                 marginBottom={{ xs: "20px", md: "0" }}
                               >
-                                <FormGroup marginBottom="20px">
+                                <FormGroup marginBottom="20px" style={{ padding: "15px" }}>
                                   <label
                                     className="form-control-label"
                                     htmlFor="input-property"
@@ -408,6 +411,7 @@ const VendorWorkDetail = () => {
                                       fontFamily: "Poppins",
                                       fontSize: "16px",
                                       color: "#152B51",
+
                                     }}
                                   >
                                     Description
@@ -424,7 +428,7 @@ const VendorWorkDetail = () => {
                                     {outstandDetails.work_performed || "N/A"}
                                   </span>
                                 </FormGroup>
-                                <FormGroup marginBottom="20px">
+                                <FormGroup marginBottom="20px" style={{ padding: "15px" }}>
                                   <label
                                     className="form-control-label"
                                     htmlFor="input-property"
@@ -454,7 +458,7 @@ const VendorWorkDetail = () => {
                                       : "No"}
                                   </span>
                                 </FormGroup>
-                                <FormGroup marginBottom="20px">
+                                <FormGroup marginBottom="20px" style={{ padding: "15px" }}>
                                   <label
                                     className="form-control-label"
                                     htmlFor="input-property"
@@ -484,20 +488,20 @@ const VendorWorkDetail = () => {
 
                               {/* Right side */}
 
-                              <Box flex="1" className="d-flex flex-column">
+                              <Box flex="1" className="d-flex flex-column justify-content-end" >
                                 <Row
                                   style={{
                                     border: "1px solid #ccc",
                                     borderRadius: "8px",
                                     margin: "15px auto",
-                                    width: "100%",
+                                    width: "60%",
                                   }}
                                 >
                                   <Col style={{ padding: "0 8px" }}>
                                     <SmallSummaryCard
                                       label="Status"
                                       value={outstandDetails.status || "N/A"}
-                                      textTruncate // add this prop to enable text truncation
+                                      textTruncate
                                     />
                                   </Col>
                                 </Row>
@@ -506,7 +510,7 @@ const VendorWorkDetail = () => {
                                     border: "1px solid #ccc",
                                     borderRadius: "8px",
                                     margin: "15px auto",
-                                    width: "100%",
+                                    width: "60%",
                                   }}
                                 >
                                   <Col style={{ padding: "0 8px" }}>
@@ -522,7 +526,7 @@ const VendorWorkDetail = () => {
                                     border: "1px solid #ccc",
                                     borderRadius: "8px",
                                     margin: "15px auto",
-                                    width: "100%",
+                                    width: "60%",
                                   }}
                                 >
                                   <Col style={{ padding: "0 8px" }}>
@@ -542,10 +546,11 @@ const VendorWorkDetail = () => {
                           {outstandDetails?.partsandcharge_data?.length > 0 &&
                             outstandDetails?.partsandcharge_data ? (
                             <Box
-                              border="1px solid #ccc"
-                              borderRadius="8px"
+                              // border="1px solid #ccc"
+                              border="0.5px solid #737791"
+                              borderRadius="10px"
                               padding="16px"
-                              maxWidth="700px"
+                              maxWidth="900px"
                               boxShadow=" 0px 4px 4px 0px #00000040"
 
                               margin="20px"
@@ -623,6 +628,7 @@ const VendorWorkDetail = () => {
                                       <td
                                         colSpan="4"
                                         style={{
+                                          ...tableFooterStyle,
                                           fontWeight: "400",
                                           fontFamily: "Poppins",
                                           fontSize: "14px", color: "#152B51"
@@ -634,6 +640,9 @@ const VendorWorkDetail = () => {
                                         style={{
                                           ...tableFooterStyle,
                                           textAlign: "right",
+                                          fontWeight: "400",
+                                          fontFamily: "Poppins",
+                                          fontSize: "14px", color: "#152B51"
                                         }}
                                       >
                                         ${total()}
@@ -646,10 +655,12 @@ const VendorWorkDetail = () => {
                           ) : null}
                           <Grid
                             container
-                            border="1px solid #ccc"
+                            // border="1px solid #ccc"
+                            border="0.5px solid #737791"
+
                             borderRadius="8px"
                             padding="16px"
-                            maxWidth="700px"
+                            maxWidth="900px"
                             boxShadow=" 0px 4px 4px 0px #00000040"
                             margin="20px"
                             style={{
@@ -779,24 +790,32 @@ const VendorWorkDetail = () => {
                       )}
                     </Col>
                     <Col lg="4" md="12">
-                      {outstandDetails?.workorder_id ? (
+                      {outstandDetails?.workOrder_id ? (
                         <Box
-                          border="1px solid #ccc"
+                          // border="1px solid #ccc"
+                          border="0.5px solid #737791"
                           borderRadius="8px"
+                          boxShadow=" 0px 4px 4px 0px #00000040"
                           maxWidth="100%" // Use 100% to make it responsive
                           margin="20px"
                         >
                           <Box
+                            className="align-item-center text-center"
                             borderBottom="1px solid #ccc"
                             style={{
-                              minWidth: "100%",
-                              padding: "16px 16px 5px 16px",
+                              width: "100%",
+                              padding: "16px",
+                              textAlign: "left",
+                              boxShadow: " 0px 4px 4px 0px #00000040",
                               color: "#5e72e4",
                             }}
                           >
-                            <h3 className="text" style={{ color: "#36013F" }}>
+                            <span
+                              style={{ color: "#152B51", fontWeight: "500", fontFamily: "Poppins", fontSize: "16px", }}
+
+                            >
                               Contacts
-                            </h3>
+                            </span>
                           </Box>
                           <Box
                             borderBottom="1px solid #ccc"
@@ -809,29 +828,27 @@ const VendorWorkDetail = () => {
                           >
                             <Box width="16px" marginRight="10px">
                               {/* SVG icon */}
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                fill="currentColor"
-                                className="bi bi-person-fill"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
-                              </svg>
+                              <img src={profile} height={20} width={20} />
+
                             </Box>
                             <Box
                               width="100%"
                               style={{ minWidth: "100%", padding: "0 16px" }}
                             >
-                              <span style={detailstyle}>Vendor</span> <br />
-                              <span>
-                                {outstandDetails?.vendor_name || "N/A"}
+                              <span style={{ color: "#152B51", fontWeight: "500", fontFamily: "Poppins", fontSize: "16px", }}
+                              >Vendor</span> <br />
+                              <span style={{
+                                fontWeight: "400",
+                                fontFamily: "Poppins",
+                                fontSize: "14px",
+                              }}>
+                                {outstandDetails?.vendor_data.vendor_name ||
+                                  "N/A"}
                               </span>
                             </Box>
                           </Box>
-                          {tenantsDetails &&
-                            typeof tenantsDetails === "object" ? (
+                          {outstandDetails?.tenant_data &&
+                            typeof outstandDetails?.tenant_data === "object" ? (
                             <Box
                               style={{
                                 display: "flex",
@@ -841,16 +858,8 @@ const VendorWorkDetail = () => {
                               }}
                             >
                               <Box width="16px" marginRight="10px">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="24"
-                                  height="24"
-                                  fill="currentColor"
-                                  className="bi bi-person-fill"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
-                                </svg>
+                                <img src={profile} height={20} width={20} />
+
                               </Box>
                               <Box
                                 width="100%"
@@ -859,12 +868,24 @@ const VendorWorkDetail = () => {
                                   padding: "0 16px",
                                 }}
                               >
-                                <span style={detailstyle}>Tenant</span> <br />
-                                <span>
-                                  {tenantsDetails.tenant_firstName ? (
+                                <span style={{ color: "#152B51", fontWeight: "500", fontFamily: "Poppins", fontSize: "16px", }}
+                                >Tenant</span> <br />
+                                <span style={{
+                                  fontWeight: "400",
+                                  fontFamily: "Poppins",
+                                  fontSize: "14px",
+                                }}>
+                                  {outstandDetails?.tenant_data
+                                    .tenant_firstName ? (
                                     <>
-                                      {tenantsDetails.tenant_firstName}{" "}
-                                      {tenantsDetails.tenant_lastName}
+                                      {
+                                        outstandDetails?.tenant_data
+                                          .tenant_firstName
+                                      }{" "}
+                                      {
+                                        outstandDetails?.tenant_data
+                                          .tenant_lastName
+                                      }
                                     </>
                                   ) : (
                                     ""
@@ -878,16 +899,18 @@ const VendorWorkDetail = () => {
                       {outstandDetails ? (
                         <>
                           <Box
-                            border="1px solid #ccc"
+                            // border="1px solid #ccc"
+                            border="0.5px solid #737791"
                             borderRadius="8px"
-                            maxWidth="100%" // Use 100% to make it responsive
+                            maxWidth="100%"
                             margin="20px"
                             display="flex"
                             boxShadow=" 0px 4px 4px 0px #00000040"
                             flexDirection="column"
-                            alignItems="center" // Center content horizontally
+                            alignItems="center"
                           >
                             <Box
+                              className="align-item-center text-center"
                               borderBottom="1px solid #ccc"
                               style={{
                                 width: "100%",
@@ -897,13 +920,12 @@ const VendorWorkDetail = () => {
                                 color: "#5e72e4",
                               }}
                             >
-                              <h3
-                                className="text-center"
+                              <span
                                 style={{ color: "#152B51", fontWeight: "500", fontFamily: "Poppins", fontSize: "16px", }}
 
                               >
                                 Property
-                              </h3>
+                              </span>
                             </Box>
                             {outstandDetails?.property_data?.rental_image ? (
                               <Box
@@ -1048,63 +1070,46 @@ const VendorWorkDetail = () => {
                   <Row className="mb-4">
                     <Col lg="8" md="12">
                       <Box
-                        border="1px solid #ccc"
-                        borderRadius="8px"
+                        // border="1px solid #ccc"
+                        border="0.5px solid #737791"
+                        borderRadius="10px"
                         padding="16px"
-                        maxWidth="700px"
+                        maxWidth="900px"
                         margin={"20px"}
+                        boxShadow=" 0px 4px 4px 0px #00000040"
+
                       >
                         <Row>
-                          <Col lg="2">
+                          <Col lg="1">
                             <Box
                               width="40px"
                               height="40px"
                               display="flex"
                               alignItems="center"
                               justifyContent="center"
-                              backgroundColor="grey"
+                              backgroundColor="#152B51"
                               borderRadius="8px"
                               color="white"
                               fontSize="24px"
+                              marginRight="16px"
                             >
-                              <AssignmentOutlinedIcon />
+                              {/* <AssignmentOutlinedIcon /> */}
+                              <img src={workorderdetail} height={20} width={20} />
+
                             </Box>
                           </Col>
                           <Col lg="8">
+
+
                             <span
-                              style={{
-                                border: "2px solid",
-                                borderColor:
-                                  outstandDetails.priority === "High"
-                                    ? "red"
-                                    : outstandDetails.priority === "Medium"
-                                      ? "green"
-                                      : outstandDetails.priority === "Low"
-                                        ? "#FFD700"
-                                        : "inherit",
-                                borderRadius: "15px",
-                                padding: "2px",
-                                fontSize: "15px",
-                                color:
-                                  outstandDetails.priority === "High"
-                                    ? "red"
-                                    : outstandDetails.priority === "Medium"
-                                      ? "green"
-                                      : outstandDetails.priority === "Low"
-                                        ? "#FFD700"
-                                        : "inherit",
-                              }}
-                            >
-                              &nbsp;{outstandDetails.priority}&nbsp;
-                            </span>
-                            <h2
                               className="text-lg"
-                              style={{ color: "#36013F" }}
+                              style={{ fontSize: "16px", fontFamily: "Poppins", fontWeight: "500", color: "#152B51" }}
+
                             >
                               {outstandDetails.work_subject || "N/A"}
-                            </h2>
+                            </span><br />
 
-                            <span className="">
+                            <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
                               {outstandDetails.property_data?.rental_adress ||
                                 "N/A"}
                               {outstandDetails?.unit_data?.rental_unit ? (
@@ -1115,6 +1120,42 @@ const VendorWorkDetail = () => {
                                 <></>
                               )}
                             </span>
+
+                          </Col>
+                          <Col lg="3">
+                            <span
+                              style={{
+                                display: "flex",
+                                justifyContent: "flex-end",
+                              }}
+                            >
+                              <span
+                                style={{
+                                  border: "2px solid",
+                                  borderColor:
+                                    outstandDetails.priority === "High"
+                                      ? "red"
+                                      : outstandDetails.priority === "Medium"
+                                        ? "green"
+                                        : outstandDetails.priority === "Low"
+                                          ? "#FFD700"
+                                          : "inherit",
+                                  borderRadius: "8px",
+                                  padding: "4px",
+                                  fontSize: "15px",
+                                  color:
+                                    outstandDetails.priority === "High"
+                                      ? "red"
+                                      : outstandDetails.priority === "Medium"
+                                        ? "green"
+                                        : outstandDetails.priority === "Low"
+                                          ? "#FFD700"
+                                          : "inherit",
+                                }}
+                              >
+                                &nbsp;{outstandDetails.priority}&nbsp;
+                              </span>
+                            </span>
                           </Col>
                         </Row>
                         <br />
@@ -1124,73 +1165,83 @@ const VendorWorkDetail = () => {
                               <label
                                 className="form-control-label"
                                 htmlFor="input-property"
+                                style={{ fontSize: "16px", fontFamily: "Poppins", fontWeight: "500", color: "#152B51" }}
+
                               >
                                 Description
                               </label>
                               <br />
-                              <span style={{ fontSize: "13px" }}>
+                              <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
                                 {outstandDetails.work_performed || "N/A"}
                               </span>
                             </FormGroup>
                           </Col>
                         </Row>
                         <Row>
-                          <Col lg="6">
+                          <Col lg="8">
                             <FormGroup>
                               <label
                                 className="form-control-label"
                                 htmlFor="input-property"
+                                style={{ fontSize: "16px", fontFamily: "Poppins", fontWeight: "500", color: "#152B51" }}
+
                               >
                                 Status
                               </label>
                               <br />
-                              <span style={{ fontSize: "13px" }}>
+                              <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
                                 {outstandDetails.status || "N/A"}
                               </span>
                             </FormGroup>
                           </Col>
 
-                          <Col lg="6">
+                          <Col lg="4">
                             <FormGroup>
                               <label
                                 className="form-control-label"
                                 htmlFor="input-property"
+                                style={{ fontSize: "16px", fontFamily: "Poppins", fontWeight: "500", color: "#152B51" }}
+
                               >
                                 Due Date
                               </label>
                               <br />
-                              <span style={{ fontSize: "13px" }}>
+                              <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
                                 {outstandDetails.date || "N/A"}
                               </span>
                             </FormGroup>
                           </Col>
                         </Row>
                         <Row>
-                          <Col lg="6">
+                          <Col lg="8">
                             <FormGroup>
                               <label
                                 className="form-control-label"
                                 htmlFor="input-property"
+                                style={{ fontSize: "16px", fontFamily: "Poppins", fontWeight: "500", color: "#152B51" }}
+
                               >
                                 Assignees
                               </label>
                               <br />
-                              <span style={{ fontSize: "13px" }}>
+                              <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
                                 {outstandDetails.staff_data
                                   .staffmember_name || "N/A"}
                               </span>
                             </FormGroup>
                           </Col>
-                          <Col lg="6">
+                          <Col lg="4">
                             <FormGroup>
                               <label
                                 className="form-control-label"
                                 htmlFor="input-property"
+                                style={{ fontSize: "16px", fontFamily: "Poppins", fontWeight: "500", color: "#152B51" }}
+
                               >
                                 Permission to enter
                               </label>
                               <br />
-                              <span style={{ fontSize: "13px" }}>
+                              <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
                                 {outstandDetails?.entry_allowed
                                   ? "Yes"
                                   : "No"}
@@ -1205,29 +1256,34 @@ const VendorWorkDetail = () => {
                       {outstandDetails ? (
                         <>
                           <Box
-                            border="1px solid #ccc"
-                            borderRadius="8px"
-                            maxWidth="100%" // Use 100% to make it responsive
+                            // border="1px solid #ccc"
+                            border="0.5px solid #737791"
+                            borderRadius="10px"
+                            maxWidth="100%"
                             margin="20px"
                             display="flex"
                             flexDirection="column"
-                            alignItems="center" // Center content horizontally
+                            alignItems="center"
+                            boxShadow=" 0px 4px 4px 0px #00000040"
+
                           >
                             <Box
+                              className="align-item-center text-center"
                               borderBottom="1px solid #ccc"
                               style={{
                                 width: "100%",
                                 padding: "16px",
                                 textAlign: "left",
+                                boxShadow: " 0px 4px 4px 0px #00000040",
                                 color: "#5e72e4",
                               }}
                             >
-                              <h2
-                                className="text"
-                                style={{ color: "#36013F" }}
+                              <span
+                                style={{ color: "#152B51", fontWeight: "500", fontFamily: "Poppins", fontSize: "16px", }}
+
                               >
                                 Images
-                              </h2>
+                              </span>
                             </Box>
 
                             {outstandDetails?.workOrder_images &&
@@ -1236,7 +1292,7 @@ const VendorWorkDetail = () => {
                                 style={{
                                   width: "100%",
                                   padding: "16px",
-                                  marginTop: "10px",
+                                  marginTop: "100px",
                                   display: "flex",
                                   flexWrap: "wrap",
                                   justifyContent: "center",
@@ -1267,7 +1323,9 @@ const VendorWorkDetail = () => {
                                 )}
                               </Box>
                             ) : (
-                              "No Images Attached"
+                              <div className="mt-3">
+                                No Images Attached
+                              </div>
                             )}
                             <br />
                             <Box
@@ -1285,7 +1343,7 @@ const VendorWorkDetail = () => {
                                   textAlign: "center",
                                 }}
                               >
-                                <span>
+                                <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
                                   {outstandDetails.property_data
                                     ?.rental_adress || "N/A"}{" "}
                                   ({outstandDetails.unit_data?.rental_unit})
@@ -1307,7 +1365,7 @@ const VendorWorkDetail = () => {
                                   textAlign: "center",
                                 }}
                               >
-                                <span>
+                                <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
                                   {outstandDetails.propertyDetails
                                     ?.rental_city ? (
                                     <>

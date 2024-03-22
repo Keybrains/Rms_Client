@@ -17,6 +17,7 @@ import {
   Label,
   Table,
 } from "reactstrap";
+import Box from "@mui/material/Box";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useState } from "react";
@@ -968,16 +969,16 @@ const VendorAddWork = () => {
   useEffect(() => {
     const fetchVendorNames = async () => {
       if (id) {
-      try {
-        const response = await axios.get(
-          `${baseUrl}/workorder/workorder/vendor/${id}`
-        );
-        const data = response.data;
-        setSelectedVendor(data.vendor_name);
-      } catch (error) {
-        console.error("Error fetching vendor names:", error);
+        try {
+          const response = await axios.get(
+            `${baseUrl}/workorder/workorder/vendor/${id}`
+          );
+          const data = response.data;
+          setSelectedVendor(data.vendor_name);
+        } catch (error) {
+          console.error("Error fetching vendor names:", error);
+        }
       }
-    }
     };
 
     fetchVendorNames();
@@ -987,77 +988,110 @@ const VendorAddWork = () => {
     <>
       <VendorHeader />
       {/* Page content */}
-      <Container className="mt--7" fluid>
+      <Container fluid style={{ marginTop: "4rem" }} >
         <Row>
           <Col className="order-xl-1" xl="12">
-            <Card
+            {/* <Card
               className="bg-secondary shadow"
               onSubmit={WorkFormik.handleSubmit}
+            > */}
+
+            <CardHeader
+              className=" mt-3 mx-5"
+              style={{
+                backgroundColor: "#152B51",
+                borderRadius: "10px",
+                boxShadow: " 0px 4px 4px 0px #00000040 ",
+              }}
             >
-              <CardHeader className="bg-white border-0">
-                <Row className="align-items-center">
-                  <Col xs="8">
-                    <h3 className="mb-0">
-                      {" "}
-                      {id ? "Edit Work Order" : "New Work Order"}
-                    </h3>
-                  </Col>
-                </Row>
-              </CardHeader>
-              <CardBody>
-                <Form onSubmit={WorkFormik.handleSubmit}>
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-member"
-                          >
-                            Subject *
-                          </label>
-                          <br />
-                          <br />
-                          <Input
-                            className="form-control-alternative"
-                            id="input-work-subject"
-                            placeholder="Add Subject"
-                            type="text"
-                            name="work_subject"
-                            readOnly
-                            //name="nput-staffmember-name"
-                            onBlur={WorkFormik.handleBlur}
-                            onChange={(e) => {
-                              // Update the state or Formik values with the new input value
-                              WorkFormik.handleChange(e);
-                            }}
-                            value={WorkFormik.values.work_subject}
-                          />
-                          {WorkFormik.touched.work_subject &&
-                            WorkFormik.errors.work_subject ? (
-                            <div style={{ color: "red" }}>
-                              {WorkFormik.errors.work_subject}
-                            </div>
-                          ) : null}
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col>
-                        {imagedetails > 0 ? (
-                          <FormGroup
-                            style={{
-                              display: "flex",
-                              flexDirection: "column",
-                            }}
-                          >
+              <h2
+                className=""
+                style={{
+                  color: "#ffffff",
+                  fontFamily: "Poppins",
+                  fontWeight: "500",
+                  fontSize: "26px",
+                }}
+              >
+                {id ? "Edit Work Order" : "New Work Order"}
+
+              </h2>
+            </CardHeader>
+            <CardBody>
+              <Form onSubmit={WorkFormik.handleSubmit}>
+                <Box
+                  // border="1px solid #ccc"
+                  border="0.5px solid #737791"
+                  borderRadius="8px"
+                  padding="16px"
+                  maxWidth="100%"
+                  boxShadow=" 0px 4px 4px 0px #00000040"
+
+                  margin="20px"
+                >
+                  <Box
+                    // display="flex"
+                    alignItems="center"
+                    marginBottom="20px"
+                  >
+                    <div className="pl-lg-4">
+                      <Row>
+                        <Col lg="6">
+                          <FormGroup>
                             <label
                               className="form-control-label"
-                              htmlFor="input-unitadd"
+                              htmlFor="input-member"
+                              style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500" }}
                             >
-                              Photo
+                              Subject *
                             </label>
-                            {/* <span
+                            <br />
+                            <br />
+                            <Input
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040 ", border: "0.5px solid #32456780"
+                              }}
+                              className="form-control-alternative"
+                              id="input-work-subject"
+                              placeholder="Add Subject"
+                              type="text"
+                              name="work_subject"
+                              readOnly
+                              //name="nput-staffmember-name"
+                              onBlur={WorkFormik.handleBlur}
+                              onChange={(e) => {
+                                // Update the state or Formik values with the new input value
+                                WorkFormik.handleChange(e);
+                              }}
+                              value={WorkFormik.values.work_subject}
+                            />
+                            {WorkFormik.touched.work_subject &&
+                              WorkFormik.errors.work_subject ? (
+                              <div style={{ color: "red" }}>
+                                {WorkFormik.errors.work_subject}
+                              </div>
+                            ) : null}
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col>
+                          {imagedetails > 0 ? (
+                            <FormGroup
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                              }}
+                            >
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-unitadd"
+                                style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500" }}
+
+                              >
+                                Photo
+                              </label>
+                              {/* <span
                                           // onClick={workOrderDialog}
                                           style={{
                                             cursor: "pointer",
@@ -1138,52 +1172,52 @@ const VendorAddWork = () => {
                                             Add
                                           </label>
                                         </span> */}
-                          </FormGroup>
-                        ) : null}
-                      </Col>
-                    </Row>
-                    <FormGroup
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        paddingLeft: "10px",
-                      }}
-                    >
-                      <div
-                        className="mt-3 d-flex"
+                            </FormGroup>
+                          ) : null}
+                        </Col>
+                      </Row>
+                      <FormGroup
                         style={{
-                          justifyContent: "center",
+                          display: "flex",
                           flexWrap: "wrap",
+                          paddingLeft: "10px",
                         }}
                       >
-                        {workOrderImage.map((image, index) => (
-                          <div
-                            key={index}
-                            style={{
-                              position: "relative",
-                              width: "100px",
-                              height: "100px",
-                              margin: "10px",
-                              display: "flex",
-                              flexDirection: "column",
-                            }}
-                          >
-                            <img
-                              src={image}
-                              alt=""
+                        <div
+                          className="mt-3 d-flex"
+                          style={{
+                            justifyContent: "center",
+                            flexWrap: "wrap",
+                          }}
+                        >
+                          {workOrderImage.map((image, index) => (
+                            <div
+                              key={index}
                               style={{
+                                position: "relative",
                                 width: "100px",
                                 height: "100px",
-                                maxHeight: "100%",
-                                maxWidth: "100%",
-                                borderRadius: "10px",
+                                margin: "10px",
+                                display: "flex",
+                                flexDirection: "column",
                               }}
-                              onClick={() => {
-                                setSelectedImage(image);
-                                setOpen(true);
-                              }}
-                            />
-                            {/* <ClearIcon
+                            >
+                              <img
+                                src={image}
+                                alt=""
+                                style={{
+                                  width: "100px",
+                                  height: "100px",
+                                  maxHeight: "100%",
+                                  maxWidth: "100%",
+                                  borderRadius: "10px",
+                                }}
+                                onClick={() => {
+                                  setSelectedImage(image);
+                                  setOpen(true);
+                                }}
+                              />
+                              {/* <ClearIcon
                                                   style={{
                                                     cursor: "pointer",
                                                     alignSelf: "flex-start",
@@ -1199,119 +1233,124 @@ const VendorAddWork = () => {
                                                   }
                                                   
                                                 /> */}
-                          </div>
-                        ))}
-                        {open && (
-                          <OpenImageDialog
-                            open={open}
-                            setOpen={setOpen}
-                            selectedImage={selectedImage}
-                          />
-                        )}
-                      </div>
-                    </FormGroup>
-                    <br />
-                  </div>
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="4">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-desg"
-                          >
-                            Property
-                          </label>
-                          <br />
-                          <br />
+                            </div>
+                          ))}
+                          {open && (
+                            <OpenImageDialog
+                              open={open}
+                              setOpen={setOpen}
+                              selectedImage={selectedImage}
+                            />
+                          )}
+                        </div>
+                      </FormGroup>
+                      <br />
+                    </div>
+                    <div className="pl-lg-4">
+                      <Row>
+                        <Col lg="4">
                           <FormGroup>
-                            <Dropdown
-                              isOpen={propdropdownOpen}
-                              toggle={toggle1}
-                              disabled={true}
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-desg"
+                              style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500" }}
                             >
-                              <DropdownToggle caret style={{ width: "100%" }}>
-                                {selectedProp
-                                  ? selectedProp
-                                  : "Select a property..."}
-                                &nbsp;&nbsp;&nbsp;&nbsp;
-                              </DropdownToggle>
-                              <DropdownMenu
+                              Property
+                            </label>
+                            <br />
+                            <br />
+                            <FormGroup>
+                              <Dropdown
                                 style={{
-                                  width: "100%",
-                                  maxHeight: "200px",
-                                  overflowY: "auto",
+                                  boxShadow: " 0px 4px 4px 0px #00000040 ",
                                 }}
+                                isOpen={propdropdownOpen}
+                                toggle={toggle1}
+                                disabled={true}
                               >
-                                {propertyData.map((property) => (
-                                  <DropdownItem
-                                    key={property._id}
-                                    onClick={() =>
-                                      handlePropertySelect(
-                                        property.rental_adress
-                                      )
-                                    }
-                                  >
-                                    {property.rental_adress}
-                                  </DropdownItem>
-                                ))}
-                              </DropdownMenu>
-                            </Dropdown>
-                          </FormGroup>
-                        </FormGroup>
-                      </Col>
-
-                      <Col lg="4">
-                        <Row>
-                          {console.log(unitData, "mj")}
-
-                          {selectedProp &&
-                            unitData &&
-                            unitData[0] &&
-                            unitData[0].rental_units && (
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-unit"
-                                  style={{ marginLeft: "15px" }}
+                                <DropdownToggle caret style={{ width: "100%" }}>
+                                  {selectedProp
+                                    ? selectedProp
+                                    : "Select a property..."}
+                                  &nbsp;&nbsp;&nbsp;&nbsp;
+                                </DropdownToggle>
+                                <DropdownMenu
+                                  style={{
+                                    width: "100%",
+                                    maxHeight: "200px",
+                                    overflowY: "auto",
+                                  }}
                                 >
-                                  Unit *
-                                </label>
-                                <br />
-                                <br />
-                                <FormGroup style={{ marginLeft: "15px" }}>
-                                  <Dropdown
-                                    isOpen={unitDropdownOpen}
-                                    toggle={toggle11}
-                                    disabled={true}
+                                  {propertyData.map((property) => (
+                                    <DropdownItem
+                                      key={property._id}
+                                      onClick={() =>
+                                        handlePropertySelect(
+                                          property.rental_adress
+                                        )
+                                      }
+                                    >
+                                      {property.rental_adress}
+                                    </DropdownItem>
+                                  ))}
+                                </DropdownMenu>
+                              </Dropdown>
+                            </FormGroup>
+                          </FormGroup>
+                        </Col>
+
+                        <Col lg="4">
+                          <Row>
+                            {console.log(unitData, "mj")}
+
+                            {selectedProp &&
+                              unitData &&
+                              unitData[0] &&
+                              unitData[0].rental_units && (
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-unit"
+                                    style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", marginLeft: "15px" }}
+
                                   >
-                                    <DropdownToggle caret>
-                                      {selectedUnit
-                                        ? selectedUnit
-                                        : "Select Unit"}
-                                    </DropdownToggle>
-                                    <DropdownMenu>
-                                      {unitData.length > 0 ? (
-                                        unitData.map((unit) => (
-                                          <DropdownItem
-                                            key={unit._id}
-                                            onClick={() =>
-                                              handleUnitSelect(
-                                                unit.rental_units,
-                                                unit._id
-                                              )
-                                            }
-                                          >
-                                            {unit.rental_units}
+                                    Unit *
+                                  </label>
+                                  <br />
+                                  <br />
+                                  <FormGroup style={{ marginLeft: "15px" }}>
+                                    <Dropdown
+                                      isOpen={unitDropdownOpen}
+                                      toggle={toggle11}
+                                      disabled={true}
+                                    >
+                                      <DropdownToggle caret>
+                                        {selectedUnit
+                                          ? selectedUnit
+                                          : "Select Unit"}
+                                      </DropdownToggle>
+                                      <DropdownMenu>
+                                        {unitData.length > 0 ? (
+                                          unitData.map((unit) => (
+                                            <DropdownItem
+                                              key={unit._id}
+                                              onClick={() =>
+                                                handleUnitSelect(
+                                                  unit.rental_units,
+                                                  unit._id
+                                                )
+                                              }
+                                            >
+                                              {unit.rental_units}
+                                            </DropdownItem>
+                                          ))
+                                        ) : (
+                                          <DropdownItem disabled>
+                                            No units available
                                           </DropdownItem>
-                                        ))
-                                      ) : (
-                                        <DropdownItem disabled>
-                                          No units available
-                                        </DropdownItem>
-                                      )}
-                                    </DropdownMenu>
-                                    {/* {WorkFormik.errors &&
+                                        )}
+                                      </DropdownMenu>
+                                      {/* {WorkFormik.errors &&
                                     WorkFormik.errors?.rental_units &&
                                     WorkFormik.touched &&
                                     WorkFormik.touched?.rental_units &&
@@ -1320,87 +1359,91 @@ const VendorAddWork = () => {
                                         {WorkFormik.errors.rental_units}
                                       </div>
                                     ) : null} */}
-                                  </Dropdown>
+                                    </Dropdown>
+                                  </FormGroup>
                                 </FormGroup>
-                              </FormGroup>
-                            )}
-                        </Row>
-                      </Col>
-                    </Row>
+                              )}
+                          </Row>
+                        </Col>
+                      </Row>
 
-                    <br />
-                  </div>
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-desg"
-                          >
-                            Category
-                          </label>
-                          <br />
-                          <br />
-                          <Dropdown
-                            isOpen={categorydropdownOpen}
-                            toggle={toggle2}
-                            disabled={true}
-                          >
-                            <DropdownToggle caret style={{ width: "100%" }}>
-                              {selectedCategory} &nbsp;&nbsp;&nbsp;&nbsp;
-                            </DropdownToggle>
-                            <DropdownMenu style={{ width: "100%" }}>
-                              <DropdownItem
-                                onClick={() =>
-                                  handleCategorySelection("Complaint")
-                                }
-                              >
-                                Complaint
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() =>
-                                  handleCategorySelection(
-                                    "Contribution Request"
-                                  )
-                                }
-                              >
-                                Contribution Request
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() =>
-                                  handleCategorySelection("Feedback/Suggestion")
-                                }
-                              >
-                                Feedback/Suggestion
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() =>
-                                  handleCategorySelection("General Inquiry")
-                                }
-                              >
-                                General Inquiry
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() =>
-                                  handleCategorySelection("Maintenance Request")
-                                }
-                              >
-                                Maintenance Request
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() => handleCategorySelection("Other")}
-                              >
-                                Other
-                              </DropdownItem>
-                            </DropdownMenu>
-                          </Dropdown>
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <br />
-                  </div>
-                  {/* <div className="pl-lg-4">
+                      <br />
+                    </div>
+                    <div className="pl-lg-4">
+                      <Row>
+                        <Col lg="6">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-desg"
+                              style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500" }}
+                            >
+                              Category
+                            </label>
+                            <br />
+                            <br />
+                            <Dropdown
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              }}
+                              isOpen={categorydropdownOpen}
+                              toggle={toggle2}
+                              disabled={true}
+                            >
+                              <DropdownToggle caret style={{ width: "100%" }}>
+                                {selectedCategory} &nbsp;&nbsp;&nbsp;&nbsp;
+                              </DropdownToggle>
+                              <DropdownMenu style={{ width: "100%" }}>
+                                <DropdownItem
+                                  onClick={() =>
+                                    handleCategorySelection("Complaint")
+                                  }
+                                >
+                                  Complaint
+                                </DropdownItem>
+                                <DropdownItem
+                                  onClick={() =>
+                                    handleCategorySelection(
+                                      "Contribution Request"
+                                    )
+                                  }
+                                >
+                                  Contribution Request
+                                </DropdownItem>
+                                <DropdownItem
+                                  onClick={() =>
+                                    handleCategorySelection("Feedback/Suggestion")
+                                  }
+                                >
+                                  Feedback/Suggestion
+                                </DropdownItem>
+                                <DropdownItem
+                                  onClick={() =>
+                                    handleCategorySelection("General Inquiry")
+                                  }
+                                >
+                                  General Inquiry
+                                </DropdownItem>
+                                <DropdownItem
+                                  onClick={() =>
+                                    handleCategorySelection("Maintenance Request")
+                                  }
+                                >
+                                  Maintenance Request
+                                </DropdownItem>
+                                <DropdownItem
+                                  onClick={() => handleCategorySelection("Other")}
+                                >
+                                  Other
+                                </DropdownItem>
+                              </DropdownMenu>
+                            </Dropdown>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <br />
+                    </div>
+                    {/* <div className="pl-lg-4">
                     <Row>
                       <Col lg="6">
                         <FormGroup>
@@ -1438,7 +1481,7 @@ const VendorAddWork = () => {
                     <br />
                   </div> */}
 
-                  {/* <div className="pl-lg-4">
+                    {/* <div className="pl-lg-4">
                     <Row>
                       <Col lg="4">
                         <FormGroup>
@@ -1510,499 +1553,534 @@ const VendorAddWork = () => {
                     <br />
                   </div> */}
 
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="4">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-desg"
-                          >
-                            Entry Allowed
-                          </label>
-                          <br />
-                          <br />
-                          <Dropdown
-                            isOpen={entrydropdownOpen}
-                            toggle={toggle4}
-                            disabled={true}
-                          >
-                            <DropdownToggle caret style={{ width: "100%" }}>
-                              {selectedEntry} &nbsp;&nbsp;&nbsp;&nbsp;
-                            </DropdownToggle>
-                            <DropdownMenu style={{ width: "100%" }}>
-                              <DropdownItem
-                                onClick={() => handleEntrySelect("Yes")}
-                              >
-                                Yes
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() => handleEntrySelect("No")}
-                              >
-                                No
-                              </DropdownItem>
-                            </DropdownMenu>
-                          </Dropdown>
-                        </FormGroup>
-                      </Col>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-desg"
-                          >
-                            Assigned To *
-                          </label>
-                          <br />
-                          <br />
+                    <div className="pl-lg-4">
+                      <Row>
+                        <Col lg="4">
                           <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-desg"
+                              style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500" }}
+
+                            >
+                              Entry Allowed
+                            </label>
+                            <br />
+                            <br />
                             <Dropdown
-                              isOpen={userdropdownOpen}
-                              toggle={toggle5}
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              }}
+                              isOpen={entrydropdownOpen}
+                              toggle={toggle4}
                               disabled={true}
                             >
-                              <DropdownToggle caret>
-                                {selecteduser ? selecteduser : "Select"}
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                              <DropdownToggle caret style={{ width: "100%" }}>
+                                {selectedEntry} &nbsp;&nbsp;&nbsp;&nbsp;
                               </DropdownToggle>
-                              <DropdownMenu
-                                style={{
-                                  width: "100%",
-                                  maxHeight: "200px",
-                                  overflowY: "auto",
-                                }}
-                              >
-                                <DropdownItem header style={{ color: "blue" }}>
-                                  Staff
+                              <DropdownMenu style={{ width: "100%" }}>
+                                <DropdownItem
+                                  onClick={() => handleEntrySelect("Yes")}
+                                >
+                                  Yes
                                 </DropdownItem>
-                                {staffData.map((user) => (
-                                  <DropdownItem
-                                    key={user._id}
-                                    onClick={() =>
-                                      handleStaffSelect(user.staffmember_name)
-                                    }
-                                  >
-                                    {user.staffmember_name}
-                                  </DropdownItem>
-                                ))}
+                                <DropdownItem
+                                  onClick={() => handleEntrySelect("No")}
+                                >
+                                  No
+                                </DropdownItem>
                               </DropdownMenu>
                             </Dropdown>
                           </FormGroup>
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <br />
-                  </div>
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="6">
+                        </Col>
+                        <Col lg="6">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-desg"
+                              style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500" }}
+
+                            >
+                              Assigned To *
+                            </label>
+                            <br />
+                            <br />
+                            <FormGroup>
+                              <Dropdown
+
+                                isOpen={userdropdownOpen}
+                                toggle={toggle5}
+                                disabled={true}
+                              >
+                                <DropdownToggle caret style={{ boxShadow: " 0px 4px 4px 0px #00000040", }}>
+                                  {selecteduser ? selecteduser : "Select"}
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                </DropdownToggle>
+                                <DropdownMenu
+                                  style={{
+                                    width: "100%",
+                                    maxHeight: "200px",
+                                    overflowY: "auto",
+
+                                  }}
+                                >
+                                  <DropdownItem header style={{ color: "blue" }}>
+                                    Staff
+                                  </DropdownItem>
+                                  {staffData.map((user) => (
+                                    <DropdownItem
+                                      key={user._id}
+                                      onClick={() =>
+                                        handleStaffSelect(user.staffmember_name)
+                                      }
+                                    >
+                                      {user.staffmember_name}
+                                    </DropdownItem>
+                                  ))}
+                                </DropdownMenu>
+                              </Dropdown>
+                            </FormGroup>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <br />
+                    </div>
+                    <div className="pl-lg-4">
+                      <Row>
+                        <Col lg="6">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-member"
+                              style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500" }}
+                            >
+                              Work To Be Performed
+                            </label>
+                            <br />
+                            <br />
+                            <Input
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040 ", border: "0.5px solid #32456780"
+                              }}
+                              className="form-control-alternative"
+                              id="input-name"
+                              placeholder=""
+                              type="textarea"
+                              name="work_performed"
+                              readOnly
+                              //name="nput-staffmember-name"
+                              onBlur={WorkFormik.handleBlur}
+                              onChange={(e) => {
+                                // Update the state or Formik values with the new input value
+                                WorkFormik.handleChange(e);
+                              }}
+                              value={WorkFormik.values.work_performed}
+                            />
+                            {WorkFormik.touched.work_performed &&
+                              WorkFormik.errors.work_performed ? (
+                              <div style={{ color: "red" }}>
+                                {WorkFormik.errors.work_performed}
+                              </div>
+                            ) : null}
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <br />
+                    </div>
+                  </Box>
+                </Box>
+
+                <Box
+                  // border="1px solid #ccc"
+                  border="0.5px solid #737791"
+                  borderRadius="8px"
+                  padding="16px"
+                  maxWidth="100%"
+                  boxShadow=" 0px 4px 4px 0px #00000040"
+
+                  margin="20px"
+                >
+                  <Box
+                    // display="flex"
+                    alignItems="center"
+                    marginBottom="20px"
+                  >
+                    <div className="pl-lg-4">
+                      <label className="form-control-label" htmlFor="input-desg" style={{ fontFamily: "Poppins", fontSize: "18px", fontWeight: "500", color: "#152B51" }}>
+                        Parts and Labor
+                      </label>
+                      <Col lg="12">
                         <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-member"
-                          >
-                            Work To Be Performed
-                          </label>
-                          <br />
-                          <br />
-                          <Input
-                            className="form-control-alternative"
-                            id="input-name"
-                            placeholder=""
-                            type="textarea"
-                            name="work_performed"
-                            readOnly
-                            //name="nput-staffmember-name"
-                            onBlur={WorkFormik.handleBlur}
-                            onChange={(e) => {
-                              // Update the state or Formik values with the new input value
-                              WorkFormik.handleChange(e);
-                            }}
-                            value={WorkFormik.values.work_performed}
-                          />
-                          {WorkFormik.touched.work_performed &&
-                            WorkFormik.errors.work_performed ? (
-                            <div style={{ color: "red" }}>
-                              {WorkFormik.errors.work_performed}
-                            </div>
-                          ) : null}
+                          <div className="table-responsive" style={{
+                            boxShadow: " 0px 4px 4px 0px #00000040 ", border: "0.5px solid #32456780"
+                          }}>
+                            <Table
+                              className="table table-bordered"
+                              responsive
+                              style={{
+                                borderCollapse: "collapse",
+                                // border: "1px solid #ddd",
+
+                                // width: "100% !important",
+                              }}
+                            >
+                              <thead style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#152B51" }}>
+                                <tr>
+                                  <th>Qty</th>
+                                  <th>Account</th>
+                                  <th>Description</th>
+                                  <th>Price</th>
+                                  <th>Total</th>
+                                  {/* <th scope="col">ACTION</th> */}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {WorkFormik.values.entries?.map(
+                                  (entry, index) => (
+                                    <tr key={index}>
+                                      <td>
+                                        <Input
+                                          className="form-control-alternative"
+                                          id="input-unitadd"
+                                          placeholder="Quantity"
+                                          type="text"
+                                          name={`entries[${index}].part_qty`}
+                                          onChange={(e) =>
+                                            handleQuantityChange(e, index)
+                                          }
+                                          value={entry.part_qty}
+                                        />
+                                        {WorkFormik.touched.entries &&
+                                          WorkFormik.touched.entries[index] &&
+                                          WorkFormik.errors.entries &&
+                                          WorkFormik.errors.entries[index] &&
+                                          WorkFormik.errors.entries[index]
+                                            .part_qty ? (
+                                          <div style={{ color: "red" }}>
+                                            {
+                                              WorkFormik.errors.entries[index]
+                                                .part_qty
+                                            }
+                                          </div>
+                                        ) : null}
+                                      </td>
+                                      <td>
+                                        <Dropdown
+                                          isOpen={entry.dropdownOpen}
+                                          toggle={() => toggleDropdown(index)}
+                                        >
+                                          <DropdownToggle
+                                            caret
+                                            style={{ width: "100%" }}
+                                          >
+                                            {entry.account_type || "Select"}{" "}
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                          </DropdownToggle>
+                                          <DropdownMenu
+                                            style={{
+                                              width: "100%",
+                                              maxHeight: "200px",
+                                              overflowY: "auto",
+                                            }}
+                                          >
+                                            <DropdownItem
+                                              onClick={() =>
+                                                handleAccountSelection(
+                                                  "Advertising",
+                                                  index
+                                                )
+                                              }
+                                            >
+                                              Advertising
+                                            </DropdownItem>
+                                            <DropdownItem
+                                              onClick={() =>
+                                                handleAccountSelection(
+                                                  "Association Fees",
+                                                  index
+                                                )
+                                              }
+                                            >
+                                              Association Fees
+                                            </DropdownItem>
+                                            <DropdownItem
+                                              onClick={() =>
+                                                handleAccountSelection(
+                                                  "Auto and Travel",
+                                                  index
+                                                )
+                                              }
+                                            >
+                                              Auto and Travel
+                                            </DropdownItem>
+                                            <DropdownItem
+                                              onClick={() =>
+                                                handleAccountSelection(
+                                                  "Bank Fees",
+                                                  index
+                                                )
+                                              }
+                                            >
+                                              Bank Fees
+                                            </DropdownItem>
+                                            <DropdownItem
+                                              onClick={() =>
+                                                handleAccountSelection(
+                                                  "Cleaning and Maintenance",
+                                                  index
+                                                )
+                                              }
+                                            >
+                                              Cleaning and Maintenance
+                                            </DropdownItem>
+                                            <DropdownItem
+                                              onClick={() =>
+                                                handleAccountSelection(
+                                                  "Commissions",
+                                                  index
+                                                )
+                                              }
+                                            >
+                                              Commissions
+                                            </DropdownItem>
+                                            <DropdownItem
+                                              onClick={() =>
+                                                handleAccountSelection(
+                                                  "Depreciation Expense",
+                                                  index
+                                                )
+                                              }
+                                            >
+                                              Depreciation Expense
+                                            </DropdownItem>
+                                            <DropdownItem
+                                              onClick={() =>
+                                                handleAccountSelection(
+                                                  "Insurance",
+                                                  index
+                                                )
+                                              }
+                                            >
+                                              Insurance
+                                            </DropdownItem>
+                                            <DropdownItem
+                                              onClick={() =>
+                                                handleAccountSelection(
+                                                  "Legal and Professional Fees",
+                                                  index
+                                                )
+                                              }
+                                            >
+                                              Legal and Professional Fees
+                                            </DropdownItem>
+                                            <DropdownItem
+                                              onClick={() =>
+                                                handleAccountSelection(
+                                                  "Licenses and Permits",
+                                                  index
+                                                )
+                                              }
+                                            >
+                                              Licenses and Permits
+                                            </DropdownItem>
+                                            <DropdownItem
+                                              onClick={() =>
+                                                handleAccountSelection(
+                                                  "Management Fees",
+                                                  index
+                                                )
+                                              }
+                                            >
+                                              Management Fees
+                                            </DropdownItem>
+                                            <DropdownItem
+                                              onClick={() =>
+                                                handleAccountSelection(
+                                                  "Mortgage Interest",
+                                                  index
+                                                )
+                                              }
+                                            >
+                                              Mortgage Interest
+                                            </DropdownItem>
+                                            <DropdownItem
+                                              onClick={() =>
+                                                handleAccountSelection(
+                                                  "Other Expenses",
+                                                  index
+                                                )
+                                              }
+                                            >
+                                              Other Expenses
+                                            </DropdownItem>
+                                            <DropdownItem
+                                              onClick={() =>
+                                                handleAccountSelection(
+                                                  "Other Interest Expenses",
+                                                  index
+                                                )
+                                              }
+                                            >
+                                              Other Interest Expenses
+                                            </DropdownItem>
+                                            <DropdownItem
+                                              onClick={() =>
+                                                handleAccountSelection(
+                                                  "Postage and Delivery",
+                                                  index
+                                                )
+                                              }
+                                            >
+                                              Postage and Delivery
+                                            </DropdownItem>
+                                            <DropdownItem
+                                              onClick={() =>
+                                                handleAccountSelection(
+                                                  "Repairs",
+                                                  index
+                                                )
+                                              }
+                                            >
+                                              Repairs
+                                            </DropdownItem>
+                                            <DropdownItem
+                                              onClick={() =>
+                                                handleAccountSelection(
+                                                  "Insurance",
+                                                  index
+                                                )
+                                              }
+                                            >
+                                              Other Expenses
+                                            </DropdownItem>
+                                          </DropdownMenu>
+                                        </Dropdown>
+                                      </td>
+                                      <td>
+                                        <Input
+                                          className="form-control-alternative"
+                                          id="input-unitadd"
+                                          placeholder="Description"
+                                          type="text"
+                                          name={`entries[${index}].description`}
+                                          onBlur={WorkFormik.handleBlur}
+                                          onChange={WorkFormik.handleChange}
+                                          value={entry.description}
+                                        />
+                                        {WorkFormik.touched.entries &&
+                                          WorkFormik.touched.entries[index] &&
+                                          WorkFormik.errors.entries &&
+                                          WorkFormik.errors.entries[index] &&
+                                          WorkFormik.errors.entries[index]
+                                            .description ? (
+                                          <div style={{ color: "red" }}>
+                                            {
+                                              WorkFormik.errors.entries[index]
+                                                .description
+                                            }
+                                          </div>
+                                        ) : null}
+                                      </td>
+                                      <td>
+                                        <Input
+                                          className="form-control-alternative"
+                                          id="input-unitadd"
+                                          placeholder="Price"
+                                          type="text"
+                                          name={`entries[${index}].part_price`}
+                                          onChange={(e) =>
+                                            handlePriceChange(e, index)
+                                          }
+                                          value={entry.part_price}
+                                          onInput={(e) => {
+                                            const inputValue = e.target.value;
+                                            const numericValue =
+                                              inputValue.replace(/\D/g, "");
+                                            e.target.value = numericValue;
+                                          }}
+                                        />
+                                        {WorkFormik.touched.entries &&
+                                          WorkFormik.touched.entries[index] &&
+                                          WorkFormik.errors.entries &&
+                                          WorkFormik.errors.entries[index] &&
+                                          WorkFormik.errors.entries[index]
+                                            .part_price ? (
+                                          <div style={{ color: "red" }}>
+                                            {
+                                              WorkFormik.errors.entries[index]
+                                                .part_price
+                                            }
+                                          </div>
+                                        ) : null}
+                                      </td>
+                                      <td>
+                                        <Input
+                                          className="form-control-alternative"
+                                          id="input-unitadd"
+                                          placeholder="Total"
+                                          type="number"
+                                          name={`entries[${index}].total_amount`}
+                                          onBlur={WorkFormik.handleBlur}
+                                          onChange={WorkFormik.handleChange}
+                                          value={entry.total_amount}
+                                          disabled // Disable the input
+                                        />
+                                        {WorkFormik.touched.entries &&
+                                          WorkFormik.touched.entries[index] &&
+                                          WorkFormik.errors.entries &&
+                                          WorkFormik.errors.entries[index] &&
+                                          WorkFormik.errors.entries[index]
+                                            .total_amount ? (
+                                          <div style={{ color: "red" }}>
+                                            {
+                                              WorkFormik.errors.entries[index]
+                                                .total_amount
+                                            }
+                                          </div>
+                                        ) : null}
+                                      </td>
+                                      <td style={{ border: "none" }}>
+                                        <ClearIcon
+                                          type="button"
+                                          style={{
+                                            cursor: "pointer",
+                                            padding: 0,
+                                          }}
+                                          onClick={() => handleRemoveRow(index)}
+                                        >
+                                          Remove
+                                        </ClearIcon>
+                                      </td>
+                                    </tr>
+                                  )
+                                )}
+                                <tr>
+                                  <th style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#152B51" }}>Total</th>
+                                  <th></th>
+                                  <th></th>
+                                  <th></th>
+                                  <th style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#152B51" }}>{final_total_amount.toFixed(2)}</th>
+                                </tr>
+                              </tbody>
+                              <tfoot>
+                                <tr>
+                                  <td colSpan="4">
+                                    <Button
+                                      type="button"
+                                      className="btn btn-primary"
+                                      onClick={handleAddRow}
+                                      style={{ backgroundColor: "#152B51", fontFamily: "Poppins", fontSize: "14px", fontWeight: "500", color: "white" }}
+                                    >
+                                      Add Row
+                                    </Button>
+                                  </td>
+                                </tr>
+                              </tfoot>
+                            </Table>
+                          </div>
                         </FormGroup>
                       </Col>
-                    </Row>
-                    <br />
-                  </div>
-                  <div className="pl-lg-4">
-                    <label className="form-control-label" htmlFor="input-desg">
-                      Parts and Labor
-                    </label>
-                    <Col lg="12">
-                      <FormGroup>
-                        <div className="table-responsive">
-                          <Table
-                            className="table table-bordered"
-                            responsive
-                            style={{
-                              borderCollapse: "collapse",
-                              border: "1px solid #ddd",
-                              // width: "100% !important",
-                            }}
-                          >
-                            <thead className="thead-light">
-                              <tr>
-                                <th>Qty</th>
-                                <th>Account</th>
-                                <th>Description</th>
-                                <th>Price</th>
-                                <th>Total</th>
-                                {/* <th scope="col">ACTION</th> */}
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {WorkFormik.values.entries?.map(
-                                (entry, index) => (
-                                  <tr key={index}>
-                                    <td>
-                                      <Input
-                                        className="form-control-alternative"
-                                        id="input-unitadd"
-                                        placeholder="Quantity"
-                                        type="text"
-                                        name={`entries[${index}].part_qty`}
-                                        onChange={(e) =>
-                                          handleQuantityChange(e, index)
-                                        }
-                                        value={entry.part_qty}
-                                      />
-                                      {WorkFormik.touched.entries &&
-                                        WorkFormik.touched.entries[index] &&
-                                        WorkFormik.errors.entries &&
-                                        WorkFormik.errors.entries[index] &&
-                                        WorkFormik.errors.entries[index]
-                                          .part_qty ? (
-                                        <div style={{ color: "red" }}>
-                                          {
-                                            WorkFormik.errors.entries[index]
-                                              .part_qty
-                                          }
-                                        </div>
-                                      ) : null}
-                                    </td>
-                                    <td>
-                                      <Dropdown
-                                        isOpen={entry.dropdownOpen}
-                                        toggle={() => toggleDropdown(index)}
-                                      >
-                                        <DropdownToggle
-                                          caret
-                                          style={{ width: "100%" }}
-                                        >
-                                          {entry.account_type || "Select"}{" "}
-                                          &nbsp;&nbsp;&nbsp;&nbsp;
-                                        </DropdownToggle>
-                                        <DropdownMenu
-                                          style={{
-                                            width: "100%",
-                                            maxHeight: "200px",
-                                            overflowY: "auto",
-                                          }}
-                                        >
-                                          <DropdownItem
-                                            onClick={() =>
-                                              handleAccountSelection(
-                                                "Advertising",
-                                                index
-                                              )
-                                            }
-                                          >
-                                            Advertising
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            onClick={() =>
-                                              handleAccountSelection(
-                                                "Association Fees",
-                                                index
-                                              )
-                                            }
-                                          >
-                                            Association Fees
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            onClick={() =>
-                                              handleAccountSelection(
-                                                "Auto and Travel",
-                                                index
-                                              )
-                                            }
-                                          >
-                                            Auto and Travel
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            onClick={() =>
-                                              handleAccountSelection(
-                                                "Bank Fees",
-                                                index
-                                              )
-                                            }
-                                          >
-                                            Bank Fees
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            onClick={() =>
-                                              handleAccountSelection(
-                                                "Cleaning and Maintenance",
-                                                index
-                                              )
-                                            }
-                                          >
-                                            Cleaning and Maintenance
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            onClick={() =>
-                                              handleAccountSelection(
-                                                "Commissions",
-                                                index
-                                              )
-                                            }
-                                          >
-                                            Commissions
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            onClick={() =>
-                                              handleAccountSelection(
-                                                "Depreciation Expense",
-                                                index
-                                              )
-                                            }
-                                          >
-                                            Depreciation Expense
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            onClick={() =>
-                                              handleAccountSelection(
-                                                "Insurance",
-                                                index
-                                              )
-                                            }
-                                          >
-                                            Insurance
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            onClick={() =>
-                                              handleAccountSelection(
-                                                "Legal and Professional Fees",
-                                                index
-                                              )
-                                            }
-                                          >
-                                            Legal and Professional Fees
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            onClick={() =>
-                                              handleAccountSelection(
-                                                "Licenses and Permits",
-                                                index
-                                              )
-                                            }
-                                          >
-                                            Licenses and Permits
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            onClick={() =>
-                                              handleAccountSelection(
-                                                "Management Fees",
-                                                index
-                                              )
-                                            }
-                                          >
-                                            Management Fees
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            onClick={() =>
-                                              handleAccountSelection(
-                                                "Mortgage Interest",
-                                                index
-                                              )
-                                            }
-                                          >
-                                            Mortgage Interest
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            onClick={() =>
-                                              handleAccountSelection(
-                                                "Other Expenses",
-                                                index
-                                              )
-                                            }
-                                          >
-                                            Other Expenses
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            onClick={() =>
-                                              handleAccountSelection(
-                                                "Other Interest Expenses",
-                                                index
-                                              )
-                                            }
-                                          >
-                                            Other Interest Expenses
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            onClick={() =>
-                                              handleAccountSelection(
-                                                "Postage and Delivery",
-                                                index
-                                              )
-                                            }
-                                          >
-                                            Postage and Delivery
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            onClick={() =>
-                                              handleAccountSelection(
-                                                "Repairs",
-                                                index
-                                              )
-                                            }
-                                          >
-                                            Repairs
-                                          </DropdownItem>
-                                          <DropdownItem
-                                            onClick={() =>
-                                              handleAccountSelection(
-                                                "Insurance",
-                                                index
-                                              )
-                                            }
-                                          >
-                                            Other Expenses
-                                          </DropdownItem>
-                                        </DropdownMenu>
-                                      </Dropdown>
-                                    </td>
-                                    <td>
-                                      <Input
-                                        className="form-control-alternative"
-                                        id="input-unitadd"
-                                        placeholder="Description"
-                                        type="text"
-                                        name={`entries[${index}].description`}
-                                        onBlur={WorkFormik.handleBlur}
-                                        onChange={WorkFormik.handleChange}
-                                        value={entry.description}
-                                      />
-                                      {WorkFormik.touched.entries &&
-                                        WorkFormik.touched.entries[index] &&
-                                        WorkFormik.errors.entries &&
-                                        WorkFormik.errors.entries[index] &&
-                                        WorkFormik.errors.entries[index]
-                                          .description ? (
-                                        <div style={{ color: "red" }}>
-                                          {
-                                            WorkFormik.errors.entries[index]
-                                              .description
-                                          }
-                                        </div>
-                                      ) : null}
-                                    </td>
-                                    <td>
-                                      <Input
-                                        className="form-control-alternative"
-                                        id="input-unitadd"
-                                        placeholder="Price"
-                                        type="text"
-                                        name={`entries[${index}].part_price`}
-                                        onChange={(e) =>
-                                          handlePriceChange(e, index)
-                                        }
-                                        value={entry.part_price}
-                                        onInput={(e) => {
-                                          const inputValue = e.target.value;
-                                          const numericValue =
-                                            inputValue.replace(/\D/g, "");
-                                          e.target.value = numericValue;
-                                        }}
-                                      />
-                                      {WorkFormik.touched.entries &&
-                                        WorkFormik.touched.entries[index] &&
-                                        WorkFormik.errors.entries &&
-                                        WorkFormik.errors.entries[index] &&
-                                        WorkFormik.errors.entries[index]
-                                          .part_price ? (
-                                        <div style={{ color: "red" }}>
-                                          {
-                                            WorkFormik.errors.entries[index]
-                                              .part_price
-                                          }
-                                        </div>
-                                      ) : null}
-                                    </td>
-                                    <td>
-                                      <Input
-                                        className="form-control-alternative"
-                                        id="input-unitadd"
-                                        placeholder="Total"
-                                        type="number"
-                                        name={`entries[${index}].total_amount`}
-                                        onBlur={WorkFormik.handleBlur}
-                                        onChange={WorkFormik.handleChange}
-                                        value={entry.total_amount}
-                                        disabled // Disable the input
-                                      />
-                                      {WorkFormik.touched.entries &&
-                                        WorkFormik.touched.entries[index] &&
-                                        WorkFormik.errors.entries &&
-                                        WorkFormik.errors.entries[index] &&
-                                        WorkFormik.errors.entries[index]
-                                          .total_amount ? (
-                                        <div style={{ color: "red" }}>
-                                          {
-                                            WorkFormik.errors.entries[index]
-                                              .total_amount
-                                          }
-                                        </div>
-                                      ) : null}
-                                    </td>
-                                    <td style={{ border: "none" }}>
-                                      <ClearIcon
-                                        type="button"
-                                        style={{
-                                          cursor: "pointer",
-                                          padding: 0,
-                                        }}
-                                        onClick={() => handleRemoveRow(index)}
-                                      >
-                                        Remove
-                                      </ClearIcon>
-                                    </td>
-                                  </tr>
-                                )
-                              )}
-                              <tr>
-                                <th>Total</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th>{final_total_amount.toFixed(2)}</th>
-                              </tr>
-                            </tbody>
-                            <tfoot>
-                              <tr>
-                                <td colSpan="4">
-                                  <Button
-                                    type="button"
-                                    className="btn btn-primary"
-                                    onClick={handleAddRow}
-                                  >
-                                    Add Row
-                                  </Button>
-                                </td>
-                              </tr>
-                            </tfoot>
-                          </Table>
-                        </div>
-                      </FormGroup>
-                    </Col>
-                    {/* <div>
+                      {/* <div>
                                 <input
                                 type="number"
                                 name="qty"
@@ -2040,240 +2118,275 @@ const VendorAddWork = () => {
                                 />
                                 <button onClick={handleAddRow}>Add Row</button>
                             </div> */}
-                  </div>
-                  <br />
-                  <br />
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-member"
-                          >
-                            Vendor Notes
-                          </label>
-                          <br />
-                          <br />
-                          <Input
-                            className="form-control-alternative"
-                            id="input-name"
-                            placeholder=""
-                            type="textarea"
-                            name="vendor_note"
-                            //name="nput-staffmember-name"
-                            onBlur={WorkFormik.handleBlur}
-                            onChange={(e) => {
-                              // Update the state or Formik values with the new input value
-                              WorkFormik.handleChange(e);
-                            }}
-                            value={WorkFormik.values.vendor_note}
-                          />
-                          {WorkFormik.touched.vendor_note &&
-                            WorkFormik.errors.vendor_note ? (
-                            <div style={{ color: "red" }}>
-                              {WorkFormik.errors.vendor_note}
-                            </div>
-                          ) : null}
-                        </FormGroup>
-                      </Col>
-                    </Row>
+                    </div>
                     <br />
-                  </div>
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="3">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-desg"
-                          >
-                            Priority
-                          </label>
-                          <br />
-                          <br />
-                          <div style={{ display: "flex" }}>
-                            <Col xs="3">
-                              <Label check>
-                                <Input
-                                  type="radio"
-                                  name="priority"
-                                  value="High"
-                                  checked={selectedPriority === "High"}
-                                  onChange={handlePriorityChange}
-                                  disabled // Set disabled to make it readonly
-                                />
-                                High
-                              </Label>
-                            </Col>
-                            &nbsp;
-                            <Col xs="4">
-                              <Label check>
-                                <Input
-                                  type="radio"
-                                  name="priority"
-                                  value="Medium"
-                                  checked={selectedPriority === "Medium"}
-                                  onChange={handlePriorityChange}
-                                  disabled // Set disabled to make it readonly
-                                />
-                                Medium
-                              </Label>
-                            </Col>
-                            &nbsp;
-                            <Col xs="4">
-                              <Label check>
-                                <Input
-                                  type="radio"
-                                  name="priority"
-                                  value="Low"
-                                  checked={selectedPriority === "Low"}
-                                  onChange={handlePriorityChange}
-                                  disabled // Set disabled to make it readonly
-                                />
-                                Low
-                              </Label>
-                            </Col>
-                          </div>
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                  </div>
-
-                  <br />
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="3">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-desg"
-                          >
-                            Status
-                          </label>
-                          <br />
-                          <br />
+                    <br />
+                    <div className="pl-lg-4">
+                      <Row>
+                        <Col lg="6">
                           <FormGroup>
-                            <Dropdown
-                              isOpen={statusdropdownOpen}
-                              toggle={toggle6}
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-member"
+                              style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500" }}
                             >
-                              <DropdownToggle caret>
-                                {selectedStatus ? selectedStatus : "Select"}
-                                &nbsp;&nbsp;&nbsp;&nbsp;
-                              </DropdownToggle>
-                              <DropdownMenu
-                                style={{
-                                  width: "100%",
-                                  maxHeight: "200px",
-                                  overflowY: "auto",
-                                }}
-                              >
-                                <DropdownItem
-                                  onClick={() => handleStatusSelect("New")}
-                                >
-                                  New
-                                </DropdownItem>
-                                <DropdownItem
-                                  onClick={() =>
-                                    handleStatusSelect("In Progress")
-                                  }
-                                >
-                                  In Progress
-                                </DropdownItem>
-                                <DropdownItem
-                                  onClick={() => handleStatusSelect("On Hold")}
-                                >
-                                  On Hold
-                                </DropdownItem>
-                                <DropdownItem
-                                  onClick={() => handleStatusSelect("Complete")}
-                                >
-                                  Complete
-                                </DropdownItem>
-                              </DropdownMenu>
-                            </Dropdown>
+                              Vendor Notes
+                            </label>
+                            <br />
+                            <br />
+                            <Input
+                              className="form-control-alternative"
+                              id="input-name"
+                              placeholder=""
+                              type="textarea"
+                              name="vendor_note"
+                              //name="nput-staffmember-name"
+                              onBlur={WorkFormik.handleBlur}
+                              onChange={(e) => {
+                                // Update the state or Formik values with the new input value
+                                WorkFormik.handleChange(e);
+                              }}
+                              value={WorkFormik.values.vendor_note}
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040 ", border: "0.5px solid #32456780"
+                              }}
+                            />
+                            {WorkFormik.touched.vendor_note &&
+                              WorkFormik.errors.vendor_note ? (
+                              <div style={{ color: "red" }}>
+                                {WorkFormik.errors.vendor_note}
+                              </div>
+                            ) : null}
                           </FormGroup>
-                        </FormGroup>
-                      </Col>
-                      <Col lg="3">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-unitadd"
-                          >
-                            Due Date
-                          </label>
-                          <br />
-                          <br />
-                          <Input
-                            className="form-control-alternative"
-                            id="input-unitadd"
-                            type="date"
-                            name="due_date"
-                            onBlur={WorkFormik.handleBlur}
-                            onChange={WorkFormik.handleChange}
-                            value={WorkFormik.values.due_date}
-                            readOnly
-                          />
-                          {WorkFormik.touched.due_date &&
-                            WorkFormik.errors.due_date ? (
-                            <div style={{ color: "red" }}>
-                              {WorkFormik.errors.due_date}
+                        </Col>
+                      </Row>
+                      <br />
+                    </div>
+                    <div className="pl-lg-4">
+                      <Row>
+                        <Col lg="3">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-desg"
+                              style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500" }}
+
+                            >
+                              Priority
+                            </label>
+                            <br />
+                            <br />
+                            <div style={{ display: "flex" }}>
+                              <Col xs="3">
+                                <Label check>
+                                  <Input
+                                    type="radio"
+                                    name="priority"
+                                    value="High"
+                                    checked={selectedPriority === "High"}
+                                    onChange={handlePriorityChange}
+                                    disabled // Set disabled to make it readonly
+                                    style={{ fontFamily: "Poppins", fontSize: "14px", fontWeight: "400", color: selectedPriority === "High" ? "#152B51" : "inherit", }}
+
+                                  />
+                                  High
+                                </Label>
+                              </Col>
+                              &nbsp;
+                              <Col xs="4">
+                                <Label check>
+                                  <Input
+                                    type="radio"
+                                    name="priority"
+                                    value="Medium"
+                                    checked={selectedPriority === "Medium"}
+                                    onChange={handlePriorityChange}
+                                    disabled // Set disabled to make it readonly
+                                    style={{ fontFamily: "Poppins", fontSize: "14px", fontWeight: "400", color: selectedPriority === "High" ? "#152B51" : "inherit", }}
+
+                                  />
+                                  Medium
+                                </Label>
+                              </Col>
+                              &nbsp;
+                              <Col xs="4">
+                                <Label check>
+                                  <Input
+                                    type="radio"
+                                    name="priority"
+                                    value="Low"
+                                    checked={selectedPriority === "Low"}
+                                    onChange={handlePriorityChange}
+                                    disabled // Set disabled to make it readonly
+                                    style={{ fontFamily: "Poppins", fontSize: "14px", fontWeight: "400", color: selectedPriority === "High" ? "#152B51" : "inherit", }}
+
+                                  />
+                                  Low
+                                </Label>
+                              </Col>
                             </div>
-                          ) : null}
-                        </FormGroup>
-                      </Col>
-                    </Row>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                    </div>
 
                     <br />
-                  </div>
+                    <div className="pl-lg-4">
+                      <Row>
+                        <Col lg="3">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-desg"
+                              style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500" }}
 
-                  {loader ? (
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      style={{ background: "green", cursor: "not-allowed" }}
-                      disabled
-                    >
-                      Loading...
-                    </button>
-                  ) : id ? (
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      style={{ background: "green", cursor: "pointer" }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        editworkorder(vid);
-                      }}
-                    >
-                      Update Work Order
-                    </button>
-                  ) : (
-                    <button
-                      type="submit"
-                      onSubmit={{ handleSubmit }}
-                      className="btn btn-primary ml-4"
-                      style={{ background: "green" }}
-                    >
-                      Add Work Order
-                    </button>
-                  )}
+                            >
+                              Status
+                            </label>
+                            <br />
+                            <br />
+                            <FormGroup>
+                              <Dropdown
+
+                                isOpen={statusdropdownOpen}
+                                toggle={toggle6}
+                              >
+                                <DropdownToggle caret style={{
+                                  boxShadow: " 0px 4px 4px 0px #00000040",
+                                }}>
+                                  {selectedStatus ? selectedStatus : "Select"}
+                                  &nbsp;&nbsp;&nbsp;&nbsp;
+                                </DropdownToggle>
+                                <DropdownMenu
+                                  style={{
+                                    width: "100%",
+                                    maxHeight: "200px",
+                                    overflowY: "auto",
+                                  }}
+                                >
+                                  <DropdownItem
+                                    onClick={() => handleStatusSelect("New")}
+                                  >
+                                    New
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    onClick={() =>
+                                      handleStatusSelect("In Progress")
+                                    }
+                                  >
+                                    In Progress
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    onClick={() => handleStatusSelect("On Hold")}
+                                  >
+                                    On Hold
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    onClick={() => handleStatusSelect("Complete")}
+                                  >
+                                    Complete
+                                  </DropdownItem>
+                                </DropdownMenu>
+                              </Dropdown>
+                            </FormGroup>
+                          </FormGroup>
+                        </Col>
+                        <Col lg="3">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-unitadd"
+                              style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500" }}
+                            >
+                              Due Date
+                            </label>
+                            <br />
+                            <br />
+                            <Input
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040",
+                              }}
+                              className="form-control-alternative"
+                              id="input-unitadd"
+                              type="date"
+                              name="due_date"
+                              onBlur={WorkFormik.handleBlur}
+                              onChange={WorkFormik.handleChange}
+                              value={WorkFormik.values.due_date}
+                              readOnly
+                            />
+                            {WorkFormik.touched.due_date &&
+                              WorkFormik.errors.due_date ? (
+                              <div style={{ color: "red" }}>
+                                {WorkFormik.errors.due_date}
+                              </div>
+                            ) : null}
+                          </FormGroup>
+                        </Col>
+                      </Row>
+
+                      <br />
+                    </div>
+                  </Box>
+                </Box>
+                {loader ? (
                   <button
-                    color="primary"
-                    //  href="#rms"
+                    type="submit"
                     className="btn btn-primary"
-                    onClick={handleCloseButtonClick}
-                    size="sm"
-                    style={{ background: "white", color: "black" }}
+                    style={{ background: "green", cursor: "not-allowed" }}
+                    disabled
                   >
-                    Cancel
+                    Loading...
                   </button>
-                </Form>
-                <br />
-              </CardBody>
-            </Card>
+                ) : id ? (
+                  <button
+                    type="submit"
+                    className=" mx-3 btn btn-primary"
+                    style={{
+                      backgroundColor: "#152B51", cursor: "pointer", fontFamily: "Poppins", fontSize: "14px", fontWeight: "400",
+                      boxShadow: " 0px 4px 4px 0px #00000040 ",
+
+                    }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      editworkorder(vid);
+                    }}
+                  >
+                    Update Work Order
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    onSubmit={{ handleSubmit }}
+                    className=" btn btn-primary mx-3"
+                    style={{
+                      backgroundColor: "#152B51", fontFamily: "Poppins", fontSize: "14px", fontWeight: "400",
+                      boxShadow: " 0px 4px 4px 0px #00000040 ",
+
+                    }}
+                  >
+                    Add Work Order
+                  </button>
+                )}
+                <button
+                  color="primary"
+                  //  href="#rms"
+                  className="btn btn-primary"
+                  onClick={handleCloseButtonClick}
+
+                  size="sm"
+                  style={{
+                    background: "white", color: "#152B51", fontFamily: "Poppins", fontSize: "14px", fontWeight: "400",
+                    boxShadow: " 0px 4px 4px 0px #00000040 ",
+
+                  }}
+                >
+                  Cancel
+                </button>
+              </Form>
+              <br />
+            </CardBody>
+            {/* </Card> */}
           </Col>
         </Row>
         <ToastContainer />

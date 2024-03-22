@@ -185,12 +185,13 @@ const VendorWorkTable = () => {
                         <Input
                           fullWidth
                           type="text"
-                          placeholder="Search"
+                          placeholder="Search here..."
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           style={{
                             width: "100%",
                             maxWidth: "200px",
+                            boxShadow: " 0px 4px 4px 0px #00000040",
                             minWidth: "200px",
                           }}
                         />
@@ -198,15 +199,19 @@ const VendorWorkTable = () => {
                       <Dropdown
                         isOpen={search}
                         toggle={toggle3}
+
                         className="mx-2"
+
                       >
                         <DropdownToggle
                           caret
                           style={{
-                            boxShadow: "none",
+                            boxShadow: " 0px 4px 4px 0px #00000040",
                             border: "1px solid #ced4da",
                             maxWidth: "200px",
                             minWidth: "200px",
+                            backgroundColor: "transparent",
+                            color: "#A7A7A7"
                           }}
                         >
                           {searchQuery2
