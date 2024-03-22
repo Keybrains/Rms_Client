@@ -32,7 +32,7 @@ import Agent from "views/source/Agent";
 import AgentdashBoard from "views/source/AgentdashBoard";
 import StaffDashBoard from "views/source/StaffDashBoard";
 import VendorDashBoard from "views/source/VendorDashBoard (1)";
-import VendorProfile from "views/source/VendorProfile";
+import VendorProfile from "views/source/VendorProfile (1)";
 import VenorWorkOrder from "views/source/VenorWorkOrder";
 import TenantWork from "views/source/TenantWork";
 import TAddWork from "views/source/TAddWork";

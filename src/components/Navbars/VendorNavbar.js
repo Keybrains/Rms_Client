@@ -136,7 +136,7 @@ const VendorNavbar = (props) => {
               onKeyDown={toggleSidebar}
             >
               <List style={{ width: "350px" }}>
-                <h2 style={{ color: "#36013F", marginLeft: "15px" }}>
+                <h2 style={{ color: "#fff", marginLeft: "15px", backgroundColor: "#152B51", borderRadius: "10px, 0px, 0px, 10px", fontFamily: "Poppins", fontWeight: "600" }}>
                   Notifications
                 </h2>
                 <Divider />
@@ -156,7 +156,14 @@ const VendorNavbar = (props) => {
                           <h4>{notificationTitle}</h4>
                           <p>{notificationDetails}</p>
                           <Row>
-                            <Col lg="8">
+                            <Col lg="8"
+                              style={{
+                                color: "#152B51",
+                                textTransform: "none",
+                                fontSize: "14px",
+                                fontFamily: "Poppins",
+                                fontWeight: "500",
+                              }}>
                               <p>{notificationTime}</p>
                             </Col>
                             <Col>
@@ -164,10 +171,12 @@ const VendorNavbar = (props) => {
                                 variant="contained"
                                 color="primary"
                                 style={{
-                                  background: "#36013F",
+                                  background: "#152B51",
                                   color: "white",
                                   textTransform: "none",
                                   fontSize: "12px",
+                                  fontFamily: "Poppins",
+                                  fontWeight: "500",
                                 }}
                                 onClick={() => {
                                   readStaffmemberNotification(

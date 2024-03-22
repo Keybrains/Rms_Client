@@ -136,14 +136,33 @@ const VendorWorkTable = () => {
   return (
     <>
       <VendorHeader />
-      <Container className="mt--8" fluid>
-        <Row>
+      <Container fluid style={{ marginTop: "4rem" }} >
+        <CardHeader
+          className="mx-3 mt-1"
+          style={{
+            backgroundColor: "#152B51",
+            borderRadius: "10px",
+            boxShadow: " 0px 4px 4px 0px #00000040 ",
+          }}
+        >
+          <h2
+            style={{
+              color: "#ffffff",
+              fontFamily: "Poppins",
+              fontWeight: "500",
+              fontSize: "18px",
+            }}
+          >
+            Work Orders
+          </h2>
+        </CardHeader>
+        {/* <Row>
           <Col xs="12" sm="6">
             <FormGroup>
               <h1 style={{ color: "white" }}>Work Orders</h1>
             </FormGroup>
           </Col>
-        </Row>
+        </Row> */}
         <br />
         <Row>
           <div className="col">
@@ -158,7 +177,7 @@ const VendorWorkTable = () => {
                 />
               </div>
             ) : (
-              <Card className="shadow">
+              <>
                 <CardHeader className="border-0">
                   <Row>
                     <Col xs="12" sm="6" className="d-flex">
@@ -250,43 +269,85 @@ const VendorWorkTable = () => {
                     </Col>
                   </Row>
                 </CardHeader>
-                <Table className="align-items-center table-flush" responsive>
-                  <thead className="thead-light">
-                    <tr>
-                      <th scope="col">Work Order</th>
-                      <th scope="col">Property</th>
-                      <th scope="col">Category</th>
-                      <th scope="col">priority</th>
-                      <th scope="col">Status</th>
-                      <th scope="col">Created At</th>
-                      <th scope="col">Updated At</th>
-                      <th scope="col">Due Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filterRentalsBySearchAndPage().map((vendor) => (
-                      <tr
-                        key={vendor?.vendor_id}
-                        onClick={() => navigateToDetails(vendor?.workOrder_id)}
-                        style={{ cursor: "pointer" }}
-                      >
-                        <td>{vendor?.work_subject}</td>
-                        <td>
-                          {vendor?.rental_data?.rental_adress}{" "}
-                          {vendor?.unit_data?.rental_unit
-                            ? " - " + vendor?.unit_data?.rental_unit
-                            : null}
-                        </td>
-                        <td>{vendor?.work_category}</td>
-                        <td>{vendor?.priority}</td>
-                        <td>{vendor?.status}</td>
-                        <td>{vendor?.createdAt}</td>
-                        <td>{vendor?.updateAt || "-"}</td>
-                        <td>{vendor?.date || "-"}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
+                <Row
+                  className="mx-2  d-flex align-items-center py-1"
+                  style={{
+                    borderRadius: "10px", height: "auto",
+                    // boxShadow: " 0px 4px 4px 0px #00000040",
+
+                  }}
+                >
+                  <Col>
+                    <Row
+                      className="mx-1 d-flex align-items-center"
+                      style={{
+                        border: "2px solid rgba(50, 69, 103, 1)",
+                        borderTopLeftRadius: "12px",
+                        borderTopRightRadius: "12px",
+                        height: "45px",
+                        fontSize: "14px",
+                        fontFamily: "poppins",
+                        fontWeight: "600",
+                        boxShadow: " 0px 4px 4px 0px #00000040",
+                      }}
+                    >
+                      <Col>Work Order</Col>
+                      <Col>Property</Col>
+                      <Col>Category</Col>
+                      <Col>priority</Col>
+                      <Col>Status</Col>
+                      <Col>Created At</Col>
+                      <Col>Updated At</Col>
+                      <Col>Due Date</Col>
+                    </Row>
+                    <Row
+                      className="mx-1 mt-3"
+                      style={{
+                        border: "0.5px solid rgba(50, 69, 103, 1)",
+                        borderBottomLeftRadius: "12px",
+                        borderBottomRightRadius: "12px",
+                        overflow: "hidden",
+                        fontSize: "16px",
+                        fontWeight: "600",
+                        // lineHeight: "19.12px",
+                      }}
+                    >
+                      <Col>
+                        {filterRentalsBySearchAndPage().map((vendor) => (
+                          <Row
+                            key={vendor?.workOrder_id}
+                            className="d-flex align-items-center"
+                            onClick={() => navigateToDetails(vendor?.workOrder_id)}
+                            style={{
+                              cursor: "pointer",
+                              border: "0.5px solid rgba(50, 69, 103, 1)",
+                              fontSize: "12px",
+                              height: "40px",
+                              fontFamily: "poppins",
+                              fontWeight: "600",
+                              lineHeight: "10.93px",
+                            }}
+                          >
+                            <Col>{vendor?.work_subject}</Col>
+                            <Col>
+                              {vendor?.rental_data?.rental_adress}-
+                              {vendor?.unit_data?.rental_unit}{" "}
+                              {vendor?.unit_data?.rental_unit
+                                ? " - " + vendor?.unit_data?.rental_unit
+                                : null}
+                            </Col>
+                            <Col>{vendor?.work_category}</Col>
+                            <Col>{vendor?.priority}</Col>
+                            <Col>{vendor?.status}</Col>
+                            <Col>{vendor?.createdAt}</Col>
+                            <Col>{vendor?.updateAt || "-"}</Col>
+                            <Col>{vendor?.date || "-"}</Col>
+                          </Row>
+                        ))}
+                      </Col>
+                    </Row>
+                  </Col>
+                </Row>
                 {workData.length > 0 ? (
                   <Row>
                     <Col className="text-right m-3">
@@ -367,7 +428,8 @@ const VendorWorkTable = () => {
                     </Col>
                   </Row>
                 ) : null}
-              </Card>
+                {/* </Card> */}
+              </>
             )}
           </div>
         </Row>
