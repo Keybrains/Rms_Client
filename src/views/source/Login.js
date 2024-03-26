@@ -45,15 +45,17 @@ const Login = () => {
   useEffect(() => {
     const checkComapny = async () => {
       if (admin) {
-      try {
-        const res = await axios.get(`${baseUrl}/admin/check_company/${admin}`);
-        if (res.data.statusCode === 200) {
-          setAdmin_id(res.data.data.admin_id);
+        try {
+          const res = await axios.get(
+            `${baseUrl}/admin/check_company/${admin}`
+          );
+          if (res.data.statusCode === 200) {
+            setAdmin_id(res.data.data.admin_id);
+          }
+        } catch (error) {
+          console.error("Error: ", error.message);
         }
-      } catch (error) {
-        console.error("Error: ", error.message);
       }
-    }
     };
     if (admin) {
       checkComapny();
@@ -65,7 +67,7 @@ const Login = () => {
     try {
       if (!admin_id) {
         const url = `${baseUrl}/admin/login`;
-        
+
         const adminRes = await axios.post(url, values);
 
         if (adminRes.status === 200) {
@@ -151,7 +153,7 @@ const Login = () => {
             });
             setTimeout(() => {
               localStorage.setItem("token", response.data.token);
-              if (roll === "tenants") {
+              if (roll === "tenant") {
                 navigate("/tenant/tenantdashboard");
               } else if (roll === "vendor") {
                 navigate("/vendor/vendordashboard");

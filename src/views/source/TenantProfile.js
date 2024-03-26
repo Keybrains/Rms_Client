@@ -49,7 +49,7 @@ const TenantProfile = () => {
     if (accessType?.tenant_id) {
       try {
         const response = await axios.get(
-          `${baseUrl}/tenants/tenant_profile/${accessType?.tenant_id}`
+          `${baseUrl}/tenant/tenant_profile/${accessType?.tenant_id}`
         );
         setTenantDetails(response.data.data);
       } catch (error) {
@@ -148,7 +148,11 @@ const TenantProfile = () => {
                                         {tenantDetails?.tenant_phoneNumber ||
                                           "N/A"}
                                       </td>
-                                      <td>
+                                      <td
+                                        style={{
+                                          textTransform: "lowercase",
+                                        }}
+                                      >
                                         {tenantDetails?.tenant_email || "N/A"}
                                       </td>
                                     </tr>
@@ -235,7 +239,7 @@ const TenantProfile = () => {
                             </div>
                           ) : (
                             <tr>
-                              <td>Data not found</td>
+                              <td>Lease not available</td>
                             </tr>
                           )}
                         </div>

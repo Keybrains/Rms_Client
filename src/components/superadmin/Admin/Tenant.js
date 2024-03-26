@@ -107,7 +107,7 @@ export default function Tenant() {
   const getData = async () => {
     if (admin_id) {
       try {
-        const res = await axios.get(`${baseUrl}/tenants/tenant/get/${admin_id}`, {
+        const res = await axios.get(`${baseUrl}/tenant/tenant/get/${admin_id}`, {
           params: {
             pageSize: rowsPerPage,
             pageNumber: page,
@@ -200,7 +200,7 @@ export default function Tenant() {
   let handleSearchData = async (values) => {
     setSearchLoader(true);
     // const token = cookies.get("token");
-    let res = await axios.post(`${baseUrl}/tenants/search`, {
+    let res = await axios.post(`${baseUrl}/tenant/search`, {
       search: values,
       admin_id: admin_id,
     });

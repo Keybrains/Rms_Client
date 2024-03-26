@@ -16,7 +16,6 @@ import {
   DropdownItem,
   Label,
 } from "reactstrap";
-
 import { useState } from "react";
 import axios from "axios";
 import * as yup from "yup";
@@ -68,14 +67,14 @@ const AddStaffMember = () => {
         .string()
         .email("Invalid email address")
         .required("Email is required"),
-      staffmember_password: yup
-        .string()
-        .required("No Password Provided")
-        .min(8, "Password is too short")
-        .matches(
-          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-          "Must Contain One Uppercase, One Lowercase, One Number and one special case Character"
-        ),
+      // staffmember_password: yup
+      //   .string()
+      //   .required("No Password Provided")
+      //   .min(8, "Password is too short")
+      //   .matches(
+      //     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+      //     "Must Contain One Uppercase, One Lowercase, One Number and one special case Character"
+      //   ),
     }),
     onSubmit: (values) => {
       handleSubmit(values);
@@ -101,7 +100,7 @@ const AddStaffMember = () => {
             staffmember_phoneNumber:
               staffMamberdata?.staffmember_phoneNumber || "",
             staffmember_email: staffMamberdata?.staffmember_email || "",
-            staffmember_password: staffMamberdata?.staffmember_password || "",
+            // staffmember_password: staffMamberdata?.staffmember_password || "",
           });
         })
         .catch((error) => {
@@ -118,7 +117,7 @@ const AddStaffMember = () => {
       staffmember_designation: values?.staffmember_designation,
       staffmember_phoneNumber: values?.staffmember_phoneNumber,
       staffmember_email: values?.staffmember_email,
-      staffmember_password: values?.staffmember_password,
+      // staffmember_password: values?.staffmember_password,
     };
     try {
       if (id === undefined) {

@@ -59,7 +59,7 @@ const TenantDashBoard = (props) => {
   const fetchPropertyCount = async () => {
     if (accessType?.tenant_id) {
       try {
-        const url = `${baseUrl}/tenants/count/${accessType?.tenant_id}`;
+        const url = `${baseUrl}/tenant/count/${accessType?.tenant_id}`;
         const res = await axios.get(
           url
         );
@@ -91,7 +91,7 @@ const TenantDashBoard = (props) => {
     if (accessType?.tenant_id && accessType?.admin_id) {
       try {
         const newResponse = await axios.get(
-          `${baseUrl}/tenants/dashboard_workorder/${accessType?.tenant_id}/${accessType?.admin_id}`
+          `${baseUrl}/tenant/dashboard_workorder/${accessType?.tenant_id}/${accessType?.admin_id}`
         );
         setNewWorkOrders(newResponse.data.data.new_workorder.slice(0, 3)); // Slice to get only the first three elements
         setOverdueWorkOrders(newResponse.data.data.overdue_workorder.slice(0, 3));

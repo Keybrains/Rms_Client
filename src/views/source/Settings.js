@@ -1159,8 +1159,7 @@ const Settings = () => {
                                         name="cc_exp"
                                         onBlur={nmikeyFormik.handleBlur}
                                         onChange={nmikeyFormik.handleChange}
-                                        value={nmikeyFormik.values.cc_exp}
-                                        
+                                        value={nmikeyFormik.values.cc_exp}                                        
                                       />
                                     </FormGroup>
                                   </Col>
@@ -1170,9 +1169,9 @@ const Settings = () => {
                                 {testLoader ? (
                                   <Button
                                     type="submit"
+                                    color="warning"
                                     className="btn btn-primary ml-4"
                                     style={{
-                                      background: "green",
                                       color: "white",
                                     }}
                                     disabled

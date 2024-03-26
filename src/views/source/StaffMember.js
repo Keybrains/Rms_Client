@@ -285,7 +285,7 @@ const StaffMember = () => {
 
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterTenantsBySearch();
-    const paginatedData = filteredData.slice(startIndex, endIndex);
+    const paginatedData = filteredData?.slice(startIndex, endIndex);
     return paginatedData;
   };
 
@@ -500,7 +500,7 @@ const StaffMember = () => {
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
-                  {StaffMemberData.length === 0 ? (
+                  {StaffMemberData?.length === 0 ? (
                     <tbody>
                       <tr className="text-center">
                         <td colSpan="8" style={{ fontSize: "15px" }}>
@@ -510,7 +510,7 @@ const StaffMember = () => {
                     </tbody>
                   ) : (
                     <tbody>
-                      {filterTenantsBySearchAndPage().map((staff) => (
+                      {filterTenantsBySearchAndPage()?.map((staff) => (
                         <tr key={staff._id}>
                           <td>{staff.staffmember_name}</td>
                           <td>{staff.staffmember_designation}</td>
@@ -544,7 +544,7 @@ const StaffMember = () => {
                     </tbody>
                   )}
                 </Table>
-                {paginatedData.length > 0 ? (
+                {paginatedData?.length > 0 ? (
                   <Row>
                     <Col className="text-right m-3">
                       <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>

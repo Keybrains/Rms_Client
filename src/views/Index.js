@@ -128,7 +128,7 @@ const Index = (props) => {
       if (accessType?.admin_id) {
         try {
           console.log("firsti")
-          const response1 = await axios.get(`${baseUrl}/tenants/tenant_count/${accessType?.admin_id}`);
+          const response1 = await axios.get(`${baseUrl}/tenant/tenant_count/${accessType?.admin_id}`);
           const response2 = await axios.get(`${baseUrl}/rentals/rental_count/${accessType?.admin_id}`);
           const response3 = await axios.get(
             `${baseUrl}/rental_owner/rental_owner_count/${accessType?.admin_id}`);

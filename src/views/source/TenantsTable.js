@@ -66,7 +66,7 @@ const TenantsTable = () => {
     if (accessType?.admin_id) {
       try {
         let response = await axios.get(
-          `${baseUrl}/tenants/tenants/${accessType?.admin_id}`
+          `${baseUrl}/tenant/tenants/${accessType?.admin_id}`
         );
         if (response.data.statusCode === 200) {
           let data = response.data.data;
@@ -92,7 +92,7 @@ const TenantsTable = () => {
     if (accessType?.admin_id) {
       try {
         const response = await axios.get(
-          `${baseUrl}/tenants/limitation/${accessType?.admin_id}`
+          `${baseUrl}/tenant/limitation/${accessType?.admin_id}`
         );
         setCountRes(response.data);
       } catch (error) {
@@ -124,7 +124,7 @@ const TenantsTable = () => {
     }).then(async (willDelete) => {
       if (willDelete) {
         const res = await axios.delete(
-          `${baseUrl}/tenants/tenant/${tenant_id}`
+          `${baseUrl}/tenant/tenant/${tenant_id}`
         );
         console.log(res);
         if (res.data.statusCode === 200) {

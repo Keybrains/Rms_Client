@@ -169,7 +169,7 @@ const PropDetails = () => {
       setLoader(true);
       try {
         const response = await axios.get(
-          `${baseUrl}/tenants/rental_tenant/${rental_id}`
+          `${baseUrl}/tenant/rental_tenant/${rental_id}`
         );
         setTenantsData(response.data.data);
         setTenantsCount(response.data.count);
