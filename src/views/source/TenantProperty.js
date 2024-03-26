@@ -51,7 +51,7 @@ const TenantProperty = () => {
     if (accessType?.tenant_id) {
       try {
         const allTenants = await axios.get(
-          `${baseUrl}/tenants/tenant_property/${accessType.tenant_id}`
+          `${baseUrl}/tenant/tenant_property/${accessType.tenant_id}`
         );
         setPropertyDetails(allTenants.data.data);
         setLoader(false);

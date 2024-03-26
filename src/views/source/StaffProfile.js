@@ -14,6 +14,7 @@ import {
   Col,
 } from "reactstrap"; // Import other necessary components from 'reactstrap'
 import { jwtDecode } from "jwt-decode";
+import { transform } from "typescript";
 
 const StaffProfile = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -120,7 +121,7 @@ const StaffProfile = () => {
                                 <td>{staffDetails?.staffmember_name}</td>
                                 <td>{staffDetails?.staffmember_designation}</td>
                                 <td>{staffDetails?.staffmember_phoneNumber}</td>
-                                <td>{staffDetails?.staffmember_email}</td>
+                                <td style={{textTransform: "lowercase"}}>{staffDetails?.staffmember_email}</td>
                               </tr>
                             )}
                           </>

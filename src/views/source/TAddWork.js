@@ -168,7 +168,7 @@ const TAddWork = () => {
   const getTenantData = async () => {
     if (accessType?.tenant_id) {
       try {
-        const apiUrl = `${baseUrl}/tenants/tenant_details/${accessType?.tenant_id}`;
+        const apiUrl = `${baseUrl}/tenant/tenant_details/${accessType?.tenant_id}`;
         const response = await axios.get(apiUrl);
         console.log('apiUrl', apiUrl)
         setTenantDetails(response.data.data[0]);
@@ -406,7 +406,7 @@ const TAddWork = () => {
   const fetchRentals = () => {
     if (accessType?.tenant_id) {
       axios
-        .get(`${baseUrl}/tenants/tenant_property/${accessType?.tenant_id}`)
+        .get(`${baseUrl}/tenant/tenant_property/${accessType?.tenant_id}`)
         .then((response) => {
           const responseData = response.data.data;
           if (responseData.length > 0) {

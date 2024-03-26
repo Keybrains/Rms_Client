@@ -40,7 +40,7 @@ const TenantDetailPage = () => {
   const getTenantData = async () => {
     if (id) {
       try {
-        const apiUrl = `${baseUrl}/tenants/tenant_details/${id}`;
+        const apiUrl = `${baseUrl}/tenant/tenant_details/${id}`;
         const response = await axios.get(apiUrl);
         setTenantDetails(response.data.data[0]);
         setLoading(false);

@@ -105,7 +105,9 @@ const VendorProfile = () => {
                             <tr className="body">
                               <td>{vendorDetails.vendor_name}</td>
                               <td>{vendorDetails.vendor_phoneNumber}</td>
-                              <td>{vendorDetails.vendor_email}</td>
+                              <td style={{
+                                          textTransform: "lowercase",
+                                        }}>{vendorDetails.vendor_email}</td>
                             </tr>
                           </>
                         </>

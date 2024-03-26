@@ -48,6 +48,7 @@ const TenantWork = () => {
       setSearchQuery2("Over Due");
     }
   }, [status]);
+  
   const baseUrl = process.env.REACT_APP_BASE_URL;
   let navigate = useNavigate();
   const [workData, setWorkData] = useState([]);
@@ -82,6 +83,7 @@ const TenantWork = () => {
   if (workData) {
     paginatedData = workData.slice(startIndex, endIndex);
   }
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -109,7 +111,6 @@ const TenantWork = () => {
   const navigateToDetails = (tenantId) => {
     navigate(`/tenant/Tworkorderdetail/${tenantId}`);
   };
-  console.log("first", workData)
 
   // const filterRentalsBySearch = () => {
   //   let filteredData = [...workData]; // Create a copy of workData to avoid mutating the original array
@@ -177,6 +178,7 @@ const TenantWork = () => {
   // };
 
   const filterRentalsBySearch = () => {
+    let filteredData;
     if (searchQuery2 && !searchQuery) {
       if (searchQuery2 === "All") {
         return workData;
@@ -184,7 +186,6 @@ const TenantWork = () => {
         return workData.filter((rental) => {
           let currentDate = new Date();
           let rentalDate = new Date(rental.date);
-          console.log(rental.date, "yash");
           return rentalDate < currentDate && rental.status !== "Complete";
         });
       } else {
@@ -218,35 +219,38 @@ const TenantWork = () => {
       });
     }
 
-    // if (upArrow.length > 0) {
-    //   const sortingArrows = upArrow;
-    //   sortingArrows.forEach((value) => {
-    //     switch (value) {
-    //       case "rental_adress":
-    //         filteredData.sort((a, b) =>
-    //           a.rental_adress.localeCompare(b.rental_adress)
-    //         );
-    //         break;
-    //       case "work_subject":
-    //         filteredData.sort((a, b) =>
-    //           a.work_subject.localeCompare(b.work_subject)
-    //         );
-    //         break;
-    //       case "work_category":
-    //         filteredData.sort((a, b) =>
-    //           a.work_category.localeCompare(b.work_category)
-    //         );
-    //         break;
-    //       case "staffmember_name":
-    //         filteredData.sort((a, b) =>
-    //           a.staffmember_name.localeCompare(b.staffmember_name)
-    //         );
-    //         break;
-    //     }
-    //   });
-    //   return filteredData;
-    // }
+    if (upArrow.length > 0) {
+      const sortingArrows = upArrow;
+      sortingArrows.forEach((value) => {
+        switch (value) {
+          case "rental_adress":
+            filteredData.sort((a, b) =>
+              a.rental_adress.localeCompare(b.rental_adress)
+            );
+            break;
+          case "work_subject":
+            filteredData.sort((a, b) =>
+              a.work_subject.localeCompare(b.work_subject)
+            );
+            break;
+          case "work_category":
+            filteredData.sort((a, b) =>
+              a.work_category.localeCompare(b.work_category)
+            );
+            break;
+          case "staffmember_name":
+            filteredData.sort((a, b) =>
+              a.staffmember_name.localeCompare(b.staffmember_name)
+            );
+            break;
+          default:  
+            break;
+        }
+      });
+      return filteredData;
+    }
   };
+
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterRentalsBySearch();
     const paginatedData = filteredData.slice(startIndex, endIndex);

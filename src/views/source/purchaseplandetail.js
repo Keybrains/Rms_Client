@@ -318,10 +318,9 @@ function Purchaseplan() {
                                                                 borderBottom: "1px solid #ddd",
                                                             }}
                                                         >
-                                                            <Col style={{ fontSize: "20px" }}> Plan features</Col>
+                                                            <Col style={{ fontSize: "20px" }}>Plan features</Col>
                                                         </Row>
                                                         <Container fluid>
-
                                                             <Row
                                                                 className="w-100 mb-1"
                                                                 style={{
@@ -336,9 +335,7 @@ function Purchaseplan() {
                                                                 </Col>
 
                                                             </Row>
-
                                                             <br />
-
                                                         </Container>
                                                     </div>
                                                 </>
