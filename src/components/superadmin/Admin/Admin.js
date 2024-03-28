@@ -17,7 +17,7 @@ import Checkbox from "@mui/material/Checkbox";
 import EditIcon from "@mui/icons-material/Edit";
 import Tooltip from "@mui/material/Tooltip";
 // import { Button } from "react-bootstrap";
-import {  Button } from "@mui/material";
+import { Button } from "@mui/material";
 import moment from "moment";
 import { useState } from "react";
 import TextField from "@mui/material/TextField";
@@ -32,7 +32,17 @@ import * as Yup from "yup";
 import { Circles } from "react-loader-spinner";
 import deleterecord from "../assets/img/delete.png";
 import SuperAdminHeader from "../Headers/SuperAdminHeader";
-import { Col, Container, Row, ModalHeader, ModalBody, Modal, FormGroup, Input, ModalFooter} from "reactstrap";
+import {
+  Col,
+  Container,
+  Row,
+  ModalHeader,
+  ModalBody,
+  Modal,
+  FormGroup,
+  Input,
+  ModalFooter,
+} from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import ProfileIcon from "../Images/profile.png";
 import { jwtDecode } from "jwt-decode";
@@ -68,9 +78,9 @@ const headCells = [
   {
     label: "Status",
   },
-  // {
-  //   label: "NMI Key",
-  // },
+  {
+    label: "NMI Key",
+  },
   {
     label: "Action",
   },
@@ -86,7 +96,7 @@ function Rows(props) {
     getData,
     isModalOpen,
     openCardForm,
-    closeModal
+    closeModal,
   } = props;
   const navigate = useNavigate();
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -158,10 +168,10 @@ function Rows(props) {
         hover
         onClick={(event) => {
           handleClick(event, row.admin_id);
-           
+
           navigate(`/superadmin/staffmember/${row?.admin_id}`);
         }}
-        style={{ cursor: "pointer",whiteSpace: "nowrap" }}
+        style={{ cursor: "pointer", whiteSpace: "nowrap" }}
         role="checkbox"
         aria-checked={isItemSelected}
         tabIndex={-1}
@@ -172,7 +182,7 @@ function Rows(props) {
             color="primary"
             checked={isItemSelected}
             onClick={(event) => {
-               event.stopPropagation();
+              event.stopPropagation();
               handleClick(event, row.admin_id);
             }}
             inputProps={{
@@ -224,7 +234,7 @@ function Rows(props) {
             {row.status === "activate" ? "Active" : "Inactive"}
           </Button>
         </TableCell>
-        {/* <TableCell>
+        <TableCell>
           <Button
             size="small"
             variant="outlined"
@@ -233,16 +243,21 @@ function Rows(props) {
             onClick={(event) => {
               event.stopPropagation();
               openCardForm(row);
-
             }}
           >
-          {row.status === "activate" ? "Key" : "Add Key"} 
-            
+            View
+            {/* {row.status === "activate" ? "Key" : "Add Key"} */}
           </Button>
-        </TableCell> */}
+        </TableCell>
         <TableCell align="center">
           <div className="d-flex">
-            <div onClick={(event) => {seletedEditData(row);  event.stopPropagation()}} title="Edit">
+            <div
+              onClick={(event) => {
+                seletedEditData(row);
+                event.stopPropagation();
+              }}
+              title="Edit"
+            >
               <EditIcon />
             </div>
             <div
@@ -299,7 +314,7 @@ function Rows(props) {
 export default function Admin() {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [accessType, setAccessType] = useState();
- 
+
   const navigate = useNavigate();
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -506,133 +521,146 @@ export default function Admin() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paymentLoader, setPaymentLoader] = useState(false);
   const [submitLoader, setSubmitLoader] = useState(false);
-    
-    const closeModal = () => {
-      setIsModalOpen(false);
-      // getCreditCard();
-    };
-  
-    const openCardForm = (row) => {
-      setIsModalOpen(true);
-    };
-    const [nmiKey, setNmiKey] = useState(null);
-    const [key_id, setKeyId] = useState(null);
-    const [responseText, setResponseText] = useState(null);
-  
-    const nmikeyFormik = useFormik({
-      initialValues: {
-        security_key: "",
-        admin_id: "",
-      },
-      validationSchema: yup.object({
-        security_key: yup.string().required("Required"),
-      }),
-      onSubmit: (values) => {
-        handleNmiKeySubmit(values);
-      },
-    });
-    useEffect(() => {
-      let Admin_Id = accessType?.admin_id;
-      axios
-        .get(`${baseUrl}/nmi-keys/nmi-keys/${Admin_Id}`)
-        .then((response) => {
-          const Data = response.data.data;
-          setNmiKey(Data);
-          setKeyId(Data.key_id);
-          nmikeyFormik.setValues({
-            security_key: Data.security_key || "",
-            //  late_fee: Data.late_fee || "",
-          });
-        })
-        .catch((error) => {
-          console.error("Error fetching late fee data:", error);
+  const [admin_id, setAdminId] = useState(null);
+  const [nmiKey, setNmiKey] = useState(null);
+  const [key_id, setKeyId] = useState(null);
+  const [responseText, setResponseText] = useState(null);
+  const [testLoader, setTestLoader] = useState(false);
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    // getCreditCard();
+    setKeyId(null);
+    setNmiKey(null);
+    setResponseText(null);
+    nmikeyFormik.resetForm();
+  };
+
+  const openCardForm = (row) => {
+    // console.warning("row", row)
+    setAdminId(row.admin_id);
+    setIsModalOpen(true);
+  };
+
+  const nmikeyFormik = useFormik({
+    initialValues: {
+      security_key: "",
+      admin_id: "",
+    },
+    validationSchema: yup.object({
+      security_key: yup.string().required("Required"),
+    }),
+    onSubmit: (values) => {
+      handleNmiKeySubmit(values);
+    },
+  });
+  useEffect(() => {
+    // let Admin_Id = accessType?.admin_id;
+    axios
+      .get(`${baseUrl}/nmi-keys/nmi-keys/${admin_id}`)
+      .then((response) => {
+        const Data = response.data.data;
+        setNmiKey(Data);
+        setKeyId(Data.key_id);
+        nmikeyFormik.setValues({
+          security_key: Data.security_key || "",
+          //  late_fee: Data.late_fee || "",
         });
-    }, [accessType]);
-  
-    async function handleNmiKeySubmit(values) {
-      setSubmitLoader(true);
-      try {
-        const object = {
-          admin_id: accessType?.admin_id,
-          security_key: values.security_key,
-        };
-  
-        if (!key_id) {
-          const res = await axios.post(`${baseUrl}/nmi-keys/nmi-keys`, object);
-          if (res.data.statusCode === 200) {
-            toast.success("Security Key Added", {
-              position: "top-center",
-              autoClose: 800,
-              // onClose: () => navigate(`/${admin}/surcharge`),
-            });
-          } else if (res.data.statusCode === 201) {
-            toast.error(res.data.message, {
-              position: "top-center",
-              autoClose: 1000,
-            });
-          }
-        } else {
-          const editUrl = `${baseUrl}/nmi-keys/nmi-keys/${key_id}`;
-          const res = await axios.put(editUrl, object);
-          if (res.data.statusCode === 200) {
-            toast.success("Security Key Updated", {
-              position: "top-center",
-              autoClose: 800,
-              // onClose: () => navigate(`/${admin}/surcharge`),
-            });
-          } else if (res.data.statusCode === 400) {
-            toast.error(res.data.message, {
-              position: "top-center",
-              autoClose: 1000,
-            });
-          }
+      })
+      .catch((error) => {
+        console.error("Error fetching late fee data:", error);
+      });
+  }, [admin_id]);
+
+  async function handleNmiKeySubmit(values) {
+    setSubmitLoader(true);
+    try {
+      const object = {
+        admin_id: admin_id,
+        security_key: values.security_key,
+      };
+
+      if (!key_id) {
+        const res = await axios.post(`${baseUrl}/nmi-keys/nmi-keys`, object);
+        if (res.data.statusCode === 200) {
+          toast.success("Security Key Added", {
+            position: "top-center",
+            autoClose: 800,
+            onClose: () => closeModal(),
+          });
+        } else if (res.data.statusCode === 201) {
+          toast.error(res.data.message, {
+            position: "top-center",
+            autoClose: 1000,
+          });
         }
-      } catch (error) {
-        console.error("Error:", error);
-        if (error.response) {
-          console.error("Response Data:", error.response.data);
+      } else {
+        const editUrl = `${baseUrl}/nmi-keys/nmi-keys/${key_id}`;
+        const res = await axios.put(editUrl, object);
+        if (res.data.statusCode === 200) {
+          toast.success("Security Key Updated", {
+            position: "top-center",
+            autoClose: 800,
+            onClose: () => closeModal(),
+          });
+        } else if (res.data.statusCode === 400) {
+          toast.error(res.data.message, {
+            position: "top-center",
+            autoClose: 1000,
+          });
         }
-      } finally {
-        setSubmitLoader(false);
       }
+    } catch (error) {
+      console.error("Error:", error);
+      if (error.response) {
+        console.error("Response Data:", error.response.data);
+      }
+    } finally {
+      setSubmitLoader(false);
     }
-  
-    async function handleTestKeyClick(values) {
-     
-      try {
-        const object = {
-          first_name: accessType.first_name,
-          last_name: accessType.last_name,
-          email: accessType.email,
-          security_key: values.security_key,
-          cc_number: values.cc_number,
-          cc_exp: values.cc_exp
-        };
-  
-  
-          const res = await axios.post(`${baseUrl}/nmipayment/test_sale`, {paymentDetails:object});
-          if (res.data.statusCode === 100) {
-            toast.success(res.data.message, {
-              position: "top-center", 
-              autoClose: 1000,
-              // onClose: () => navigate(`/${admin}/surcharge`),
-            });
-            setResponseText(res.data.message)
-          } else if (res.data.statusCode === 200) {
-            toast.error(res.data.message, {
-              position: "top-center",
-              autoClose: 1000,
-            });
-            setResponseText(res.data.message)
-          }
-     
-      } catch (error) {
-        console.error("Error:", error);
-        if (error.response) {
-          console.error("Response Data:", error.response.data);
-        }
-      } 
+  }
+
+  async function handleTestKeyClick(values) {
+    setTestLoader(true);
+    try {
+      const object = {
+        first_name: accessType.first_name,
+        last_name: accessType.last_name,
+        email: accessType.email,
+        security_key: values.security_key,
+        cc_number: values.cc_number,
+        cc_exp: values.cc_exp,
+      };
+
+      const res = await axios.post(`${baseUrl}/nmipayment/test_sale`, {
+        paymentDetails: object,
+      });
+
+      if (res.data.statusCode === 100) {
+        // toast.success("Account Linked Successfully", {
+        //   position: "top-center",
+        //   autoClose: 700,
+        //   onClose:()=> navigate('/superadmin/admin')
+        // });
+        setResponseText(res.data.message);
+      } else if (res.data.statusCode === 200) {
+        // toast.error("Something went wrong", {
+        //   position: "top-center",
+        //   autoClose: 1000,
+        // });
+        setResponseText(res.data.message);
+      }
+
+      // setResponseText(res.data.message);
+    } catch (error) {
+      console.error("Error:", error);
+      if (error.response) {
+        console.error("Response Data:", error.response.data);
+      }
+    } finally {
+      setTestLoader(false);
     }
+  }
 
   return (
     <>
@@ -672,8 +700,8 @@ export default function Admin() {
                   sx={{
                     pl: { sm: 2 },
                     pr: { xs: 1, sm: 1 },
-                    bgcolor: "#fff", 
-                    color: "white", 
+                    bgcolor: "#fff",
+                    color: "white",
                   }}
                 >
                   <Typography
@@ -754,7 +782,10 @@ export default function Admin() {
                           {headCells.map((headCell, id) => {
                             return (
                               <TableCell
-                                style={{ fontWeight: "bold",whiteSpace: "nowrap" }}
+                                style={{
+                                  fontWeight: "bold",
+                                  whiteSpace: "nowrap",
+                                }}
                                 key={headCell.id}
                                 className="fw-bold"
                                 align="left"
@@ -983,124 +1014,128 @@ export default function Admin() {
           </Col>
         </Row>
 
-        <ToastContainer />
         <Modal
           isOpen={isModalOpen}
           toggle={closeModal}
           style={{ maxWidth: "600px" }}
         >
           <ModalHeader toggle={closeModal} className="bg-secondary text-white">
-            <strong style={{ fontSize: 18 }}>Add NMI Security Key</strong>
+            <strong style={{ fontSize: 18 }}>{nmiKey ? "Change NMI Security Key" : "Add NMI Security Key"}</strong>
           </ModalHeader>
-    
+
           <ModalBody>
-      
-                                <Row className="mt-4">
-                                  <Col lg="9">
-                                    <FormGroup>
-                                      <label
-                                        className="form-control-label"
-                                        htmlFor="input-unitadd"
-                                      >
-                                        Security Key
-                                      </label>
-                                      <Input
-                                        className="form-control-alternative"
-                                        id="input-unitadd"
-                                        placeholder="Enter Security Key"
-                                        type="text"
-                                        name="security_key"
-                                        onBlur={nmikeyFormik.handleBlur}
-                                        onChange={nmikeyFormik.handleChange}
-                                        value={nmikeyFormik.values.security_key}
-                                        required
-                                      />
-                                    </FormGroup>
-                                  </Col>
-                                </Row>
-                                <Row className="mt-4">
-                                  <Col lg="11 ">
-                                    <FormGroup>
-                                      <label
-                                        className="form-control-label"
-                                        htmlFor="input-unitadd"
-                                      >
-                                        Test NMI Account
-                                      </label>
-                                      <p>
-                                        To test whether the account system has
-                                        been successfully linked to the NMI
-                                        account or not, please click on the
-                                        button that will initiate a $1.00
-                                        transaction to this security key's
-                                        account.
-                                      </p>
-                                      <Row className="mt-4">
-                                  <Col lg="5">
-                                    <FormGroup>
-                                      <label
-                                        className="form-control-label"
-                                        htmlFor="input-unitadd"
-                                      >
-                                        Card Number
-                                      </label>
-                                      <Input
-                                        className="form-control-alternative"
-                                        id="input-unitadd"
-                                        placeholder="Card Number"
-                                        type="number"
-                                        name="cc_number"
-                                        onBlur={nmikeyFormik.handleBlur}
-                                        onChange={nmikeyFormik.handleChange}
-                                        value={nmikeyFormik.values.cc_number}
-                                        
-                                      />
-                                    </FormGroup>
-                                  </Col>
-                                  <Col lg="4">
-                                    <FormGroup>
-                                      <label
-                                        className="form-control-label"
-                                        htmlFor="input-unitadd"
-                                      >
-                                        Expiration Date
-                                      </label>
-                                      <Input
-                                        className="form-control-alternative"
-                                        id="input-unitadd"
-                                        placeholder="MM/YYYY"
-                                        type="text"
-                                        name="cc_exp"
-                                        onBlur={nmikeyFormik.handleBlur}
-                                        onChange={nmikeyFormik.handleChange}
-                                        value={nmikeyFormik.values.cc_exp}
-                                        
-                                      />
-                                    </FormGroup>
-                                  </Col>
-                                </Row>
-                                <Row className="mt-4">
-                                <Col lg="5">
-                                <Button
-                                        //color="warning"
-                                        className="bg-warning text-white"
-                                        type="submit"
-                                        onClick={(e) => {
-                                          handleTestKeyClick(nmikeyFormik.values);
-                                          e.preventDefault();
-                                        }}
-                                      >
-                                        Test Transaction
-                                      </Button>
-                                  </Col>
-                                  <Col lg="6">
-                                    <label>{responseText}</label>
-                                  </Col>
-                                </Row>
-                                   
-                                    </FormGroup>
-                                  </Col>
-                                </Row>    
+            <Row className="mt-4">
+              <Col lg="9">
+                <FormGroup>
+                  <label className="form-control-label" htmlFor="input-unitadd">
+                    Security Key
+                  </label>
+                  <Input
+                    className="form-control-alternative"
+                    id="input-unitadd"
+                    placeholder="Enter Security Key"
+                    type="text"
+                    name="security_key"
+                    onBlur={nmikeyFormik.handleBlur}
+                    onChange={nmikeyFormik.handleChange}
+                    value={nmikeyFormik.values.security_key}
+                    required
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="mt-4">
+              <Col lg="11 ">
+                <FormGroup>
+                  <label className="form-control-label" htmlFor="input-unitadd">
+                    Test NMI Account
+                  </label>
+                  <p>
+                    To test whether the account system has been successfully
+                    linked to the NMI account or not, please click on the button
+                    that will initiate a $1.00 transaction to this security
+                    key's account.
+                  </p>
+                  <Row className="mt-4">
+                    <Col lg="5">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-unitadd"
+                        >
+                          Card Number
+                        </label>
+                        <Input
+                          className="form-control-alternative"
+                          id="input-unitadd"
+                          placeholder="Card Number"
+                          type="number"
+                          name="cc_number"
+                          onBlur={nmikeyFormik.handleBlur}
+                          onChange={nmikeyFormik.handleChange}
+                          value={nmikeyFormik.values.cc_number}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col lg="4">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-unitadd"
+                        >
+                          Expiration Date
+                        </label>
+                        <Input
+                          className="form-control-alternative"
+                          id="input-unitadd"
+                          placeholder="MM/YYYY"
+                          type="text"
+                          name="cc_exp"
+                          onBlur={nmikeyFormik.handleBlur}
+                          onChange={nmikeyFormik.handleChange}
+                          value={nmikeyFormik.values.cc_exp}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row className="mt-4">
+                    <Col lg="4">
+                      {testLoader ? (
+                        <Button
+                          type="submit"
+                          // color="warning"
+                          className="btn btn-warning ml-4"
+                          style={{
+                            color: "white",
+                          }}
+                          disabled
+                        >
+                          Loading...
+                        </Button>
+                      ) : (
+                        <Button
+                          // color="warning"
+                          className="btn bg-warning ml-4"
+                          type="submit"
+                          style={{
+                            color: "white",
+                          }}
+                          onClick={(e) => {
+                            handleTestKeyClick(nmikeyFormik.values);
+                            e.preventDefault();
+                          }}
+                        >
+                          Test Transaction
+                        </Button>
+                      )}
+                    </Col>
+                    <Col lg="6">
+                      <label>{responseText}</label>
+                    </Col>
+                  </Row>
+                </FormGroup>
+              </Col>
+            </Row>
           </ModalBody>
           <ModalFooter>
             {paymentLoader ? (
@@ -1108,21 +1143,23 @@ export default function Admin() {
                 Loading
               </Button>
             ) : (
-              <Button             
+              <Button
                 className="bg-success text-white mr-2"
                 type="submit"
                 onClick={(e) => {
-                  // handleRefundClick();
+                  handleNmiKeySubmit(nmikeyFormik.values);
                   e.preventDefault();
                 }}
               >
                 Save
               </Button>
             )}
-            <Button className="bg-light text-dark" onClick={closeModal}>Cancel</Button>
+            <Button className="bg-light text-dark" onClick={closeModal}>
+              Cancel
+            </Button>
           </ModalFooter>
-      
         </Modal>
+        <ToastContainer />
       </Container>
     </>
   );

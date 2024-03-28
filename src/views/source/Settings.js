@@ -270,6 +270,7 @@ const Settings = () => {
       handleNmiKeySubmit(values);
     },
   });
+
   useEffect(() => {
     let Admin_Id = accessType?.admin_id;
     axios
@@ -481,7 +482,7 @@ const Settings = () => {
                             Late Fee Charge
                           </div>
                         </li>
-                        <li style={{ borderBottom: "1px solid #ccc" }}>
+                        {/* <li style={{ borderBottom: "1px solid #ccc" }}>
                           <div
                             color="link"
                             onClick={() => handleOptionClick("nmi-account")}
@@ -498,7 +499,7 @@ const Settings = () => {
                           >
                             NMI Account
                           </div>
-                        </li>
+                        </li> */}
                         {/* <li style={{ borderBottom: "1px solid #ccc" }}>
                           <div
                             color="link"
@@ -1070,7 +1071,7 @@ const Settings = () => {
                             </div>
                           </div>
                         )}
-                        {selectedOption === "nmi-account" && (
+                        {/* {selectedOption === "nmi-account" && (
                           <div>
                             <h1>NMI Account Set Up</h1>
                             <Form onSubmit={nmikeyFormik.handleSubmit}>
@@ -1242,7 +1243,7 @@ const Settings = () => {
                               </Row>
                             </Form>
                           </div>
-                        )}
+                        )} */}
                       </CardBody>
                     </div>
                   </Col>

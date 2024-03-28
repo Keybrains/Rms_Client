@@ -294,8 +294,7 @@ const AdminNavbar = (props) => {
                       const notificationTime = new Date(
                         data?.createdAt
                       ).toLocaleString();
-                      {console.log("data",data)}
-                      {console.log("data--------------",data.notification_type.workorder_id)}
+                      
                       return (
                         <div
                           key={data._id}

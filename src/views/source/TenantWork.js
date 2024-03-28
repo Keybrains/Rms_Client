@@ -48,7 +48,7 @@ const TenantWork = () => {
       setSearchQuery2("Over Due");
     }
   }, [status]);
-  
+
   const baseUrl = process.env.REACT_APP_BASE_URL;
   let navigate = useNavigate();
   const [workData, setWorkData] = useState([]);
@@ -176,26 +176,27 @@ const TenantWork = () => {
   //   }
   //   return filteredData;
   // };
-
+ 
   const filterRentalsBySearch = () => {
     let filteredData;
     if (searchQuery2 && !searchQuery) {
       if (searchQuery2 === "All") {
         return workData;
-      } else if (searchQuery2 === "Over Due") {
+      } 
+      if (searchQuery2 === "Over Due") {
         return workData.filter((rental) => {
           let currentDate = new Date();
           let rentalDate = new Date(rental.date);
           return rentalDate < currentDate && rental.status !== "Complete";
         });
-      } else {
+      } 
         return workData.filter((rental) => {
           const lowerCaseQuery = searchQuery2.toLowerCase();
           return rental.status.toLowerCase().includes(lowerCaseQuery);
         });
-      }
+      
     }
-    if (!searchQuery && !searchQuery2) {
+    if (!searchQuery ) {
       return workData;
     }
 
@@ -371,11 +372,11 @@ const TenantWork = () => {
                         </DropdownItem>
                         <DropdownItem
                           onClick={() => {
-                            setSearchQuery2("Overdue");
+                            setSearchQuery2("Over Due");
                             setSearchQuery("");
                           }}
                         >
-                          Overdue
+                          Over Due
                         </DropdownItem>
                         <DropdownItem
                           onClick={() => {
