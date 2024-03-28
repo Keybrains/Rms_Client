@@ -38,7 +38,7 @@ const TenantDashBoard = () => {
     if (accessType?.tenant_id && accessType?.admin_id) {
       try {
         const newResponse = await axios.get(
-          `${baseUrl}/tenants/dashboard_workorder/${accessType?.tenant_id}`
+          `${baseUrl}/tenant/dashboard_workorder/${accessType?.tenant_id}`
         );
         setNewWorkOrders(newResponse.data.data.new_workorder);
         setOverdueWorkOrders(newResponse.data.data.overdue_workorder);
@@ -55,7 +55,7 @@ const TenantDashBoard = () => {
     if (accessType?.tenant_id) {
       try {
         const property = await axios.get(
-          `${baseUrl}/tenants/count/${accessType?.tenant_id}`
+          `${baseUrl}/tenant/count/${accessType?.tenant_id}`
         );
         setLeaseData(property?.data?.data);
 

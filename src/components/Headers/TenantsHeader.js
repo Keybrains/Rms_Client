@@ -11,6 +11,8 @@ const TenantsHeader = ({ prop }) => {
                 fontFamily: "manrope",
                 fontSize: "30px",
                 fontWeight: "700",
+                color: "#333",
+
               }}
             >
               {prop}

@@ -225,7 +225,7 @@ const VendorNavbar = (props) => {
                   style={{
                     width: "40px",
                     height: "40px",
-                    backgroundColor: "rgba(82, 84, 89, 1)",
+                    backgroundColor: "rgba(21, 43, 81, 1)",
                     borderRadius: "12px",
                     color: "#fff",
                   }}
@@ -250,7 +250,7 @@ const VendorNavbar = (props) => {
                     style={{
                       fontSize: "12px",
                       fontFamily: "Manrope",
-                      color: "rgba(54, 159, 255, 1)",
+                      color: "rgba(21, 43, 81, 1)",
                     }}
                   >
                     Vendor

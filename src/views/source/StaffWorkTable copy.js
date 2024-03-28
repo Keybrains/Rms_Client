@@ -154,65 +154,128 @@ const StaffWorkTable = () => {
       <Container fluid className="bg-white h-100">
         <Row>
           <Col xs="12">
-            <Row
-              className="mx-4 mt-5 d-flex align-items-center py-1"
+            <CardHeader
+              className=" mt-3 mb-3 mx-4"
               style={{
+                backgroundColor: "#152B51",
                 borderRadius: "10px",
-                height: "69px",
-                backgroundColor: "rgba(21, 43, 81, 1)",
+                boxShadow: " 0px 4px 4px 0px #00000040 ",
               }}
             >
-              <Col>
-                <h2
-                  style={{
-                    fontFamily: "poppins",
-                    fontSize: "26px",
-                    fontWeight: "500",
-                    lineHeight: "35.52px",
-                    color: "#fff",
-                  }}
-                >
-                  Work Orders
-                </h2>
-              </Col>
-            </Row>
+              <h2
+                className="mb-0"
+                style={{
+                  color: "#ffffff",
+                  fontFamily: "Poppins",
+                  fontWeight: "500",
+                  fontSize: "26px",
+                }}
+              >
+                 Work Orders
+              </h2>
+            </CardHeader>
             <Row
-              className="mx-3 mt-4 d-flex align-items-center py-1"
+              className="mx-2 mt-4 d-flex align-items-center py-1"
               style={{ borderRadius: "10px", height: "69px" }}
             >
-              <Col lg="2">
-                <FormGroup>
-                  <Input
-                    fullWidth
-                    type="text"
-                    placeholder="Search"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{
-                      minHeight: "42px",
-                      border: "0.5px solid rgba(50, 69, 103, 1)",
-                      boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-                    }}
-                  />
-                </FormGroup>
-              </Col>
-              <Col lg="2">
-                <FormGroup>
-                  <Input
-                    fullWidth
-                    type="text"
-                    placeholder="Select Status"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{
-                      minHeight: "42px",
-                      border: "0.5px solid rgba(50, 69, 103, 1)",
-                      boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-                    }}
-                  />
-                </FormGroup>
-              </Col>
+              <CardHeader className="border-0">
+                <Row>
+                  <Col xs="12" sm="6" className="d-flex">
+                    <FormGroup>
+                      <Input
+                        fullWidth
+                        type="text"
+                        placeholder="Search here..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        style={{
+                          width: "100%",
+                          maxWidth: "200px",
+                          boxShadow: " 0px 4px 4px 0px #00000040",
+                          minWidth: "200px",
+                        }}
+                      />
+                    </FormGroup>
+                    <Dropdown
+                      isOpen={search}
+                      toggle={toggle3}
+
+                      className="mx-2"
+
+                    >
+                      <DropdownToggle
+                        caret
+                        style={{
+                          boxShadow: " 0px 4px 4px 0px #00000040",
+                          border: "1px solid #ced4da",
+                          maxWidth: "200px",
+                          minWidth: "200px",
+                          backgroundColor: "transparent",
+                          color: "#A7A7A7"
+                        }}
+                      >
+                        {searchQuery2
+                          ? searchQuery
+                            ? "Select Status"
+                            : searchQuery2
+                          : "Select Status"}
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        <DropdownItem
+                          onClick={() => {
+                            setSearchQuery2("New");
+                            setSearchQuery("");
+                          }}
+                        >
+                          New
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            setSearchQuery2("In Progress");
+                            setSearchQuery("");
+                          }}
+                        >
+                          In Progress
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            setSearchQuery2("On Hold");
+                            setSearchQuery("");
+                          }}
+                        >
+                          On Hold
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            setSearchQuery2("Complete");
+                            setSearchQuery("");
+                          }}
+                        >
+                          Complete
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            setSearchQuery2("Over Due");
+                            setSearchQuery("");
+                          }}
+                        >
+                          Over Due
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            setSearchQuery2("All");
+                            setSearchQuery("");
+                          }}
+                        >
+                          All
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </Col>
+                </Row>
+              </CardHeader>
             </Row>
+            
             <Row
               className="mx-3 mt-3 d-flex align-items-center py-1"
               style={{ borderRadius: "10px", height: "69px" }}
@@ -225,14 +288,17 @@ const StaffWorkTable = () => {
                     borderTopLeftRadius: "12px",
                     borderTopRightRadius: "12px",
                     height: "45px",
-                    fontSize: "18px",
-                    fontWeight: "700",
+                    fontFamily: "poppins",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    boxShadow: " 0px 4px 4px 0px #00000040",
+
                   }}
                 >
                   <Col>Work Order</Col>
                   <Col>Property</Col>
                   <Col>Category</Col>
-                  <Col>priority</Col>
+                  <Col>Priority</Col>
                   <Col>Status</Col>
                   <Col>Created At</Col>
                   <Col>Updated At</Col>
@@ -278,7 +344,7 @@ const StaffWorkTable = () => {
                         <Col>{vendor?.priority}</Col>
                         <Col>{vendor?.status}</Col>
                         <Col>{vendor?.createdAt}</Col>
-                        <Col>{vendor?.updateAt || "-"}</Col>
+                        <Col>{vendor?.updatedAt || "-"}</Col>
                         <Col>{vendor?.date || "-"}</Col>
                       </Row>
                     ))}

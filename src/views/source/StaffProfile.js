@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+  import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Cookies from "universal-cookie";
@@ -67,11 +67,11 @@ const StaffProfile = () => {
         <Row>
           <div className="col">
             <Card
-              className="shadow"
+              className="shadow mx-3"
               style={{
                 backgroundColor: "#152B51",
                 padding: "20px",
-                borderRadius: "20px",
+                borderRadius: "10px",
                 paddingRight: "90px",
                 paddingLeftL: "90px",
               }}
@@ -160,7 +160,7 @@ const StaffProfile = () => {
                   display: "flex",
                 }}
               >
-                First Name
+               Name
               </Col>
               <Col
                 style={{

@@ -61,7 +61,7 @@ const VendorProfile = () => {
 
             <Container className="" fluid style={{ marginTop: "4rem", height: "100vh" }}>
                 <CardHeader
-                    className=" mt-3 mb-3"
+                    className=" mt-3 mb-3 mx-3"
                     style={{
                         backgroundColor: "#152B51",
                         borderRadius: "10px",

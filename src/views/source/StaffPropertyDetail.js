@@ -47,19 +47,19 @@ const StaffPropertyDetail = () => {
   return (
     <>
       <StaffHeader />
-      <Container className="" fluid>
+      <Container className="" fluid >
         <Row>
-          <Col xs="12" sm="6">
+          {/* <Col xs="12" sm="6">
             <FormGroup className="">
               <h1 style={{ color: "white" }}>Property Details</h1>
             </FormGroup>
-          </Col>
+          </Col> */}
           <Col className="text-right" style={{ paddingRight: "40px" }}>
             <Button
-              color="primary"
+              // color="primary"
               //  href="#rms"
               onClick={() => navigate("/staff/staffproperty")}
-              size="sm"
+              size="small"
               style={{ background: "#152B51", color: "white" }}
             >
               Back

@@ -395,42 +395,43 @@ function TenantAddPayment() {
           `${baseUrl}/payment/payment/${payment_id}`
         );
 
-      if (response.data.statusCode === 200) {
-        const responseData = response.data.data[0];
-        console.log("responseData", response.data.data);
-        generalledgerFormik.setValues({
-          ...generalledgerFormik.values,
-          lease_id: responseData.lease_id,
-          payment_id: responseData.payment_id,
-          check_number: responseData.check_number,
-          payment_type: responseData.payment_type,
-          date: responseData.entry[0].date,
-          total_amount: responseData.total_amount,
-          payments_memo: responseData.entry[0].memo,
-          customer_vault_id: responseData.customer_vault_id,
-          billing_id: responseData.billing_id,
-          transaction_id: responseData.transaction_id,
-          surcharge: responseData.surcharge,
-          payments: responseData.entry.map((entry) => ({
-            entry_id: entry.entry_id,
-            account: entry.account,
-            amount: entry.amount,
-            balance: entry.amount,
-            charge_type: entry.charge_type,
-          })),
-          payments_attachment: responseData.payment_attachment,
-        });
+        if (response.data.statusCode === 200) {
+          const responseData = response.data.data[0];
+          console.log("responseData", response.data.data);
+          generalledgerFormik.setValues({
+            ...generalledgerFormik.values,
+            lease_id: responseData.lease_id,
+            payment_id: responseData.payment_id,
+            check_number: responseData.check_number,
+            payment_type: responseData.payment_type,
+            date: responseData.entry[0].date,
+            total_amount: responseData.total_amount,
+            payments_memo: responseData.entry[0].memo,
+            customer_vault_id: responseData.customer_vault_id,
+            billing_id: responseData.billing_id,
+            transaction_id: responseData.transaction_id,
+            surcharge: responseData.surcharge,
+            payments: responseData.entry.map((entry) => ({
+              entry_id: entry.entry_id,
+              account: entry.account,
+              amount: entry.amount,
+              balance: entry.amount,
+              charge_type: entry.charge_type,
+            })),
+            payments_attachment: responseData.payment_attachment,
+          });
 
-        handlePropertyTypeSelect(response.data.data.lease_data);
-        setSelectedPaymentMethod(responseData.payment_type);
-        setSelectedCreditCard(responseData.billing_id);
-      } else {
-        console.error("Error:", response.data.message);
+          handlePropertyTypeSelect(response.data.data.lease_data);
+          setSelectedPaymentMethod(responseData.payment_type);
+          setSelectedCreditCard(responseData.billing_id);
+        } else {
+          console.error("Error:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Network error:", error);
       }
-    } catch (error) {
-      console.error("Network error:", error);
     }
-  }};
+  };
 
   // Calculate total amount after surcharge
   const calculateTotalAmount = () => {
@@ -981,11 +982,31 @@ function TenantAddPayment() {
     <>
       <TenantsHeader />
 
-      <Container className="mt--7" fluid>
+      <Container className="" fluid style={{ marginTop: "3rem", height: "100vh" }}>
         <Row>
           <Col className="order-xl-1" xl="12">
-            <Card className="bg-secondary shadow">
-              <CardHeader className="bg-white border-0">
+            <Card className="mx-2 mb-3"
+              style={{ borderRadius: "20px", }}>
+
+              <CardHeader className="mx-4 mt-5" style={{
+                backgroundColor: "#152B51",
+                borderRadius: "6px",
+                height: "45px",
+                boxShadow: " 0px 4px 4px 0px #00000040 ",
+                padding: "6px 7px 1px 21px",
+
+              }}>
+
+                <span className=" align-items-center " style={{
+                  color: "#ffffff",
+                  fontFamily: "Poppins",
+                  fontWeight: "500",
+                  fontSize: "22px",
+                  // padding:"6px 7px 1px 21px",
+                }}>Payment for{" "} {tenantData?.tenant_firstName}{" "}
+                  {tenantData?.tenant_lastName}</span>
+              </CardHeader >
+              {/* <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
                   <Col xs="8">
                     <h3 className="mb-0">
@@ -998,7 +1019,7 @@ function TenantAddPayment() {
                     </h3>
                   </Col>
                 </Row>
-              </CardHeader>
+              </CardHeader> */}
               <CardBody>
                 <Form>
                   <Row>
@@ -1007,10 +1028,17 @@ function TenantAddPayment() {
                         <label
                           className="form-control-label"
                           htmlFor="input-unitadd"
+                          style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                         >
                           Date
                         </label>
                         <Input
+                          style={{
+                            boxShadow: " 0px 4px 4px 0px #00000040 ",
+                            borderRadius: "6px",
+
+                          }}
                           className="form-control-alternative"
                           id="input-unitadd"
                           placeholder="3000"
@@ -1026,14 +1054,21 @@ function TenantAddPayment() {
                   <Row>
                     <Col md="6">
                       <Label
-                        className="form-control-label"
+                        className="form-control-label mt-2"
                         htmlFor="input-property"
+                        style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                       >
                         Leases *
                       </Label>
                       <FormGroup>
                         <Dropdown isOpen={propdropdownOpen} toggle={toggle9}>
-                          <DropdownToggle caret style={{ width: "100%" }}>
+                          <DropdownToggle caret style={{
+                            width: "100%", boxShadow: " 0px 4px 4px 0px #00000040",
+                            border: "1px solid #ced4da",
+                            backgroundColor: "transparent",
+                            color: "#A7A7A7"
+                          }}>
                             {selectedPropertyType
                               ? selectedPropertyType
                               : "Select Lease"}
@@ -1064,12 +1099,19 @@ function TenantAddPayment() {
                     <Col sm="4">
                       <FormGroup>
                         <label
-                          className="form-control-label"
+                          className="form-control-label mt-2"
                           htmlFor="input-property"
+                          style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                         >
                           Amount *
                         </label>
                         <Input
+                          style={{
+                            boxShadow: " 0px 4px 4px 0px #00000040 ",
+                            borderRadius: "6px",
+
+                          }}
                           type="number"
                           id="amount"
                           placeholder="Enter amount"
@@ -1085,8 +1127,10 @@ function TenantAddPayment() {
                     <Col lg="2">
                       <FormGroup>
                         <label
-                          className="form-control-label"
+                          className="form-control-label mt-2"
                           htmlFor="input-property"
+                          style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                         >
                           Payment Method
                         </label>
@@ -1096,10 +1140,15 @@ function TenantAddPayment() {
                           toggle={toggle2}
                           disabled={payment_id}
                         >
-                          <DropdownToggle caret style={{ width: "100%" }}>
+                          <DropdownToggle caret style={{
+                            width: "100%", boxShadow: " 0px 4px 4px 0px #00000040",
+                            border: "1px solid #ced4da",
+                            backgroundColor: "transparent",
+                            color: "#A7A7A7"
+                          }}>
                             {selectedPaymentMethod
                               ? selectedPaymentMethod
-                              : "Selcet Method"}
+                              : "Select Method"}
                           </DropdownToggle>
                           <DropdownMenu
                             style={{
@@ -1135,7 +1184,7 @@ function TenantAddPayment() {
                         {selectedPaymentMethod === "Credit Card" ? (
                           <>
                             <Card
-                              className="w-100 mt-3"
+                              className="w-100 mt-3 mx-3"
                               style={{ background: "#F4F6FF" }}
                             >
                               <label
@@ -1290,13 +1339,13 @@ function TenantAddPayment() {
                                   }}
                                 >
                                   <Button
-                                    color="primary"
+                                    // color="primary"
                                     onClick={() => {
                                       openCardForm();
                                     }}
                                     style={{
-                                      background: "white",
-                                      color: "#3B2F2F",
+                                      background: "#152B51",
+                                      color: "white",
                                       marginRight: "10px",
                                     }}
                                   >
@@ -1311,14 +1360,18 @@ function TenantAddPayment() {
                           </>
                         ) : selectedPaymentMethod === "Check" ? (
                           <>
-                            <FormGroup>
+                            <FormGroup className="mx-3 mt-2">
                               <label
-                                className="form-control-label"
+                                className="form-control-label "
                                 htmlFor="input-property"
+                                style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                               >
                                 Check Number *
                               </label>
                               <Input
+                                style={{ boxShadow: " 0px 4px 4px 0px #00000040 ", borderRadius: "6px" }}
+
                                 type="text"
                                 id="check_number"
                                 placeholder="Enter check number"
@@ -1399,12 +1452,18 @@ function TenantAddPayment() {
                     <Col lg="3">
                       <FormGroup>
                         <label
-                          className="form-control-label"
+                          className="form-control-label mt-2"
                           htmlFor="input-unitadd"
+                          style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                         >
                           Memo
                         </label>
                         <Input
+                          style={{
+                            boxShadow: " 0px 4px 4px 0px #00000040 ",
+                            borderRadius: "6px",
+                          }}
                           className="form-control-alternative"
                           id="input-unitadd"
                           placeholder="if left blank, will show 'Payment'"
@@ -1419,8 +1478,10 @@ function TenantAddPayment() {
                     <Col lg="12">
                       <FormGroup>
                         <label
-                          className="form-control-label"
+                          className="form-control-label mt-2"
                           htmlFor="input-unitadd"
+                          style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                         >
                           Apply Payment to Balances
                         </label>
@@ -1434,7 +1495,8 @@ function TenantAddPayment() {
                             }}
                           >
                             <thead>
-                              <tr>
+                              <tr style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "600", color: "#152B51" }}
+                              >
                                 <th>Account</th>
                                 {!payment_id && <th>Balance</th>}
                                 <th>Amount</th>
@@ -1450,7 +1512,12 @@ function TenantAddPayment() {
                                           isOpen={payments.dropdownOpen}
                                           toggle={() => toggleDropdown(index)}
                                         >
-                                          <DropdownToggle caret>
+                                          <DropdownToggle caret style={{
+                                            width: "100%", boxShadow: " 0px 4px 4px 0px #00000040",
+                                            border: "1px solid #ced4da",
+                                            backgroundColor: "transparent",
+                                            color: "#A7A7A7"
+                                          }}>
                                             {payments.account
                                               ? payments.account
                                               : "Select"}
@@ -1464,7 +1531,7 @@ function TenantAddPayment() {
                                           >
                                             <DropdownItem
                                               header
-                                              style={{ color: "blue" }}
+                                              style={{ color: "#152B51", fontFamily: "Poppins", fontSize: "12px", fontWeight: "500", }}
                                             >
                                               Liability Account
                                             </DropdownItem>
@@ -1505,7 +1572,7 @@ function TenantAddPayment() {
                                               <>
                                                 <DropdownItem
                                                   header
-                                                  style={{ color: "blue" }}
+                                                  style={{ color: "#152B51", fontFamily: "Poppins", fontSize: "12px", fontWeight: "500", }}
                                                 >
                                                   Reccuring Charges
                                                 </DropdownItem>
@@ -1531,7 +1598,7 @@ function TenantAddPayment() {
                                               <>
                                                 <DropdownItem
                                                   header
-                                                  style={{ color: "blue" }}
+                                                  style={{ color: "#152B51", fontFamily: "Poppins", fontSize: "12px", fontWeight: "500", }}
                                                 >
                                                   One Time Charges
                                                 </DropdownItem>
@@ -1679,8 +1746,9 @@ function TenantAddPayment() {
                                   <td colSpan="4">
                                     <Button
                                       type="button"
-                                      className="btn btn-primary"
+                                      className="btn "
                                       onClick={handleAddRow}
+                                      style={{ color: "white", backgroundColor: "#152B51" }}
                                     >
                                       Add Row
                                     </Button>
@@ -1699,6 +1767,8 @@ function TenantAddPayment() {
                         <label
                           className="form-control-label"
                           htmlFor="input-address"
+                          style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                         >
                           Upload Files (Maximum of 10)
                         </label>
@@ -1714,7 +1784,8 @@ function TenantAddPayment() {
                               multiple
                               onChange={(e) => fileData(e.target.files)}
                             />
-                            <label for="upload_file" className="btn">
+                            <label for="upload_file" className="btn"
+                              style={{ fontFamily: "Poppins", fontSize: "14px", fontWeight: "400", color: "#C2C3CF", boxShadow: " 0px 4px 4px 0px #00000040", }}>
                               Choose Files
                             </label>
                           </div>
@@ -1787,11 +1858,13 @@ function TenantAddPayment() {
                     <tbody>
                       {selectedPaymentMethod === "Credit Card" && (
                         <>
-                          <tr style={{ backgroundColor: "#e0e0e0" }}>
+                          <tr style={{ backgroundColor: "#e0e0e0", borderRadius: '6px', }}>
                             <td
                               style={{
                                 padding: "12px",
                                 borderBottom: "1px solid #bdbdbd",
+                                fontFamily: "Poppins", fontSize: "14px", borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px', fontWeight: "500"
+
                               }}
                             >
                               Amount
@@ -1800,18 +1873,22 @@ function TenantAddPayment() {
                               style={{
                                 padding: "12px",
                                 borderBottom: "1px solid #bdbdbd",
+                                borderTopRightRadius: '10px', borderBottomRightRadius: '10px',
+
                               }}
                             >
-                              <strong style={{ color: "grey" }}>
+                              <strong style={{ color: "grey", fontFamily: "Poppins", fontSize: "14px", fontWeight: "500", }}>
+
                                 ${generalledgerFormik.values.total_amount || 0}
                               </strong>
                             </td>
                           </tr>
-                          <tr style={{ backgroundColor: "#f5f5f5" }}>
+                          <tr style={{ backgroundColor: "#f5f5f5", borderRadius: '6px', }}>
                             <td
                               style={{
                                 padding: "12px",
                                 borderBottom: "1px solid #bdbdbd",
+                                fontFamily: "Poppins", fontSize: "14px", borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px', fontWeight: "500"
                               }}
                             >
                               Surcharge included
@@ -1820,9 +1897,10 @@ function TenantAddPayment() {
                               style={{
                                 padding: "12px",
                                 borderBottom: "1px solid #bdbdbd",
+                                borderTopRightRadius: '10px', borderBottomRightRadius: '10px',
                               }}
                             >
-                              <strong style={{ color: "grey" }}>
+                              <strong style={{ color: "grey", fontFamily: "Poppins", fontSize: "14px", fontWeight: "500", }}>
                                 ${generalledgerFormik.values.surcharge || 0}
                               </strong>
                             </td>
@@ -1830,17 +1908,17 @@ function TenantAddPayment() {
                         </>
                       )}
 
-                      <tr style={{ backgroundColor: "#e0f2f1" }}>
-                        <td style={{ padding: "12px" }}>Total Amount</td>
-                        <td style={{ padding: "12px" }}>
-                          <strong style={{ color: "green" }}>
-                            $
-                            {totalAmount1 ||
-                              generalledgerFormik.values.total_amount ||
-                              0}
+                      <tr style={{ backgroundColor: "#152B51", borderRadius: '6px', }}>
+                        <td style={{ padding: "12px", color: "#fff", fontFamily: "Poppins", fontSize: "14px", borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px', fontWeight: "500" }}>
+                          Total Amount
+                        </td>
+                        <td style={{ padding: "12px", borderTopRightRadius: '10px', borderBottomRightRadius: '10px', }}>
+                          <strong style={{ color: "#fff", fontFamily: "Poppins", fontSize: "14px", fontWeight: "500", }}>
+                            ${totalAmount1 || generalledgerFormik.values.total_amount || 0}
                           </strong>
                         </td>
                       </tr>
+
                     </tbody>
                   </Table>
 
@@ -1864,8 +1942,8 @@ function TenantAddPayment() {
                         ) : payment_id ? (
                           <button
                             type="submit"
-                            className="btn btn-primary"
-                            style={{ background: "green", cursor: "pointer" }}
+                            className="btn"
+                            style={{ background: "#152B51", color: "white", cursor: "pointer" }}
                             onClick={(e) => {
                               e.preventDefault();
                               editPayment(generalledgerFormik.values);
@@ -1876,8 +1954,8 @@ function TenantAddPayment() {
                         ) : (
                           <button
                             type="submit"
-                            className="btn btn-primary"
-                            style={{ background: "green", cursor: "pointer" }}
+                            className="btn"
+                            style={{ background: "#152B51", color: "white", cursor: "pointer" }}
                             onClick={(e) => {
                               e.preventDefault();
                               generalledgerFormik.handleSubmit();
@@ -1888,10 +1966,10 @@ function TenantAddPayment() {
                         )}
 
                         <Button
-                          color="primary"
-                          className="btn btn-primary"
+                          // color="primary"
+                          className="btn"
                           onClick={handleCloseButtonClick}
-                          style={{ background: "white", color: "black" }}
+                          style={{ background: "white", color: "#152B51" }}
                         >
                           Cancel
                         </Button>
@@ -1908,11 +1986,30 @@ function TenantAddPayment() {
         <Modal
           isOpen={isModalOpen}
           toggle={closeModal}
-          style={{ maxWidth: "1000px" }}
+          style={{ maxWidth: "1000px", borderRadius:"20px" }}
         >
-          <ModalHeader toggle={closeModal} className="bg-secondary text-white">
-            <strong style={{ fontSize: 18 }}>Add Credit Card</strong>
+          <ModalHeader className=" mx-4 mt-5 text-white" style={{
+            backgroundColor: "#152B51",
+            borderRadius: "6px",
+            height: "45px",
+            boxShadow: " 0px 4px 4px 0px #00000040 ",
+            padding: "10px 7px 1px 21px",
+            color: "white"
+          }}>
+
+
+            <span className=" align-items-center " style={{
+              color: "#ffffff",
+              fontFamily: "Poppins",
+              fontWeight: "500",
+              fontSize: "22px",
+            }}>Add Card</span>
+
+            {/* <strong style={{ fontSize: 18 }}>Add Credit Card</strong> */}
+
+
           </ModalHeader>
+
           <ModalBody>
             <CreditCardForm
               tenantId={tenantId}

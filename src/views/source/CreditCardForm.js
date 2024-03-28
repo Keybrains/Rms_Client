@@ -16,6 +16,7 @@ import valid from "card-validator";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { RotatingLines } from "react-loader-spinner";
 import { ToastContainer, toast } from "react-toastify";
+import deleicon from "../../assets/img/icons/common/delete.svg";
 import "react-toastify/dist/ReactToastify.css";
 
 function CreditCardForm(props) {
@@ -341,7 +342,7 @@ function CreditCardForm(props) {
 
 
   return (
-    <div style={{ maxHeight: "530px", overflowY: "auto", overflowX: "hidden" }}>
+    <div style={{ maxHeight: "600px", overflowY: "auto", overflowX: "hidden" }}>
       <Row>
         {/* Formik Section */}
         <Col xs="12" sm="6">
@@ -378,8 +379,13 @@ function CreditCardForm(props) {
               <Row className="mb--2">
                 <Col xs="12" sm="6">
                   <FormGroup>
-                    <label htmlFor="card_number">Card Number *</label>
+                    <label htmlFor="card_number" style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+                    >Card Number *</label>
                     <Input
+                      style={{
+                        boxShadow: " 0px 4px 4px 0px #00000040 ",
+                        borderRadius: "6px",
+                      }}
                       type="number"
                       id="card_number"
                       placeholder="0000 0000 0000 0000"
@@ -398,8 +404,13 @@ function CreditCardForm(props) {
 
                 <Col xs="12" sm="4">
                   <FormGroup>
-                    <label htmlFor="exp_date">Expiration Date *</label>
+                    <label htmlFor="exp_date" style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+                    >Expiration Date *</label>
                     <Input
+                      style={{
+                        boxShadow: " 0px 4px 4px 0px #00000040 ",
+                        borderRadius: "6px",
+                      }}
                       type="text"
                       id="exp_date"
                       name="exp_date"
@@ -419,8 +430,13 @@ function CreditCardForm(props) {
               <Row className="mb--2">
                 <Col xs="12" sm="6">
                   <FormGroup>
-                    <label htmlFor="first_name">First Name *</label>
+                    <label className="mt-2" htmlFor="first_name" style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+                    >First Name *</label>
                     <Input
+                      style={{
+                        boxShadow: " 0px 4px 4px 0px #00000040 ",
+                        borderRadius: "6px",
+                      }}
                       type="text"
                       id="first_name"
                       name="first_name"
@@ -437,8 +453,13 @@ function CreditCardForm(props) {
                 </Col>
                 <Col xs="12" sm="6">
                   <FormGroup>
-                    <label htmlFor="last_name">Last Name *</label>
+                    <label className="mt-2" htmlFor="last_name" style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+                    >Last Name *</label>
                     <Input
+                      style={{
+                        boxShadow: " 0px 4px 4px 0px #00000040 ",
+                        borderRadius: "6px",
+                      }}
                       type="text"
                       id="last_name"
                       name="last_name"
@@ -458,8 +479,13 @@ function CreditCardForm(props) {
               <Row className="mb--2">
                 <Col xs="12" sm="7">
                   <FormGroup>
-                    <label htmlFor="email">Email *</label>
+                    <label className="mt-2" htmlFor="email" style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+                    >Email *</label>
                     <Input
+                      style={{
+                        boxShadow: " 0px 4px 4px 0px #00000040 ",
+                        borderRadius: "6px",
+                      }}
                       type="text"
                       id="email"
                       name="email"
@@ -476,8 +502,13 @@ function CreditCardForm(props) {
                 </Col>
                 <Col xs="12" sm="5">
                   <FormGroup>
-                    <label htmlFor="phone">Phone *</label>
+                    <label className="mt-2" htmlFor="phone" style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+                    >Phone *</label>
                     <Input
+                      style={{
+                        boxShadow: " 0px 4px 4px 0px #00000040 ",
+                        borderRadius: "6px",
+                      }}
                       type="text"
                       id="phone"
                       name="phone"
@@ -497,8 +528,13 @@ function CreditCardForm(props) {
               <Row className="mb--2">
                 <Col xs="12" sm="10">
                   <FormGroup>
-                    <label htmlFor="address1">Address </label>
+                    <label className="mt-2" htmlFor="address1" style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+                    >Address </label>
                     <Input
+                      style={{
+                        boxShadow: " 0px 4px 4px 0px #00000040 ",
+                        borderRadius: "6px",
+                      }}
                       type="textarea"
                       id="address1"
                       name="address1"
@@ -517,8 +553,13 @@ function CreditCardForm(props) {
               <Row className="mb--2">
                 <Col xs="12" sm="4">
                   <FormGroup>
-                    <label htmlFor="city">City</label>
+                    <label className="mt-2" htmlFor="city" style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+                    >City</label>
                     <Input
+                      style={{
+                        boxShadow: " 0px 4px 4px 0px #00000040 ",
+                        borderRadius: "6px",
+                      }}
                       type="text"
                       id="city"
                       name="city"
@@ -534,8 +575,13 @@ function CreditCardForm(props) {
                 </Col>
                 <Col xs="12" sm="4">
                   <FormGroup>
-                    <label htmlFor="state">State</label>
+                    <label className="mt-2" htmlFor="state" style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+                    >State</label>
                     <Input
+                      style={{
+                        boxShadow: " 0px 4px 4px 0px #00000040 ",
+                        borderRadius: "6px",
+                      }}
                       type="text"
                       id="state"
                       name="state"
@@ -551,8 +597,13 @@ function CreditCardForm(props) {
                 </Col>
                 <Col xs="12" sm="4">
                   <FormGroup>
-                    <label htmlFor="country">Country</label>
+                    <label className="mt-2" htmlFor="country" style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+                    >Country</label>
                     <Input
+                      style={{
+                        boxShadow: " 0px 4px 4px 0px #00000040 ",
+                        borderRadius: "6px",
+                      }}
                       type="text"
                       id="country"
                       name="country"
@@ -571,8 +622,13 @@ function CreditCardForm(props) {
               <Row className="mb--2">
                 <Col xs="12" sm="4">
                   <FormGroup>
-                    <label htmlFor="zip">Zip</label>
+                    <label className="mt-2" htmlFor="zip" style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+                    >Zip</label>
                     <Input
+                      style={{
+                        boxShadow: " 0px 4px 4px 0px #00000040 ",
+                        borderRadius: "6px",
+                      }}
                       type="text"
                       id="zip"
                       name="zip"
@@ -587,23 +643,24 @@ function CreditCardForm(props) {
                   </FormGroup>
                 </Col>
 
-                <Col xs="12" sm="7">
+                {/* <Col xs="12" sm="7">
                   <FormGroup>
-                    <label htmlFor="company">Company</label>
+                    <label className="mt-2" htmlFor="company" style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+                    >Company</label>
                     <Input
+                      style={{
+                        boxShadow: " 0px 4px 4px 0px #00000040 ",
+                        borderRadius: "6px",
+                      }}
                       type="text"
                       id="company"
                       name="company"
                       placeholder="Enter company"
                       tag={Field}
                     />
-                    {/* <ErrorMessage
-                        name="company"
-                        component="div"
-                        style={{ color: "red" }}
-                      /> */}
+                    
                   </FormGroup>
-                </Col>
+                </Col> */}
               </Row>
 
               {/* Form Buttons */}
@@ -615,9 +672,10 @@ function CreditCardForm(props) {
               >
                 <button
                   type="submit"
-                  className="btn btn-primary"
+                  className="btn"
                   style={{
-                    background: "green",
+                    backgroundColor: "#152B51",
+                    color: "white",
                     cursor: paymentSchema.isValid ? "pointer" : "not-allowed",
                   }}
                   disabled={!paymentSchema.isValid || isSubmitting}
@@ -627,12 +685,12 @@ function CreditCardForm(props) {
 
                 <button
                   type="reset"
-                  className="btn btn-primary"
+                  className="btn"
                   onClick={closeModal}
                   style={{
                     background: "#fff",
                     cursor: "pointer",
-                    color: "#333",
+                    color: "#152B51",
                   }}
                 >
                   Cancel
@@ -647,8 +705,11 @@ function CreditCardForm(props) {
           <Card
             className="mt-1"
             style={{
-              background: "#F4F6FF",
+              background: "#fff",
               maxWidth: "500px",
+              borderRadius: "6px",
+              boxShadow: " 0px 4px 4px 0px #00000040",
+              border: "0.5px solid #324567",
               height: "530px",
               overflowY: "auto",
               overflowX: "hidden",
@@ -657,16 +718,17 @@ function CreditCardForm(props) {
             <CardContent>
               <Typography
                 sx={{
-                  fontSize: 17,
-                  fontWeight: "bold",
-                  fontFamily: "Arial",
+                  fontSize: 18,
+                  fontWeight: "500",
+                  fontFamily: "Poppins",
                   textTransform: "capitalize",
                   marginRight: "10px",
+                  color: "#152B51",
                 }}
-                color="text.secondary"
-                gutterBottom
+              // color="text.secondary"
+              // gutterBottom
               >
-                Credit Cards
+                Cards
               </Typography>
               {/* Card Details */}
               {paymentLoader ? (
@@ -682,7 +744,8 @@ function CreditCardForm(props) {
               ) : cardDetalis && cardDetalis.length > 0 ? (
                 <Table responsive style={{ overflowX: "hidden" }}>
                   <tbody>
-                    <tr>
+                    <tr style={{ fontFamily: "Poppins", fontSize: "14px", fontWeight: "500", color: "#8A95A8" }}
+                    >
                       <th>Card Number</th>
                       <th>Card Type</th>
                       <th></th>
@@ -728,7 +791,17 @@ function CreditCardForm(props) {
                           <div
                             style={{ display: "flex", alignItems: "center" }}
                           >
-                            <DeleteIcon
+                            <img src={deleicon} width={30} height={30} onClick={() =>
+                              handleDeleteCard(
+                                item.customer_vault_id,
+                                item.billing_id
+                              )
+                            } style={{
+                              cursor: "pointer",
+                              marginRight: "5px",
+                            }} />
+
+                            {/* <DeleteIcon
                               onClick={() =>
                                 handleDeleteCard(
                                   item.customer_vault_id,
@@ -739,7 +812,7 @@ function CreditCardForm(props) {
                                 cursor: "pointer",
                                 marginRight: "5px",
                               }}
-                            />
+                            /> */}
                             {/* <EditIcon
                               onClick={() =>
                                 getEditData(item.customer_vault_id)

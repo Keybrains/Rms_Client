@@ -136,9 +136,9 @@ const VendorWorkTable = () => {
   return (
     <>
       <VendorHeader />
-      <Container fluid style={{ marginTop: "4rem" }} >
+      <Container className="" fluid style={{ marginTop: "4rem", height: "100vh" }}>
         <CardHeader
-          className="mx-3 mt-1"
+          className=" mt-3 mb-3 mx-4"
           style={{
             backgroundColor: "#152B51",
             borderRadius: "10px",
@@ -146,14 +146,15 @@ const VendorWorkTable = () => {
           }}
         >
           <h2
+            className="mb-0"
             style={{
               color: "#ffffff",
               fontFamily: "Poppins",
               fontWeight: "500",
-              fontSize: "18px",
+              fontSize: "26px",
             }}
           >
-            Work Orders
+             Work Orders
           </h2>
         </CardHeader>
         {/* <Row>
@@ -163,7 +164,7 @@ const VendorWorkTable = () => {
             </FormGroup>
           </Col>
         </Row> */}
-        <br />
+        {/* <br /> */}
         <Row>
           <div className="col">
             {loader ? (
@@ -299,7 +300,7 @@ const VendorWorkTable = () => {
                       <Col>Work Order</Col>
                       <Col>Property</Col>
                       <Col>Category</Col>
-                      <Col>priority</Col>
+                      <Col>Priority</Col>
                       <Col>Status</Col>
                       <Col>Created At</Col>
                       <Col>Updated At</Col>
@@ -345,7 +346,7 @@ const VendorWorkTable = () => {
                             <Col>{vendor?.priority}</Col>
                             <Col>{vendor?.status}</Col>
                             <Col>{vendor?.createdAt}</Col>
-                            <Col>{vendor?.updateAt || "-"}</Col>
+                            <Col>{vendor?.updatedAt || "-"}</Col>
                             <Col>{vendor?.date || "-"}</Col>
                           </Row>
                         ))}

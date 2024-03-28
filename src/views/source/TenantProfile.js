@@ -49,7 +49,7 @@ const TenantProfile = () => {
     if (accessType?.tenant_id) {
       try {
         const response = await axios.get(
-          `${baseUrl}/tenants/tenant_profile/${accessType?.tenant_id}`
+          `${baseUrl}/tenant/tenant_profile/${accessType?.tenant_id}`
         );
         setTenantDetails(response.data.data);
       } catch (error) {
@@ -76,178 +76,359 @@ const TenantProfile = () => {
   return (
     <>
       <TenantsHeader />
-      <Container className="mt--7" fluid>
-        <Row>
-          <div className="col">
-            <Card className="shadow" style={{ backgroundColor: "#FFFEFA" }}>
-              {loading ? (
-                <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
-                  <RotatingLines
-                    strokeColor="grey"
-                    strokeWidth="5"
-                    animationDuration="0.75"
-                    width="50"
-                    visible={loading}
-                  />
-                </div>
-              ) : (
-                <div className="table-responsive">
-                  <div className="row m-3">
-                    <div className="col-12">
-                      <div
-                        className="align-items-center table-flush"
-                        responsive
-                        style={{ width: "100%" }}
-                      >
-                        <div className="w-100">
-                          {tenantDetails ? (
-                            <div>
-                              <Row
-                                className="w-100 my-3 "
-                                style={{
-                                  fontSize: "18px",
-                                  textTransform: "capitalize",
-                                  color: "#263238",
-                                  fontWeight: "600",
-                                  borderBottom: "1px solid #ddd",
-                                }}
-                              >
-                                <Col>Personal Details</Col>
-                              </Row>
-                              <Row
-                                className="mb-1 m-0 p-0"
-                                style={{ fontSize: "12px", color: "#000" }}
-                              >
-                                <Table>
-                                  <tbody
-                                    className="tbbody p-0 m-0"
-                                    style={{
-                                      borderTopRightRadius: "5px",
-                                      borderTopLeftRadius: "5px",
-                                      borderBottomLeftRadius: "5px",
-                                      borderBottomRightRadius: "5px",
-                                    }}
-                                  >
-                                    <tr className="header">
-                                      <th>First Name</th>
-                                      <th>Last Name</th>
-                                      <th>Phone</th>
-                                      <th>Email</th>
-                                    </tr>
-
-                                    <tr className="body">
-                                      <td>
-                                        {tenantDetails?.tenant_firstName ||
-                                          "N/A"}
-                                      </td>
-                                      <td>
-                                        {tenantDetails?.tenant_lastName ||
-                                          "N/A"}
-                                      </td>
-                                      <td>
-                                        {tenantDetails?.tenant_phoneNumber ||
-                                          "N/A"}
-                                      </td>
-                                      <td>
-                                        {tenantDetails?.tenant_email || "N/A"}
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </Table>
-                              </Row>
-                            </div>
-                          ) : (
-                            <tr>
-                              <td>Loading Tenant details...</td>
-                            </tr>
-                          )}
-                          <Row
-                            className="w-100 my-3 "
-                            style={{
-                              fontSize: "18px",
-                              textTransform: "capitalize",
-                              color: "#263238",
-                              fontWeight: "600",
-                              borderBottom: "1px solid #ddd",
-                            }}
-                          >
-                            <Col>Lease Details</Col>
-                          </Row>
-                          {tenantDetails?.lease_id ? (
-                            <div>
-                              <Row
-                                className="mb-1 m-0 p-0"
-                                style={{ fontSize: "12px", color: "#000" }}
-                              >
-                                <Table style={{ marginBottom: "20px" }}>
-                                  <tbody
-                                    className="tbbody p-0 m-0"
-                                    style={{
-                                      borderTopRightRadius: "5px",
-                                      borderTopLeftRadius: "5px",
-                                      borderBottomLeftRadius: "5px",
-                                      borderBottomRightRadius: "5px",
-                                    }}
-                                  >
-                                    <tr className="header">
-                                      <th>Property</th>
-                                      <th>Lease Type</th>
-                                      <th>Start Date</th>
-                                      <th>End Date</th>
-                                      <th>Rent Cycle</th>
-                                      <th>Rent Amount</th>
-                                      <th>Next Due Date</th>
-                                    </tr>
-
-                                    <tr className="body">
-                                      <td>
-                                        {tenantDetails?.rental_adress || "N/A"}
-                                      </td>
-                                      <td>
-                                        {tenantDetails?.lease_type || "N/A"}
-                                      </td>
-
-                                      <td>
-                                        {formatDateWithoutTime(
-                                          tenantDetails?.start_date
-                                        ) || "N/A"}
-                                      </td>
-
-                                      <td>
-                                        {formatDateWithoutTime(
-                                          tenantDetails?.end_date
-                                        ) || "N/A"}
-                                      </td>
-                                      <td>
-                                        {tenantDetails?.rent_cycle || "N/A"}
-                                      </td>
-                                      <td>{tenantDetails?.amount || "N/A"}</td>
-
-                                      <td>
-                                        {formatDateWithoutTime(
-                                          tenantDetails?.date
-                                        ) || "N/A"}
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </Table>
-                              </Row>
-                            </div>
-                          ) : (
-                            <tr>
-                              <td>Data not found</td>
-                            </tr>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </Card>
+      <Container className="" fluid style={{ marginTop: "4rem", height: "100vh" }}>
+        {loading ? (
+          <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+            <RotatingLines
+              strokeColor="grey"
+              strokeWidth="5"
+              animationDuration="0.75"
+              width="50"
+              visible={loading}
+            />
           </div>
-        </Row>
-      </Container>
+        ) : (
+          <>
+            <Row>
+              <div className="col">
+                <Card
+                  className="shadow mx-3"
+                  style={{
+                    backgroundColor: "#152B51",
+                    padding: "20px",
+                    borderRadius: "10px",
+                    paddingRight: "90px",
+                    paddingLeftL: "90px",
+                  }}
+                >
+                  <h2 className="mb-0" style={{ color: "white" }}>
+                    Personal Details
+                  </h2>
+                </Card>
+
+                <Row
+                  className="mx-3 py-0 mt-3"
+                  style={{
+                    border: ".5px solid rgba(50, 69, 103, 1)",
+                    borderTopLeftRadius: "12px",
+                    borderTopRightRadius: "12px",
+                    height: "45px",
+                    alignItems: "center",
+                    borderBottom: "0px",
+                    color: "#152B51",
+
+
+                  }}
+                >
+                  <Col
+                    style={{
+                      borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                    }}
+                  >
+                    Name
+                  </Col>
+                  <Col
+                    style={{
+                      borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                    }}
+                  >
+                    Designation
+                  </Col>
+                  <Col
+                    style={{
+                      borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                    }}
+                  >
+                    Phone Number
+                  </Col>
+                  <Col
+                    style={{
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                    }}
+                  >
+                    Email
+                  </Col>
+                </Row>
+                <Row
+                  className="mx-3 py-0"
+                  style={{
+                    border: ".5px solid rgba(50, 69, 103, 1)",
+                    borderBottomLeftRadius: "12px",
+                    borderBottomRightRadius: "12px",
+                    height: "45px",
+                    alignItems: "center",
+                    color: "#152B51",
+                    boxShadow: "0px 4px 4px 0px #00000040"
+                  }}
+                >
+                  <Col
+                    style={{
+                      borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                      fontSize: "12px"
+                    }}
+                  >
+                    {tenantDetails?.tenant_firstName ||
+                      "N/A"}
+                  </Col>
+                  <Col
+                    style={{
+                      borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                      fontSize: "12px"
+                    }}
+                  >
+                    {tenantDetails?.tenant_lastName ||
+                      "N/A"}
+                  </Col>
+                  <Col
+                    style={{
+                      borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                      fontSize: "12px"
+                    }}
+                  >
+                    {tenantDetails?.tenant_phoneNumber ||
+                      "N/A"}
+                  </Col>
+                  <Col
+                    style={{
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                      fontSize: "12px"
+                    }}
+                  >
+                    {tenantDetails?.tenant_email || "N/A"}
+                  </Col>
+                </Row>
+                {/* </tbody>
+              </table> */}
+              </div>
+            </Row>
+            <Row>
+              <div className="col">
+                <Card
+                  className="shadow mt-5 mx-3"
+                  style={{
+                    backgroundColor: "#152B51",
+                    padding: "20px",
+                    borderRadius: "10px",
+                    paddingRight: "90px",
+                    paddingLeftL: "90px",
+                  }}
+                >
+                  <h2 className="mb-0" style={{ color: "white" }}>
+                    Lease Details
+                  </h2>
+                </Card>
+
+                <Row
+                  className="mx-3 py-0 mt-3"
+                  style={{
+                    border: ".5px solid rgba(50, 69, 103, 1)",
+                    borderTopLeftRadius: "12px",
+                    borderTopRightRadius: "12px",
+                    height: "45px",
+                    alignItems: "center",
+                    borderBottom: "0px",
+                    color: "#152B51",
+
+
+                  }}
+                >
+                  <Col
+                    style={{
+                      borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                    }}
+                  >
+                    Property
+                  </Col>
+                  <Col
+                    style={{
+                      borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                    }}
+                  >
+                    Lease Type
+                  </Col>
+                  <Col
+                    style={{
+                      borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                    }}
+                  >
+                    Start Date
+                  </Col>
+                  <Col
+                    style={{
+                      borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                    }}
+                  >
+                    End Date
+                  </Col>
+                  <Col
+                    style={{
+                      borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                    }}
+                  >
+                    Rent Cycle
+                  </Col>
+                  <Col
+                    style={{
+                      borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                    }}
+                  >
+                    Rent Amount
+                  </Col>
+                  <Col
+                    style={{
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                    }}
+                  >
+                    Next Due Date
+                  </Col>
+
+                </Row>
+                <Row
+                  className="mx-3 py-0"
+                  style={{
+                    border: ".5px solid rgba(50, 69, 103, 1)",
+                    borderBottomLeftRadius: "12px",
+                    borderBottomRightRadius: "12px",
+                    height: "45px",
+                    alignItems: "center",
+                    color: "#152B51",
+                    boxShadow: "0px 4px 4px 0px #00000040"
+                  }}
+                >
+                  <Col
+                    style={{
+                      borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                      fontSize: "12px"
+                    }}
+                  >
+                    {tenantDetails?.rental_adress || "N/A"}
+                  </Col>
+                  <Col
+                    style={{
+                      borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                      fontSize: "12px"
+                    }}
+                  >
+                    {tenantDetails?.lease_type || "N/A"}
+                  </Col>
+                  <Col
+                    style={{
+                      borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                      fontSize: "12px"
+                    }}
+                  >
+                    {formatDateWithoutTime(
+                      tenantDetails?.start_date
+                    ) || "N/A"}
+                  </Col>
+                  <Col
+                    style={{
+                      borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                      fontSize: "12px"
+                    }}
+                  >
+                    {formatDateWithoutTime(
+                      tenantDetails?.end_date
+                    ) || "N/A"}
+                  </Col>
+
+                  <Col
+                    style={{
+                      borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                      fontSize: "12px"
+                    }}
+                  >
+                    {tenantDetails?.rent_cycle || "N/A"}
+                  </Col>
+                  <Col
+                    style={{
+                      borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                      fontSize: "12px"
+                    }}
+                  >
+                    {tenantDetails?.amount || "N/A"}
+                  </Col>
+
+                  <Col
+                    style={{
+                      height: "100%",
+                      alignItems: "center",
+                      display: "flex",
+                      fontSize: "12px"
+                    }}
+                  >
+                    {formatDateWithoutTime(
+                      tenantDetails?.date
+                    ) || "N/A"}
+                  </Col>
+                </Row>
+                {/* </tbody>
+              </table> */}
+              </div>
+            </Row>
+          </>
+        )}
+      </Container >
     </>
   );
 };

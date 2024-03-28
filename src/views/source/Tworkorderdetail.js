@@ -7,6 +7,8 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import profile from "../../assets/img/icons/common/profile1.svg";
 import TenantsHeader from "components/Headers/TenantsHeader";
 import {
   Card,
@@ -253,9 +255,11 @@ const TWorkOrderDetails = () => {
       <div className="small-summary-card p-3">
         {" "}
         {/* Added padding with the p-3 class */}
-        <h6 className="text-uppercase text-muted mb-0">{label}</h6>
+        <h6 className="text-uppercase text-muted mb-0" style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>{label}</h6>
         <span
           className={`font-weight-bold ${textTruncate ? "text-truncate" : ""}`}
+          style={{ fontSize: "16px", fontFamily: "Poppins", fontWeight: "500", color: "#152B51" }}
+
         >
           {value}
         </span>
@@ -316,30 +320,51 @@ const TWorkOrderDetails = () => {
     <>
       <TenantsHeader />
       {/* Page content */}
-      <Container className="mt--8" fluid>
+      <Container className="" fluid>
         <Row>
-          <Col xs="12" sm="6">
-            <FormGroup className="">
-              <h1 style={{ color: "white" }}>Work Order Details</h1>
-            </FormGroup>
-          </Col>
-          <Col className="text-right">
+          <Col className="text-right mx-4">
             <Button
               color="primary"
               //  href="#rms"
               onClick={() => navigate("/tenant/tenantwork")}
-              size="sm"
-              style={{ background: "white", color: "black" }}
+              size="small"
+              style={{ background: "#152B51", color: "#fff" }}
             >
               Back
             </Button>
           </Col>
+          <Col xs="12" lg="12" sm="6">
+            <FormGroup className="">
+              {/* <h1 style={{ color: "red" }}>Work Order Details</h1> */}
+            </FormGroup>
+            <CardHeader
+              className=" mt-3 mx-4"
+              style={{
+                backgroundColor: "#152B51",
+                borderRadius: "10px",
+                boxShadow: " 0px 4px 4px 0px #00000040 ",
+              }}
+            >
+              <h2
+                className=""
+                style={{
+                  color: "#ffffff",
+                  fontFamily: "Poppins",
+                  fontWeight: "500",
+                  fontSize: "26px",
+                }}
+              >
+                Work Order Details
+              </h2>
+            </CardHeader>
+          </Col>
+
         </Row>
         <br />
         {/* Table */}
         <Row>
           <div className="col">
-            <Card className="shadow">
+            {/* <Card className="shadow"> */}
               <CardHeader className="border-0">
                 <ToggleButtonGroup
                   color="primary"
@@ -355,7 +380,10 @@ const TWorkOrderDetails = () => {
                       background: "none",
                       textTransform: "capitalize",
                       cursor: "pointer",
-                      color: activeButton === "Summary" ? "#263238" : "inherit",
+                      fontSize: "18px",
+                      fontFamily: "Poppins",
+                      fontWeight: "600",
+                      color: activeButton === "Summary" ? "#152B51" : "inherit",
                       // textDecoration: activeButton === 'Summary' ? 'underline' : 'none',
                     }}
                     onMouseEnter={() => handleMouseEnter("Summary")}
@@ -372,7 +400,10 @@ const TWorkOrderDetails = () => {
                       background: "none",
                       textTransform: "capitalize",
                       cursor: "pointer",
-                      color: activeButton === "Task" ? "#263238" : "inherit",
+                      fontSize: "18px",
+                      fontFamily: "Poppins",
+                      fontWeight: "600",
+                      color: activeButton === "Task" ? "#152B51" : "inherit",
                       // textDecoration: activeButton === 'Task' ? 'underline' : 'none',
                     }}
                     onMouseEnter={() => handleMouseEnter("Task")}
@@ -395,10 +426,12 @@ const TWorkOrderDetails = () => {
                         ) : outstandDetails.workOrder_id ? (
                           <>
                             <Box
-                              border="1px solid #ccc"
-                              borderRadius="8px"
+                              border="0.5px solid #737791"
+                              borderRadius="10px"
                               padding="16px"
-                              maxWidth="700px"
+                              maxWidth="900px"
+                              boxShadow=" 0px 4px 4px 0px #00000040"
+
                               margin="20px"
                             >
                               <Box
@@ -412,18 +445,19 @@ const TWorkOrderDetails = () => {
                                   display="flex"
                                   alignItems="center"
                                   justifyContent="center"
-                                  backgroundColor="grey"
+                                  backgroundColor="#152B51"
                                   borderRadius="8px"
                                   color="white"
                                   fontSize="24px"
                                   marginRight="16px"
                                 >
-                                  <AssignmentOutlinedIcon />
+                                  <FormatListBulletedIcon />
+
                                 </Box>
                                 <Box flex="1">
                                   <h2
                                     className="text text-lg"
-                                    style={{ color: "#263238" }}
+                                    style={{ color: "#152B51" }}
                                   >
                                     {outstandDetails.work_subject || "N/A"}
                                   </h2>
@@ -448,20 +482,25 @@ const TWorkOrderDetails = () => {
                                   className={{ xs: "col-12", md: "col-7" }}
                                   marginBottom={{ xs: "20px", md: "0" }}
                                 >
-                                  <FormGroup marginBottom="20px">
+                                  <FormGroup marginBottom="20px" style={{ padding: "15px" }}>
                                     <label
                                       className="form-control-label"
                                       htmlFor="input-property"
                                       style={{
                                         marginBottom: "10px",
-                                        fontWeight: "bold",
+                                        fontWeight: "500",
+                                        fontFamily: "Poppins",
+                                        fontSize: "16px",
+                                        color: "#152B51",
                                       }}
                                     >
                                       Description
                                     </label>
                                     <span
                                       style={{
-                                        fontSize: "13px",
+                                        fontWeight: "400",
+                                        fontFamily: "Poppins",
+                                        fontSize: "14px",
                                         display: "block",
                                         marginTop: "5px",
                                       }}
@@ -469,20 +508,25 @@ const TWorkOrderDetails = () => {
                                       {outstandDetails.work_performed || "N/A"}
                                     </span>
                                   </FormGroup>
-                                  <FormGroup marginBottom="20px">
+                                  <FormGroup marginBottom="20px" style={{ padding: "15px" }}>
                                     <label
                                       className="form-control-label"
                                       htmlFor="input-property"
                                       style={{
                                         marginBottom: "10px",
-                                        fontWeight: "bold",
+                                        fontWeight: "500",
+                                        fontFamily: "Poppins",
+                                        fontSize: "16px",
+                                        color: "#152B51",
                                       }}
                                     >
                                       Permission to enter
                                     </label>
                                     <span
                                       style={{
-                                        fontSize: "13px",
+                                        fontWeight: "400",
+                                        fontFamily: "Poppins",
+                                        fontSize: "14px",
                                         display: "block",
                                         marginTop: "5px",
                                       }}
@@ -492,20 +536,25 @@ const TWorkOrderDetails = () => {
                                         : "No"}
                                     </span>
                                   </FormGroup>
-                                  <FormGroup marginBottom="20px">
+                                  <FormGroup marginBottom="20px" style={{ padding: "15px" }}>
                                     <label
                                       className="form-control-label"
                                       htmlFor="input-property"
                                       style={{
                                         marginBottom: "10px",
-                                        fontWeight: "bold",
+                                        fontWeight: "500",
+                                        fontFamily: "Poppins",
+                                        fontSize: "16px",
+                                        color: "#152B51",
                                       }}
                                     >
                                       Vendor Notes
                                     </label>
                                     <span
                                       style={{
-                                        fontSize: "13px",
+                                        fontWeight: "400",
+                                        fontFamily: "Poppins",
+                                        fontSize: "14px",
                                         display: "block",
                                         marginTop: "5px",
                                       }}
@@ -517,13 +566,13 @@ const TWorkOrderDetails = () => {
 
                                 {/* Right side */}
 
-                                <Box flex="1" className="d-flex flex-column">
+                                <Box flex="1" className="d-flex flex-column justify-content-end">
                                   <Row
                                     style={{
                                       border: "1px solid #ccc",
                                       borderRadius: "8px",
                                       margin: "15px auto",
-                                      width: "100%",
+                                      width: "60%",
                                     }}
                                   >
                                     <Col style={{ padding: "0 8px" }}>
@@ -539,7 +588,7 @@ const TWorkOrderDetails = () => {
                                       border: "1px solid #ccc",
                                       borderRadius: "8px",
                                       margin: "15px auto",
-                                      width: "100%",
+                                      width: "60%",
                                     }}
                                   >
                                     <Col style={{ padding: "0 8px" }}>
@@ -555,7 +604,7 @@ const TWorkOrderDetails = () => {
                                       border: "1px solid #ccc",
                                       borderRadius: "8px",
                                       margin: "15px auto",
-                                      width: "100%",
+                                      width: "60%",
                                     }}
                                   >
                                     <Col style={{ padding: "0 8px" }}>
@@ -575,10 +624,13 @@ const TWorkOrderDetails = () => {
                             {outstandDetails?.partsandcharge_data?.length > 0 &&
                               outstandDetails?.partsandcharge_data ? (
                               <Box
-                                border="1px solid #ccc"
-                                borderRadius="8px"
+                                // border="1px solid #ccc"
+                                border="0.5px solid #737791"
+                                borderRadius="10px"
                                 padding="16px"
-                                maxWidth="700px"
+                                maxWidth="900px"
+                                boxShadow=" 0px 4px 4px 0px #00000040"
+
                                 margin="20px"
                                 style={{
                                   marginRight: "auto",
@@ -587,19 +639,29 @@ const TWorkOrderDetails = () => {
                               >
                                 <h2
                                   className="text text-lg"
-                                  style={{ color: "#263238" }}
+                                  style={{ color: "#152B51", fontWeight: "500", fontFamily: "Poppins", fontSize: "16px", }}
+
                                 >
                                   Parts and Labor
                                 </h2>
                                 <Box overflowX="auto">
                                   <table
                                     style={{
+                                      fontWeight: "500",
                                       width: "100%",
+                                      fontFamily: "Poppins",
                                       borderCollapse: "collapse",
+
+                                      fontSize: "14px", color: "#152B51"
                                     }}
                                   >
                                     <thead>
-                                      <tr>
+                                      <tr
+                                        style={{
+                                          fontWeight: "500",
+                                          fontFamily: "Poppins",
+                                          fontSize: "14px", color: "#152B51"
+                                        }}>
                                         <th style={tableHeaderStyle}>QTY</th>
                                         <th style={tableHeaderStyle}>
                                           ACCOUNT
@@ -649,7 +711,12 @@ const TWorkOrderDetails = () => {
                                       <tr>
                                         <td
                                           colSpan="4"
-                                          style={tableHeaderStyle}
+                                          style={{
+                                            ...tableFooterStyle,
+                                            fontWeight: "400",
+                                            fontFamily: "Poppins",
+                                            fontSize: "14px", color: "#152B51"
+                                          }}
                                         >
                                           Total
                                         </td>
@@ -657,6 +724,9 @@ const TWorkOrderDetails = () => {
                                           style={{
                                             ...tableFooterStyle,
                                             textAlign: "right",
+                                            fontWeight: "400",
+                                            fontFamily: "Poppins",
+                                            fontSize: "14px", color: "#152B51"
                                           }}
                                         >
                                           ${total()}
@@ -669,28 +739,33 @@ const TWorkOrderDetails = () => {
                             ) : null}
                             <Grid
                               container
-                              border="1px solid #ccc"
-                              borderRadius="8px"
+                              // border="1px solid #ccc"
+                              border="0.5px solid #737791"
+                              borderRadius="10px"
                               padding="16px"
-                              maxWidth="700px"
+                              maxWidth="900px"
+                              boxShadow=" 0px 4px 4px 0px #00000040"
                               margin="20px"
                               style={{
                                 marginRight: "auto",
                                 overflowX: "auto",
-                              }} // Center the box horizontally
+                              }}
                             >
                               <Grid item xs={3} sm={3.5} md={3} lg={2} xl={2}>
                                 <h2
                                   className="text-lg"
-                                  style={{ color: "#263238" }}
+                                  style={{ color: "#152B51", fontWeight: "500", fontFamily: "Poppins", fontSize: "16px", }}
+
                                 >
                                   Updates
                                 </h2>
                               </Grid>
-                              <Grid item xs={3}>
+                              <Grid item xs={3} sm={3.5} md={3} lg={2} xl={2}>
                                 <Button
-                                  size="sm"
+
+                                  size="small"
                                   onClick={handleUpdateButtonClick}
+                                  style={{ color: "#C2C3CF", boxShadow: "0px 4px 4px 0px #00000040", backgroundColor: "transparent", }}
                                 >
                                   Update
                                 </Button>
@@ -809,22 +884,29 @@ const TWorkOrderDetails = () => {
                       <Col lg="4" md="12">
                         {outstandDetails?.workOrder_id ? (
                           <Box
-                            border="1px solid #ccc"
-                            borderRadius="8px"
-                            maxWidth="100%" // Use 100% to make it responsive
+                            border="0.5px solid #737791"
+                            borderRadius="10px"
+                            boxShadow=" 0px 4px 4px 0px #00000040"
+                            maxWidth="100%"
                             margin="20px"
                           >
                             <Box
+                              className="align-item-center text-center"
                               borderBottom="1px solid #ccc"
                               style={{
-                                minWidth: "100%",
-                                padding: "16px 16px 5px 16px",
+                                width: "100%",
+                                padding: "16px",
+                                textAlign: "left",
+                                boxShadow: " 0px 4px 4px 0px #00000040",
                                 color: "#5e72e4",
                               }}
                             >
-                              <h2 className="text" style={{ color: "#263238" }}>
+                              <span
+                                style={{ color: "#152B51", fontWeight: "500", fontFamily: "Poppins", fontSize: "16px", }}
+
+                              >
                                 Contacts
-                              </h2>
+                              </span>
                             </Box>
                             <Box
                               borderBottom="1px solid #ccc"
@@ -837,24 +919,21 @@ const TWorkOrderDetails = () => {
                             >
                               <Box width="16px" marginRight="10px">
                                 {/* SVG icon */}
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="24"
-                                  height="24"
-                                  fill="currentColor"
-                                  className="bi bi-person-fill"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
-                                </svg>
+                                <img src={profile} height={20} width={20} />
+
                               </Box>
                               <Box
                                 width="100%"
                                 style={{ minWidth: "100%", padding: "0 16px" }}
                               >
-                                <span style={detailstyle}>Vendor</span> <br />
-                                <span>
-                                  {outstandDetails?.vendor_data?.vendor_name ||
+                                <span style={{ color: "#152B51", fontWeight: "500", fontFamily: "Poppins", fontSize: "16px", }}
+                                >Vendor</span> <br />
+                                <span style={{
+                                  fontWeight: "400",
+                                  fontFamily: "Poppins",
+                                  fontSize: "14px",
+                                }}>
+                                  {outstandDetails?.vendor_data.vendor_name ||
                                     "N/A"}
                                 </span>
                               </Box>
@@ -870,16 +949,8 @@ const TWorkOrderDetails = () => {
                                 }}
                               >
                                 <Box width="16px" marginRight="10px">
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="currentColor"
-                                    className="bi bi-person-fill"
-                                    viewBox="0 0 16 16"
-                                  >
-                                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
-                                  </svg>
+                                  <img src={profile} height={20} width={20} />
+
                                 </Box>
                                 <Box
                                   width="100%"
@@ -888,8 +959,15 @@ const TWorkOrderDetails = () => {
                                     padding: "0 16px",
                                   }}
                                 >
-                                  <span style={detailstyle}>Tenant</span> <br />
-                                  <span>
+                                  <span style={{ color: "#152B51", fontWeight: "500", fontFamily: "Poppins", fontSize: "16px", }}
+                                  >Tenant</span> <br />
+                                  <span
+                                    style={{
+                                      fontWeight: "400",
+                                      fontFamily: "Poppins",
+                                      fontSize: "14px",
+                                    }}
+                                  >
                                     {outstandDetails?.tenant_data
                                       ?.tenant_firstName ? (
                                       <>
@@ -914,26 +992,32 @@ const TWorkOrderDetails = () => {
                         {outstandDetails?.property_data ? (
                           <>
                             <Box
-                              border="1px solid #ccc"
-                              borderRadius="8px"
-                              maxWidth="100%" // Use 100% to make it responsive
+                              // border="1px solid #ccc"
+                              border="0.5px solid #737791"
+                              borderRadius="10px"
+                              maxWidth="100%"
                               margin="20px"
                               display="flex"
+                              boxShadow=" 0px 4px 4px 0px #00000040"
                               flexDirection="column"
-                              alignItems="center" // Center content horizontally
+                              alignItems="center"
                             >
                               <Box
+                                className="align-item-center text-center"
+
                                 borderBottom="1px solid #ccc"
                                 style={{
                                   width: "100%",
                                   padding: "16px",
                                   textAlign: "left",
+                                  boxShadow: " 0px 4px 4px 0px #00000040",
                                   color: "#5e72e4",
                                 }}
                               >
                                 <h2
                                   className="text"
-                                  style={{ color: "#263238" }}
+                                  style={{ color: "#152B51", fontWeight: "500", fontFamily: "Poppins", fontSize: "16px", }}
+
                                 >
                                   Property
                                 </h2>
@@ -1043,7 +1127,6 @@ const TWorkOrderDetails = () => {
                                       ""
                                     )}{" "}
                                   </span>
-                                  <br />
                                   <span>
                                     {outstandDetails?.property_data
                                       ?.rental_country ? (
@@ -1082,7 +1165,7 @@ const TWorkOrderDetails = () => {
                     {updateButton && (
                       <Form onSubmit={updateWorkorderFormik.handleSubmit}>
                         <Dialog open={openDialog} onClose={handleDialogClose}>
-                          <DialogTitle>Update Dialog</DialogTitle>
+                          <DialogTitle style={{ fontFamily: "Poppins", fontWeight: "500", fontSize: "26px", color: "#152B51" }}>Update Dialog</DialogTitle>
                           <DialogContent>
                             <Grid container spacing={2}>
                               <Grid item xs={4}>
@@ -1090,6 +1173,7 @@ const TWorkOrderDetails = () => {
                                   <label
                                     className="form-control-label"
                                     htmlFor="input-desg"
+                                    style={{ fontFamily: "Poppins", fontWeight: "500", fontSize: "16px", color: "#8A95A8" }}
                                   >
                                     Status *
                                   </label>
@@ -1098,7 +1182,14 @@ const TWorkOrderDetails = () => {
                                       isOpen={statusdropdownOpen}
                                       toggle={toggle6}
                                     >
-                                      <DropdownToggle caret>
+                                      <DropdownToggle caret
+                                        style={{
+                                          boxShadow: " 0px 4px 4px 0px #00000040",
+                                          border: "1px solid #ced4da",
+                                          backgroundColor: "transparent",
+                                          color: "#C2C3CF"
+                                        }}
+                                      >
                                         {selectedStatus
                                           ? selectedStatus
                                           : "Select"}
@@ -1158,11 +1249,16 @@ const TWorkOrderDetails = () => {
                                   <label
                                     className="form-control-label"
                                     htmlFor="input-unitadd"
+                                    style={{ fontFamily: "Poppins", fontWeight: "500", fontSize: "16px", color: "#8A95A8" }}
+
                                   >
                                     Due Date
                                   </label>
                                   <Input
                                     className="form-control-alternative"
+                                    style={{
+                                      boxShadow: " 0px 4px 4px 0px #00000040",
+                                    }}
                                     id="input-unitadd"
                                     type="date"
                                     name="due_date"
@@ -1187,6 +1283,8 @@ const TWorkOrderDetails = () => {
                                   <label
                                     className="form-control-label"
                                     htmlFor="input-desg"
+                                    style={{ fontFamily: "Poppins", fontWeight: "500", fontSize: "16px", color: "#8A95A8" }}
+
                                   >
                                     Assigned To *
                                   </label>
@@ -1195,7 +1293,12 @@ const TWorkOrderDetails = () => {
                                       isOpen={userdropdownOpen}
                                       toggle={toggle5}
                                     >
-                                      <DropdownToggle caret>
+                                      <DropdownToggle caret style={{
+                                        boxShadow: " 0px 4px 4px 0px #00000040",
+                                        border: "1px solid #ced4da",
+                                        backgroundColor: "transparent",
+                                        color: "#C2C3CF"
+                                      }}>
                                         {selecteduser ? selecteduser : "Select"}
                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                       </DropdownToggle>
@@ -1243,11 +1346,17 @@ const TWorkOrderDetails = () => {
                                   <label
                                     className="form-control-label"
                                     htmlFor="input-unitadd"
+                                    style={{ fontFamily: "Poppins", fontWeight: "500", fontSize: "16px", color: "#8A95A8" }}
+
                                   >
                                     Message
                                   </label>
                                   <Input
                                     className="form-control-alternative"
+                                    style={{
+                                      boxShadow: " 0px 4px 4px 0px #00000040"
+
+                                    }}
                                     id="input-unitadd"
                                     type="textarea"
                                     name="message"
@@ -1267,12 +1376,12 @@ const TWorkOrderDetails = () => {
                               </Grid>
                             </Grid>
                           </DialogContent>
-                          <DialogActions>
-                            <Button onClick={handleDialogClose} color="primary">
-                              Cancel
-                            </Button>
-                            <Button color="primary" onClick={updateValues}>
+                          <DialogActions className="d-flex justify-content-start mx-3 mb-3">
+                            <Button size="small" style={{ color: "white", backgroundColor: "#152B51" }} onClick={updateValues}>
                               Save
+                            </Button>
+                            <Button onClick={handleDialogClose} style={{ color: "#152B51", backgroundColor: "transparent" }}>
+                              Cancel
                             </Button>
                           </DialogActions>
                         </Dialog>
@@ -1286,69 +1395,88 @@ const TWorkOrderDetails = () => {
                     <Row className="mb-4">
                       <Col lg="8" md="12">
                         <Box
-                          border="1px solid #ccc"
-                          borderRadius="8px"
+                          border="0.5px solid #737791"
+                          // border="1px solid #ccc"
+                          borderRadius="10px"
                           padding="16px"
-                          maxWidth="700px"
+                          maxWidth="900px"
                           margin={"20px"}
+                          boxShadow=" 0px 4px 4px 0px #00000040"
+
                         >
-                          <Row>
-                            <Col lg="2">
+                          <Row style={{ justifyContent: "space-between" }}>
+                            <Col lg="8" className="d-flex" style={{ alignItems: "center" }}>
                               <Box
                                 width="40px"
                                 height="40px"
                                 display="flex"
                                 alignItems="center"
                                 justifyContent="center"
-                                backgroundColor="grey"
+                                backgroundColor="#152B51"
                                 borderRadius="8px"
                                 color="white"
                                 fontSize="24px"
+
                               >
-                                <AssignmentOutlinedIcon />
+
+                                <FormatListBulletedIcon />
+
                               </Box>
+                              <Col>
+                                <h2
+                                  className=""
+                                  style={{ color: "#152B51", marginBottom: 0, fontFamily: "poppins" }}
+                                >
+                                  {outstandDetails?.work_subject || "N/A"}
+                                </h2>
+
+                                <span className="my-o" style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
+                                  {outstandDetails.property_data?.rental_adress ||
+                                    "N/A"}
+                                  {outstandDetails?.unit_data?.rental_unit ? (
+                                    " (" +
+                                    outstandDetails?.unit_data?.rental_unit +
+                                    ")"
+                                  ) : (
+                                    <></>
+                                  )}
+                                </span>
+
+                              </Col>
                             </Col>
-                            <Col lg="8">
+                            <Col lg="2" className="text-end">
                               <span
                                 style={{
-                                  border: "2px solid",
-                                  borderColor:
-                                    outstandDetails.priority === "High"
-                                      ? "red"
-                                      : outstandDetails.priority === "Medium"
-                                        ? "green"
-                                        : outstandDetails.priority === "Low"
-                                          ? "#FFD700"
-                                          : "inherit",
-                                  borderRadius: "15px",
-                                  padding: "2px",
-                                  fontSize: "15px",
-                                  color:
-                                    outstandDetails.priority === "High"
-                                      ? "red"
-                                      : outstandDetails.priority === "Medium"
-                                        ? "green"
-                                        : outstandDetails.priority === "Low"
-                                          ? "#FFD700"
-                                          : "inherit",
+                                  display: "flex",
+                                  justifyContent: "flex-end",
                                 }}
                               >
-                                &nbsp;{outstandDetails.priority}&nbsp;
-                              </span>
-                              <h2
-                                className="text-lg"
-                                style={{ color: "#263238" }}
-                              >
-                                {outstandDetails.work_subject || "N/A"}
-                              </h2>
-
-                              <span className="">
-                                {outstandDetails.property_data.rental_adress ||
-                                  "N/A"}{" "}
-                                {outstandDetails?.unit_data?.rental_unit
-                                  ? " - " +
-                                  outstandDetails?.unit_data?.rental_unit
-                                  : null}
+                                <span
+                                  style={{
+                                    border: "2px solid",
+                                    borderColor:
+                                      outstandDetails.priority === "High"
+                                        ? "red"
+                                        : outstandDetails.priority === "Medium"
+                                          ? "green"
+                                          : outstandDetails.priority === "Low"
+                                            ? "#FFD700"
+                                            : "inherit",
+                                    borderRadius: "8px",
+                                    padding: "4px",
+                                    fontSize: "15px",
+                                    color:
+                                      outstandDetails.priority === "High"
+                                        ? "red"
+                                        : outstandDetails.priority === "Medium"
+                                          ? "green"
+                                          : outstandDetails.priority === "Low"
+                                            ? "#FFD700"
+                                            : "inherit",
+                                  }}
+                                >
+                                  &nbsp;{outstandDetails?.priority}&nbsp;
+                                </span>
                               </span>
                             </Col>
                           </Row>
@@ -1359,11 +1487,14 @@ const TWorkOrderDetails = () => {
                                 <label
                                   className="form-control-label"
                                   htmlFor="input-property"
+                                  style={{ fontSize: "16px", fontFamily: "Poppins", fontWeight: "500", color: "#152B51" }}
+
                                 >
                                   Description
                                 </label>
                                 <br />
-                                <span style={{ fontSize: "13px" }}>
+                                <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
+
                                   {outstandDetails.work_performed || "N/A"}
                                 </span>
                               </FormGroup>
@@ -1375,11 +1506,14 @@ const TWorkOrderDetails = () => {
                                 <label
                                   className="form-control-label"
                                   htmlFor="input-property"
+                                  style={{ fontSize: "16px", fontFamily: "Poppins", fontWeight: "500", color: "#152B51" }}
+
                                 >
                                   Status
                                 </label>
                                 <br />
-                                <span style={{ fontSize: "13px" }}>
+                                <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
+
                                   {outstandDetails.status || "N/A"}
                                 </span>
                               </FormGroup>
@@ -1390,11 +1524,14 @@ const TWorkOrderDetails = () => {
                                 <label
                                   className="form-control-label"
                                   htmlFor="input-property"
+                                  style={{ fontSize: "16px", fontFamily: "Poppins", fontWeight: "500", color: "#152B51" }}
+
                                 >
                                   Due Date
                                 </label>
                                 <br />
-                                <span style={{ fontSize: "13px" }}>
+                                <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
+
                                   {formatDateWithoutTime(
                                     outstandDetails.date || "N/A"
                                   ) || "N/A"}
@@ -1408,11 +1545,14 @@ const TWorkOrderDetails = () => {
                                 <label
                                   className="form-control-label"
                                   htmlFor="input-property"
+                                  style={{ fontSize: "16px", fontFamily: "Poppins", fontWeight: "500", color: "#152B51" }}
+
                                 >
                                   Assignees
                                 </label>
                                 <br />
-                                <span style={{ fontSize: "13px" }}>
+                                <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
+
                                   {outstandDetails?.staff_data
                                     ?.staffmember_name || "N/A"}
                                 </span>
@@ -1423,11 +1563,14 @@ const TWorkOrderDetails = () => {
                                 <label
                                   className="form-control-label"
                                   htmlFor="input-property"
+                                  style={{ fontSize: "16px", fontFamily: "Poppins", fontWeight: "500", color: "#152B51" }}
+
                                 >
                                   Permission to enter
                                 </label>
                                 <br />
-                                <span style={{ fontSize: "13px" }}>
+                                <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
+
                                   {outstandDetails?.entry_allowed
                                     ? "Yes"
                                     : "No"}
@@ -1450,29 +1593,33 @@ const TWorkOrderDetails = () => {
                         {outstandDetails ? (
                           <>
                             <Box
-                              border="1px solid #ccc"
-                              borderRadius="8px"
-                              maxWidth="100%" // Use 100% to make it responsive
+                              border="0.5px solid #737791"
+                              borderRadius="10px"
+                              maxWidth="100%"
                               margin="20px"
                               display="flex"
                               flexDirection="column"
-                              alignItems="center" // Center content horizontally
+                              alignItems="center"
+                              boxShadow=" 0px 4px 4px 0px #00000040"
                             >
                               <Box
+                                className="align-item-center text-center"
                                 borderBottom="1px solid #ccc"
                                 style={{
                                   width: "100%",
-                                  padding: "16px",
+                                  padding: "10px",
                                   textAlign: "left",
-                                  color: "#5e72e4",
+                                  color: "#152B51",
+                                  boxShadow: "0px 4px 4px 0px #00000040",
+                                  marginBottom: "10px"
                                 }}
                               >
-                                <h2
-                                  className="text"
-                                  style={{ color: "#263238" }}
+                                <span
+                                  style={{ color: "#152B51", fontWeight: "500", fontFamily: "Poppins", fontSize: "16px", }}
+
                                 >
                                   Images
-                                </h2>
+                                </span>
                               </Box>
 
                               {outstandDetails?.workOrder_images &&
@@ -1485,6 +1632,8 @@ const TWorkOrderDetails = () => {
                                     display: "flex",
                                     flexWrap: "wrap",
                                     justifyContent: "center",
+                                    fontFamily: "poppins",
+
                                   }}
                                 >
                                   {outstandDetails?.workOrder_images?.map(
@@ -1512,7 +1661,9 @@ const TWorkOrderDetails = () => {
                                   )}
                                 </Box>
                               ) : (
-                                "No Images Attached"
+                                <div className="mt-3">
+                                  No Images Attached
+                                </div>
                               )}
                               <br />
                               <Box
@@ -1537,7 +1688,8 @@ const TWorkOrderDetails = () => {
                                     )
                                   }
                                 >
-                                  <span>
+                                  <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
+
                                     {outstandDetails?.property_data
                                       ?.rental_adress || "N/A"}{" "}
                                     (
@@ -1563,7 +1715,8 @@ const TWorkOrderDetails = () => {
                                     textAlign: "center",
                                   }}
                                 >
-                                  <span>
+                                  <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
+
                                     {outstandDetails?.property_data
                                       ?.rental_city ? (
                                       <>
@@ -1626,7 +1779,7 @@ const TWorkOrderDetails = () => {
                 )}
               </div>
               <br />
-            </Card>
+            {/* </Card> */}
           </div>
         </Row>
         <br />

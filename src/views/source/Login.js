@@ -147,7 +147,7 @@ const Login = () => {
             });
             setTimeout(() => {
               localStorage.setItem("token", response.data.token);
-              if (roll === "tenants") {
+              if (roll === "tenant") {
                 navigate("/tenant/tenantdashboard");
               } else if (roll === "vendor") {
                 navigate("/vendor/vendordashboard");

@@ -99,7 +99,7 @@ const Leaseing = () => {
 
     try {
       setLoader(true);
-      const res = await axios.post(`${baseUrl}/tenants/tenants`, object);
+      const res = await axios.post(`${baseUrl}/tenant/tenants`, object);
       if (res.data.statusCode === 200) {
         toast.success("Tenant Added successfully!", {
           position: "top-center",
@@ -127,7 +127,7 @@ const Leaseing = () => {
     try {
       setLoader(true);
       const res = await axios.put(
-        `${baseUrl}/tenants/tenants/${tenant_id}`,
+        `${baseUrl}/tenant/tenants/${tenant_id}`,
         object
       );
       if (res.data.statusCode === 200) {
@@ -153,7 +153,7 @@ const Leaseing = () => {
   const fetchTenantData = async () => {
     if (tenant_id) {
       try {
-        const res = await axios.get(`${baseUrl}/tenants/get_tenant/${tenant_id}`);
+        const res = await axios.get(`${baseUrl}/tenant/get_tenant/${tenant_id}`);
         if (res.data.statusCode === 200) {
           tenantFormik.setValues(res.data.data);
         } else if (res.data.statusCode === 201) {

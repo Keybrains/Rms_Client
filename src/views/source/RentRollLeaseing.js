@@ -1047,7 +1047,7 @@ const RentRollLeaseing = () => {
     if (accessType?.admin_id) {
       try {
         const res = await axios.get(
-          `${baseUrl}/tenants/tenants/${accessType?.admin_id}`
+          `${baseUrl}/tenant/tenants/${accessType?.admin_id}`
         );
         if (res.data.statusCode === 200) {
           setTenantData(res.data.data);

@@ -290,7 +290,7 @@ const StaffNavbar = (props) => {
                   style={{
                     width: "40px",
                     height: "40px",
-                    backgroundColor: "rgba(82, 84, 89, 1)",
+                    backgroundColor: "rgba(21, 43, 81, 1)",
                     borderRadius: "12px",
                     color: "#fff",
                   }}

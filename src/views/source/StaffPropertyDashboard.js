@@ -155,39 +155,34 @@ const StaffPropertyDashboard = () => {
   return (
     <>
       <StaffHeader />
-      <Container className=" " fluid style={{ padding: "0px 50px 0px 50px " }}>
+      <Container className=" " fluid style={{ marginTop: "4rem", height: "100vh" }}>
         <Row>
           <div className="col">
-            <Card className="shadow " style={{ backgroundColor: "#152B51" }}>
-              <Row>
-                <Col
-                  xs="12"
-                  sm="4"
-                  style={{ display: "flex", justifyContent: "left" }}
-                >
-                  <FormGroup
-                    className=""
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <h1
-                      style={{
-                        color: "white",
-                        paddingLeft: "20px",
-                        fontSize: "20px",
-                        marginTop: "10px",
-                        fontFamily: "Poppins",
-                      }}
-                    >
-                      Properties
-                    </h1>
-                  </FormGroup>
-                </Col>
-              </Row>
-            </Card>
+            <CardHeader
+              className=" mt-3 mb-3 mx-2"
+              style={{
+                backgroundColor: "#152B51",
+                borderRadius: "10px",
+                boxShadow: " 0px 4px 4px 0px #00000040 ",
+              }}
+            >
+              <h2
+                className="mb-0"
+                style={{
+                  color: "#ffffff",
+                  fontFamily: "Poppins",
+                  fontWeight: "500",
+                  fontSize: "26px",
+                }}
+              >
+                Properties
+              </h2>
+            </CardHeader>
+
             <>
-              <Row>
+              <Row >
                 <Col xs="12" sm="6">
-                  <FormGroup className="">
+                  <FormGroup className="mx-2">
                     <Input
                       fullWidth
                       type="text"
@@ -220,7 +215,7 @@ const StaffPropertyDashboard = () => {
                         height: "45px",
                       }}
                     >
-                      <Col style={{color:"#152B51"}}>
+                      <Col style={{ color: "#152B51" }}>
                         Rental Address {console.log(sortBy, "yash", upArrow)}
                         {sortBy.includes("rental_adress") ? (
                           upArrow.includes("rental_adress") ? (
@@ -238,7 +233,7 @@ const StaffPropertyDashboard = () => {
                           />
                         )}
                       </Col>
-                      <Col style={{color:"#152B51"}}>
+                      <Col style={{ color: "#152B51" }}>
                         Property Subtype{" "}
                         {sortBy.includes("propertysub_type") ? (
                           upArrow.includes("propertysub_type") ? (
@@ -256,7 +251,7 @@ const StaffPropertyDashboard = () => {
                           />
                         )}
                       </Col>
-                      <Col style={{color:"#152B51"}}>
+                      <Col style={{ color: "#152B51" }}>
                         Locality{" "}
                         {sortBy.includes("rental_city") ? (
                           upArrow.includes("rental_city") ? (
@@ -274,7 +269,7 @@ const StaffPropertyDashboard = () => {
                           />
                         )}
                       </Col>
-                      <Col style={{color:"#152B51"}}>CreatedAt</Col>
+                      <Col style={{ color: "#152B51" }}>CreatedAt</Col>
                     </Row>
                     <Row
                       className="mt-3"
@@ -311,10 +306,10 @@ const StaffPropertyDashboard = () => {
                                 lineHeight: "10.93px",
                               }}
                             >
-                              <Col style={{color:"#152B51"}}>{address?.rental_adress} </Col>
-                              <Col style={{color:"#152B51"}}>{address?.propertysub_type}</Col>
-                              <Col style={{color:"#152B51"}}>{address?.rental_city}</Col>
-                              <Col style={{color:"#152B51"}}>
+                              <Col style={{ color: "#152B51" }}>{address?.rental_adress} </Col>
+                              <Col style={{ color: "#152B51" }}>{address?.propertysub_type}</Col>
+                              <Col style={{ color: "#152B51" }}>{address?.rental_city}</Col>
+                              <Col style={{ color: "#152B51" }}>
                                 {" "}
                                 {moment(address?.createdAt).format(
                                   "DD-MM-YYYY"

@@ -410,7 +410,7 @@ const TAddWork = () => {
   const fetchRentals = () => {
     if (accessType?.tenant_id) {
 
-      axios.get(`${baseUrl}/tenants/tenant_property/${accessType?.tenant_id}`)
+      axios.get(`${baseUrl}/tenant/tenant_property/${accessType?.tenant_id}`)
         .then((response) => {
           const responseData = response.data.data;
           if (responseData.length > 0) {
@@ -498,25 +498,45 @@ const TAddWork = () => {
     <>
       <TenantHeader />
       {/* Page content */}
-      <Container className="mt--7" fluid>
-        <Row>
+      <Container className="" fluid style={{ marginTop: "3rem", height: "100vh" }}>
+        <Row >
           <Col className="order-xl-1" xl="12">
             <Card
-              className="bg-secondary shadow"
+              className=" mb-3"
+              style={{ borderRadius: "20px", }}
             >
               {/* onSubmit={WorkFormik.handleSubmit} */}
               <Form onSubmit={(event) => {
                 event.preventDefault();
                 handleSubmit(WorkFormik.values)
               }}>
-                <CardHeader className="bg-white border-0">
-                  <Row className="align-items-center">
+                <CardHeader className="mx-5 mt-5" style={{
+                  backgroundColor: "#152B51",
+                  borderRadius: "6px",
+                  height: "45px",
+                  boxShadow: " 0px 4px 4px 0px #00000040 ",
+                  padding: "6px 7px 1px 21px",
+
+                }}>
+                  {/* <Row className="align-items-center">
                     <Col xs="8">
-                      <h3 className="mb-0">New Work Order</h3>
+                      <span className="" style={{
+                        color: "#ffffff",
+                        fontFamily: "Poppins",
+                        fontWeight: "500",
+                        fontSize: "22px",
+                      }}>New Work Order</span>
                     </Col>
-                  </Row>
-                </CardHeader>
-                <CardBody>
+                  </Row> */}
+                  <span className=" align-items-center " style={{
+                    color: "#ffffff",
+                    fontFamily: "Poppins",
+                    fontWeight: "500",
+                    fontSize: "22px",
+                    // padding:"6px 7px 1px 21px",
+                  }}>New Work Order</span>
+                </CardHeader >
+                <CardBody className="bg-white">
                   <Form>
                     <div className="pl-lg-4">
                       <Row>
@@ -525,15 +545,21 @@ const TAddWork = () => {
                             <label
                               className="form-control-label"
                               htmlFor="input-member"
+                              style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
                             >
                               Subject *
                             </label>
                             <br />
                             <br />
                             <Input
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                borderRadius: "6px",
+
+                              }}
                               className="form-control-alternative"
                               id="input-name"
-                              placeholder="Add Subject"
+                              placeholder="Add Subject here..."
                               type="text"
                               name="work_subject"
                               //name="nput-staffmember-name"
@@ -563,8 +589,10 @@ const TAddWork = () => {
                             }}
                           >
                             <label
-                              className="form-control-label"
+                              className="form-control-label mt-3"
                               htmlFor="input-unitadd"
+                              style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                             >
                               Photo
                             </label>
@@ -586,8 +614,17 @@ const TAddWork = () => {
                                 name={`workOrderImage`}
                                 onChange={(e) => fileData(e)}
                               />
-                              <label htmlFor={`workOrderImage`}>
-                                <b style={{ fontSize: "20px" }}>+</b> Add
+                              <label htmlFor={`workOrderImage`}
+
+                                style={{
+                                  fontFamily: "Poppins", fontSize: "14px", fontWeight: "400", color: "white", backgroundColor: "#152B51", borderRadius: "6px", padding: "15px",
+                                  boxShadow: " 0px 4px 4px 0px #00000040",
+
+                                }}
+
+                              >
+                                {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
+                                Upload here...
                               </label>
                             </span>
                           </FormGroup>
@@ -673,6 +710,8 @@ const TAddWork = () => {
                             <label
                               className="form-control-label"
                               htmlFor="input-desg"
+                              style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                             >
                               Property *
                             </label>
@@ -680,10 +719,17 @@ const TAddWork = () => {
                             <br />
                             <FormGroup>
                               <Dropdown
+
                                 isOpen={propdropdownOpen}
                                 toggle={toggle1}
                               >
-                                <DropdownToggle caret style={{ width: "100%" }}>
+                                <DropdownToggle caret style={{
+                                  width: "100%", boxShadow: " 0px 4px 4px 0px #00000040",
+                                  border: "1px solid #ced4da",
+
+                                  backgroundColor: "transparent",
+                                  color: "#A7A7A7"
+                                }}>
                                   {selectedProp
                                     ? selectedProp
                                     : "Select a property..."}{" "}
@@ -806,6 +852,8 @@ const TAddWork = () => {
                             <label
                               className="form-control-label"
                               htmlFor="input-desg"
+                              style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                             >
                               Category
                             </label>
@@ -815,7 +863,13 @@ const TAddWork = () => {
                               isOpen={categorydropdownOpen}
                               toggle={toggle2}
                             >
-                              <DropdownToggle caret style={{ width: "100%" }}>
+                              <DropdownToggle caret style={{
+                                width: "100%", boxShadow: " 0px 4px 4px 0px #00000040",
+                                border: "1px solid #ced4da",
+
+                                backgroundColor: "transparent",
+                                color: "#A7A7A7"
+                              }}>
                                 {selectedCategory} &nbsp;&nbsp;&nbsp;&nbsp;
                               </DropdownToggle>
                               <DropdownMenu style={{ width: "100%" }}>
@@ -877,6 +931,8 @@ const TAddWork = () => {
                             <label
                               className="form-control-label"
                               htmlFor="input-member"
+                              style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                             >
                               Other Category
                             </label>
@@ -916,15 +972,22 @@ const TAddWork = () => {
                         <Col lg="4">
                           <FormGroup>
                             <label
-                              className="form-control-label"
+                              className="form-control-label mt-3"
                               htmlFor="input-desg"
+                              style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                             >
                               Entry Allowed
                             </label>
                             <br />
                             <br />
                             <Dropdown isOpen={entrydropdownOpen} toggle={toggle4}>
-                              <DropdownToggle caret style={{ width: "100%" }}>
+                              <DropdownToggle caret style={{
+                                width: "100%", boxShadow: " 0px 4px 4px 0px #00000040",
+                                border: "1px solid #ced4da",
+                                backgroundColor: "transparent",
+                                color: "#A7A7A7"
+                              }}>
                                 {selectedEntry} &nbsp;&nbsp;&nbsp;&nbsp;
                               </DropdownToggle>
                               <DropdownMenu style={{ width: "100%" }}>
@@ -977,6 +1040,8 @@ const TAddWork = () => {
                             <label
                               className="form-control-label"
                               htmlFor="input-member"
+                              style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                             >
                               Work To Be Performed
                             </label>
@@ -984,8 +1049,9 @@ const TAddWork = () => {
                             <br />
                             <Input
                               className="form-control-alternative"
+                              style={{ boxShadow: " 0px 4px 4px 0px #00000040 " }}
                               id="input-name"
-                              placeholder=""
+                              placeholder="Enter here..."
                               type="textarea"
                               name="work_performed"
                               //name="nput-staffmember-name"
@@ -1071,7 +1137,7 @@ const TAddWork = () => {
                       <button
                         type="submit"
                         className="btn btn-primary"
-                        style={{ background: "green", cursor: "pointer" }}
+                        style={{ backgroundColor: "#152B51", cursor: "pointer" }}
                         onSubmit={(e) => {
                           e.preventDefault();
                           editworkorder(vid);
@@ -1087,18 +1153,18 @@ const TAddWork = () => {
                           e.preventDefault();
                           handleSubmit(WorkFormik.values);
                         }}
-                        style={{ background: "green" }}
+                        style={{ backgroundColor: "#152B51" }}
                       >
                         Add Work Order
                       </button>
                     )}
                     <button
-                      color="primary"
+                      // color="#152B51"
                       //  href="#rms"
-                      className="btn btn-primary"
+                      className="btn "
                       onClick={handleCloseButtonClick}
                       size="sm"
-                      style={{ background: "white", color: "black" }}
+                      style={{ background: "white", color: "#152B51" }}
                     >
                       Cancel
                     </button>

@@ -142,7 +142,7 @@ const Index = () => {
         try {
           console.log("firsti");
           const response1 = await axios.get(
-            `${baseUrl}/tenants/tenant_count/${accessType?.admin_id}`
+            `${baseUrl}/tenant/tenant_count/${accessType?.admin_id}`
           );
           const response2 = await axios.get(
             `${baseUrl}/rentals/rental_count/${accessType?.admin_id}`

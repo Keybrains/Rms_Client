@@ -4,10 +4,8 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import workorderdetail from "../../assets/img/icons/common/workordericon.svg";
 import profile from "../../assets/img/icons/common/profile1.svg";
 import VendorHeader from "components/Headers/VendorHeader";
 import {
@@ -17,14 +15,9 @@ import {
   Container,
   Row,
   Col,
-  Table,
   Button,
 } from "reactstrap";
 import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Grid,
 } from "@mui/material";
 
@@ -224,11 +217,11 @@ const VendorWorkDetail = () => {
     <>
       <VendorHeader />
       {/* Page content */}
-      <Container className="" fluid style={{ marginTop: "4rem" }}>
+      <Container className="" fluid >
         <Row>
           <Col className="text-right">
             <Button
-              color="primary"
+              // color="primary"
               className="mr-4"
               //  href="#rms"
               onClick={() => navigate("/vendor/vendorworktable")}
@@ -260,7 +253,7 @@ const VendorWorkDetail = () => {
                   fontSize: "26px",
                 }}
               >
-                Work Orders Details
+                Work Order Details
               </h2>
             </CardHeader>
           </Col>
@@ -271,7 +264,7 @@ const VendorWorkDetail = () => {
         <Row>
           <div className="col">
             {/* <Card className="" style={{backgroundColor:"transparent"}}> */}
-            <CardHeader className="d-flex justify-content-between align-items-center">
+            <CardHeader className=" border-0 d-flex justify-content-between align-items-center">
               <div>
                 <ToggleButtonGroup
                   color="primary"
@@ -349,7 +342,7 @@ const VendorWorkDetail = () => {
                           <Box
                             // border="1px solid #ccc"
                             border="0.5px solid #737791"
-                            borderRadius="8px"
+                            borderRadius="10px"
                             padding="16px"
                             maxWidth="900px"
                             boxShadow=" 0px 4px 4px 0px #00000040"
@@ -374,13 +367,13 @@ const VendorWorkDetail = () => {
                                 marginRight="16px"
                               >
                                 {/* <AssignmentOutlinedIcon /> */}
-                                <img src={workorderdetail} height={20} width={20} />
+                                <FormatListBulletedIcon />
 
                               </Box>
                               <Box flex="1">
                                 <h2
                                   className="text-lg"
-                                  style={{ color: "##152B51" }}
+                                  style={{ color: "#152B51" }}
                                 >
                                   {outstandDetails.work_subject || "N/A"}
                                 </h2>
@@ -517,7 +510,7 @@ const VendorWorkDetail = () => {
                                     <SmallSummaryCard
                                       label="Due Date"
                                       value={outstandDetails.date || "N/A"}
-                                      textTruncate // add this prop to enable text truncation
+                                      textTruncate
                                     />
                                   </Col>
                                 </Row>
@@ -536,7 +529,7 @@ const VendorWorkDetail = () => {
                                         outstandDetails.staff_data
                                           .staffmember_name || "N/A"
                                       }
-                                      textTruncate // add this prop to enable text truncation
+                                      textTruncate
                                     />
                                   </Col>
                                 </Row>
@@ -557,7 +550,7 @@ const VendorWorkDetail = () => {
                               style={{
                                 marginRight: "auto",
                                 overflowX: "auto",
-                              }} // Center the box horizontally
+                              }}
                             >
                               <h2
                                 className="text text-lg"
@@ -657,8 +650,7 @@ const VendorWorkDetail = () => {
                             container
                             // border="1px solid #ccc"
                             border="0.5px solid #737791"
-
-                            borderRadius="8px"
+                            borderRadius="10px"
                             padding="16px"
                             maxWidth="900px"
                             boxShadow=" 0px 4px 4px 0px #00000040"
@@ -666,7 +658,7 @@ const VendorWorkDetail = () => {
                             style={{
                               marginRight: "auto",
                               overflowX: "auto",
-                            }} // Center the box horizontally
+                            }}
                           >
                             <Grid item xs={3} sm={3.5} md={3} lg={2} xl={2}>
                               <h2
@@ -689,7 +681,7 @@ const VendorWorkDetail = () => {
                                       marginLeft: "auto",
                                       marginRight: "auto",
                                       overflowX: "auto",
-                                    }} // Center the box horizontally
+                                    }}
                                   >
                                     <div
                                       style={{
@@ -794,9 +786,9 @@ const VendorWorkDetail = () => {
                         <Box
                           // border="1px solid #ccc"
                           border="0.5px solid #737791"
-                          borderRadius="8px"
+                          borderRadius="10px"
                           boxShadow=" 0px 4px 4px 0px #00000040"
-                          maxWidth="100%" // Use 100% to make it responsive
+                          maxWidth="100%"
                           margin="20px"
                         >
                           <Box
@@ -901,7 +893,7 @@ const VendorWorkDetail = () => {
                           <Box
                             // border="1px solid #ccc"
                             border="0.5px solid #737791"
-                            borderRadius="8px"
+                            borderRadius="10px"
                             maxWidth="100%"
                             margin="20px"
                             display="flex"
@@ -1079,8 +1071,8 @@ const VendorWorkDetail = () => {
                         boxShadow=" 0px 4px 4px 0px #00000040"
 
                       >
-                        <Row>
-                          <Col lg="1">
+                        <Row style={{ justifyContent: "space-between" }}>
+                          <Col lg="8" className="d-flex" style={{ alignItems: "center" }}>
                             <Box
                               width="40px"
                               height="40px"
@@ -1091,38 +1083,36 @@ const VendorWorkDetail = () => {
                               borderRadius="8px"
                               color="white"
                               fontSize="24px"
-                              marginRight="16px"
+
                             >
-                              {/* <AssignmentOutlinedIcon /> */}
-                              <img src={workorderdetail} height={20} width={20} />
+
+                              <FormatListBulletedIcon />
 
                             </Box>
+
+                            <Col>
+                              <h2
+                                className=""
+                                style={{ color: "#152B51", marginBottom: 0, fontFamily: "poppins" }}
+                              >
+                                {outstandDetails?.work_subject || "N/A"}
+                              </h2>
+
+                              <span className="my-o" style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
+                                {outstandDetails.property_data?.rental_adress ||
+                                  "N/A"}
+                                {outstandDetails?.unit_data?.rental_unit ? (
+                                  " (" +
+                                  outstandDetails?.unit_data?.rental_unit +
+                                  ")"
+                                ) : (
+                                  <></>
+                                )}
+                              </span>
+
+                            </Col>
                           </Col>
-                          <Col lg="8">
-
-
-                            <span
-                              className="text-lg"
-                              style={{ fontSize: "16px", fontFamily: "Poppins", fontWeight: "500", color: "#152B51" }}
-
-                            >
-                              {outstandDetails.work_subject || "N/A"}
-                            </span><br />
-
-                            <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
-                              {outstandDetails.property_data?.rental_adress ||
-                                "N/A"}
-                              {outstandDetails?.unit_data?.rental_unit ? (
-                                " (" +
-                                outstandDetails?.unit_data?.rental_unit +
-                                ")"
-                              ) : (
-                                <></>
-                              )}
-                            </span>
-
-                          </Col>
-                          <Col lg="3">
+                          <Col lg="2" className="text-end">
                             <span
                               style={{
                                 display: "flex",
@@ -1153,7 +1143,7 @@ const VendorWorkDetail = () => {
                                           : "inherit",
                                 }}
                               >
-                                &nbsp;{outstandDetails.priority}&nbsp;
+                                &nbsp;{outstandDetails?.priority}&nbsp;
                               </span>
                             </span>
                           </Col>
@@ -1272,10 +1262,11 @@ const VendorWorkDetail = () => {
                               borderBottom="1px solid #ccc"
                               style={{
                                 width: "100%",
-                                padding: "16px",
+                                padding: "10px",
                                 textAlign: "left",
-                                boxShadow: " 0px 4px 4px 0px #00000040",
-                                color: "#5e72e4",
+                                color: "#152B51",
+                                boxShadow: "0px 4px 4px 0px #00000040",
+                                marginBottom: "10px"
                               }}
                             >
                               <span
@@ -1292,10 +1283,12 @@ const VendorWorkDetail = () => {
                                 style={{
                                   width: "100%",
                                   padding: "16px",
-                                  marginTop: "100px",
+                                  marginTop: "10px",
                                   display: "flex",
                                   flexWrap: "wrap",
                                   justifyContent: "center",
+                                  fontFamily: "poppins",
+
                                 }}
                               >
                                 {outstandDetails?.workOrder_images.map(
@@ -1366,11 +1359,11 @@ const VendorWorkDetail = () => {
                                 }}
                               >
                                 <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
-                                  {outstandDetails.propertyDetails
+                                  {outstandDetails.property_data
                                     ?.rental_city ? (
                                     <>
                                       {
-                                        outstandDetails.propertyDetails
+                                        outstandDetails.property_data
                                           ?.rental_city
                                       }
                                       ,
@@ -1378,11 +1371,11 @@ const VendorWorkDetail = () => {
                                   ) : (
                                     ""
                                   )}{" "}
-                                  {outstandDetails.propertyDetails
+                                  {outstandDetails.property_data
                                     ?.rental_state ? (
                                     <>
                                       {
-                                        outstandDetails.propertyDetails
+                                        outstandDetails.property_data
                                           ?.rental_state
                                       }
                                       ,
@@ -1390,11 +1383,11 @@ const VendorWorkDetail = () => {
                                   ) : (
                                     ""
                                   )}{" "}
-                                  {outstandDetails.propertyDetails
+                                  {outstandDetails.property_data
                                     ?.rental_country ? (
                                     <>
                                       {
-                                        outstandDetails.propertyDetails
+                                        outstandDetails.property_data
                                           ?.rental_country
                                       }
                                       ,
@@ -1402,11 +1395,11 @@ const VendorWorkDetail = () => {
                                   ) : (
                                     ""
                                   )}{" "}
-                                  {outstandDetails.propertyDetails
+                                  {outstandDetails.property_data
                                     ?.rental_postcode ? (
                                     <>
                                       {
-                                        outstandDetails.propertyDetails
+                                        outstandDetails.property_data
                                           ?.rental_postcode
                                       }
                                       .

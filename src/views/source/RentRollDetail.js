@@ -106,7 +106,7 @@ const RentRollDetail = () => {
     if (lease_id) {
       setLoading(true);
       try {
-        const res = await axios.get(`${baseUrl}/tenants/leases/${lease_id}`);
+        const res = await axios.get(`${baseUrl}/tenant/leases/${lease_id}`);
         setTenantDetails(res.data.data);
         setTenantId(res.data.data[0].tenant_id);
       } catch (error) {

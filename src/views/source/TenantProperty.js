@@ -19,7 +19,10 @@ import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 import { RotatingLines } from "react-loader-spinner";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import moment from "moment";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 const TenantProperty = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -51,7 +54,7 @@ const TenantProperty = () => {
     if (accessType?.tenant_id) {
       try {
         const allTenants = await axios.get(
-          `${baseUrl}/tenants/tenant_property/${accessType.tenant_id}`
+          `${baseUrl}/tenant/tenant_property/${accessType.tenant_id}`
         );
         setPropertyDetails(allTenants.data.data);
         setLoader(false);
@@ -148,39 +151,168 @@ const TenantProperty = () => {
     <>
       <TenantsHeader />
       {/* Page content */}
-      <Container className="mt--8 ml--10" fluid>
-        <Row>
-          <Col xs="12" sm="6">
-            <FormGroup className="">
-              <h1 style={{ color: "white" }}>Properties</h1>
-            </FormGroup>
-          </Col>
-        </Row>
+      <Container className=" " fluid style={{ marginTop: "4rem", height: "100vh" }}>
+
         <Row>
           <div className="col">
-            <Card className="shadow">
-              <CardHeader className="border-0">
-                {/* <h1 className="mb-0">Property</h1> */}
-                <Row>
-                  <Col xs="12" sm="6">
-                    <FormGroup className="">
-                      <Input
-                        fullWidth
-                        type="text"
-                        placeholder="Search"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        style={{
-                          width: "100%",
-                          maxWidth: "200px",
-                          minWidth: "200px",
-                        }}
-                      />
-                    </FormGroup>
+            <CardHeader
+              className=" mt-3 mb-3 mx-2"
+              style={{
+                backgroundColor: "#152B51",
+                borderRadius: "10px",
+                boxShadow: " 0px 4px 4px 0px #00000040 ",
+              }}
+            >
+              <h2
+                className="mb-0"
+                style={{
+                  color: "#ffffff",
+                  fontFamily: "Poppins",
+                  fontWeight: "500",
+                  fontSize: "26px",
+                }}
+              >
+                Properties
+              </h2>
+            </CardHeader>
+            <>
+              <Row>
+                <Col xs="12" sm="6">
+                  <FormGroup className="mx-2">
+                    <Input
+                      fullWidth
+                      type="text"
+                      placeholder="Search here..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      style={{
+                        width: "100%",
+                        maxWidth: "200px",
+                        minWidth: "200px",
+                        marginTop: "20px",
+                        boxShadow: "0px 4px 4px 0px #00000040",
+                      }}
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+              {!loader || rental_adress?.length > 0 ? (
+                <Row
+                  className="mx-2 mt-3 d-flex align-items-center py-1"
+                  style={{ borderRadius: "10px", height: "69px" }}
+                >
+                  <Col>
+                    <Row
+                      className="d-flex align-items-center"
+                      style={{
+                        border: "2px solid rgba(50, 69, 103, 1)",
+                        borderTopLeftRadius: "12px",
+                        borderTopRightRadius: "12px",
+                        height: "45px",
+                      }}
+                    >
+                      <Col style={{ color: "#152B51" }}>
+                        Rental Address {console.log(sortBy, "yash", upArrow)}
+                        {sortBy.includes("rental_adress") ? (
+                          upArrow.includes("rental_adress") ? (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("rental_adress")}
+                            />
+                          ) : (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("rental_adress")}
+                            />
+                          )
+                        ) : (
+                          <ArrowDropDownIcon
+                            onClick={() => sortData("rental_adress")}
+                          />
+                        )}
+                      </Col>
+                      <Col style={{ color: "#152B51" }}>
+                        Start date{" "}
+                        {sortBy.includes("start_date") ? (
+                          upArrow.includes("start_date") ? (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("start_date")}
+                            />
+                          ) : (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("start_date")}
+                            />
+                          )
+                        ) : (
+                          <ArrowDropDownIcon
+                            onClick={() => sortData("start_date")}
+                          />
+                        )}
+                      </Col>
+                      <Col style={{ color: "#152B51" }}>
+                        End Date{" "}
+                        {sortBy.includes("end_date") ? (
+                          upArrow.includes("end_date") ? (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("end_date")}
+                            />
+                          ) : (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("end_date")}
+                            />
+                          )
+                        ) : (
+                          <ArrowDropDownIcon
+                            onClick={() => sortData("end_date")}
+                          />
+                        )}
+                      </Col>
+
+                    </Row>
+                    <Row
+                      className="mt-3"
+                      style={{
+                        border: "0.5px solid rgba(50, 69, 103, 1)",
+                        borderBottomLeftRadius: "12px",
+                        borderBottomRightRadius: "12px",
+                        overflow: "hidden",
+                        fontSize: "16px",
+                        fontWeight: "600",
+                        lineHeight: "19.12px",
+                      }}
+                    >
+                      <Col>
+                        {filterTenantsBySearchAndPage().map(
+                          (address, index) => (
+                            <Row
+                              key={index}
+                              className="d-flex align-items-center"
+                              // onClick={() => navigateToDetails(vendor?.workOrder_id)}
+                              onClick={() => navigate(`/tenant/tenantpropertydetail/${address?.lease_id}`)}
+
+                              style={{
+                                cursor: "pointer",
+                                border: "0.5px solid rgba(50, 69, 103, 1)",
+                                fontSize: "12px",
+                                height: "40px",
+                                fontFamily: "poppins",
+                                fontWeight: "600",
+                                lineHeight: "10.93px",
+                              }}
+                            >
+                              <Col style={{ color: "#152B51" }}> {address?.rental_adress}{" "}
+                                {address?.rental_units
+                                  ? " - " + address?.rental_units
+                                  : null} </Col>
+                              <Col style={{ color: "#152B51" }}>{address?.start_date}</Col>
+                              <Col style={{ color: "#152B51" }}>{address?.end_date}</Col>
+
+                            </Row>
+                          )
+                        )}
+                      </Col>
+                    </Row>
                   </Col>
                 </Row>
-              </CardHeader>
-              {loader ? (
+              ) : (
                 <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
                   <RotatingLines
                     strokeColor="grey"
@@ -190,121 +322,8 @@ const TenantProperty = () => {
                     visible={loader}
                   />
                 </div>
-              ) : (
-                <div className="table-responsive">
-                  <>
-                    <Table
-                      className="align-items-center table-flush"
-                      responsive
-                    // style={{
-                    //   width: "100%",
-                    //   border: "1px solid #e5e5e5",
-                    //   borderRadius: "8px",
-                    //   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                    // }}
-                    >
-                      <thead className="thead-light">
-                        <tr>
-                          <th>
-                            Rental Address
-                            {sortBy.includes("rental_adress") ? (
-                              upArrow.includes("rental_adress") ? (
-                                <ArrowDownwardIcon
-                                  onClick={() => sortData("rental_adress")}
-                                />
-                              ) : (
-                                <ArrowUpwardIcon
-                                  onClick={() => sortData("rental_adress")}
-                                />
-                              )
-                            ) : (
-                              <ArrowUpwardIcon
-                                onClick={() => sortData("rental_adress")}
-                              />
-                            )}
-                          </th>
-                          <th>
-                            Start date
-                            {sortBy.includes("start_date") ? (
-                              upArrow.includes("start_date") ? (
-                                <ArrowDownwardIcon
-                                  onClick={() => sortData("start_date")}
-                                />
-                              ) : (
-                                <ArrowUpwardIcon
-                                  onClick={() => sortData("start_date")}
-                                />
-                              )
-                            ) : (
-                              <ArrowUpwardIcon
-                                onClick={() => sortData("start_date")}
-                              />
-                            )}
-                          </th>
-                          <th>
-                            End Date
-                            {sortBy.includes("end_date") ? (
-                              upArrow.includes("end_date") ? (
-                                <ArrowDownwardIcon
-                                  onClick={() => sortData("end_date")}
-                                />
-                              ) : (
-                                <ArrowUpwardIcon
-                                  onClick={() => sortData("end_date")}
-                                />
-                              )
-                            ) : (
-                              <ArrowUpwardIcon
-                                onClick={() => sortData("end_date")}
-                              />
-                            )}
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filterTenantsBySearchAndPage().map(
-
-                          (address, index) => (
-                            <>
-                              <tr
-                                key={index}
-                                // key={address}
-                                // onClick={() =>
-                                //   navigateToTenantsDetails(
-                                //     address.rental_adress
-                                //   )
-                                // }
-                                onClick={() => navigate(`/tenant/tenantpropertydetail/${address?.lease_id}`)}
-                                style={{ cursor: "pointer" }}
-                              >
-                                <td
-                                // style={{
-                                //   padding: "12px",
-                                //   borderBottom: "1px solid #e5e5e5",
-                                //   backgroundColor:
-                                //     index % 2 === 0 ? "#f9f9f9" : "#ffffff",
-                                //   textAlign: "center",
-                                // }}
-                                >
-                                  {address?.rental_adress}{" "}
-                                  {address?.rental_units
-                                    ? " - " + address?.rental_units
-                                    : null}
-                                </td>
-
-                                <td>{address?.start_date}</td>
-                                <td>{address?.end_date}</td>
-                              </tr>
-                            </>
-                          )
-                        )}
-                      </tbody>
-                    </Table>
-                  </>
-                </div>
               )}
-
-            </Card>
+            </>
           </div>
         </Row>
       </Container>
