@@ -121,50 +121,29 @@ const TenantWork = () => {
   };
 
   const filterRentalsBySearch = () => {
+    let filteredData;
     if (searchQuery2 && !searchQuery) {
       if (searchQuery2 === "All") {
         return workData;
-      }
+      } 
       if (searchQuery2 === "Over Due") {
         return workData.filter((rental) => {
           let currentDate = new Date();
           let rentalDate = new Date(rental.date);
           return rentalDate < currentDate && rental.status !== "Complete";
         });
-      }
-      //  else if (searchQuery2 === "Overdue") {
-      //   return workData.filter((rental) => {
-      //     return (
-      //       moment(rental.date).format("YYYY-MM-DD") <
-      //       moment().format("YYYY-MM-DD") && rental.status !== "Complete"
-      //     );
-      //   });
-      // }
-      //  else if (searchQuery2 === "New") {
-      //   return workData.filter((rental) => {
-      //     return (
-      //       moment(rental.date).format("YYYY-MM-DD") >=
-      //       moment().format("YYYY-MM-DD") && rental.status !== "Complete"
-      //     );
-      //   });
-      // }
-      //  else {
-      //   return workData.filter((rental) => {
-      //     const lowerCaseQuery = searchQuery2.toLowerCase();
-      //     return rental.status.toLowerCase().includes(lowerCaseQuery);
-      //   });
-      // }
-      return workData.filter((rental) => {
-            const lowerCaseQuery = searchQuery2.toLowerCase();
-            return rental.status.toLowerCase().includes(lowerCaseQuery);
-          });
+      } 
+        return workData.filter((rental) => {
+          const lowerCaseQuery = searchQuery2.toLowerCase();
+          return rental.status.toLowerCase().includes(lowerCaseQuery);
+        });
+      
     }
-
-    if (!searchQuery) {
+    if (!searchQuery ) {
       return workData;
     }
 
-   
+    if (searchQuery && !searchQuery2) {
       return workData.filter((rental) => {
         const lowerCaseQuery = searchQuery.toLowerCase();
         const isUnitAddress = (rental.unit_no + " " + rental.rental_adress)
@@ -182,36 +161,38 @@ const TenantWork = () => {
           rental.priority.toLowerCase().includes(lowerCaseQuery)
         );
       });
-    
+    }
 
-    // if (upArrow.length > 0) {
-    //   const sortingArrows = upArrow;
-    //   sortingArrows.forEach((value) => {
-    //     switch (value) {
-    //       case "rental_adress":
-    //         filteredData.sort((a, b) =>
-    //           a.rental_adress.localeCompare(b.rental_adress)
-    //         );
-    //         break;
-    //       case "work_subject":
-    //         filteredData.sort((a, b) =>
-    //           a.work_subject.localeCompare(b.work_subject)
-    //         );
-    //         break;
-    //       case "work_category":
-    //         filteredData.sort((a, b) =>
-    //           a.work_category.localeCompare(b.work_category)
-    //         );
-    //         break;
-    //       case "staffmember_name":
-    //         filteredData.sort((a, b) =>
-    //           a.staffmember_name.localeCompare(b.staffmember_name)
-    //         );
-    //         break;
-    //     }
-    //   });
-    //   return filteredData;
-    // }
+    if (upArrow.length > 0) {
+      const sortingArrows = upArrow;
+      sortingArrows.forEach((value) => {
+        switch (value) {
+          case "rental_adress":
+            filteredData.sort((a, b) =>
+              a.rental_adress.localeCompare(b.rental_adress)
+            );
+            break;
+          case "work_subject":
+            filteredData.sort((a, b) =>
+              a.work_subject.localeCompare(b.work_subject)
+            );
+            break;
+          case "work_category":
+            filteredData.sort((a, b) =>
+              a.work_category.localeCompare(b.work_category)
+            );
+            break;
+          case "staffmember_name":
+            filteredData.sort((a, b) =>
+              a.staffmember_name.localeCompare(b.staffmember_name)
+            );
+            break;
+          default:  
+            break;
+        }
+      });
+      return filteredData;
+    }
   };
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterRentalsBySearch();
@@ -351,11 +332,11 @@ const TenantWork = () => {
                       </DropdownItem>
                       <DropdownItem
                         onClick={() => {
-                          setSearchQuery2("Overdue");
+                          setSearchQuery2("Over Due");
                           setSearchQuery("");
                         }}
                       >
-                        Overdue
+                        Over Due
                       </DropdownItem>
                       <DropdownItem
                         onClick={() => {

@@ -26,6 +26,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import swal from "sweetalert";
 import { useNavigate, useParams } from "react-router-dom";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import Header from "components/Headers/Header";
@@ -41,6 +43,8 @@ import Cookies from "universal-cookie";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import moment from "moment";
+import deleicon from "../../assets/img/icons/common/delete.svg";
+import editicon from "../../assets/img/icons/common/editicon.svg";
 
 const PropertyType = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -284,25 +288,46 @@ const PropertyType = () => {
     <>
       <Header />
       {/* Page content */}
-      <Container className="mt--8" fluid>
+      <Container className="" fluid style={{ marginTop: "3rem", height: "100vh" }}>
         <Row>
-          <Col xs="12" sm="6">
-            <FormGroup className="">
-              <h1 style={{ color: "white" }}>Property Type</h1>
-            </FormGroup>
-          </Col>
-
           <Col className="text-right">
             <Button
-              color="primary"
+              // color="primary"
               //  href="#rms"
+              className="mr-4"
               onClick={() => navigate("/" + admin + "/AddPropertyType")}
-              size="sm"
-              style={{ background: "white", color: "blue" }}
+              size="small"
+              style={{ background: "#152B51", color: "#fff" }}
             >
               Add New Property Type
             </Button>
           </Col>
+          <Col xs="12" lg="12" sm="6">
+            {/* <FormGroup className="">
+              <h1 style={{ color: "white" }}>Property Type</h1>
+            </FormGroup> */}
+            <CardHeader
+              className=" mt-3 mx-4"
+              style={{
+                backgroundColor: "#152B51",
+                borderRadius: "10px",
+                boxShadow: " 0px 4px 4px 0px #00000040 ",
+              }}
+            >
+              <h2
+                className=""
+                style={{
+                  color: "#ffffff",
+                  fontFamily: "Poppins",
+                  fontWeight: "500",
+                  fontSize: "26px",
+                }}
+              >
+                Property Type
+              </h2>
+            </CardHeader>
+          </Col>
+
         </Row>
         <br />
         {/* Table */}
@@ -319,14 +344,15 @@ const PropertyType = () => {
                 />
               </div>
             ) : (
-              <Card className="shadow">
+              <>
+                {/* <Card className="shadow"> */}
                 <CardHeader className="border-0">
-                  <Row className="d-flex">
+                  <Row className="d-flex mx-2" >
                     <FormGroup className="mr-sm-2">
                       <Input
                         fullWidth
                         type="text"
-                        placeholder="Search"
+                        placeholder="Search here..."
                         value={searchQuery}
                         onChange={(e) => {
                           setSearchQuery(e.target.value);
@@ -336,6 +362,7 @@ const PropertyType = () => {
                           width: "100%",
                           maxWidth: "200px",
                           minWidth: "200px",
+                          boxShadow: " 0px 4px 4px 0px #00000040",
                           border: "1px solid #ced4da", // Border color similar to the input
                         }}
                       />
@@ -345,10 +372,12 @@ const PropertyType = () => {
                         <DropdownToggle
                           caret
                           style={{
-                            boxShadow: "none",
+                            boxShadow: " 0px 4px 4px 0px #00000040",
                             border: "1px solid #ced4da",
                             maxWidth: "200px",
                             minWidth: "200px",
+                            backgroundColor: "transparent",
+                            color: "#A7A7A7"
                           }}
                         >
                           {searchQuery2
@@ -387,10 +416,10 @@ const PropertyType = () => {
                     </FormGroup>
                   </Row>
                 </CardHeader>
-                <Table className="align-items-center table-flush" responsive>
+                {/* <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
-                      {/* <th scope="col">Property_ID</th> */}
+                     
                       <th scope="col">
                         Main Type
                         {sortBy.includes("property_type") ? (
@@ -494,7 +523,166 @@ const PropertyType = () => {
                       ))}
                     </tbody>
                   )}
-                </Table>
+                </Table> */}
+                <Row
+                  className="mx-4 mt-3 d-flex align-items-center py-1"
+                  style={{ borderRadius: "10px", height: "auto" }}
+                >
+                  <Col>
+                    <Row
+                      className="d-flex align-items-center"
+                      style={{
+                        border: "2px solid rgba(50, 69, 103, 1)",
+                        borderTopLeftRadius: "12px",
+                        borderTopRightRadius: "12px",
+                        height: "45px",
+                        fontSize: "14px",
+                        fontFamily: "poppins",
+                        fontWeight: "600",
+                        boxShadow: " 0px 4px 4px 0px #00000040",
+                      }}
+                    >
+                      <Col style={{ color: "#152B51" }}>
+
+                        Main Type
+                        {sortBy.includes("property_type") ? (
+                          upArrow.includes("property_type") ? (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("property_type")}
+                            />
+                          ) : (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("property_type")}
+                            />
+                          )
+                        ) : (
+                          <ArrowDropDownIcon
+                            onClick={() => sortData("property_type")}
+                          />
+                        )}
+                      </Col>
+                      <Col style={{ color: "#152B51" }}>
+
+                        Sub Type{" "}
+                        {sortBy.includes("propertysub_type") ? (
+                          upArrow.includes("propertysub_type") ? (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("propertysub_type")}
+                            />
+                          ) : (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("propertysub_type")}
+                            />
+                          )
+                        ) : (
+                          <ArrowDropDownIcon
+                            onClick={() => sortData("propertysub_type")}
+                          />
+                        )}
+                      </Col>
+
+                      <Col style={{ color: "#152B51" }}>
+                        Created At{" "}
+                        {sortBy.includes("createdAt") ? (
+                          upArrow.includes("createdAt") ? (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("createdAt")}
+                            />
+                          ) : (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("createdAt")}
+                            />
+                          )
+                        ) : (
+                          <ArrowDropDownIcon
+                            onClick={() => sortData("createdAt")}
+                          />
+                        )}
+                      </Col>
+                      <Col style={{ color: "#152B51" }}>
+                        Updated At{" "}
+
+                      </Col>
+                      <Col style={{ color: "#152B51" }}>
+                        Action{" "}
+
+                      </Col>
+                    </Row>
+                    {/* {propertyData?.length === 0 ? (
+                      <tbody>
+                        <tr className="text-center">
+                          <td colSpan="5" style={{ fontSize: "15px" }}>
+                            No Property Types Added
+                          </td>
+                        </tr>
+                      </tbody>
+                    ) : ( */}
+                      <Row
+                        className="mt-3"
+                        style={{
+                          border: "0.5px solid rgba(50, 69, 103, 1)",
+                          borderBottomLeftRadius: "12px",
+                          borderBottomRightRadius: "12px",
+                          overflow: "hidden",
+                          fontSize: "16px",
+                          fontWeight: "600",
+                          // lineHeight: "19.12px",
+                        }}
+                      >
+                        <Col>
+                          {filterTenantsBySearchAndPage()?.map((property) => (
+                            <Row
+                              key={property._id}
+                              className="d-flex align-items-center"
+                              // onClick={() => navigateToDetails(vendor?.workOrder_id)}
+
+                              style={{
+                                cursor: "pointer",
+                                border: "0.5px solid rgba(50, 69, 103, 1)",
+                                fontSize: "12px",
+                                height: "40px",
+                                fontFamily: "poppins",
+                                fontWeight: "600",
+                                lineHeight: "10.93px",
+                              }}
+                            >
+                              <Col style={{ color: "#152B51" }}>{property.property_type} </Col>
+                              <Col style={{ color: "#152B51" }}>{property.propertysub_type}</Col>
+                              <Col style={{ color: "#152B51" }}> {moment(property.createdAt).format("DD-MM-YYYY")}
+                              </Col>
+                              <Col style={{ color: "#152B51" }}>
+                                {" "}
+                                {moment(property.updatedAt).format("DD-MM-YYYY")}
+                              </Col>
+                              <Col>  <div style={{ display: "flex" }}>
+                                <div
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() =>
+                                    deleteProperty(property.property_id)
+                                  }
+                                >
+                                  <img src={deleicon} width={20} height={20} />
+
+                                </div>
+                                &nbsp; &nbsp; &nbsp;
+                                <div
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() =>
+                                    editPropertyType(property.property_id)
+                                  }
+                                >
+                                  <img src={editicon} width={20} height={20} />
+
+                                </div>
+                              </div></Col>
+                            </Row>
+                          )
+                          )}
+                        </Col>
+                      </Row>
+                     {/* )} */}
+                  </Col>
+                </Row>
                 {paginatedData?.length > 0 ? (
                   <Row>
                     <Col className="text-right m-3">
@@ -577,7 +765,8 @@ const PropertyType = () => {
                 ) : (
                   <></>
                 )}
-              </Card>
+                {/* </Card> */}
+              </>
             )}
           </div>
         </Row>

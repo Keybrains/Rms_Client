@@ -165,7 +165,7 @@ function CreditCardForm(props) {
     card_type: yup.string(),
     first_name: yup.string().required("Required"),
     last_name: yup.string().required("Required"),
-    address1: yup.string(),
+    address1: yup.string().required("Required"),
     city: yup.string(),
     state: yup.string(),
     zip: yup.string(),
@@ -451,7 +451,7 @@ function CreditCardForm(props) {
                       /> */}
                   </FormGroup>
                 </Col>
-                <Col xs="12" sm="6">
+                {/* <Col xs="12" sm="6">
                   <FormGroup>
                     <label className="mt-2" htmlFor="last_name" style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
                     >Last Name *</label>
@@ -466,14 +466,9 @@ function CreditCardForm(props) {
                       placeholder="Enter last name"
                       tag={Field}
                       required
-                    />
-                    {/* <ErrorMessage
-                        name="last_name"
-                        component="div"
-                        style={{ color: "red" }}
-                      /> */}
+                    />                   
                   </FormGroup>
-                </Col>
+                </Col> */}
               </Row>
 
               <Row className="mb--2">
@@ -529,7 +524,7 @@ function CreditCardForm(props) {
                 <Col xs="12" sm="10">
                   <FormGroup>
                     <label className="mt-2" htmlFor="address1" style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
-                    >Address </label>
+                    >Address *</label>
                     <Input
                       style={{
                         boxShadow: " 0px 4px 4px 0px #00000040 ",
@@ -540,6 +535,8 @@ function CreditCardForm(props) {
                       name="address1"
                       placeholder="Enter address"
                       tag={Field}
+                      required
+
                     />
                     {/* <ErrorMessage
                         name="address1"

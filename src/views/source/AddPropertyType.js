@@ -182,8 +182,8 @@ const AddPropertyType = () => {
 
   return (
     <>
-      <AddPropertyTypeHeader />
-      <Container className="mt--7" fluid>
+      {/* <AddPropertyTypeHeader /> */}
+      <Container className="" fluid style={{ marginTop: "4rem", height: "100vh" }}>
         <Row>
           <Col className="order-xl-1" xl="12">
             <Card className="bg-secondary shadow">

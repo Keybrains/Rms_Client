@@ -136,10 +136,12 @@ const TenantNavbar = (props) => {
               onKeyDown={toggleSidebar}
             >
               <List style={{ width: "350px" }}>
-                <h2 style={{ color: "#263238", marginLeft: "15px" }}>
+                <Divider />
+                <div >
+                <h2 style={{ color: "#fff",borderTopLeftRadius:"7px",borderBottomLeftRadius:"10px", marginLeft: "15px", backgroundColor: "#152B51", borderRadius: "10px, 0px, 0px, 10px", fontFamily: "Poppins", fontWeight: "600",marginTop:"-9px",padding:"18px" ,marginLeft:"0",}}>
                   Notifications
                 </h2>
-                <Divider />
+                </div>
                 {tenantNotification.map((data) => {
                   if (data.isTenantread) {
                     return null;
@@ -155,25 +157,43 @@ const TenantNavbar = (props) => {
                     return (
                       <div
                         key={data._id}
-                        style={{ backgroundColor: "#abccba" }}
                       >
                         <ListItem onClick={() => handlePropertySelect(data)}>
                           <div>
-                            <h4>{notificationTitle}</h4>
-                            <p>{notificationDetails}</p>
+                            <h4
+                             style={{
+                              color: "#152B51",
+                             fontSize: "20px",
+                             fontFamily: "Poppins",
+                             fontWeight: "600",
+                           }}>{notificationTitle}</h4>
+                            <p                            
+                            style={{
+                              color: "#C2C3CF",
+                              fontSize: "16px",
+                              fontFamily: "Poppins",
+                              fontWeight: "400",
+                            }}>{notificationDetails}</p>
                             <Row>
                               <Col lg="8">
-                                <p>{notificationTime}</p>
+                                <p style={{
+                                color: "#152B51",
+                                fontSize: "14px",
+                                fontFamily: "Poppins",
+                                fontWeight: "500",
+                              }}>{notificationTime}</p>
                               </Col>
                               <Col>
                                 <Button
                                   variant="contained"
-                                  color="primary"
+                                  // color="primary"
                                   style={{
-                                    background: "#263238",
+                                    background: "#152B51",
                                     color: "white",
                                     textTransform: "none",
                                     fontSize: "12px",
+                                    fontFamily: "Poppins",
+                                    fontWeight: "500",
                                   }}
                                   // onClick={() =>
                                   //   navigateToDetails(data.notification_type)
@@ -254,7 +274,7 @@ const TenantNavbar = (props) => {
                     borderRadius: "12px",
                     color: "#fff",
                   }}
-                >
+                >   
                   {`${accessType?.tenant_firstName
                     ?.slice(0, 1)
                     .toUpperCase()}${accessType?.tenant_lastName

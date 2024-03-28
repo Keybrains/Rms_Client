@@ -135,10 +135,13 @@ const VendorNavbar = (props) => {
               onKeyDown={toggleSidebar}
             >
               <List style={{ width: "350px" }}>
-                <h2 style={{ color: "#fff", marginLeft: "15px", backgroundColor: "#152B51", borderRadius: "10px, 0px, 0px, 10px", fontFamily: "Poppins", fontWeight: "600" }}>
+                <Divider />
+                <div >
+                <h2 style={{ color: "#fff",borderTopLeftRadius:"7px",borderBottomLeftRadius:"10px", marginLeft: "15px", backgroundColor: "#152B51", borderRadius: "10px, 0px, 0px, 10px", fontFamily: "Poppins", fontWeight: "600",marginTop:"-9px",padding:"18px" ,marginLeft:"0",}}>
                   Notifications
                 </h2>
-                <Divider />
+                </div>
+                
                 {vendorNotification.map((data) => {
                   const notificationTitle =
                     data.notification_title || "No Title Available";
@@ -152,23 +155,31 @@ const VendorNavbar = (props) => {
                     <div key={data._id}>
                       <ListItem onClick={() => handlePropertySelect(data)}>
                         <div>
-                          <h4>{notificationTitle}</h4>
-                          <p>{notificationDetails}</p>
+                          <h4 style={{
+                                 color: "#152B51",
+                                fontSize: "20px",
+                                fontFamily: "Poppins",
+                                fontWeight: "600",
+                              }} > {notificationTitle}</h4>
+                          <p style={{
+                                color: "#C2C3CF",
+                                fontSize: "16px",
+                                fontFamily: "Poppins",
+                                fontWeight: "400",
+                              }}>{notificationDetails}</p>
                           <Row>
-                            <Col lg="8"
-                              style={{
+                            <Col lg="8">
+                              <p style={{
                                 color: "#152B51",
-                                textTransform: "none",
                                 fontSize: "14px",
                                 fontFamily: "Poppins",
                                 fontWeight: "500",
-                              }}>
-                              <p>{notificationTime}</p>
+                              }}>{notificationTime}</p>
                             </Col>
                             <Col>
                               <Button
                                 variant="contained"
-                                color="primary"
+                                // color="primary"
                                 style={{
                                   background: "#152B51",
                                   color: "white",

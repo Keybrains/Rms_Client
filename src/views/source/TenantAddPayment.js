@@ -1037,6 +1037,7 @@ function TenantAddPayment() {
                           style={{
                             boxShadow: " 0px 4px 4px 0px #00000040 ",
                             borderRadius: "6px",
+                            width: "70%"
 
                           }}
                           className="form-control-alternative"
@@ -1075,7 +1076,7 @@ function TenantAddPayment() {
                           </DropdownToggle>
                           <DropdownMenu
                             style={{
-                              width: "100%",
+                              width: "max-content",
                               maxHeight: "200px",
                               overflowY: "auto",
                             }}
@@ -1096,7 +1097,7 @@ function TenantAddPayment() {
                     </Col>
                   </Row>
                   <Row>
-                    <Col sm="4">
+                    <Col sm="2">
                       <FormGroup>
                         <label
                           className="form-control-label mt-2"
@@ -1110,11 +1111,11 @@ function TenantAddPayment() {
                           style={{
                             boxShadow: " 0px 4px 4px 0px #00000040 ",
                             borderRadius: "6px",
-
+                            width: "80%",
                           }}
                           type="number"
                           id="amount"
-                          placeholder="Enter amount"
+                          placeholder="Enter amount here..."
                           name="total_amount"
                           onBlur={generalledgerFormik.handleBlur}
                           onChange={generalledgerFormik.handleChange}
@@ -1449,7 +1450,7 @@ function TenantAddPayment() {
                   </Row>
 
                   <Row>
-                    <Col lg="3">
+                    <Col sm="3">
                       <FormGroup>
                         <label
                           className="form-control-label mt-2"
@@ -1463,10 +1464,11 @@ function TenantAddPayment() {
                           style={{
                             boxShadow: " 0px 4px 4px 0px #00000040 ",
                             borderRadius: "6px",
+                            width: '70%'
                           }}
                           className="form-control-alternative"
                           id="input-unitadd"
-                          placeholder="if left blank, will show 'Payment'"
+                          placeholder="If left blank, will show 'Payment'"
                           type="text"
                           name="memo"
                         />
@@ -1485,29 +1487,51 @@ function TenantAddPayment() {
                         >
                           Apply Payment to Balances
                         </label>
-                        <div className="table-responsive">
+                        <div className="table-responsive" style={{
+                          boxShadow: " 0px 4px 4px 0px #00000040",
+
+
+                        }}>
                           <Table
                             className="table table-bordered"
                             style={{
                               borderCollapse: "collapse",
-                              border: "1px solid #ddd",
+                              // border: "1px solid #ddd",
+                              border: "1px solid #152B51",
                               overflow: "hidden",
+                              boxShadow: " 0px 4px 4px 0px #00000040",
                             }}
                           >
                             <thead>
-                              <tr style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "600", color: "#152B51" }}
+                              <tr style={{
+                                fontFamily: "Poppins", fontSize: "16px", fontWeight: "600", color: "#152B51",
+                                border: "1px solid #152B51",
+
+                              }}
                               >
-                                <th>Account</th>
-                                {!payment_id && <th>Balance</th>}
-                                <th>Amount</th>
+                                <th style={{
+                                  border: "1px solid #152B51",
+                                }}>Account</th>
+                                {!payment_id &&
+                                  <th style={{
+                                    border: "1px solid #152B51",
+                                  }}>Balance</th>}
+                                <th style={{
+                                  border: "1px solid #152B51",
+                                }}>Amount</th>
                               </tr>
                             </thead>
                             <tbody>
                               <>
                                 {generalledgerFormik.values.payments?.map(
                                   (payments, index) => (
-                                    <tr key={index}>
-                                      <td>
+                                    <tr key={index} style={{
+                                      border: "1px solid #152B51",
+                                    }}>
+                                      <td style={{
+                                        border: "1px solid #152B51",
+                                      }}>
+
                                         <Dropdown
                                           isOpen={payments.dropdownOpen}
                                           toggle={() => toggleDropdown(index)}
@@ -1626,7 +1650,11 @@ function TenantAddPayment() {
                                         </Dropdown>
                                       </td>
                                       {!payment_id && (
-                                        <td>
+                                        <td
+                                          style={{
+                                            border: "1px solid #152B51",
+                                          }}
+                                        >
                                           <Input
                                             className="form-control-alternative"
                                             id="input-unitadd"
@@ -1649,7 +1677,11 @@ function TenantAddPayment() {
                                           />
                                         </td>
                                       )}
-                                      <td>
+                                      <td
+                                        style={{
+                                          border: "1px solid #152B51",
+                                        }}
+                                      >
                                         <Input
                                           className="form-control-alternative"
                                           id="input-unitadd"
@@ -1694,7 +1726,9 @@ function TenantAddPayment() {
                                         ) : null}
                                       </td>
                                       {!payment_id && (
-                                        <td>
+                                        <td style={{
+                                          border: "1px solid #152B51",
+                                        }}>
                                           <ClearIcon
                                             type="button"
                                             style={{
@@ -1712,15 +1746,27 @@ function TenantAddPayment() {
                                     </tr>
                                   )
                                 )}
-                                <tr>
-                                  <th>Total</th>
-                                  <th>{total.toFixed(2)}</th>
+                                <tr style={{
+                                  border: "1px solid #152B51",
+                                }}>
+                                  <th style={{
+                                    border: "1px solid #152B51",
+                                  }}>Total</th>
+                                  <th style={{
+                                    border: "1px solid #152B51",
+                                  }}>{total.toFixed(2)}</th>
                                 </tr>
                                 {Number(
                                   generalledgerFormik.values.total_amount || 0
                                 ) !== Number(total) ? (
-                                  <tr>
-                                    <th colSpan={2}>
+                                  <tr
+                                    style={{
+                                      border: "1px solid #152B51",
+                                    }}
+                                  >
+                                    <th colSpan={2}
+
+                                    >
                                       <span
                                         style={{
                                           cursor: "pointer",
@@ -1743,7 +1789,11 @@ function TenantAddPayment() {
                             {!payment_id && (
                               <tfoot>
                                 <tr>
-                                  <td colSpan="4">
+                                  <td colSpan="4"
+                                    style={{
+                                      border: "1px solid #152B51",
+                                    }}
+                                  >
                                     <Button
                                       type="button"
                                       className="btn "
@@ -1761,7 +1811,7 @@ function TenantAddPayment() {
                       </FormGroup>
                     </Col>
                   </Row>
-                  <Row>
+                  <Row className="mt-2">
                     <Col lg="4">
                       <FormGroup>
                         <label
@@ -1846,33 +1896,38 @@ function TenantAddPayment() {
                       </FormGroup>
                     </Col>
                   </Row> */}
-                  <Table
+                  {/* <Table className="mt-2"
                     style={{
-                      width: "40%",
+                      width: "20%",
                       borderCollapse: "collapse",
-                      backgroundColor: "#f7f7f7",
+                      backgroundColor: "#fff",
                       borderRadius: "8px",
+                      border: "none",
                       boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
                     }}
-                  >
-                    <tbody>
+                  > */}
+                    {/* <tbody style={{
+                      width:"20%",
+                      border: "none",
+
+                    }}> */}
                       {selectedPaymentMethod === "Credit Card" && (
                         <>
-                          <tr style={{ backgroundColor: "#e0e0e0", borderRadius: '6px', }}>
-                            <td
+                          <Row className="mx-0" style={{ backgroundColor: "#e0e0e0", borderRadius: '6px',maxWidth:"30%" }}>
+                            <Col
                               style={{
                                 padding: "12px",
-                                borderBottom: "1px solid #bdbdbd",
-                                fontFamily: "Poppins", fontSize: "14px", borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px', fontWeight: "500"
+                                // borderBottom: "1px solid #bdbdbd",
+                                fontFamily: "Poppins", fontSize: "14px", borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px', fontWeight: "500",width:"60%"
 
                               }}
                             >
                               Amount
-                            </td>
-                            <td
+                            </Col>
+                            <Col className="d-flex justify-content-end"
                               style={{
                                 padding: "12px",
-                                borderBottom: "1px solid #bdbdbd",
+                                // borderBottom: "1px solid #bdbdbd",
                                 borderTopRightRadius: '10px', borderBottomRightRadius: '10px',
 
                               }}
@@ -1881,19 +1936,19 @@ function TenantAddPayment() {
 
                                 ${generalledgerFormik.values.total_amount || 0}
                               </strong>
-                            </td>
-                          </tr>
-                          <tr style={{ backgroundColor: "#f5f5f5", borderRadius: '6px', }}>
-                            <td
+                            </Col>
+                          </Row>
+                          <Row className="mx-0" style={{ backgroundColor: "#f5f5f5", borderRadius: '6px', maxWidth:"30%" }}>
+                            <Col
                               style={{
                                 padding: "12px",
-                                borderBottom: "1px solid #bdbdbd",
+                                // borderBottom: "1px solid #bdbdbd",
                                 fontFamily: "Poppins", fontSize: "14px", borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px', fontWeight: "500"
                               }}
                             >
                               Surcharge included
-                            </td>
-                            <td
+                            </Col>
+                            <Col className="d-flex justify-content-end"
                               style={{
                                 padding: "12px",
                                 borderBottom: "1px solid #bdbdbd",
@@ -1903,24 +1958,24 @@ function TenantAddPayment() {
                               <strong style={{ color: "grey", fontFamily: "Poppins", fontSize: "14px", fontWeight: "500", }}>
                                 ${generalledgerFormik.values.surcharge || 0}
                               </strong>
-                            </td>
-                          </tr>
+                            </Col>
+                          </Row>
                         </>
                       )}
 
-                      <tr style={{ backgroundColor: "#152B51", borderRadius: '6px', }}>
-                        <td style={{ padding: "12px", color: "#fff", fontFamily: "Poppins", fontSize: "14px", borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px', fontWeight: "500" }}>
+                      <Row className="mx-0" style={{ backgroundColor: "#152B51", borderRadius: '6px', maxWidth:"30%" }}>
+                        <Col style={{ padding: "12px", color: "#fff", fontFamily: "Poppins", fontSize: "14px", borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px', fontWeight: "500" }}>
                           Total Amount
-                        </td>
-                        <td style={{ padding: "12px", borderTopRightRadius: '10px', borderBottomRightRadius: '10px', }}>
+                        </Col>
+                        <Col className="d-flex justify-content-end" style={{ padding: "12px", borderTopRightRadius: '10px', borderBottomRightRadius: '10px', }}>
                           <strong style={{ color: "#fff", fontFamily: "Poppins", fontSize: "14px", fontWeight: "500", }}>
                             ${totalAmount1 || generalledgerFormik.values.total_amount || 0}
                           </strong>
-                        </td>
-                      </tr>
+                        </Col>
+                      </Row>
 
-                    </tbody>
-                  </Table>
+                    {/* </tbody> */}
+                  {/* </Table> */}
 
                   <br />
 
@@ -1986,7 +2041,7 @@ function TenantAddPayment() {
         <Modal
           isOpen={isModalOpen}
           toggle={closeModal}
-          style={{ maxWidth: "1000px", borderRadius:"20px" }}
+          style={{ maxWidth: "1000px", borderRadius: "20px" }}
         >
           <ModalHeader className=" mx-4 mt-5 text-white" style={{
             backgroundColor: "#152B51",

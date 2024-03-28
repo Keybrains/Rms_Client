@@ -193,11 +193,14 @@ const StaffNavbar = (props) => {
               onClick={toggleSidebar}
               onKeyDown={toggleSidebar}
             >
-              <List style={{ width: "350px" }}>
-                <h2 style={{ color: "#033E3E", marginLeft: "15px" }}>
+               <List style={{ width: "350px" }}>
+                <Divider />
+                <div >
+                <h2 style={{ color: "#fff",borderTopLeftRadius:"7px",borderBottomLeftRadius:"10px", marginLeft: "15px", backgroundColor: "#152B51", borderRadius: "10px, 0px, 0px, 10px", fontFamily: "Poppins", fontWeight: "600",marginTop:"-9px",padding:"18px" ,marginLeft:"0",}}>
                   Notifications
                 </h2>
-                <Divider />
+                </div>
+
                 {staffMemberNotification?.map((data) => {
                   const notificationTitle =
                     data?.notification_title || "No Title Available";
@@ -208,24 +211,42 @@ const StaffNavbar = (props) => {
                   ).toLocaleString();
 
                   return (
-                    <div key={data._id} style={{ backgroundColor: "#abccba" }}>
+                    <div key={data._id} >
                       <ListItem onClick={() => handlePropertySelect(data)}>
                         <div>
-                          <h4>{notificationTitle}</h4>
-                          <p>{notificationDetails}</p>
+                          <h4 style={{
+                                 color: "#152B51",
+                                fontSize: "20px",
+                                fontFamily: "Poppins",
+                                fontWeight: "600",
+                              }}>{notificationTitle}</h4>
+                          <p style={{
+                                color: "#C2C3CF",
+                                fontSize: "16px",
+                                fontFamily: "Poppins",
+                                fontWeight: "400",
+                              }}>{notificationDetails}</p>
                           <Row>
                             <Col lg="8">
-                              <p>{notificationTime}</p>
+                              <p
+                              style={{
+                                color: "#152B51",
+                                fontSize: "14px",
+                                fontFamily: "Poppins",
+                                fontWeight: "500",
+                              }}>{notificationTime}</p>
                             </Col>
                             <Col>
                               <Button
                                 variant="contained"
                                 //color="primary"
                                 style={{
-                                  background: "#033E3E",
+                                  background: "#152B51",
                                   color: "white",
                                   textTransform: "none",
                                   fontSize: "12px",
+                                  fontFamily: "Poppins",
+                                  fontWeight: "500",
                                 }}
                                 onClick={() => {
                                   readStaffmemberNotification(
