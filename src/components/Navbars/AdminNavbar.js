@@ -163,7 +163,7 @@ const AdminNavbar = (props) => {
                   background: "#152B51",
                   color: "#fff",
                   fontSize: "16px",
-                  fontFamily: "Roboto",
+                  fontFamily: "Poppins",
                   fontWeight: "500",
                 }}
                 className="p-2"
@@ -192,11 +192,12 @@ const AdminNavbar = (props) => {
               <DropdownToggle
                 style={{
                   border: "none",
-                  background: "none",
+                  background: "rgba(54, 159, 255, 0.1)",
+
                   boxShadow: "none",
                 }}
               >
-                <Media className="align-items-end">
+                <Media className="align-items-center">
                   <span
                     className="d-flex justify-content-center align-items-center"
                     style={{
@@ -204,9 +205,10 @@ const AdminNavbar = (props) => {
                       height: "40px",
                       borderRadius: "12px",
                       background: "#152B51",
+                      
                       color: "#fff",
                       fontSize: "16px",
-                      fontFamily: "Roboto",
+                      fontFamily: "Poppins",
                       fontWeight: "500",
                     }}
                   >
@@ -237,6 +239,7 @@ const AdminNavbar = (props) => {
                     >
                       Property Manager
                     </span>
+                    
                   </Media>
                   <span
                     className="d-flex justify-content-center align-items-center"

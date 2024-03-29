@@ -608,7 +608,7 @@ const PropertyType = () => {
 
                       </Col>
                     </Row>
-                    {/* {propertyData?.length === 0 ? (
+                    {propertyData?.length === 0 ? (
                       <tbody>
                         <tr className="text-center">
                           <td colSpan="5" style={{ fontSize: "15px" }}>
@@ -616,7 +616,7 @@ const PropertyType = () => {
                           </td>
                         </tr>
                       </tbody>
-                    ) : ( */}
+                    ) : (
                       <Row
                         className="mt-3"
                         style={{
@@ -680,7 +680,7 @@ const PropertyType = () => {
                           )}
                         </Col>
                       </Row>
-                     {/* )} */}
+                      )} 
                   </Col>
                 </Row>
                 {paginatedData?.length > 0 ? (

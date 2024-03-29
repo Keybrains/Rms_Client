@@ -278,30 +278,63 @@ const Rentals = () => {
     }
   `}
       </style>
-      <RentalownerHeder />
-      <Container className="mt--7" fluid>
+      {/* <RentalownerHeder /> */}
+      <Container className="" fluid style={{ marginTop: "4rem", height: "100vh" }}>
+        <Col xs="12" lg="12" sm="6">
+          {/* <FormGroup className="">
+              <h1 style={{ color: "white" }}>Property Type</h1>
+            </FormGroup> */}
+          <CardHeader
+            className=" mt-3 mx-2"
+            style={{
+              backgroundColor: "#152B51",
+              borderRadius: "10px",
+              boxShadow: " 0px 4px 4px 0px #00000040 ",
+            }}
+          >
+            <h2
+              className=""
+              style={{
+                color: "#ffffff",
+                fontFamily: "Poppins",
+                fontWeight: "500",
+                fontSize: "26px",
+              }}
+            >
+              Add Rental Owner
+            </h2>
+          </CardHeader>
+        </Col>
         <Row>
           <Col className="order-xl-1" xl="12">
-            <Card className="bg-secondary shadow">
+            <Card className="bg-white shadow mt-3 mx-4 " style={{ boxShadow: " 0px 4px 4px 0px #00000040", border: "1px solid #324567" }}>
               <CardHeader className="bg-white border-0">
-                <Row className="align-items-center">
-                  <Col xs="8">
-                    <h3 className="mb-0">
-                      {id ? "Edit Reantal Owner" : "New Reantal Owner"}
-                    </h3>
-                  </Col>
-                  <Col className="text-right" xs="4"></Col>
-                </Row>
+                {/* <Row className="align-items-center">
+                  <Col xs="8"> */}
+                <h3 className="mb-0" style={{ fontSize: "18px", fontWeight: "600", fontFamily: "Poppins", color: "#152B51" }}>
+
+                  {id ? "Edit Rental Owner" : "New Rental Owner"}
+                </h3>
+                {/* </Col>
+                  
+                </Row> */}
+
               </CardHeader>
               <CardBody>
                 <Form role="form">
-                  <h6 className="heading-small text-muted mb-1"></h6>
-                  <div className="pl-lg-4">
+                  <div className="mt--3">
 
                     <FormGroup>
                       <label
                         className="form-control-label"
                         htmlFor="input-property"
+                        style={{
+                          // marginBottom: "10px",
+                          fontWeight: "500",
+                          fontFamily: "Poppins",
+                          fontSize: "16px",
+                          color: "#152B51",
+                        }}
                       >
                         Personal Information
                       </label>
@@ -315,13 +348,25 @@ const Rentals = () => {
                             <label
                               className="form-control-label"
                               htmlFor="input-property"
+                              style={{
+                                // marginBottom: "10px",
+                                fontWeight: "500",
+                                fontFamily: "Poppins",
+                                fontSize: "16px",
+                                color: "#8A95A8",
+                              }}
                             >
                               First Name
                             </label>
                             <Input
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                borderRadius: "6px",
+                                width: "60%",
+                              }}
                               type="text"
                               id="rentalOwner_firstName"
-                              placeholder="First Name"
+                              placeholder="Enter first name here..."
                               onBlur={rentalsFormik.handleBlur}
                               onChange={rentalsFormik.handleChange}
                               value={
@@ -341,13 +386,25 @@ const Rentals = () => {
                             <label
                               className="form-control-label"
                               htmlFor="input-property"
+                              style={{
+                                // marginBottom: "10px",
+                                fontWeight: "500",
+                                fontFamily: "Poppins",
+                                fontSize: "16px",
+                                color: "#8A95A8",
+                              }}
                             >
                               Last Name
                             </label>
                             <Input
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                borderRadius: "6px",
+                                width: "60%",
+                              }}
                               type="text"
                               id="rentalOwner_lastName"
-                              placeholder="Last Name"
+                              placeholder="Enter last name here..."
                               onBlur={rentalsFormik.handleBlur}
                               onChange={rentalsFormik.handleChange}
                               value={
@@ -370,14 +427,26 @@ const Rentals = () => {
                             <label
                               className="form-control-label"
                               htmlFor="input-address"
+                              style={{
+                                // marginBottom: "10px",
+                                fontWeight: "500",
+                                fontFamily: "Poppins",
+                                fontSize: "16px",
+                                color: "#8A95A8",
+                              }}
                             >
                               Company Name
                             </label>
 
                             <Input
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                borderRadius: "6px",
+                                width: "60%",
+                              }}
                               type="text"
                               id="rentalOwner_companyName"
-                              placeholder="Company Name"
+                              placeholder="Enter company name here..."
                               onBlur={rentalsFormik.handleBlur}
                               onChange={rentalsFormik.handleChange}
                               value={
@@ -410,10 +479,22 @@ const Rentals = () => {
                             <label
                               className="form-control-label"
                               htmlFor="input-unitadd"
+                              style={{
+                                // marginBottom: "10px",
+                                fontWeight: "500",
+                                fontFamily: "Poppins",
+                                fontSize: "16px",
+                                color: "#8A95A8",
+                              }}
                             >
                               Date Of Birth*
                             </label>
                             <Input
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                borderRadius: "6px",
+                                width: "80%",
+                              }}
                               id="birth_date"
                               placeholder="Date Of Birth"
                               type="date"
@@ -431,12 +512,36 @@ const Rentals = () => {
                         </Col>
                       </Row>
 
-                      <hr />
+                    </FormGroup>
+                  </div>
+                </Form>
+              </CardBody>
+
+            </Card>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col className="order-xl-1" xl="12">
+            <Card className="bg-white shadow mt-3 mx-4" style={{ boxShadow: " 0px 4px 4px 0px #00000040", border: "1px solid #324567" }}>
+
+              <CardBody>
+                <Form role="form">
+                  <h6 className="heading-small text-muted mb-1"></h6>
+                  <div className="">
+                    <FormGroup>
 
                       <FormGroup>
                         <label
                           className="form-control-label"
                           htmlFor="input-address"
+                          style={{
+                            // marginBottom: "10px",
+                            fontWeight: "500",
+                            fontFamily: "Poppins",
+                            fontSize: "16px",
+                            color: "#152B51",
+                          }}
                         >
                           Managment agreement
                         </label>
@@ -449,12 +554,24 @@ const Rentals = () => {
                               <label
                                 className="form-control-label"
                                 htmlFor="input-unitadd"
+                                style={{
+                                  // marginBottom: "10px",
+                                  fontWeight: "500",
+                                  fontFamily: "Poppins",
+                                  fontSize: "16px",
+                                  color: "#8A95A8",
+                                }}
                               >
                                 Start Date *
                               </label>
                               <br />
 
                               <Input
+                                style={{
+                                  boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                  borderRadius: "6px",
+                                  width: "80%",
+                                }}
                                 id="start_date"
                                 placeholder="Start Date"
                                 type="date"
@@ -475,11 +592,23 @@ const Rentals = () => {
                             <label
                               className="form-control-label"
                               htmlFor="input-unitadd"
+                              style={{
+                                // marginBottom: "10px",
+                                fontWeight: "500",
+                                fontFamily: "Poppins",
+                                fontSize: "16px",
+                                color: "#8A95A8",
+                              }}
                             >
                               End Date *
                             </label>
                             <br />
                             <Input
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                borderRadius: "6px",
+                                width: "80%",
+                              }}
                               id="end_date"
                               placeholder="End Date"
                               type="date"
@@ -496,33 +625,67 @@ const Rentals = () => {
                           </Col>
                         </Row>
                       </FormGroup>
+                    </FormGroup>
+                  </div>
+                </Form>
+              </CardBody>
 
-                      <hr></hr>
+            </Card>
+          </Col>
+        </Row>
+        <Row>
+          <Col className="order-xl-1" xl="12">
+            <Card className="bg-white shadow mt-3 mx-4" style={{ boxShadow: " 0px 4px 4px 0px #00000040", border: "1px solid #324567" }}>
+
+              <CardBody>
+                <Form role="form">
+                  <h6 className="heading-small text-muted mb-1"></h6>
+                  <div className="">
+                    <FormGroup>
 
                       <FormGroup>
                         <label
                           className="form-control-label"
                           htmlFor="input-address"
+                          style={{
+                            // marginBottom: "10px",
+                            fontWeight: "500",
+                            fontFamily: "Poppins",
+                            fontSize: "16px",
+                            color: "#152B51",
+                          }}
                         >
                           Contact information
                         </label>
                         <br></br>
 
                       </FormGroup>
-
                       <Row>
-                        <Col lg="4">
+                        <Col lg="3">
                           <FormGroup className="mb-0">
                             <label
                               className="form-control-label"
                               htmlFor="input-property"
+                              style={{
+                                // marginBottom: "10px",
+                                fontWeight: "500",
+                                fontFamily: "Poppins",
+                                fontSize: "16px",
+                                color: "#8A95A8",
+                              }}
                             >
                               Primary E-mail
                             </label>
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                           </FormGroup>
 
-                          <FormGroup>
+                          <FormGroup
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width: "80%",
+                            }}
+                          >
                             <div className="input-group">
                               <div className="input-group-prepend">
                                 <span className="input-group-text">
@@ -530,9 +693,10 @@ const Rentals = () => {
                                 </span>
                               </div>
                               <Input
+
                                 type="text"
                                 id="rentalOwner_primaryEmail"
-                                placeholder="Enter Email"
+                                placeholder="Enter primary email here..."
                                 onBlur={rentalsFormik.handleBlur}
                                 onChange={rentalsFormik.handleChange}
                                 value={
@@ -554,19 +718,32 @@ const Rentals = () => {
                             ) : null}
                           </FormGroup>
                         </Col>
-                        <Col lg="4">
+                        <Col lg="3">
 
                           <FormGroup className="mb-0">
                             <label
                               className="form-control-label"
                               htmlFor="input-property"
+                              style={{
+                                // marginBottom: "10px",
+                                fontWeight: "500",
+                                fontFamily: "Poppins",
+                                fontSize: "16px",
+                                color: "#8A95A8",
+                              }}
                             >
                               Alternative E-mail
                             </label>
                             &nbsp;
                           </FormGroup>
 
-                          <FormGroup>
+                          <FormGroup
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width: "80%",
+                            }}
+                          >
                             <div className="input-group">
                               <div className="input-group-prepend">
                                 <span className="input-group-text">
@@ -576,7 +753,7 @@ const Rentals = () => {
                               <Input
                                 type="text"
                                 id="rentalOwner_alternateEmail"
-                                placeholder="Enter Email"
+                                placeholder="Enter alternative email here..."
                                 onBlur={rentalsFormik.handleBlur}
                                 onChange={rentalsFormik.handleChange}
                                 value={
@@ -599,305 +776,435 @@ const Rentals = () => {
                           </FormGroup>
                         </Col>
                       </Row>
-
-
-
-
                       <Col></Col>
+                      <Row className="mt-2">
+                        <Col lg="3" >
+                          <FormGroup className="mb-0">
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-property"
+                              style={{
+                                // marginBottom: "10px",
+                                fontWeight: "500",
+                                fontFamily: "Poppins",
+                                fontSize: "16px",
+                                color: "#8A95A8",
+                              }}
+                            >
+                              Phone Number
+                            </label>
+                          </FormGroup>
+                          <FormGroup style={{
+                            boxShadow: " 0px 4px 4px 0px #00000040 ",
+                            borderRadius: "6px",
+                            width: "80%",
+                          }}>
+                            <div className="input-group" >
+                              <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                  <FontAwesomeIcon icon={faPhone} />
+                                </span>
+                              </div>
+                              <Input
+                                type="text"
+                                id="rentalOwner_phoneNumber"
+                                placeholder="Enter phone number here..."
+                                onBlur={rentalsFormik.handleBlur}
+                                onChange={rentalsFormik.handleChange}
+                                value={
+                                  rentalsFormik.values.rentalOwner_phoneNumber
+                                }
+                                onInput={(e) => {
+                                  const inputValue = e.target.value;
+                                  const numericValue = inputValue.replace(
+                                    /\D/g,
+                                    ""
+                                  ); // Remove non-numeric characters
+                                  e.target.value = numericValue;
+                                }}
+                              />
+                            </div>
+                            {rentalsFormik.touched.rentalOwner_phoneNumber &&
+                              rentalsFormik.errors.rentalOwner_phoneNumber ? (
+                              <div
+                                style={{
+                                  color: "red",
+                                }}
+                              >
+                                {rentalsFormik.errors.rentalOwner_phoneNumber}
+                              </div>
+                            ) : null}
+                          </FormGroup>
+                        </Col>
+                        {/* <br /> */}
+                        <Col lg="3">
+                          <FormGroup className="mb-0">
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-homenumber"
+                              style={{
+                                // marginBottom: "10px",
+                                fontWeight: "500",
+                                fontFamily: "Poppins",
+                                fontSize: "16px",
+                                color: "#8A95A8",
+                              }}
+                            >
+                              Home Number
+                            </label>
+                          </FormGroup>
+                          <FormGroup style={{
+                            boxShadow: " 0px 4px 4px 0px #00000040 ",
+                            borderRadius: "6px",
+                            width: "80%",
+                          }}>
+                            <div className="input-group">
+                              <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                  <FontAwesomeIcon icon={faHome} />
+                                </span>
+                              </div>
+                              <Input
+                                type="text"
+                                id="rentalOwner_homeNumber"
+                                placeholder="Enter home number here..."
+                                onBlur={rentalsFormik.handleBlur}
+                                onChange={rentalsFormik.handleChange}
+                                value={
+                                  rentalsFormik.values.rentalOwner_homeNumber
+                                }
+                                onInput={(e) => {
+                                  const inputValue = e.target.value;
+                                  const numericValue = inputValue.replace(
+                                    /\D/g,
+                                    ""
+                                  ); // Remove non-numeric characters
+                                  e.target.value = numericValue;
+                                }}
+                              />
+                              {rentalsFormik.touched.rentalOwner_homeNumber &&
+                                rentalsFormik.errors.rentalOwner_homeNumber ? (
+                                <div
+                                  style={{
+                                    color: "red",
+                                  }}
+                                >
+                                  {rentalsFormik.errors.rentalOwner_homeNumber}
+                                </div>
+                              ) : null}
+                            </div>
+                          </FormGroup>
+                        </Col>
+                        {/* <br /> */}
+                        <Col lg="3">
+                          <FormGroup className="mb-0">
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-property"
+                              style={{
+                                // marginBottom: "10px",
+                                fontWeight: "500",
+                                fontFamily: "Poppins",
+                                fontSize: "16px",
+                                color: "#8A95A8",
+                              }}
+                            >
+                              Office Number
+                            </label>
+                          </FormGroup>
+                          <FormGroup style={{
+                            boxShadow: " 0px 4px 4px 0px #00000040 ",
+                            borderRadius: "6px",
+                            width: "80%",
+                          }}>
+                            <div className="input-group">
+                              <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                  <FontAwesomeIcon icon={faBriefcase} />
+                                </span>
+                              </div>
+                              <Input
+                                type="text"
+                                id="rentalOwner_businessNumber"
+                                placeholder="Enter office number here..."
+                                onBlur={rentalsFormik.handleBlur}
+                                onChange={rentalsFormik.handleChange}
+                                value={
+                                  rentalsFormik.values.rentalOwner_businessNumber
+                                }
+                                onInput={(e) => {
+                                  const inputValue = e.target.value;
+                                  const numericValue = inputValue.replace(
+                                    /\D/g,
+                                    ""
+                                  ); // Remove non-numeric characters
+                                  e.target.value = numericValue;
+                                }}
+                              />
+                              {rentalsFormik.touched.rentalOwner_businessNumber &&
+                                rentalsFormik.errors.rentalOwner_businessNumber ? (
+                                <div
+                                  style={{
+                                    color: "red",
+                                  }}
+                                >
+                                  {
+                                    rentalsFormik.errors
+                                      .rentalOwner_businessNumber
+                                  }
+                                </div>
+                              ) : null}
+                            </div>
+                          </FormGroup>
+                        </Col>
+                        {/* <br /> */}
+                      </Row>
+                      {/* </FormGroup> */}
+
+                        <Row className="mt-2">
+                          <Col lg="3">
                       <FormGroup className="mb-0">
                         <label
                           className="form-control-label"
                           htmlFor="input-property"
+                          style={{
+                            // marginBottom: "10px",
+                            fontWeight: "500",
+                            fontFamily: "Poppins",
+                            fontSize: "16px",
+                            color: "#8A95A8",
+                          }}
                         >
-                          Phone Numbers
+                          Street Address
                         </label>
                       </FormGroup>
+                          <Input
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width: "80%",
+                            }}
+                            type="textarea"
+                            id="street_address"
+                            placeholder="Enter address here..."
+                            onBlur={rentalsFormik.handleBlur}
+                            onChange={rentalsFormik.handleChange}
+                            value={rentalsFormik.values.street_address}
+                          />
+                          {rentalsFormik.touched.street_address &&
+                            rentalsFormik.errors.street_address ? (
+                            <div
+                              style={{
+                                color: "red",
+                              }}
+                            >
+                              {rentalsFormik.errors.street_address}
+                            </div>
+                          ) : null}
+                        </Col>
+                      </Row>
+                      <br></br>
+
                       <Row>
                         <Col lg="3">
-                          <div className="input-group">
-                            <div className="input-group-prepend">
-                              <span className="input-group-text">
-                                <FontAwesomeIcon icon={faPhone} />
-                              </span>
-                            </div>
-                            <Input
-                              type="text"
-                              id="rentalOwner_phoneNumber"
-                              placeholder="Phone Number"
-                              onBlur={rentalsFormik.handleBlur}
-                              onChange={rentalsFormik.handleChange}
-                              value={
-                                rentalsFormik.values.rentalOwner_phoneNumber
-                              }
-                              onInput={(e) => {
-                                const inputValue = e.target.value;
-                                const numericValue = inputValue.replace(
-                                  /\D/g,
-                                  ""
-                                ); // Remove non-numeric characters
-                                e.target.value = numericValue;
-                              }}
-                            />
-                          </div>
-                          {rentalsFormik.touched.rentalOwner_phoneNumber &&
-                            rentalsFormik.errors.rentalOwner_phoneNumber ? (
-                            <div
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-city"
                               style={{
-                                color: "red",
+                                // marginBottom: "10px",
+                                fontWeight: "500",
+                                fontFamily: "Poppins",
+                                fontSize: "16px",
+                                color: "#8A95A8",
                               }}
                             >
-                              {rentalsFormik.errors.rentalOwner_phoneNumber}
-                            </div>
-                          ) : null}
-                        </Col>
-                        {/* <br /> */}
-                        <Col lg="3">
-                          <div className="input-group">
-                            <div className="input-group-prepend">
-                              <span className="input-group-text">
-                                <FontAwesomeIcon icon={faHome} />
-                              </span>
-                            </div>
+                              City
+                            </label>
                             <Input
-                              type="text"
-                              id="rentalOwner_homeNumber"
-                              placeholder="Home Number"
-                              onBlur={rentalsFormik.handleBlur}
-                              onChange={rentalsFormik.handleChange}
-                              value={
-                                rentalsFormik.values.rentalOwner_homeNumber
-                              }
-                              onInput={(e) => {
-                                const inputValue = e.target.value;
-                                const numericValue = inputValue.replace(
-                                  /\D/g,
-                                  ""
-                                ); // Remove non-numeric characters
-                                e.target.value = numericValue;
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                borderRadius: "6px",
+                                width: "80%",
                               }}
+                              type="text"
+                              id="city"
+                              placeholder="Enter city here..."
+                              onChange={rentalsFormik.handleChange}
+                              value={rentalsFormik.values.city}
                             />
-                            {rentalsFormik.touched.rentalOwner_homeNumber &&
-                              rentalsFormik.errors.rentalOwner_homeNumber ? (
+                            {rentalsFormik.touched.city &&
+                              rentalsFormik.errors.city ? (
                               <div
                                 style={{
                                   color: "red",
                                 }}
                               >
-                                {rentalsFormik.errors.rentalOwner_homeNumber}
+                                {rentalsFormik.errors.city}
                               </div>
                             ) : null}
-                          </div>
+                          </FormGroup>
                         </Col>
-                        {/* <br /> */}
                         <Col lg="3">
-                          <div className="input-group">
-                            <div className="input-group-prepend">
-                              <span className="input-group-text">
-                                <FontAwesomeIcon icon={faBriefcase} />
-                              </span>
-                            </div>
-                            <Input
-                              type="text"
-                              id="rentalOwner_businessNumber"
-                              placeholder="Office Number"
-                              onBlur={rentalsFormik.handleBlur}
-                              onChange={rentalsFormik.handleChange}
-                              value={
-                                rentalsFormik.values.rentalOwner_businessNumber
-                              }
-                              onInput={(e) => {
-                                const inputValue = e.target.value;
-                                const numericValue = inputValue.replace(
-                                  /\D/g,
-                                  ""
-                                ); // Remove non-numeric characters
-                                e.target.value = numericValue;
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-state"
+                              style={{
+                                // marginBottom: "10px",
+                                fontWeight: "500",
+                                fontFamily: "Poppins",
+                                fontSize: "16px",
+                                color: "#8A95A8",
                               }}
+                            >
+                              State
+                            </label>
+
+                            <Input
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                borderRadius: "6px",
+                                width: "80%",
+                              }}
+                              type="text"
+                              id="state"
+                              placeholder="Enter state here..."
+                              onChange={rentalsFormik.handleChange}
+                              value={rentalsFormik.values.state}
                             />
-                            {rentalsFormik.touched.rentalOwner_businessNumber &&
-                              rentalsFormik.errors.rentalOwner_businessNumber ? (
+                            {rentalsFormik.touched.state &&
+                              rentalsFormik.errors.state ? (
                               <div
                                 style={{
                                   color: "red",
                                 }}
                               >
-                                {
-                                  rentalsFormik.errors
-                                    .rentalOwner_businessNumber
-                                }
+                                {rentalsFormik.errors.state}
                               </div>
                             ) : null}
-                          </div>
+                          </FormGroup>
                         </Col>
-                        {/* <br /> */}
+                      </Row>
+                      <Row className="mt-2">
+                        <Col lg="3">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-country"
+                              style={{
+                                // marginBottom: "10px",
+                                fontWeight: "500",
+                                fontFamily: "Poppins",
+                                fontSize: "16px",
+                                color: "#8A95A8",
+                              }}
+                            >
+                              Country
+                            </label>
+
+                            <Input
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                borderRadius: "6px",
+                                width: "80%",
+                              }}
+                              type="text"
+                              id="country"
+                              placeholder="Enter country here..."
+                              onChange={rentalsFormik.handleChange}
+                              value={rentalsFormik.values.country}
+                            />
+                            {rentalsFormik.touched.country &&
+                              rentalsFormik.errors.country ? (
+                              <div
+                                style={{
+                                  color: "red",
+                                }}
+                              >
+                                {rentalsFormik.errors.country}
+                              </div>
+                            ) : null}
+                          </FormGroup>
+                        </Col>
+
+                        <Col lg="3">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-zip"
+                              style={{
+                                // marginBottom: "10px",
+                                fontWeight: "500",
+                                fontFamily: "Poppins",
+                                fontSize: "16px",
+                                color: "#8A95A8",
+                              }}
+                            >
+                              Postal Code
+                            </label>
+                            <Input
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                borderRadius: "6px",
+                                width: "80%",
+                              }}
+                              type="text"
+                              id="postal_code"
+                              placeholder="Enter postal code here..."
+                              onChange={rentalsFormik.handleChange}
+                              value={rentalsFormik.values.postal_code}
+                              onInput={(e) => {
+                                const inputValue = e.target.value;
+                                const numericValue = inputValue.replace(
+                                  /\D/g,
+                                  ""
+                                );
+                                e.target.value = numericValue;
+                              }}
+                            // style={{ width: "235px" }}
+                            />
+                            {rentalsFormik.touched.postal_code &&
+                              rentalsFormik.errors.postal_code ? (
+                              <div
+                                style={{
+                                  color: "red",
+                                }}
+                              >
+                                {rentalsFormik.errors.postal_code}
+                              </div>
+                            ) : null}
+                          </FormGroup>
+                        </Col>
+
                       </Row>
                     </FormGroup>
+                  </div>
+                </Form>
+              </CardBody>
 
-                    <FormGroup className="mb-0">
-                      <label
-                        className="form-control-label"
-                        htmlFor="input-property"
-                      >
-                        Street Address
-                      </label>
-                    </FormGroup>
-                    <Row>
-                      <Col lg="4">
-                        <Input
-                          type="textarea"
-                          id="street_address"
-                          placeholder="Address"
-                          onBlur={rentalsFormik.handleBlur}
-                          onChange={rentalsFormik.handleChange}
-                          value={rentalsFormik.values.street_address}
-                        />
-                        {rentalsFormik.touched.street_address &&
-                          rentalsFormik.errors.street_address ? (
-                          <div
-                            style={{
-                              color: "red",
-                            }}
-                          >
-                            {rentalsFormik.errors.street_address}
-                          </div>
-                        ) : null}
-                      </Col>
-                    </Row>
-                    <br></br>
+            </Card>
+          </Col>
+        </Row>
+        <Row>
+          <Col className="order-xl-1" xl="12">
+            <Card className="bg-white shadow mt-3 mx-4 mb-2" style={{ boxShadow: " 0px 4px 4px 0px #00000040", border: "1px solid #324567" }}>
 
-                    <Row>
-                      <Col lg="3">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-city"
-                          >
-                            City
-                          </label>
-                          <Input
-                            type="text"
-                            id="city"
-                            placeholder="City"
-                            onChange={rentalsFormik.handleChange}
-                            value={rentalsFormik.values.city}
-                          />
-                          {rentalsFormik.touched.city &&
-                            rentalsFormik.errors.city ? (
-                            <div
-                              style={{
-                                color: "red",
-                              }}
-                            >
-                              {rentalsFormik.errors.city}
-                            </div>
-                          ) : null}
-                        </FormGroup>
-                      </Col>
-                      <Col lg="3">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-state"
-                          >
-                            State
-                          </label>
-
-                          <Input
-                            type="text"
-                            id="state"
-                            placeholder="State"
-                            onChange={rentalsFormik.handleChange}
-                            value={rentalsFormik.values.state}
-                          />
-                          {rentalsFormik.touched.state &&
-                            rentalsFormik.errors.state ? (
-                            <div
-                              style={{
-                                color: "red",
-                              }}
-                            >
-                              {rentalsFormik.errors.state}
-                            </div>
-                          ) : null}
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col lg="3">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-country"
-                          >
-                            Country
-                          </label>
-
-                          <Input
-                            type="text"
-                            id="country"
-                            placeholder="country"
-                            onChange={rentalsFormik.handleChange}
-                            value={rentalsFormik.values.country}
-                          />
-                          {rentalsFormik.touched.country &&
-                            rentalsFormik.errors.country ? (
-                            <div
-                              style={{
-                                color: "red",
-                              }}
-                            >
-                              {rentalsFormik.errors.country}
-                            </div>
-                          ) : null}
-                        </FormGroup>
-                      </Col>
-
-                      <Col lg="3">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-zip"
-                          >
-                            Postal Code
-                          </label>
-                          <Input
-                            type="text"
-                            id="postal_code"
-                            placeholder="Postal code"
-                            onChange={rentalsFormik.handleChange}
-                            value={rentalsFormik.values.postal_code}
-                            onInput={(e) => {
-                              const inputValue = e.target.value;
-                              const numericValue = inputValue.replace(
-                                /\D/g,
-                                ""
-                              );
-                              e.target.value = numericValue;
-                            }}
-                          // style={{ width: "235px" }}
-                          />
-                          {rentalsFormik.touched.postal_code &&
-                            rentalsFormik.errors.postal_code ? (
-                            <div
-                              style={{
-                                color: "red",
-                              }}
-                            >
-                              {rentalsFormik.errors.postal_code}
-                            </div>
-                          ) : null}
-                        </FormGroup>
-                      </Col>
-
-                    </Row>
-
-
-                    <hr></hr>
+              <CardBody>
+                <Form role="form">
+                  <div className="">
 
                     <FormGroup>
                       <label
                         className="form-control-label"
                         htmlFor="input-address"
+                        style={{
+                          // marginBottom: "10px",
+                          fontWeight: "500",
+                          fontFamily: "Poppins",
+                          fontSize: "16px",
+                          color: "#152B51",
+                        }}
                       >
                         Tax Payer Information
                       </label>
@@ -907,18 +1214,30 @@ const Rentals = () => {
 
                     <FormGroup>
                       <Row>
-                        <Col lg="2">
+                        <Col lg="3">
                           <label
                             className="form-control-label"
                             htmlFor="input-tax"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Tax Identity Type
                           </label>
 
                           <Input
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width: "80%",
+                            }}
                             type="text"
                             id="text_identityType"
-                            placeholder="Tax Identity Type"
+                            placeholder="Enter tax identify type here..."
                             onChange={rentalsFormik.handleChange}
                             value={rentalsFormik.values.text_identityType}
                           />
@@ -933,18 +1252,30 @@ const Rentals = () => {
                             </div>
                           ) : null}
                         </Col>
-                        <Col lg="2">
+                        <Col lg="3">
                           <label
                             className="form-control-label"
                             htmlFor="input-taxpayer_id"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Taxpayer Id
                           </label>
 
                           <Input
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width: "80%",
+                            }}
                             type="text"
                             id="texpayer_id"
-                            placeholder="Enter SSN or EIN....."
+                            placeholder="Enter SSN or EIN here..."
                             onChange={rentalsFormik.handleChange}
                             value={rentalsFormik.values.texpayer_id}
                           />
@@ -1123,38 +1454,34 @@ const Rentals = () => {
 
                   <Col>
                     <Row>
-                      <div className="pl-lg-4">
-                        <Button
-                          style={{
-                            background: "green",
-                            color: "white",
-                            cursor: "pointer",
-                          }}
-                          className="btn btn-primary"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            rentalsFormik.handleSubmit();
-                          }}
-                          disabled={!rentalsFormik.isValid}
-                        >
-                          {id ? "Update Rental Owner" : "Add Rental Owner"}
-                        </Button>
-                      </div>
+                      <Button
+                        style={{
+                          background: "#152B51", color: "white", fontFamily: "Poppins", fontWeight: "400", fontSize: "14px",
+                          cursor: "pointer",
 
-                      <div className="pl-lg-4">
-                        <button
-                          color="primary"
-                          href="#pablo"
-                          className="btn btn-primary"
-                          onClick={() => {
-                            handleCloseButtonClick();
-                          }}
-                          size="sm"
-                          style={{ background: "white", color: "black" }}
-                        >
-                          Cancel
-                        </button>
-                      </div>
+                        }}
+                        className="btn"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          rentalsFormik.handleSubmit();
+                        }}
+                        disabled={!rentalsFormik.isValid}
+                      >
+                        {id ? "Update Rental Owner" : "Add Rental Owner"}
+                      </Button>
+                      <Button
+                        // color="primary"
+                        href="#pablo"
+                        className="btn"
+                        onClick={() => {
+                          handleCloseButtonClick();
+                        }}
+                        size="small"
+                        style={{ background: "white", color: "#152B51" }}
+
+                      >
+                        Cancel
+                      </Button>
                       <div className="pl-lg-4">
                         {!rentalsFormik.isValid && (
                           <div style={{ color: 'red', marginTop: '10px' }}>

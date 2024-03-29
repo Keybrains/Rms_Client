@@ -181,19 +181,44 @@ const AddStaffMember = () => {
 
   return (
     <>
-      <AddStaffMemberHeader />
+      {/* <AddStaffMemberHeader /> */}
       {/* Page content */}
-      <Container className="mt--7" fluid>
+      <Container className="" fluid style={{ marginTop: "4rem", height: "100vh" }}>
+      <Col xs="12" lg="12" sm="6">
+          {/* <FormGroup className="">
+              <h1 style={{ color: "white" }}>Property Type</h1>
+            </FormGroup> */}
+          <CardHeader
+            className=" mt-3 mx-2"
+            style={{
+              backgroundColor: "#152B51",
+              borderRadius: "10px",
+              boxShadow: " 0px 4px 4px 0px #00000040 ",
+            }}
+          >
+            <h2
+              className=""
+              style={{
+                color: "#ffffff",
+                fontFamily: "Poppins",
+                fontWeight: "500",
+                fontSize: "26px",
+              }}
+            >
+              Add Staff Member
+            </h2>
+          </CardHeader>
+        </Col>
         <Row>
           <Col className="order-xl-1" xl="12">
-            <Card
-              className="bg-secondary shadow"
+            <Card className="bg-white shadow mt-3 mx-4" style={{boxShadow: "0px 4px 4px 0px #00000040",border: "1px solid #324567"}}
               onSubmit={StaffMemberFormik.handleSubmit}
             >
               <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
                   <Col xs="8">
-                    <h3 className="mb-0">
+                  <h3 className="mb-0" style={{ fontSize: "18px", fontWeight: "600", fontFamily: "Poppins", color: "#152B51" }}>
+
                       {id ? "Edit Staff Member" : "New Staff Member"}
                     </h3>
                   </Col>
@@ -201,20 +226,32 @@ const AddStaffMember = () => {
               </CardHeader>
               <CardBody>
                 <Form>
-                  <div className="pl-lg-4">
+                  <div className="">
                     <Row>
-                      <Col lg="6">
+                      <Col lg="4">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-member"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Staff Member Name *
                           </label>
                           <Input
+                          style={{
+                            boxShadow: " 0px 4px 4px 0px #00000040 ",
+                            borderRadius: "6px",
+                            width:"60%",
+                          }}
                             className="form-control-alternative"
                             id="input-staffmember-name"
-                            placeholder="John William"
+                            placeholder="Enter staff member name here..."
                             type="text"
                             name="staffmember_name"
                             //name="nput-staffmember-name"
@@ -236,18 +273,30 @@ const AddStaffMember = () => {
                     </Row>
                     <br />
                   </div>
-                  <hr className="my-2" />
-                  <div className="pl-lg-4">
+                  {/* <hr className="my-2" /> */}
+                  <div className="">
                     <Row>
-                      <Col lg="6">
+                      <Col lg="4">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-desg"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Designation
                           </label>
                           <Input
+                          style={{
+                            boxShadow: " 0px 4px 4px 0px #00000040 ",
+                            borderRadius: "6px",
+                            width:"60%",
+                          }}
                             className="form-control-alternative"
                             id="input-staffmember-desg"
                             placeholder="Manager"
@@ -270,21 +319,33 @@ const AddStaffMember = () => {
                     </Row>
                     <br />
                   </div>
-                  <hr className="my-2" />
-                  <div className="pl-lg-4">
+                  {/* <hr className="my-2" /> */}
+                  <div className="">
                     <Row>
                       <Col lg="4">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-desg"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Phone Number *
                           </label>
                           <Input
+                          style={{
+                            boxShadow: " 0px 4px 4px 0px #00000040 ",
+                            borderRadius: "6px",
+                            width:"60%",
+                          }}
                             className="form-control-alternative"
                             id="staffmember_phoneNumber"
-                            placeholder="Phone Number"
+                            placeholder="Enter phone number here..."
                             type="text"
                             name="staffmember_phoneNumber"
                             onBlur={StaffMemberFormik.handleBlur}
@@ -314,13 +375,25 @@ const AddStaffMember = () => {
                           <label
                             className="form-control-label"
                             htmlFor="input-desg"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Email *
                           </label>
                           <Input
+                          style={{
+                            boxShadow: " 0px 4px 4px 0px #00000040 ",
+                            borderRadius: "6px",
+                            width:"60%",
+                          }}
                             className="form-control-alternative"
                             id="staffmember_email"
-                            placeholder="Email"
+                            placeholder="Enter email here..."
                             type="email"
                             name="staffmember_email"
                             onBlur={StaffMemberFormik.handleBlur}
@@ -338,22 +411,34 @@ const AddStaffMember = () => {
                     </Row>
                     <br />
                   </div>
-                  <hr className="my-4" />
-                  <div className="pl-lg-4">
+                  {/* <hr className="my-4" /> */}
+                  <div className="">
                     <Row>
-                      <Col lg="6">
+                      <Col lg="4">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-desg"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Password *
                           </label>
                           <div style={{ display: "flex" }}>
                             <Input
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width:"60%",
+                            }}
                               className="form-control-alternative"
                               id="staffmember_password"
-                              placeholder="Password"
+                              placeholder="Enter password here..."
                               name="staffmember_password"
                               type={showPassword ? "text" : "password"}
                               onBlur={StaffMemberFormik.handleBlur}
@@ -382,36 +467,37 @@ const AddStaffMember = () => {
                     <br />
                   </div>
 
-                  <Row className="pl-lg-3">
+                  <Row >
                     {submitLoader ? (
-                      <button
+                      <Button
                         type="submit"
-                        className="btn btn-primary ml-4"
-                        style={{ background: "green", color: "white" }}
+                        className="btn ml-3"
+                        style={{ background: "#152B51", color: "white" }}
                         disabled
                       >
                         Loading...
-                      </button>
+                      </Button>
                     ) : (
-                      <button
+                      <Button
                         type="submit"
-                        className="btn btn-primary ml-4"
-                        style={{ background: "green" }}
+                        className="ml-3"
+                        style={{ background: "#152B51", color: "white", fontFamily: "Poppins", fontWeight: "400", fontSize: "14px", }}
                         disabled={!StaffMemberFormik.isValid}
                       >
                         {id ? "Update Staff Member" : "Add Staff Member"}
-                      </button>
+                      </Button>
                     )}
-                    <button
-                      color="primary"
+                    <Button
+                      // color="primary"
                       //  href="#rms"
-                      className="btn btn-primary"
+                      className="btn "
                       onClick={handleCloseButtonClick}
-                      size="sm"
-                      style={{ background: "white", color: "black" }}
+                      size="small"
+                      style={{ background: "white", color: "#152B51" }}
+
                     >
                       Cancel
-                    </button>
+                    </Button>
                     {/* Conditional message */}
                     {!StaffMemberFormik.isValid && (
                       <div style={{ color: "red", marginTop: "10px" }}>

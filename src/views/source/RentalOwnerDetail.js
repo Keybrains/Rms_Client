@@ -6,6 +6,7 @@ import Cookies from "universal-cookie";
 import {
   Card,
   CardHeader,
+  CardBody,
   FormGroup,
   Container,
   Row,
@@ -69,7 +70,7 @@ const RentalOwnerDetail = () => {
   return (
     <div>
       <Header />
-      <Container className="mt--8" fluid>
+      {/* <Container className="mt--8" fluid>
         <Row>
           <Col xs="12" sm="6">
             <FormGroup className="">
@@ -90,13 +91,71 @@ const RentalOwnerDetail = () => {
               Back
             </Button>
           </Col>
-        </Row>
+        </Row> */}
+
+        <Container className="" fluid style={{ marginTop: "4rem", height: "100vh" }}>
         <Row>
-          <div className="col">
-            <Card className="shadow">
-              <CardHeader className="border-0">
-                <h3 className="mb-0">Summary </h3>
-              </CardHeader>
+          <Col className="text-left" >
+            <FormGroup className=" align-item-left text-left ml-4">
+              <h1 className="text-left" style={{
+                color: "#152B51",
+                fontFamily: "Poppins",
+                fontWeight: "600",
+                fontSize: "18px",
+
+              }}>{rentalOwnerDetails.rentalOwner_firstName +
+                " " +
+                rentalOwnerDetails.rentalOwner_lastName}</h1>
+              <h4  style={{
+                color: "#B9BFCB",
+                fontFamily: "Poppins",
+                fontWeight: "500",
+                fontSize: "14px",
+              }}>Rentalowner</h4>
+            </FormGroup>
+          </Col>
+          <Col className="text-right">
+            <Button
+              className="mr-4"
+
+              // color="primary"
+              //  href="#rms"
+              onClick={() => navigate(`/${admin}/RentalownerTable`)}
+              size="small"
+              style={{ background: "#152B51", color: "#fff" }}
+
+            >
+              Back
+            </Button>
+          </Col>
+        </Row> 
+      <Col xs="12" lg="12" sm="6">
+          {/* <FormGroup className="">
+              <h1 style={{ color: "white" }}>Property Type</h1>
+            </FormGroup> */}
+          <CardHeader
+            className=" mt-3 mx-2"
+            style={{
+              backgroundColor: "#152B51",
+              borderRadius: "10px",
+              boxShadow: " 0px 4px 4px 0px #00000040 ",
+            }}
+          >
+            <h2
+              className=""
+              style={{
+                color: "#ffffff",
+                fontFamily: "Poppins",
+                fontWeight: "500",
+                fontSize: "26px",
+              }}
+            >
+              Summary
+            </h2>
+          </CardHeader>
+        </Col>
+        <Row>
+          <div className="col">   
               <div className="table-responsive">
                 <div className="m-3">
                   <Container fluid>
@@ -122,24 +181,25 @@ const RentalOwnerDetail = () => {
                           ) : rentalOwnerDetails.rentalowner_id ? (
                             <>
                               <div className="w-100">
-                                <Row
-                                  className="w-100 my-3"
-                                  style={{
-                                    fontSize: "22px",
-                                    textTransform: "capitalize",
-                                    color: "#5e72e4",
-                                    fontWeight: "600",
-                                    borderBottom: "1px solid #ddd",
-                                  }}
+                              <Card className="bg-white shadow mt-3" style={{boxShadow: "0px 4px 4px 0px #00000040",border: "1px solid #324567"}}>
+                              <CardHeader className="bg-white border-0">
+                                <h3
+                                  className="mb-0"
+                                  style={{ fontSize: "18px", fontWeight: "600", fontFamily: "Poppins", color: "#152B51" }}
                                 >
-                                  <Col>Personal Information</Col>
-                                </Row>
+                                  Personal Information
+                                </h3>
+                                </CardHeader>
+                                <CardBody>
                                 <Row
                                   className="w-100 mb-1"
                                   style={{
-                                    fontSize: "14px",
-                                    textTransform: "uppercase",
-                                    color: "#aaa",
+                                    // textTransform: "uppercase",
+                                    color: "#152B514D",
+                                    fontSize:"14px",
+                                    fontWeight:"500",
+                                    fontFamily:"Poppins",
+
                                   }}
                                 >
                                   <Col>Name</Col>
@@ -149,9 +209,11 @@ const RentalOwnerDetail = () => {
                                 <Row
                                   className="w-100 mt-1 mb-5"
                                   style={{
-                                    fontSize: "14px",
-                                    textTransform: "capitalize",
-                                    color: "#000",
+                                    fontSize: "16px",
+                                    // textTransform: "capitalize",
+                                    fontFamily:"Poppins",
+                                    fontWeight:"600",
+                                    color:"#152B51",
                                   }}
                                 >
                                   <Col>
@@ -181,9 +243,12 @@ const RentalOwnerDetail = () => {
                                 <Row
                                   className="w-100 mb-1"
                                   style={{
-                                    fontSize: "14px",
-                                    textTransform: "uppercase",
-                                    color: "#aaa",
+                                    // textTransform: "uppercase",
+                                    color: "#152B514D",
+                                    fontSize:"14px",
+                                    fontWeight:"500",
+                                    fontFamily:"Poppins",
+
                                   }}
                                 >
                                   <Col>Street Address</Col>
@@ -193,9 +258,11 @@ const RentalOwnerDetail = () => {
                                 <Row
                                   className="w-100 mt-1 mb-5"
                                   style={{
-                                    fontSize: "14px",
-                                    textTransform: "capitalize",
-                                    color: "#000",
+                                    fontSize: "16px",
+                                    // textTransform: "capitalize",
+                                    fontFamily:"Poppins",
+                                    fontWeight:"600",
+                                    color:"#152B51",
                                   }}
                                 >
                                   <Col>
@@ -210,9 +277,12 @@ const RentalOwnerDetail = () => {
                                 <Row
                                   className="w-100 mb-1"
                                   style={{
-                                    fontSize: "14px",
-                                    textTransform: "uppercase",
-                                    color: "#aaa",
+                                    // textTransform: "uppercase",
+                                    color: "#152B514D",
+                                    fontSize:"14px",
+                                    fontWeight:"500",
+                                    fontFamily:"Poppins",
+
                                   }}
                                 >
                                   <Col>Country</Col>
@@ -225,9 +295,11 @@ const RentalOwnerDetail = () => {
                                 <Row
                                   className="w-100 mt-1 mb-5"
                                   style={{
-                                    fontSize: "14px",
-                                    textTransform: "capitalize",
-                                    color: "#000",
+                                    fontSize: "16px",
+                                    // textTransform: "capitalize",
+                                    fontFamily:"Poppins",
+                                    fontWeight:"600",
+                                    color:"#152B51",
                                   }}
                                 >
                                   <Col>
@@ -241,25 +313,29 @@ const RentalOwnerDetail = () => {
                                   </Col>
 
                                 </Row>
-                                <Row
-                                  className="w-100 my-3"
-                                  style={{
-                                    fontSize: "22px",
-                                    textTransform: "capitalize",
-                                    color: "#5e72e4",
-                                    fontWeight: "600",
-                                    borderBottom: "1px solid #ddd",
-                                  }}
-                                >
-                                  <Col>Contact Information</Col>
-                                </Row>
+                                </CardBody>
+                                </Card>
+                             
 
+                                <Card className="bg-white shadow mt-3 " style={{boxShadow: "0px 4px 4px 0px #00000040",border: "1px solid #324567"}}>
+                              <CardHeader className="bg-white border-0">
+                                <h3
+                                  className="mb-0"
+                                  style={{ fontSize: "18px", fontWeight: "600", fontFamily: "Poppins", color: "#152B51" }}
+                                >
+                                  Contact Information
+                                </h3>
+                                </CardHeader>
+                                <CardBody>
                                 <Row
                                   className="w-100 mb-1"
                                   style={{
-                                    fontSize: "14px",
-                                    textTransform: "uppercase",
-                                    color: "#aaa",
+                                    // textTransform: "uppercase",
+                                    color: "#152B514D",
+                                    fontSize:"14px",
+                                    fontWeight:"500",
+                                    fontFamily:"Poppins",
+
                                   }}
                                 >
                                   <Col>Phone Number</Col>
@@ -271,9 +347,11 @@ const RentalOwnerDetail = () => {
                                 <Row
                                   className="w-100 mt-1 mb-5"
                                   style={{
-                                    fontSize: "14px",
-                                    textTransform: "capitalize",
-                                    color: "#000",
+                                    fontSize: "16px",
+                                    // textTransform: "capitalize",
+                                    fontFamily:"Poppins",
+                                    fontWeight:"600",
+                                    color:"#152B51",
                                   }}
                                 >
                                   <Col>
@@ -307,9 +385,12 @@ const RentalOwnerDetail = () => {
                                 <Row
                                   className="w-100 mb-1"
                                   style={{
-                                    fontSize: "14px",
-                                    textTransform: "uppercase",
-                                    color: "#aaa",
+                                    // textTransform: "uppercase",
+                                    color: "#152B514D",
+                                    fontSize:"14px",
+                                    fontWeight:"500",
+                                    fontFamily:"Poppins",
+
                                   }}
                                 >
                                   <Col>Email</Col>
@@ -321,9 +402,11 @@ const RentalOwnerDetail = () => {
                                 <Row
                                   className="w-100 mt-1 mb-5"
                                   style={{
-                                    fontSize: "14px",
-                                    textTransform: "capitalize",
-                                    color: "#000",
+                                    fontSize: "16px",
+                                    // textTransform: "capitalize",
+                                    fontFamily:"Poppins",
+                                    fontWeight:"600",
+                                    color:"#152B51",
                                   }}
                                 >
 
@@ -367,24 +450,30 @@ const RentalOwnerDetail = () => {
 
                                   </Col>
                                 </Row>
-                                <Row
-                                  className="w-100 my-3"
-                                  style={{
-                                    fontSize: "22px",
-                                    textTransform: "capitalize",
-                                    color: "#5e72e4",
-                                    fontWeight: "600",
-                                    borderBottom: "1px solid #ddd",
-                                  }}
+                                </CardBody>
+                                </Card>
+
+                             
+
+                                <Card className="bg-white shadow mt-3" style={{boxShadow: "0px 4px 4px 0px #00000040",border: "1px solid #324567"}}>
+                              <CardHeader className="bg-white border-0">
+                                <h3
+                                  className="mb-0"
+                                  style={{ fontSize: "18px", fontWeight: "600", fontFamily: "Poppins", color: "#152B51" }}
                                 >
-                                  <Col> Managment Agreement Details</Col>
-                                </Row>
+                                  Managment Agreement Details
+                                </h3>
+                                </CardHeader>
+                                <CardBody>
                                 <Row
                                   className="w-100 mb-1"
                                   style={{
-                                    fontSize: "14px",
-                                    textTransform: "uppercase",
-                                    color: "#aaa",
+                                    // textTransform: "uppercase",
+                                    color: "#152B514D",
+                                    fontSize:"14px",
+                                    fontWeight:"500",
+                                    fontFamily:"Poppins",
+
                                   }}
                                 >
                                   <Col>Start Date</Col>
@@ -394,9 +483,11 @@ const RentalOwnerDetail = () => {
                                 <Row
                                   className="w-100 mt-1 mb-5"
                                   style={{
-                                    fontSize: "14px",
-                                    textTransform: "capitalize",
-                                    color: "#000",
+                                    fontSize: "16px",
+                                    // textTransform: "capitalize",
+                                    fontFamily:"Poppins",
+                                    fontWeight:"600",
+                                    color:"#152B51",
                                   }}
                                 >
                                   <Col>  {formatDateWithoutTime(
@@ -409,24 +500,28 @@ const RentalOwnerDetail = () => {
                                   </Col>
 
                                 </Row>
-                                <Row
-                                  className="w-100 my-3"
-                                  style={{
-                                    fontSize: "22px",
-                                    textTransform: "capitalize",
-                                    color: "#5e72e4",
-                                    fontWeight: "600",
-                                    borderBottom: "1px solid #ddd",
-                                  }}
+                                </CardBody>
+                                </Card>
+
+                                <Card className="bg-white shadow mt-3" style={{boxShadow: "0px 4px 4px 0px #00000040",border: "1px solid #324567"}}>
+                              <CardHeader className="bg-white border-0">
+                                <h3
+                                  className="mb-0"
+                                  style={{ fontSize: "18px", fontWeight: "600", fontFamily: "Poppins", color: "#152B51" }}
                                 >
-                                  <Col>1099 -NEC Tax Filling Information</Col>
-                                </Row>
+                                  1099 -NEC Tax Filling Information
+                                </h3>
+                                </CardHeader>
+                                <CardBody>                               
                                 <Row
                                   className="w-100 mb-1"
                                   style={{
-                                    fontSize: "14px",
-                                    textTransform: "uppercase",
-                                    color: "#aaa",
+                                    // textTransform: "uppercase",
+                                    color: "#152B514D",
+                                    fontSize:"14px",
+                                    fontWeight:"500",
+                                    fontFamily:"Poppins",
+
                                   }}
                                 >
                                   <Col>Text Identify Type</Col>
@@ -436,9 +531,11 @@ const RentalOwnerDetail = () => {
                                 <Row
                                   className="w-100 mt-1 mb-5"
                                   style={{
-                                    fontSize: "14px",
-                                    textTransform: "capitalize",
-                                    color: "#000",
+                                    fontSize: "16px",
+                                    // textTransform: "capitalize",
+                                    fontFamily:"Poppins",
+                                    fontWeight:"600",
+                                    color:"#152B51",
                                   }}
                                 >
                                   <Col>{rentalOwnerDetails.text_identityType || "N/A"}</Col>
@@ -447,6 +544,9 @@ const RentalOwnerDetail = () => {
                                   </Col>
 
                                 </Row>
+                                </CardBody>
+                                </Card>
+
                               </div>
                               {/* <tbody>
                         <tr>
@@ -655,7 +755,6 @@ const RentalOwnerDetail = () => {
                   </Container>
                 </div>
               </div>
-            </Card>
           </div>
         </Row>
         <br />

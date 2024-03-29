@@ -184,13 +184,38 @@ const AddPropertyType = () => {
     <>
       {/* <AddPropertyTypeHeader /> */}
       <Container className="" fluid style={{ marginTop: "4rem", height: "100vh" }}>
+        <Col xs="12" lg="12" sm="6">
+          {/* <FormGroup className="">
+              <h1 style={{ color: "white" }}>Property Type</h1>
+            </FormGroup> */}
+          <CardHeader
+            className=" mt-3 mx-2"
+            style={{
+              backgroundColor: "#152B51",
+              borderRadius: "10px",
+              boxShadow: " 0px 4px 4px 0px #00000040 ",
+            }}
+          >
+            <h2
+              className=""
+              style={{
+                color: "#ffffff",
+                fontFamily: "Poppins",
+                fontWeight: "500",
+                fontSize: "26px",
+              }}
+            >
+              Add Property Type
+            </h2>
+          </CardHeader>
+        </Col>
         <Row>
           <Col className="order-xl-1" xl="12">
-            <Card className="bg-secondary shadow">
-              <CardHeader className="bg-white border-0">
-                <Row className="align-items-center">
+            <Card className="bg-white shadow mt-3 mx-4" style={{ boxShadow: " 0px 4px 4px 0px #00000040", border: "1px solid #324567" }}>
+              <CardHeader className="bg-white border-0 ">
+                <Row className="align-items-center ">
                   <Col xs="8">
-                    <h3 className="mb-0">
+                    <h3 className="mb-0" style={{ fontSize: "18px", fontWeight: "600", fontFamily: "Poppins", color: "#152B51" }}>
                       {id ? "Edit Property Type" : "New Property Type"}
                     </h3>
                   </Col>
@@ -198,20 +223,36 @@ const AddPropertyType = () => {
               </CardHeader>
               <CardBody>
                 <Form onSubmit={propertyFormik.handleSubmit}>
-                  <div className="pl-lg-4">
+                  <div className="">
                     <Row>
                       <Col lg="6">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-property"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Property Type *
                           </label>
                           <br />
                           <br />
                           <Dropdown isOpen={prodropdownOpen} toggle={toggle}>
-                            <DropdownToggle caret>
+                            <DropdownToggle caret
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040",
+                                border: "1px solid #ced4da",
+                                maxWidth: "200px",
+                                minWidth: "200px",
+                                backgroundColor: "transparent",
+                                color: "#A7A7A7"
+                              }}
+                            >
                               {propertyFormik.values.property_type ||
                                 "Property Type"}
                             </DropdownToggle>
@@ -242,7 +283,7 @@ const AddPropertyType = () => {
                               </DropdownItem>
                             </DropdownMenu>
                             {propertyFormik.touched.property_type &&
-                            propertyFormik.errors.property_type ? (
+                              propertyFormik.errors.property_type ? (
                               <div
                                 style={{ color: "red", marginBottom: "10px" }}
                               >
@@ -256,20 +297,32 @@ const AddPropertyType = () => {
 
                     <br />
                   </div>
-                  <hr className="my-4" />
-                  <div className="pl-lg-4">
+                  {/* <hr className="my-4" /> */}
+                  <div className="">
                     <Row>
                       <Col lg="6">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-property"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Property Sub Type *
                           </label>
                           <br />
                           <br />
                           <Input
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width: "30%",
+                            }}
                             className="form-control-alternative"
                             id="input-protype"
                             placeholder="Townhome"
@@ -280,21 +333,22 @@ const AddPropertyType = () => {
                             value={propertyFormik.values.propertysub_type}
 
                           />
-                             {propertyFormik.touched.property_type &&
+                          {propertyFormik.touched.property_type &&
                             propertyFormik.errors.property_type ? (
-                              <div
-                                style={{ color: "red", marginBottom: "10px" }}
-                              >
-                                {propertyFormik.errors.property_type}
-                              </div>
-                            ) : null}
+                            <div
+                              style={{ color: "red", marginBottom: "10px" }}
+                            >
+                              {propertyFormik.errors.property_type}
+                            </div>
+                          ) : null}
                           <br></br>
                           <Checkbox
                             onChange={handleChangecheck}
                             checked={isMultiUnit}
-                            style={{ marginRight: "10px" }}
+                            style={{ color: "#152B51" }}
                           />
-                          <label className="form-control-label">
+
+                          <label className="form-control-label" style={{ fontFamily: "Poppins", fontWeight: "500", fontSize: "16px", color: "#8A95A8" }}>
                             Multi unit
                           </label>
                         </FormGroup>
@@ -306,8 +360,8 @@ const AddPropertyType = () => {
                     {submitLoader ? (
                       <Button
                         type="submit"
-                        className="btn btn-primary ml-4"
-                        style={{ background: "green", color: "white" }}
+                        className="btn ml-3"
+                        style={{ background: "#152B51", color: "white" }}
                         disabled
                       >
                         Loading...
@@ -315,28 +369,32 @@ const AddPropertyType = () => {
                     ) : (
                       <Button
                         type="submit"
-                        className="btn btn-primary ml-4"
-                        style={{ background: "green", color: "white" }}
+                        className="ml-3"
+                        style={{
+                          background: "#152B51", color: "white", fontFamily: "Poppins", fontWeight: "400", fontSize: "14px",
+                          cursor: "pointer",
+
+                        }}
                         disabled={!propertyFormik.isValid}
                       >
                         {id ? "Update Property Type" : "Add Property Type"}
                       </Button>
                     )}
                     <Button
-                      color="primary"
-                      className="btn btn-primary"
+                      // color="primary"
+                      className="btn"
                       onClick={handleCloseButtonClick}
-                      size="sm"
-                      style={{ background: "white", color: "black" }}
+                      size="small"
+                      style={{ background: "white", color: "#152B51" }}
                     >
                       Cancel
                     </Button>
-                       {/* Conditional message */}
-                  {!propertyFormik.isValid && (
-                    <div style={{ color: 'red', marginTop: '10px' }}>
-                      Please fill in all fields correctly.
-                    </div>
-                  )}
+                    {/* Conditional message */}
+                    {!propertyFormik.isValid && (
+                      <div style={{ color: 'red', marginTop: '10px' }}>
+                        Please fill in all fields correctly.
+                      </div>
+                    )}
                   </Row>
                 </Form>
               </CardBody>

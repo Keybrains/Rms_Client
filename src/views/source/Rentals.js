@@ -593,18 +593,44 @@ const Rentals = () => {
 
   return (
     <>
-      <RentalHeader />
-      <Container className="mt--7" fluid>
+      {/* <RentalHeader /> */}
+      <Container className="" fluid style={{ marginTop: "4rem", height: "100vh" }}>
+        <Col xs="12" lg="12" sm="6">
+          {/* <FormGroup className="">
+              <h1 style={{ color: "white" }}>Property Type</h1>
+            </FormGroup> */}
+          <CardHeader
+            className=" mt-3 mx-2"
+            style={{
+              backgroundColor: "#152B51",
+              borderRadius: "10px",
+              boxShadow: " 0px 4px 4px 0px #00000040 ",
+            }}
+          >
+            <h2
+              className=""
+              style={{
+                color: "#ffffff",
+                fontFamily: "Poppins",
+                fontWeight: "500",
+                fontSize: "26px",
+              }}
+            >
+              Add Property
+            </h2>
+          </CardHeader>
+        </Col>
         <Row>
           <Col>
-            <Card
-              className="bg-secondary shadow"
+            <Card className="bg-white shadow mt-3 mx-4" style={{ boxShadow: "0px 4px 4px 0px #00000040", border: "1px solid #324567" }}
+
               onSubmit={rentalsFormik.handleSubmit}
             >
               <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
                   <Col xs="8">
-                    <h3 className="mb-0">
+                    <h3 className="mb-0" style={{ fontSize: "18px", fontWeight: "600", fontFamily: "Poppins", color: "#152B51" }}>
+
                       {rental_id ? "Edit Property" : "New Property"}
                     </h3>
                   </Col>
@@ -613,16 +639,29 @@ const Rentals = () => {
               </CardHeader>
               <CardBody>
                 <Form role="form" open={open} onClose={handleClose}>
-                  <h6 className="heading-small text-muted mb-4">
+                  <h6 className="heading-small  mb-4" style={{
+                    // marginBottom: "10px",
+                    fontWeight: "500",
+                    fontFamily: "Poppins",
+                    fontSize: "16px",
+                    color: "#B9BFCB",
+                  }}>
                     Property information
                   </h6>
-                  <div className="pl-lg-4">
+                  <div className="">
                     <Row>
                       <Col lg="6">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-property"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#152B51",
+                            }}
                           >
                             What is the property type?
                           </label>
@@ -633,7 +672,16 @@ const Rentals = () => {
                             toggle={toggle1}
                             disabled={rental_id}
                           >
-                            <DropdownToggle caret>
+                            <DropdownToggle caret
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040",
+                                border: "1px solid #ced4da",
+                                maxWidth: "200px",
+                                minWidth: "200px",
+                                backgroundColor: "transparent",
+                                color: "#A7A7A7"
+                              }}
+                            >
                               {selectedPropType &&
                                 selectedPropType.propertysub_type
                                 ? selectedPropType.propertysub_type
@@ -705,6 +753,13 @@ const Rentals = () => {
                           <label
                             className="form-control-label"
                             htmlFor="input-address"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#152B51",
+                            }}
                           >
                             What is the street address?
                           </label>
@@ -714,14 +769,25 @@ const Rentals = () => {
                             <label
                               className="form-control-label"
                               htmlFor="input-address"
+                              style={{
+                                // marginBottom: "10px",
+                                fontWeight: "500",
+                                fontFamily: "Poppins",
+                                fontSize: "16px",
+                                color: "#8A95A8",
+                              }}
                             >
                               Address *
                             </label>
                             <Input
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                borderRadius: "6px",
+                              }}
                               required
                               className="form-control-alternative"
                               id="input-address"
-                              placeholder="Address"
+                              placeholder="Enter address here..."
                               type="text"
                               name="rental_adress"
                               onBlur={rentalsFormik.handleBlur}
@@ -749,20 +815,32 @@ const Rentals = () => {
                         </FormGroup>
                       </Col>
                     </Row>
-                    <Row>
+                    <Row className="mt-2">
                       <Col lg="3">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-city"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             City *
                           </label>
                           <Input
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width: "80%",
+                            }}
                             required
                             className="form-control-alternative"
                             id="input-city"
-                            placeholder="New York"
+                            placeholder="Enter city here..."
                             type="text"
                             name="rental_city"
                             onBlur={rentalsFormik.handleBlur}
@@ -793,14 +871,26 @@ const Rentals = () => {
                           <label
                             className="form-control-label"
                             htmlFor="input-country"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             State *
                           </label>
                           <Input
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width: "80%",
+                            }}
                             required
                             className="form-control-alternative"
                             id="input-country"
-                            placeholder="state"
+                            placeholder="Enter state here..."
                             type="text"
                             name="rental_state"
                             onBlur={rentalsFormik.handleBlur}
@@ -827,20 +917,32 @@ const Rentals = () => {
                         </FormGroup>
                       </Col>
                     </Row>
-                    <Row>
+                    <Row className="mt-2">
                       <Col lg="3">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-country"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Country *
                           </label>
                           <Input
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width: "80%",
+                            }}
                             required
                             className="form-control-alternative"
                             id="input-country"
-                            placeholder="United States"
+                            placeholder="Enter country here..."
                             type="text"
                             name="rental_country"
                             onBlur={rentalsFormik.handleBlur}
@@ -871,14 +973,26 @@ const Rentals = () => {
                           <label
                             className="form-control-label"
                             htmlFor="input-country"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Postal code *
                           </label>
                           <Input
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width: "80%",
+                            }}
                             required
                             className="form-control-alternative"
                             id="input-postal-code"
-                            placeholder="Postal code"
+                            placeholder="Enter postal code here..."
                             type="text"
                             name="rental_postcode"
                             onBlur={rentalsFormik.handleBlur}
@@ -914,17 +1028,43 @@ const Rentals = () => {
                       </Col>
                     </Row>
                   </div>
-                  <hr className="my-4" />
-                  <h6 className="heading-small text-muted mb-4">
+                </Form>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Card className="bg-white shadow mt-3 mx-4" style={{ boxShadow: "0px 4px 4px 0px #00000040", border: "1px solid #324567" }}
+
+              onSubmit={rentalsFormik.handleSubmit}
+            >
+
+              <CardBody>
+                <Form role="form" open={open} onClose={handleClose}>
+                  <h6 className="heading-small  " style={{
+                    // marginBottom: "10px",
+                    fontWeight: "600",
+                    fontFamily: "Poppins",
+                    fontSize: "18px",
+                    color: "#152B51",
+                  }}>
                     Owner information
                   </h6>
-                  <div className="pl-lg-4">
+                  <div className="">
                     <Row>
                       <Col md="12">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-address"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#B9BFCB",
+                            }}
                           >
                             Who is the property owner? (Required)
                           </label>
@@ -932,7 +1072,10 @@ const Rentals = () => {
                           <br />
                           <label
                             className="label2"
-                            style={{ fontSize: "0.7rem" }}
+                            style={{  fontWeight: "500",
+                            fontFamily: "Poppins",
+                            fontSize: "14px",
+                            color: "#B9BFCB",}}
                           >
                             This information wiil be used to help prepare owner
                             drawns and 1099s.
@@ -942,13 +1085,15 @@ const Rentals = () => {
                             onClick={setRentalDialogOpen}
                             style={{
                               cursor: "pointer",
-                              fontSize: "14px",
-                              fontFamily: "monospace",
-                              color: "blue",
+                              fontSize: "12px",
+                              fontFamily: "Poppins",
+                              color: "#26C22C",
+                              fontWeight:"500",
                             }}
                           >
-                            <b style={{ fontSize: "20px" }}>+</b> Add Rental
-                            Owner
+                            <b style={{ fontSize: "15px" }}>+ </b><b style={{ fontSize: "15px" }}> Add Rental
+                            Owner</b>
+                            
                             {display === false ? (
                               <></>
                             ) : (
@@ -1766,26 +1911,48 @@ const Rentals = () => {
                       </Col>
                     </Row>
                   </div>
-                  <hr className="my-4" />
-                  <div className="pl-lg-4">
-                    <Row>
-                      <br />
-                    </Row>{" "}
-                    <br />
+                </Form>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Card className="bg-white shadow mt-3 mx-4" style={{ boxShadow: "0px 4px 4px 0px #00000040", border: "1px solid #324567" }}
+
+              onSubmit={rentalsFormik.handleSubmit}
+            >
+
+              <CardBody>
+                <Form role="form" open={open} onClose={handleClose}>
+                  <div className="">
+                   
                     <Row>
                       <Col md="12">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-address"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#B9BFCB",
+                            }}
                           >
                             Who will be the primary manager of this property?
                           </label>
                           <br />
-                          <br />
                           <label
                             className="label2"
-                            style={{ fontSize: "0.7rem" }}
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "14px",
+                              color: "#B9BFCB",
+                            }}
                           >
                             If the staff member has not yet been added as a user
                             in your account,they can be added to the
@@ -1796,6 +1963,13 @@ const Rentals = () => {
                           <label
                             className="form-control-label"
                             htmlFor="input-address"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#152B51",
+                            }}
                           >
                             Manager (Optional)
                           </label>
@@ -1805,7 +1979,14 @@ const Rentals = () => {
                               isOpen={userdropdownOpen}
                               toggle={toggle3}
                             >
-                              <DropdownToggle caret>
+                              <DropdownToggle caret   style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040",
+                                border: "1px solid #ced4da",
+                                maxWidth: "200px",
+                                minWidth: "200px",
+                                backgroundColor: "transparent",
+                                color: "#A7A7A7"
+                              }}>
                                 {selectedUser ? selectedUser : "Select"}
                               </DropdownToggle>
                               <DropdownMenu>
@@ -1840,17 +2021,42 @@ const Rentals = () => {
                       </Col>
                     </Row>
                   </div>
+                  </Form>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Card className="bg-white shadow mt-3 mb-3 mx-4" style={{ boxShadow: "0px 4px 4px 0px #00000040", border: "1px solid #324567" }}
 
-                  <hr className="my-4" />
+              onSubmit={rentalsFormik.handleSubmit}
+            >
+
+              <CardBody>
+                <Form role="form" open={open} onClose={handleClose}>
                   {!rental_id && propType === "Residential" && (
-                    <div className="pl-lg-4">
-                      <h6 className="heading-small text-muted mb-4">
+                    <div className="">
+                      <h6 className="heading-small "   style={{
+                              // marginBottom: "10px",
+                              fontWeight: "600",
+                              fontFamily: "Poppins",
+                              fontSize: "18px",
+                              color: "#152B51",
+                            }}>
                         Residential Unit
                       </h6>
                       <FormGroup>
                         <label
                           className="form-control-label"
                           htmlFor="input-address"
+                          style={{
+                            // marginBottom: "10px",
+                            fontWeight: "500",
+                            fontFamily: "Poppins",
+                            fontSize: "16px",
+                            color: "#B9BFCB",
+                          }}
                         >
                           Enter Residential Units
                         </label>
@@ -1890,11 +2096,19 @@ const Rentals = () => {
                                       <label
                                         className="form-control-label"
                                         htmlFor={`input-unit-${residentialIndex}`}
-                                        style={{ paddingTop: "10px" }}
+                                        style={{ paddingTop: "10px", fontWeight: "500",
+                                        fontFamily: "Poppins",
+                                        fontSize: "16px",
+                                        color: "#8A95A8", }}
                                       >
                                         Unit *
                                       </label>
                                       <Input
+                                       style={{
+                                        boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                        borderRadius: "6px",
+                                        width: "30%",
+                                      }}
                                         required
                                         className="form-control-alternative"
                                         id={`input-unit-${residentialIndex}`}
@@ -1941,7 +2155,7 @@ const Rentals = () => {
                                     </FormGroup>
                                   </Col>
                                   <Col
-                                    lg="4"
+                                    lg="3"
                                     style={
                                       selectedPropType.is_multiunit
                                         ? { display: "block" }
@@ -1952,11 +2166,19 @@ const Rentals = () => {
                                       <label
                                         className="form-control-label"
                                         htmlFor="input-unitadd"
-                                        style={{ paddingTop: "30px" }}
+                                        style={{ paddingTop: "30px", fontWeight: "500",
+                                        fontFamily: "Poppins",
+                                        fontSize: "16px",
+                                        color: "#8A95A8", }}
                                       >
                                         Unit Address
                                       </label>
                                       <Input
+                                      style={{
+                                        boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                        borderRadius: "6px",
+                                        width: "80%",
+                                      }}
                                         required
                                         className="form-control-alternative"
                                         id="input-unitadd"
@@ -1983,11 +2205,19 @@ const Rentals = () => {
                                       <label
                                         className="form-control-label"
                                         htmlFor="input-unitadd"
-                                        style={{ paddingTop: "30px" }}
+                                        style={{ paddingTop: "30px" , fontWeight: "500",
+                                        fontFamily: "Poppins",
+                                        fontSize: "16px",
+                                        color: "#8A95A8", }}
                                       >
                                         SQFT *
                                       </label>
                                       <Input
+                                      style={{
+                                        boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                        borderRadius: "6px",
+                                        width: "80%",
+                                      }}
                                         required
                                         className="form-control-alternative"
                                         id="input-unitadd"
@@ -2289,8 +2519,14 @@ const Rentals = () => {
                     </div>
                   )}
                   {!rental_id && propType === "Commercial" && (
-                    <div className="pl-lg-4">
-                      <h6 className="heading-small text-muted mb-4">
+                    <div className="">
+                      <h6 className="heading-small "  style={{
+                              // marginBottom: "10px",
+                              fontWeight: "600",
+                              fontFamily: "Poppins",
+                              fontSize: "18px",
+                              color: "#152B51",
+                            }}>
                         Commercial Unit
                       </h6>
                       <FormGroup>
