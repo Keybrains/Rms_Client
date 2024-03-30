@@ -481,7 +481,7 @@ const AddStaffMember = () => {
                       <Button
                         type="submit"
                         className="ml-3"
-                        style={{ background: "#152B51", color: "white", fontFamily: "Poppins", fontWeight: "400", fontSize: "14px", }}
+                        style={{ background: "#152B51", color: "white", fontFamily: "Poppins", fontWeight: "400", fontSize: "14px", cursor: "pointer"}}
                         disabled={!StaffMemberFormik.isValid}
                       >
                         {id ? "Update Staff Member" : "Add Staff Member"}

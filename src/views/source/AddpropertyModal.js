@@ -214,15 +214,22 @@ function CreditCardForm(props) {
                     <label
                       className="form-control-label"
                       htmlFor="input-property"
+                      style={{ fontFamily: "Poppins", fontSize: "16px", fontweight: "500", color: "#8A95A8" }}
                     >
                       Property Type *
                     </label>
                     <br />
-                    <br />
                     <Dropdown isOpen={prodropdownOpen} toggle={toggle}>
-                      <DropdownToggle caret>
+                      <DropdownToggle caret  style={{
+                          boxShadow: " 0px 4px 4px 0px #00000040",
+                          border: "1px solid #ced4da",
+                          maxWidth: "200px",
+                          minWidth: "200px",
+                          backgroundColor: "transparent",
+                          color: "#A7A7A7"
+                        }}>
                         {propertyFormik.values.property_type || "Property Type"}
-                      </DropdownToggle>
+                      </DropdownToggle >
                       <DropdownMenu>
                         <DropdownItem
                           onClick={() =>
@@ -259,6 +266,7 @@ function CreditCardForm(props) {
                   </FormGroup>
                 </Col>
               </Row>
+              <br />
 
               <Row>
                 <Col lg="6">
@@ -266,12 +274,16 @@ function CreditCardForm(props) {
                     <label
                       className="form-control-label"
                       htmlFor="input-property"
+                      style={{ fontFamily: "Poppins", fontSize: "16px", fontweight: "500", color: "#8A95A8" }}
                     >
                       Property Sub Type *
                     </label>
                     <br />
-                    <br />
                     <Input
+                     style={{
+                      boxShadow: " 0px 4px 4px 0px #00000040 ",
+                      borderRadius: "6px",
+                    }}
                       className="form-control-alternative"
                       id="input-protype"
                       placeholder="Townhome"
@@ -286,7 +298,7 @@ function CreditCardForm(props) {
                     <Checkbox
                       onChange={handleChangecheck}
                       checked={isMultiUnit}
-                      style={{ marginRight: "10px" }}
+                      style={{ marginRight: "10px",color:"#152B51" }}
                     />
                     <label className="form-control-label">Multi unit</label>
                   </FormGroup>
@@ -297,8 +309,9 @@ function CreditCardForm(props) {
           <Row>
             <Button
               type="submit"
-              className="btn btn-primary ml-4"
-              style={{ background: "green", color: "white" }}
+              className="btn  ml-4"
+              style={{ background: "#152B51", color: "white", fontFamily: "Poppins", fontWeight: "400", fontSize: "14px", cursor: "pointer", }}
+
             >
               {id ? "Update Property Type" : "Add Property Type"}
             </Button>

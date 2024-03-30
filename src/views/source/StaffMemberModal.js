@@ -330,13 +330,18 @@ function CreditCardForm(props) {
             <Row>
               <Col lg="12">
                 <FormGroup>
-                  <label className="form-control-label" htmlFor="input-member">
+                  <label className="form-control-label" htmlFor="input-member" style={{ fontFamily: "Poppins", fontSize: "16px", fontweight: "500", color: "#8A95A8" }}
+                  >
                     Staff Member Name *
                   </label>
                   <Input
+                    style={{
+                      boxShadow: " 0px 4px 4px 0px #00000040 ",
+                      borderRadius: "6px",
+                    }}
                     className="form-control-alternative"
                     id="input-staffmember-name"
-                    placeholder="John William"
+                    placeholder="Enter staff member name here..."
                     type="text"
                     name="staffmember_name"
                     //name="nput-staffmember-name"
@@ -346,10 +351,10 @@ function CreditCardForm(props) {
                       StaffMemberFormik.handleChange(e);
                     }}
                     value={StaffMemberFormik.values.staffmember_name.trim()}
-                    //required
+                  //required
                   />
                   {StaffMemberFormik.touched.staffmember_name &&
-                  StaffMemberFormik.errors.staffmember_name ? (
+                    StaffMemberFormik.errors.staffmember_name ? (
                     <div style={{ color: "red" }}>
                       {StaffMemberFormik.errors.staffmember_name}
                     </div>
@@ -358,18 +363,22 @@ function CreditCardForm(props) {
               </Col>
             </Row>
           </div>
-          <hr className="my-2" />
           <div className="pl-lg-4">
-            <Row>
+            <Row className="mt-3">
               <Col lg="6">
                 <FormGroup>
-                  <label className="form-control-label" htmlFor="input-desg">
+                  <label className="form-control-label" htmlFor="input-desg" style={{ fontFamily: "Poppins", fontSize: "16px", fontweight: "500", color: "#8A95A8" }}
+                  >
                     Designation
                   </label>
                   <Input
+                    style={{
+                      boxShadow: " 0px 4px 4px 0px #00000040 ",
+                      borderRadius: "6px",
+                    }}
                     className="form-control-alternative"
                     id="input-staffmember-desg"
-                    placeholder="Manager"
+                    placeholder="Enter Designation here..."
                     type="text"
                     name="staffmember_designation"
                     onBlur={StaffMemberFormik.handleBlur}
@@ -377,7 +386,7 @@ function CreditCardForm(props) {
                     value={StaffMemberFormik.values.staffmember_designation.trim()}
                   />
                   {StaffMemberFormik.touched.staffmember_designation &&
-                  StaffMemberFormik.errors.staffmember_designation ? (
+                    StaffMemberFormik.errors.staffmember_designation ? (
                     <div style={{ color: "red" }}>
                       {StaffMemberFormik.errors.staffmember_designation}
                     </div>
@@ -386,13 +395,17 @@ function CreditCardForm(props) {
               </Col>
               <Col lg="6">
                 <FormGroup>
-                  <label className="form-control-label" htmlFor="input-desg">
+                  <label className="form-control-label" htmlFor="input-desg"  style={{ fontFamily: "Poppins", fontSize: "16px", fontweight: "500", color: "#8A95A8" }}>
                     Phone Number *
                   </label>
                   <Input
+                    style={{
+                      boxShadow: " 0px 4px 4px 0px #00000040 ",
+                      borderRadius: "6px",
+                    }}
                     className="form-control-alternative"
                     id="staffmember_phoneNumber"
-                    placeholder="Phone Number"
+                    placeholder="Enter phone number here..."
                     type="text"
                     name="staffmember_phoneNumber"
                     onBlur={StaffMemberFormik.handleBlur}
@@ -406,7 +419,7 @@ function CreditCardForm(props) {
                     }}
                   />
                   {StaffMemberFormik.touched.staffmember_phoneNumber &&
-                  StaffMemberFormik.errors.staffmember_phoneNumber ? (
+                    StaffMemberFormik.errors.staffmember_phoneNumber ? (
                     <div style={{ color: "red" }}>
                       {StaffMemberFormik.errors.staffmember_phoneNumber}
                     </div>
@@ -415,27 +428,30 @@ function CreditCardForm(props) {
               </Col>
             </Row>
           </div>
-          <hr className="my-2" />
           <div className="pl-lg-4">
-            <Row>
+            <Row className="mt-3">
               <Col lg="6">
                 <FormGroup>
-                  <label className="form-control-label" htmlFor="input-desg">
+                  <label className="form-control-label" htmlFor="input-desg"  style={{ fontFamily: "Poppins", fontSize: "16px", fontweight: "500", color: "#8A95A8" }}>
                     Email *
                   </label>
                   <Input
+                    style={{
+                      boxShadow: " 0px 4px 4px 0px #00000040 ",
+                      borderRadius: "6px",
+                    }}
                     className="form-control-alternative"
                     id="staffmember_email"
-                    placeholder="Email"
+                    placeholder="Enter email here..."
                     type="email"
                     name="staffmember_email"
                     onBlur={StaffMemberFormik.handleBlur}
                     onChange={StaffMemberFormik.handleChange}
                     value={StaffMemberFormik.values.staffmember_email.toLowerCase()}
-                    //required
+                  //required
                   />
                   {StaffMemberFormik.touched.staffmember_email &&
-                  StaffMemberFormik.errors.staffmember_email ? (
+                    StaffMemberFormik.errors.staffmember_email ? (
                     <div style={{ color: "red" }}>
                       {StaffMemberFormik.errors.staffmember_email}
                     </div>
@@ -444,11 +460,15 @@ function CreditCardForm(props) {
               </Col>
               <Col lg="6">
                 <FormGroup>
-                  <label className="form-control-label" htmlFor="input-desg">
+                  <label className="form-control-label" htmlFor="input-desg"  style={{ fontFamily: "Poppins", fontSize: "16px", fontweight: "500", color: "#8A95A8" }}>
                     Password *
                   </label>
                   <div style={{ display: "flex" }}>
                     <Input
+                      style={{
+                        boxShadow: " 0px 4px 4px 0px #00000040 ",
+                        borderRadius: "6px",
+                      }}
                       className="form-control-alternative"
                       id="staffmember_password"
                       placeholder="Password"
@@ -457,7 +477,7 @@ function CreditCardForm(props) {
                       onBlur={StaffMemberFormik.handleBlur}
                       onChange={StaffMemberFormik.handleChange}
                       value={StaffMemberFormik.values.staffmember_password}
-                      //required
+                    //required
                     />
                     <Button
                       type="button"
@@ -468,7 +488,7 @@ function CreditCardForm(props) {
                     </Button>
                   </div>
                   {StaffMemberFormik.touched.staffmember_password &&
-                  StaffMemberFormik.errors.staffmember_password ? (
+                    StaffMemberFormik.errors.staffmember_password ? (
                     <div style={{ color: "red" }}>
                       {StaffMemberFormik.errors.staffmember_password}
                     </div>
@@ -477,25 +497,28 @@ function CreditCardForm(props) {
               </Col>
             </Row>
           </div>
-          <hr className="my-2" />
-          <Row>
-            <button
+          <Row className="mt-3">
+            <Button
               type="submit"
-              className="btn btn-primary ml-4"
-              style={{ background: "green" }}
+              className="btn "
+              style={{ background: "#152B51", color: "white", fontFamily: "Poppins", fontWeight: "400", fontSize: "14px", cursor: "pointer",marginLeft:"39px" }}
+
             >
               {id ? "Update Staff Member" : "Add Staff Member"}
-            </button>
-            <button
-              color="primary"
+            </Button>
+            <Button
+              // color="primary"
               //  href="#rms"
-              className="btn btn-primary"
+              className="btn "
               onClick={closeModal}
-              size="sm"
-              style={{ background: "white", color: "black" }}
+              size="small"
+              style={{
+                background: "white", color: "#152B51",
+                cursor: "pointer",
+              }}
             >
               Cancel
-            </button>
+            </Button>
           </Row>
           {/* <Row>
             <Button
