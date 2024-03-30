@@ -102,7 +102,6 @@ function CreditCardForm(props) {
         }
       );
 
-
       // Check if customer.billing is an array
       const billingData = response.data?.data?.customer?.billing;
 
@@ -177,7 +176,7 @@ function CreditCardForm(props) {
           }
         }
 
-        // setPaymentLoader(false);
+        setPaymentLoader(false);
         setCardDetails(extractedData);
         console.log("object", extractedData);
       } else {
@@ -192,9 +191,10 @@ function CreditCardForm(props) {
       throw error;
     }
   };
+
   useEffect(() => {
     getCreditCard();
-  }, [tenantId]);
+  }, [tenantId, accessType?.admin_id]);
 
   useEffect(() => {
     // Extract customer_vault_id values from cardDetails

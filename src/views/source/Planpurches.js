@@ -145,19 +145,21 @@ function Planpurches() {
     await axios
       .post(`${baseUrl}/nmipayment/custom-add-subscription`, nmiObject)
       .then(async (res) => {
-        console.log(res, "res");
+        console.log(res.data, "first api res");
         if (res.data.status === 200) {
           await axios
-            .post(`${baseUrl}/purchase/purchase`, addSubObject)
+            .post(`${baseUrl}/purchase/purchase`, {...addSubObject,subscription_id:res.data.data.transactionid})
             .then((resp) => {
               if (resp.data.statusCode === 200) {
                 console.log(resp, "res");
-                navigate(`/${admin}/index`);
-                window.location.reload();
+                // window.location.reload();
                 toast.success(resp.data.message, {
                   position: "top-center",
                   autoClose: 1000,
                 });
+                setTimeout(() => {
+                  navigate(`/${admin}/index`);
+                }, 2000)
               } else {
                 toast.error(resp.data.message, {
                   position: "top-center",
@@ -380,7 +382,7 @@ function Planpurches() {
                       <Button
                         size="sm"
                         style={{
-                          background: "black",
+                          // background: "black",
                           color: "white",
                           width: "100px",
                           height: "50px",
@@ -660,7 +662,7 @@ function Planpurches() {
                                 size="sm"
                                 type="submit"
                                 style={{
-                                  background: "black",
+                                  // background: "black",
                                   color: "white",
                                   width: "100px",
                                   height: "50px",
@@ -670,6 +672,9 @@ function Planpurches() {
                                     "linear-gradient(87deg, #11cdef 0, #1171ef 100%)",
                                 }}
                                 className="mb-5 justify-content-center"
+                                // onClick={(e)=>{
+                                //   e.preventDefault();
+                                // }}  
                               >
                                 Submit
                               </Button>

@@ -287,7 +287,7 @@ const Rentals = () => {
                 <Row className="align-items-center">
                   <Col xs="8">
                     <h3 className="mb-0">
-                      {id ? "Edit Reantal Owner" : "New Reantal Owner"}
+                      {id ? "Edit Rental Owner" : "New Rental Owner"}
                     </h3>
                   </Col>
                   <Col className="text-right" xs="4"></Col>
@@ -1144,7 +1144,7 @@ const Rentals = () => {
                       <div className="pl-lg-4">
                         <button
                           color="primary"
-                          href="#pablo"
+                        
                           className="btn btn-primary"
                           onClick={() => {
                             handleCloseButtonClick();
