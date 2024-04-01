@@ -175,6 +175,24 @@ const Index = () => {
 
     fetchData();
   }, [accessType]);
+
+  const [paymentData, setPaymentData] = useState({});
+  useEffect(() => {
+    const fetchPaymentData = async () => {
+      if (accessType?.admin_id) {
+        try {
+          const response1 = await axios.get(
+            `http://localhost:4000/api/payment/admin_balance/${accessType?.admin_id}`
+          );
+          setPaymentData(response1.data);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    };
+    fetchPaymentData();
+  }, [accessType]);
+
   return (
     <div>
       <Header />
@@ -658,7 +676,7 @@ const Index = () => {
                                 }}
                                 className="d-flex justify-content-center align-items-center py-4"
                               >
-                                1200
+                                {paymentData?.NextMonthCharge}
                               </span>
                             </CardBody>
                           </Col>
@@ -720,7 +738,7 @@ const Index = () => {
                                 }}
                                 className="d-flex justify-content-center align-items-center py-4"
                               >
-                                2500
+                                {paymentData?.TotalCollectedAmount}
                               </span>
                             </CardBody>
                           </Col>
@@ -781,7 +799,7 @@ const Index = () => {
                                 }}
                                 className="d-flex justify-content-center align-items-center py-4"
                               >
-                                1000
+                                {paymentData?.PastDueAmount}
                               </span>
                             </CardBody>
                           </Col>
@@ -843,7 +861,7 @@ const Index = () => {
                                 }}
                                 className="d-flex justify-content-center align-items-center py-4"
                               >
-                                1800
+                                {paymentData?.LastMonthCollectedAmount}
                               </span>
                             </CardBody>
                           </Col>

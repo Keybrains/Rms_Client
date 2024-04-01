@@ -473,31 +473,9 @@ export default function Admin() {
   const [pageItem, setPageItem] = React.useState(10);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
   const [totalPages, setTotalPages] = React.useState(1);
-
-  // Searchbar
   const [searchLoader, setSearchLoader] = useState(false);
-  let handleSearchData = async (values) => {
-    setSearchLoader(true);
-    // const token = cookies.get("token");
-    let res = await axios.post(`${baseUrl}/plans/search`, {
-      search: values,
-    });
-    if (res.data.statusCode === 200) {
-      if (values !== "") {
-        setSearchLoader(false);
-        setAdminData(res.data.data);
-        setCountData(res.data.count);
-      } else {
-        setSearchLoader(false);
-        getData();
-      }
-    }
-  };
-
-  //   edit machine-type here
   let [modalShowForPopupForm, setModalShowForPopupForm] = React.useState(false);
   let [id, setId] = React.useState();
-
   var handleSubmit;
 
   if (!id) {
