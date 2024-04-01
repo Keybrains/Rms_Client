@@ -127,6 +127,47 @@ const AdminNavbar = (props) => {
     getPlan();
   }, [accessType?.admin_id]);
 
+  //  Working
+  const [adminNotification, setAdminNotification] = useState([]);
+  const adminNotificationData = async (addresses, units) => {
+    if (accessType?.admin_id) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/notification/admin/${accessType?.admin_id}`
+        );
+        if (response.status === 200) {
+          const data = response.data.data;
+          setAdminNotification(data);
+          // Process the data as needed
+        } else {
+          console.error("Response status is not 200");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        // Handle the error, display a message to the user, or take other appropriate action.
+      }
+    }
+  };
+
+  useEffect(() => {
+    adminNotificationData();
+  }, [accessType?.admin_id]);
+
+  const readAdminNotification = async (notification_id) => {
+    try {
+      const response = await axios.put(
+        `${baseUrl}/notification/admin_notification/${notification_id}`
+      );
+      if (response.status === 200) {
+        adminNotificationData();
+        // Process the data as needed
+      } else {
+        console.error("Response status is not 200");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   return (
     <>
       <Navbar

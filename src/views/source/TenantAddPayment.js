@@ -216,6 +216,7 @@ function TenantAddPayment() {
         `${baseUrl}/nmipayment/get-billing-customer-vault`,
         {
           customer_vault_id: customerVaultIds,
+          admin_id : accessType?.admin_id,
         }
       );
 
@@ -621,6 +622,7 @@ function TenantAddPayment() {
           // First, make the call to baseUrl/nmipayment/sale
           const url = `${baseUrl}/nmipayment/sale`;
           const postObject = {
+            admin_id : accessType?.admin_id,
             first_name: tenantData.tenant_firstName,
             last_name: tenantData.tenant_lastName,
             email_name: tenantData.tenant_email,

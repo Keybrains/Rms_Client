@@ -165,6 +165,7 @@ const AddPlanForm = () => {
           const nmiResponse = await axios.post(
             `${baseUrl}/nmipayment/add-plan`,
             {
+              admin_id : accessType?.admin_id,
               planPayments: values.plan_payments || "0",
               planAmount: values.plan_price,
               planName: values.plan_name,
@@ -197,6 +198,7 @@ const AddPlanForm = () => {
           const nmiResponse = await axios.post(
             `${baseUrl}/nmipayment/edit-plan`,
             {
+              admin_id : accessType?.admin_id,
               planPayments: values.plan_payments || "0",
               planAmount: values.plan_price,
               planName: values.plan_name,

@@ -92,9 +92,10 @@ function AddPayment() {
   const [vaultId, setVaultId] = useState(false);
   const [paymentLoader, setPaymentLoader] = useState(false);
   const [selectedCreditCard, setSelectedCreditCard] = useState(null);
+  const [selectedBintype, setSelectedBintype] = useState(null);
   const [totalAmount1, setTotalAmount1] = useState();
   const [surchargePercentage, setSurchargePercentage] = useState();
-  const [ResponseData, setResponseData] = useState("");
+  const [debitSurchargePercentage, setDebitSurchargePercentage] = useState("");
   // Fetch surcharge from the API
   const fetchData = async () => {
     // try {
@@ -108,6 +109,7 @@ function AddPayment() {
       .then((response) => {
         const Data = response.data.data[0];
         setSurchargePercentage(response.data.data[0].surcharge_percent);
+        setDebitSurchargePercentage(response.data.data[0].surcharge_percent_debit);
       })
       .catch((error) => {
         console.error("Error fetching property type data:", error);
@@ -173,6 +175,7 @@ function AddPayment() {
         `${baseUrl}/nmipayment/get-billing-customer-vault`,
         {
           customer_vault_id: customerVaultIds,
+          admin_id : accessType?.admin_id,
         }
       );
 
@@ -185,8 +188,31 @@ function AddPayment() {
           cc_number: item.cc_number,
           cc_exp: item.cc_exp,
           cc_type: item.cc_type,
+          cc_bin: item.cc_bin,
           customer_vault_id: item.customer_vault_id,
         }));
+
+        for (const card of extractedData) {
+          const options = {
+            method: "POST",
+            url: `https://bin-ip-checker.p.rapidapi.com/?bin=${card.cc_bin}`,
+
+            headers: {
+              "content-type": "application/json",
+              "X-RapidAPI-Key":
+                "1bd772d3c3msh11c1022dee1c2aep1557bajsn0ac41ea04ef7",
+              "X-RapidAPI-Host": "bin-ip-checker.p.rapidapi.com",
+            },
+            // data: {bin: '448590'}
+          };
+
+          try {
+            const response = await axios.request(options);
+            card.binType = response.data.BIN.type;
+          } catch (error) {
+            console.error(error, "error in bin check");
+          }
+        }
 
         setPaymentLoader(false);
         setCardDetails(extractedData);
@@ -198,9 +224,32 @@ function AddPayment() {
             cc_number: billingData.cc_number,
             cc_exp: billingData.cc_exp,
             cc_type: billingData.cc_type,
+            cc_bin: billingData.cc_bin,
             customer_vault_id: billingData.customer_vault_id,
           },
         ];
+
+        for (const card of extractedData) {
+          const options = {
+            method: "POST",
+            url: `https://bin-ip-checker.p.rapidapi.com/?bin=${card.cc_bin}`,
+
+            headers: {
+              "content-type": "application/json",
+              "X-RapidAPI-Key":
+                "1bd772d3c3msh11c1022dee1c2aep1557bajsn0ac41ea04ef7",
+              "X-RapidAPI-Host": "bin-ip-checker.p.rapidapi.com",
+            },
+            // data: {bin: '448590'}
+          };
+
+          try {
+            const response = await axios.request(options);
+            card.binType = response.data.BIN.type;
+          } catch (error) {
+            console.error(error, "error in bin check");
+          }
+        }
 
         setPaymentLoader(false);
         setCardDetails(extractedData);
@@ -366,6 +415,7 @@ function AddPayment() {
               account: entry.account,
               amount: entry.amount,
               balance: entry.amount,
+              memo: responseData.memo,
               charge_type: entry.charge_type,
             })),
             payments_attachment: responseData.payment_attachment,
@@ -386,9 +436,10 @@ function AddPayment() {
   const calculateTotalAmount = () => {
     const amount = parseFloat(generalledgerFormik.values.total_amount) || 0;
     let totalAmount = amount;
+    let percent = selectedBintype === "CREDIT" ? surchargePercentage : debitSurchargePercentage
 
     if (selectedPaymentMethod === "Credit Card") {
-      const surchargeAmount = (amount * surchargePercentage) / 100;
+      const surchargeAmount = (amount * percent) / 100;
       generalledgerFormik.setFieldValue(
         "surcharge",
         surchargeAmount.toFixed(2)
@@ -570,6 +621,7 @@ function AddPayment() {
           // First, make the call to baseUrl/nmipayment/sale
           const url = `${baseUrl}/nmipayment/sale`;
           const postObject = {
+            admin_id : accessType?.admin_id,
             first_name: tenantData.tenant_firstName,
             last_name: tenantData.tenant_lastName,
             email_name: tenantData.tenant_email,
@@ -1033,7 +1085,7 @@ function AddPayment() {
                           <DropdownToggle caret style={{ width: "100%" }}>
                             {selectedPaymentMethod
                               ? selectedPaymentMethod
-                              : "Selcet Method"}
+                              : "Select Method"}
                           </DropdownToggle>
                           <DropdownMenu
                             style={{
@@ -1074,15 +1126,7 @@ function AddPayment() {
                               className="w-100 mt-3"
                               style={{ background: "#F4F6FF" }}
                             >
-                              <label
-                                className="form-control-label"
-                                htmlFor="input-property"
-                              >
-                                Credit card transactions will charge{" "}
-                                <strong style={{ color: "blue" }}>
-                                  {surchargePercentage}%
-                                </strong>
-                              </label>
+                              
                               <CardContent>
                                 {/* Card Details */}
                                 <div
@@ -1102,7 +1146,7 @@ function AddPayment() {
                                     color="text.secondary"
                                     gutterBottom
                                   >
-                                    Credit Cards
+                                      Cards
                                   </Typography>
                                 </div>
                                 {cardDetalis && cardDetalis.length > 0 && (
@@ -1124,10 +1168,11 @@ function AddPayment() {
                                               type="checkbox"
                                               checked={
                                                 selectedCreditCard ==
-                                                item.billing_id
+                                                item.billing_id  
                                               }
                                               onChange={() =>
-                                                handleCreditCardSelection(item)
+                                                {handleCreditCardSelection(item);
+                                                setSelectedBintype(item.binType)}
                                               }
                                             />
                                           </td>
@@ -1156,7 +1201,7 @@ function AddPayment() {
                                               color="text.secondary"
                                               gutterBottom
                                             >
-                                              {item.cc_type}
+                                              {item.binType}
                                               {item.cc_type && (
                                                 <img
                                                   src={`https://logo.clearbit.com/${item.cc_type.toLowerCase()}.com`}
@@ -1216,6 +1261,21 @@ function AddPayment() {
                                     </tbody>
                                   </Table>
                                 )}
+{selectedCreditCard !== null && (
+  selectedBintype === "CREDIT" ? (
+    <label className="form-control-label" htmlFor="input-property">
+      Credit card transactions will charge{" "}
+      <strong style={{ color: "blue" }}>{surchargePercentage}%</strong>
+    </label>
+  ) : (
+    <label className="form-control-label" htmlFor="input-property">
+      Debit card transactions will charge{" "}
+      <strong style={{ color: "blue" }}>{debitSurchargePercentage}%</strong>
+    </label>
+  )
+)}
+{console.log("selected surcharge",selectedBintype)}
+
 
                                 {/* Add Credit Card Button */}
                                 <div
@@ -1232,18 +1292,16 @@ function AddPayment() {
                                     }}
                                     style={{
                                       background: "white",
-                                      color: "#3B2F2F",
+                                      color : "blue",
                                       marginRight: "10px",
                                     }}
                                   >
-                                    Add Credit Card
+                                    Add Card
                                   </Button>
                                 </div>
                               </CardContent>
                             </Card>
-                            {/* ) : (
-                    ""
-                  )} */}
+                       
                           </>
                         ) : selectedPaymentMethod === "Check" ? (
                           <>
@@ -1847,7 +1905,7 @@ function AddPayment() {
           style={{ maxWidth: "1000px" }}
         >
           <ModalHeader toggle={closeModal} className="bg-secondary text-white">
-            <strong style={{ fontSize: 18 }}>Add Credit Card</strong>
+            <strong style={{ fontSize: 18 }}>Add Card</strong>
           </ModalHeader>
           <ModalBody>
             <CreditCardForm

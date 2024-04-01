@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -840,7 +840,7 @@ const AddCharge = () => {
                                           color: "red",
                                         }}
                                       >
-                                        The payment's amount must match the
+                                        The charge's amount must match the
                                         total applied to balance. The difference
                                         is $
                                         {Math.abs(

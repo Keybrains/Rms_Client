@@ -100,10 +100,7 @@ const AddWorkorder = () => {
         const response = await axios.get(
           `${baseUrl}/unit/rental_unit/${propertyType}`
         );
-
-        const units = response?.data?.data || [];
-
-        return units;
+        return response?.data?.data || [];
       } catch (error) {
         console.error("Error fetching units:", error);
         return [];
@@ -268,7 +265,9 @@ const AddWorkorder = () => {
           setSelectedVendor(vendor_data?.vendor_name || "Select");
           setSelectedCharge(response?.data?.data?.work_charge_to || "Select");
           setSelectedEntry(
-            response?.data?.data?.entry_allowed === true ? "Yes" : "No" || "Select"
+            response?.data?.data?.entry_allowed === true
+              ? "Yes"
+              : "No" || "Select"
           );
           setSelecteduser(staff_data?.staffmember_name || "Select");
           setSelectedStatus(response?.data?.data?.status || "Select");
@@ -276,8 +275,9 @@ const AddWorkorder = () => {
           setWorkOrderImage(response?.data?.data?.workOrder_images || []);
           setSelectedFiles(response?.data?.data?.workOrder_images || []);
           setSelectedTenant(
-            tenant_data?.tenant_firstName + " " + tenant_data?.tenant_lastName ||
-              "Select"
+            tenant_data?.tenant_firstName +
+              " " +
+              tenant_data?.tenant_lastName || "Select"
           );
 
           WorkFormik.setValues({
@@ -395,6 +395,7 @@ const AddWorkorder = () => {
         work_charge_to: WorkFormik.values.work_charge || "",
         status: WorkFormik.values.status || "",
         date: WorkFormik.values.due_date || "",
+        statusUpdatedBy: "Admin",
       },
       parts: WorkFormik.values.entries.map((item) => {
         return {
@@ -635,6 +636,7 @@ const AddWorkorder = () => {
         vendor_id: WorkFormik.values.vendor_id || "",
         tenant_id: WorkFormik.values.tenant_id || "",
         staffmember_id: WorkFormik.values.staffmember_id || "",
+        staffmember_name: WorkFormik.values.staffmember_name || "",
         work_subject: WorkFormik.values.work_subject || "",
         work_category: WorkFormik.values.work_category || "",
         entry_allowed:
@@ -647,6 +649,7 @@ const AddWorkorder = () => {
         status: WorkFormik.values.status || "",
         date: WorkFormik.values.due_date || "",
         updated_by: { admin_id: accessType?.admin_id },
+        statusUpdatedBy: "Admin",
       },
       parts: WorkFormik.values.entries.map((item) => {
         return {

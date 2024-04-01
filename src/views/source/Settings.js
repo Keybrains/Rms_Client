@@ -28,11 +28,9 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, useParams } from "react-router-dom";
 import * as yup from "yup";
-import EditIcon from "@mui/icons-material/Edit";
 import Header from "components/Headers/Header";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { RotatingLines } from "react-loader-spinner";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "universal-cookie";
 
@@ -92,6 +90,7 @@ const Settings = () => {
   const surchargeFormik = useFormik({
     initialValues: {
       surcharge_percent: "",
+      surcharge_percent_debit: "",
     },
     validationSchema: yup.object({
       surcharge_percent: yup.number().required("Required"),
@@ -111,6 +110,7 @@ const Settings = () => {
         setSurchargeId(Data.surcharge_id);
         surchargeFormik.setValues({
           surcharge_percent: Data.surcharge_percent || "",
+          surcharge_percent_debit: Data.surcharge_percent_debit || "",
         });
       })
       .catch((error) => {
@@ -124,6 +124,7 @@ const Settings = () => {
       const object = {
         admin_id: accessType?.admin_id,
         surcharge_percent: surchargeFormik.values.surcharge_percent,
+        surcharge_percent_debit: surchargeFormik.values.surcharge_percent_debit,
       };
 
       if (!surcharge_id) {
@@ -166,95 +167,219 @@ const Settings = () => {
     }
   }
 
-    //Selected option Latefee Charge
-    const [lateFee, setLateFee] = useState(null);
-    const [latefee_id, setLateFeeId] = useState(null);
-  
-    const latefeeFormik = useFormik({
-      initialValues: {
-        duration: "",
-        late_fee: "",
-      },
-      validationSchema: yup.object({
-        duration: yup.number().required("Required"),
-        late_fee: yup.number().required("Required"),
-      }),
-      onSubmit: (values) => {
-        handleLateFeeSubmit(values);
-      },
-    });
-  
-    useEffect(() => {
-      let Admin_Id = accessType?.admin_id;
-      axios
-        .get(`${baseUrl}/latefee/latefee/${Admin_Id}`)
-        .then((response) => {
-          const Data = response.data.data;
-          setLateFee(Data);
-          setLateFeeId(Data.latefee_id);
-          latefeeFormik.setValues({
-            duration: Data.duration || "",
-            late_fee: Data.late_fee || "",
-          });
-        })
-        .catch((error) => {
-          console.error("Error fetching late fee data:", error);
+  //Selected option Latefee Charge
+  const [lateFee, setLateFee] = useState(null);
+  const [latefee_id, setLateFeeId] = useState(null);
+  const [testLoader, setTestLoader] = useState(false);
+
+  const latefeeFormik = useFormik({
+    initialValues: {
+      duration: "",
+      late_fee: "",
+    },
+    validationSchema: yup.object({
+      duration: yup.number().required("Required"),
+      late_fee: yup.number().required("Required"),
+    }),
+    onSubmit: (values) => {
+      handleLateFeeSubmit(values);
+    },
+  });
+
+  useEffect(() => {
+    let Admin_Id = accessType?.admin_id;
+    axios
+      .get(`${baseUrl}/latefee/latefee/${Admin_Id}`)
+      .then((response) => {
+        const Data = response.data.data;
+        setLateFee(Data);
+        setLateFeeId(Data.latefee_id);
+        latefeeFormik.setValues({
+          duration: Data.duration || "",
+          late_fee: Data.late_fee || "",
         });
-    }, [accessType, selectedOption]);
-  
-    async function handleLateFeeSubmit(values) {
-      setSubmitLoader(true);
-      try {
-        const object = {
-          admin_id: accessType?.admin_id,
-          duration: latefeeFormik.values.duration,
-          late_fee: latefeeFormik.values.late_fee,
-        };
-  
-        if (!latefee_id) {
-          const res = await axios.post(`${baseUrl}/latefee/latefee`, object);
-          if (res.data.statusCode === 200) {
-            toast.success("Late Fee Added", {
-              position: "top-center",
-              autoClose: 800,
-              // onClose: () => navigate(`/${admin}/surcharge`),
-            });
-          } else if (res.data.statusCode === 201) {
-            toast.error(res.data.message, {
-              position: "top-center",
-              autoClose: 1000,
-            });
-          }
-        } else {
-          const editUrl = `${baseUrl}/latefee/latefee/${latefee_id}`;
-          const res = await axios.put(editUrl, object);
-          if (res.data.statusCode === 200) {
-            toast.success("Late Fee Updated", {
-              position: "top-center",
-              autoClose: 800,
-              // onClose: () => navigate(`/${admin}/surcharge`),
-            });
-          } else if (res.data.statusCode === 400) {
-            toast.error(res.data.message, {
-              position: "top-center",
-              autoClose: 1000,
-            });
-          }
+      })
+      .catch((error) => {
+        console.error("Error fetching late fee data:", error);
+      });
+  }, [accessType, selectedOption]);
+
+  async function handleLateFeeSubmit(values) {
+    setSubmitLoader(true);
+    try {
+      const object = {
+        admin_id: accessType?.admin_id,
+        duration: latefeeFormik.values.duration,
+        late_fee: latefeeFormik.values.late_fee,
+      };
+
+      if (!latefee_id) {
+        const res = await axios.post(`${baseUrl}/latefee/latefee`, object);
+        if (res.data.statusCode === 200) {
+          toast.success("Late Fee Added", {
+            position: "top-center",
+            autoClose: 800,
+            // onClose: () => navigate(`/${admin}/surcharge`),
+          });
+        } else if (res.data.statusCode === 201) {
+          toast.error(res.data.message, {
+            position: "top-center",
+            autoClose: 1000,
+          });
         }
-      } catch (error) {
-        console.error("Error:", error);
-        if (error.response) {
-          console.error("Response Data:", error.response.data);
+      } else {
+        const editUrl = `${baseUrl}/latefee/latefee/${latefee_id}`;
+        const res = await axios.put(editUrl, object);
+        if (res.data.statusCode === 200) {
+          toast.success("Late Fee Updated", {
+            position: "top-center",
+            autoClose: 800,
+            // onClose: () => navigate(`/${admin}/surcharge`),
+          });
+        } else if (res.data.statusCode === 400) {
+          toast.error(res.data.message, {
+            position: "top-center",
+            autoClose: 1000,
+          });
         }
-      } finally {
-        setSubmitLoader(false);
       }
+    } catch (error) {
+      console.error("Error:", error);
+      if (error.response) {
+        console.error("Response Data:", error.response.data);
+      }
+    } finally {
+      setSubmitLoader(false);
     }
+  }
+
+  //Selected option NMI Account
+  const [nmiKey, setNmiKey] = useState(null);
+  const [key_id, setKeyId] = useState(null);
+  const [responseText, setResponseText] = useState(null);
+
+  const nmikeyFormik = useFormik({
+    initialValues: {
+      security_key: "",
+      admin_id: "",
+    },
+    validationSchema: yup.object({
+      security_key: yup.string().required("Required"),
+    }),
+    onSubmit: (values) => {
+      handleNmiKeySubmit(values);
+    },
+  });
+
+  useEffect(() => {
+    let Admin_Id = accessType?.admin_id;
+    axios
+      .get(`${baseUrl}/nmi-keys/nmi-keys/${Admin_Id}`)
+      .then((response) => {
+        const Data = response.data.data;
+        setNmiKey(Data);
+        setKeyId(Data.key_id);
+        nmikeyFormik.setValues({
+          security_key: Data.security_key || "",
+          //  late_fee: Data.late_fee || "",
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching late fee data:", error);
+      });
+  }, [accessType, selectedOption]);
+
+  async function handleNmiKeySubmit(values) {
+    setSubmitLoader(true);
+    try {
+      const object = {
+        admin_id: accessType?.admin_id,
+        security_key: values.security_key,
+      };
+
+      if (!key_id) {
+        const res = await axios.post(`${baseUrl}/nmi-keys/nmi-keys`, object);
+        if (res.data.statusCode === 200) {
+          toast.success("Security Key Added", {
+            position: "top-center",
+            autoClose: 800,
+            // onClose: () => navigate(`/${admin}/surcharge`),
+          });
+        } else if (res.data.statusCode === 201) {
+          toast.error(res.data.message, {
+            position: "top-center",
+            autoClose: 1000,
+          });
+        }
+      } else {
+        const editUrl = `${baseUrl}/nmi-keys/nmi-keys/${key_id}`;
+        const res = await axios.put(editUrl, object);
+        if (res.data.statusCode === 200) {
+          toast.success("Security Key Updated", {
+            position: "top-center",
+            autoClose: 800,
+            // onClose: () => navigate(`/${admin}/surcharge`),
+          });
+        } else if (res.data.statusCode === 400) {
+          toast.error(res.data.message, {
+            position: "top-center",
+            autoClose: 1000,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      if (error.response) {
+        console.error("Response Data:", error.response.data);
+      }
+    } finally {
+      setSubmitLoader(false);
+    }
+  }
+
+  async function handleTestKeyClick(values) {
+    setTestLoader(true);
+    try {
+      const object = {
+        first_name: accessType.first_name,
+        last_name: accessType.last_name,
+        email: accessType.email,
+        security_key: values.security_key,
+        cc_number: values.cc_number,
+        cc_exp: values.cc_exp
+      };
+
+
+        const res = await axios.post(`${baseUrl}/nmipayment/test_sale`, {paymentDetails:object});
+        if (res.data.statusCode === 100) {
+          toast.success(res.data.message, {
+            position: "top-center", 
+            autoClose: 1000,
+            // onClose: () => navigate(`/${admin}/surcharge`),
+          });
+          setResponseText(res.data.message)
+        } else if (res.data.statusCode === 200) {
+          toast.error(res.data.message, {
+            position: "top-center",
+            autoClose: 1000,
+          });
+          setResponseText(res.data.message)
+        }
+   
+    } catch (error) {
+      console.error("Error:", error);
+      if (error.response) {
+        console.error("Response Data:", error.response.data);
+      }
+    } finally {
+      setTestLoader(false);
+    }
+  }
 
   //Selected option Mail
   const [mailData, setMailData] = useState([]);
   const [click, setClick] = useState(false);
-  console.log("clicked", click);
+
   useEffect(() => {
     let Admin_Id = accessType?.admin_id;
     axios
@@ -357,7 +482,25 @@ const Settings = () => {
                             Late Fee Charge
                           </div>
                         </li>
-                        <li style={{ borderBottom: "1px solid #ccc" }}>
+                        {/* <li style={{ borderBottom: "1px solid #ccc" }}>
+                          <div
+                            color="link"
+                            onClick={() => handleOptionClick("nmi-account")}
+                            style={{
+                              backgroundColor:
+                                selectedOption === "nmi-account"
+                                  ? "#D3D3D3"
+                                  : "inherit",
+                              color: "black",
+                              cursor: "pointer",
+                              fontWeight: "bold",
+                              padding: "20px 15px",
+                            }}
+                          >
+                            NMI Account
+                          </div>
+                        </li> */}
+                        {/* <li style={{ borderBottom: "1px solid #ccc" }}>
                           <div
                             color="link"
                             onClick={() => handleOptionClick("mail")}
@@ -374,7 +517,7 @@ const Settings = () => {
                           >
                             Mail Service
                           </div>
-                        </li>
+                        </li> */}
                         {/* <li style={{ borderBottom: "1px solid #ccc" }}>
                           <div
                             color="link"
@@ -440,7 +583,7 @@ const Settings = () => {
                                         className="form-control-label"
                                         htmlFor="input-property"
                                       >
-                                        Surcharge Percent
+                                        Credit Card Surcharge Percent
                                       </label>
                                       <br />
                                       <br />
@@ -461,8 +604,36 @@ const Settings = () => {
                                     </FormGroup>
                                   </Col>
                                 </Row>
-                                <br />
+
+                                <Row className="mt-4">
+                                  <Col lg="6">
+                                    <FormGroup>
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-property"
+                                      >
+                                        Debit Card Surcharge Percent
+                                      </label>
+                                      <br />
+                                      <br />
+                                      <Input
+                                        className="form-control-alternative"
+                                        id="input-protype"
+                                        placeholder="Surcharge %"
+                                        type="number"
+                                        name="surcharge_percent_debit"
+                                        onBlur={surchargeFormik.handleBlur}
+                                        onChange={surchargeFormik.handleChange}
+                                        value={
+                                          surchargeFormik.values
+                                            .surcharge_percent_debit
+                                        }
+                                      />
+                                    </FormGroup>
+                                  </Col>
+                                </Row>
                               </div>
+                              <br />
                               <Row>
                                 {submitLoader ? (
                                   <Button
@@ -503,15 +674,15 @@ const Settings = () => {
                             </Form>
                           </div>
                         )}
-                          {selectedOption === "latefee" && (
+                        {selectedOption === "latefee" && (
                           <div>
                             <h1>Late Fee Charge</h1>
                             <Form onSubmit={latefeeFormik.handleSubmit}>
                               <div className="pl-lg-4 mt-5">
                                 <Row>
                                   <span>
-                                    You can set default Late fee charge
-                                    from here
+                                    You can set default Late fee charge from
+                                    here
                                   </span>
                                 </Row>
                                 <Row className="mt-4">
@@ -521,7 +692,7 @@ const Settings = () => {
                                         className="form-control-label"
                                         htmlFor="input-property"
                                       >
-                                       Amount 
+                                        Percentage
                                       </label>
                                       <br />
                                       <br />
@@ -533,16 +704,13 @@ const Settings = () => {
                                         name="late_fee"
                                         onBlur={latefeeFormik.handleBlur}
                                         onChange={latefeeFormik.handleChange}
-                                        value={
-                                          latefeeFormik.values
-                                            .late_fee
-                                        }
+                                        value={latefeeFormik.values.late_fee}
                                         required
                                       />
                                     </FormGroup>
                                   </Col>
                                 </Row>
-                                
+
                                 <Row className="mt-4">
                                   <Col lg="6">
                                     <FormGroup>
@@ -550,7 +718,7 @@ const Settings = () => {
                                         className="form-control-label"
                                         htmlFor="input-property"
                                       >
-                                        Duration 
+                                        Duration
                                       </label>
                                       <br />
                                       <br />
@@ -562,16 +730,13 @@ const Settings = () => {
                                         name="duration"
                                         onBlur={latefeeFormik.handleBlur}
                                         onChange={latefeeFormik.handleChange}
-                                        value={
-                                          latefeeFormik.values
-                                            .duration
-                                        }
+                                        value={latefeeFormik.values.duration}
                                         required
                                       />
                                     </FormGroup>
                                   </Col>
                                 </Row>
-                                <br/>
+                                <br />
                               </div>
                               <Row>
                                 {submitLoader ? (
@@ -596,7 +761,6 @@ const Settings = () => {
                                     }}
                                   >
                                     {latefee_id ? "Update" : "Save"}
-                                   
                                   </Button>
                                 )}
                                 <Button
@@ -883,19 +1047,20 @@ const Settings = () => {
                                 ) : (
                                   <>
                                     <div className="row row-cols-1 row-cols-md-2 g-4">
-                                      {mailData && mailData.map((data, index) => (
-                                        <MailConfigurationCard
-                                          key={index}
-                                          data={data}
-                                        />
-                                      ))}
+                                      {mailData &&
+                                        mailData.map((data, index) => (
+                                          <MailConfigurationCard
+                                            key={index}
+                                            data={data}
+                                          />
+                                        ))}
                                     </div>
                                     <div className="mb-3 mx-2">
                                       <Button
                                         className="btn1 btn-primary"
                                         color="primary"
                                         style={{ color: "white" }}
-                                        onClick={() => setClick(true)} 
+                                        onClick={() => setClick(true)}
                                       >
                                         Add New
                                       </Button>
@@ -906,6 +1071,179 @@ const Settings = () => {
                             </div>
                           </div>
                         )}
+                        {/* {selectedOption === "nmi-account" && (
+                          <div>
+                            <h1>NMI Account Set Up</h1>
+                            <Form onSubmit={nmikeyFormik.handleSubmit}>
+                              <div className="pl-lg-4 mt-5">
+                                <Row>
+                                  <span>
+                                    You can set your NMI account security key
+                                    from here,
+                                  </span>
+                                </Row>
+                                <Row className="mt-4">
+                                  <Col lg="9">
+                                    <FormGroup>
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-unitadd"
+                                      >
+                                        Security Key
+                                      </label>
+                                      <Input
+                                        className="form-control-alternative"
+                                        id="input-unitadd"
+                                        placeholder="Enter Security Key"
+                                        type="text"
+                                        name="security_key"
+                                        onBlur={nmikeyFormik.handleBlur}
+                                        onChange={nmikeyFormik.handleChange}
+                                        value={nmikeyFormik.values.security_key}
+                                        required
+                                      />
+                                    </FormGroup>
+                                  </Col>
+                                </Row>
+                                <Row className="mt-4">
+                                  <Col lg="9">
+                                    <FormGroup>
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-unitadd"
+                                      >
+                                        Test NMI Account
+                                      </label>
+                                      <p>
+                                        To test whether the account system has
+                                        been successfully linked to the NMI
+                                        account or not, please click on the
+                                        button that will initiate a $1.00
+                                        transaction to this security key's
+                                        account.
+                                      </p>
+                                      <Row className="mt-4">
+                                  <Col lg="4">
+                                    <FormGroup>
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-unitadd"
+                                      >
+                                        Card Number
+                                      </label>
+                                      <Input
+                                        className="form-control-alternative"
+                                        id="input-unitadd"
+                                        placeholder="Card Number"
+                                        type="number"
+                                        name="cc_number"
+                                        onBlur={nmikeyFormik.handleBlur}
+                                        onChange={nmikeyFormik.handleChange}
+                                        value={nmikeyFormik.values.cc_number}
+                                        
+                                      />
+                                    </FormGroup>
+                                  </Col>
+                                  <Col lg="4">
+                                    <FormGroup>
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-unitadd"
+                                      >
+                                        Expiration Date
+                                      </label>
+                                      <Input
+                                        className="form-control-alternative"
+                                        id="input-unitadd"
+                                        placeholder="Expiry Date"
+                                        type="text"
+                                        name="cc_exp"
+                                        onBlur={nmikeyFormik.handleBlur}
+                                        onChange={nmikeyFormik.handleChange}
+                                        value={nmikeyFormik.values.cc_exp}                                        
+                                      />
+                                    </FormGroup>
+                                  </Col>
+                                </Row>
+                                <Row className="mt-4">
+                                <Col lg="4">
+                                {testLoader ? (
+                                  <Button
+                                    type="submit"
+                                    color="warning"
+                                    className="btn btn-primary ml-4"
+                                    style={{
+                                      color: "white",
+                                    }}
+                                    disabled
+                                  >
+                                    Loading...
+                                  </Button>
+                                ) : (
+                                <Button
+                                        color="warning"
+                                        // className="bg-warning text-white"
+                                        type="submit"
+                                        onClick={(e) => {
+                                          handleTestKeyClick(nmikeyFormik.values);
+                                          e.preventDefault();
+                                        }}
+                                      >
+                                        Test Transaction
+                                      </Button>
+                                )}
+                                  </Col>
+                                  <Col lg="6">
+                                    <label>{responseText}</label>
+                                  </Col>
+                                </Row>
+                                   
+                                    </FormGroup>
+                                  </Col>
+                                </Row>
+
+                                <br />
+                              </div>
+                              <Row>
+                                {submitLoader ? (
+                                  <Button
+                                    type="submit"
+                                    className="btn btn-primary ml-4"
+                                    style={{
+                                      background: "green",
+                                      color: "white",
+                                    }}
+                                    disabled
+                                  >
+                                    Loading...
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    type="submit"
+                                    className="btn btn-primary ml-5"
+                                    style={{
+                                      background: "green",
+                                      color: "white",
+                                    }}
+                                  >
+                                    {key_id ? "Update" : "Save"}
+                                  </Button>
+                                )}
+                                <Button
+                                  color="primary"
+                                  className="btn btn-primary ml-4"
+                                  onClick={nmikeyFormik.resetForm}
+                                  style={{
+                                    background: "white",
+                                    color: "black",
+                                  }}
+                                >
+                                  Reset
+                                </Button>
+                              </Row>
+                            </Form>
+                          </div>
+                        )} */}
                       </CardBody>
                     </div>
                   </Col>

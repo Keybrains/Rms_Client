@@ -141,7 +141,6 @@ const TAddWork = () => {
     navigate("/tenant/tenantwork");
   };
 
-
   // Use URLSearchParams to extract parameters from the query string
   const [getData, setGetData] = useState();
   const [vid, setVid] = useState("");
@@ -164,30 +163,26 @@ const TAddWork = () => {
       return [];
     }
   };
-  const [vendorDetails, setVendorDetails] = useState([]);
-  const getVendorDetails = async () => {
-    if (cookie_id) {
+  const [tenantDetails, setTenantDetails] = useState({});
+  console.log('tenantDetails', tenantDetails)
+  const getTenantData = async () => {
+    if (accessType?.tenant_id) {
       try {
-        const response = await axios.get(
-          `${baseUrl}/tenant/tenant_summary/${cookie_id}`
-        );
-        const entries = response.data.data.entries;
-
-        if (entries.length > 0) {
-          setVendorDetails(response.data.data);
-          // getRentalData(rentalAddresses, rentalUnits);
-        } else {
-          console.error("No rental addresses found.");
-        }
-
-        setLoader(false);
+        const apiUrl = `${baseUrl}/tenant/tenant_details/${accessType?.tenant_id}`;
+        const response = await axios.get(apiUrl);
+        console.log('apiUrl', apiUrl)
+        setTenantDetails(response.data.data[0]);
+        console.log('firstttttttttttttttt', response.data.data[0])
       } catch (error) {
         console.error("Error fetching tenant details:", error);
-        setLoader(false);
+        // setLoading(false);
       }
     }
   };
 
+  useEffect(() => {
+    getTenantData();
+  }, [id]);
   useEffect(() => {
     const fetchData = async () => {
       if (id1) {
@@ -215,19 +210,18 @@ const TAddWork = () => {
         } catch (error) {
           console.log(error, "aaa");
         }
-      };
-    }
+      }
+    };
     fetchData();
-    getVendorDetails();
+    getTenantData();
   }, [baseUrl, id]);
 
-  console.log(vendorDetails, "vendorDetails");
 
   const { v4: uuidv4 } = require("uuid");
   const [loader, setLoader] = useState(false);
 
   //   const handleSubmit = async (values,event) => {
-  //     // event.preventDefault(); 
+  //     // event.preventDefault();
   //     setLoader(true);
   //     let image;
 
@@ -269,7 +263,7 @@ const TAddWork = () => {
   //       if (id === undefined) {
   //         const formData = {
   //           ...values,
-  //           statusUpdatedBy: vendorDetails.tenant_firstName + " " + vendorDetails.tenant_lastName,
+  //           statusUpdatedBy: tenantDetails.tenant_firstName + " " + tenantDetails.tenant_lastName,
   //         };
   //         const workOrderRes = await axios.post(`${baseUrl}/work-order/work-order`, formData);
 
@@ -307,28 +301,32 @@ const TAddWork = () => {
     // setSubmitting(true); // Set form submitting state to true
     setLoader(true);
 
-
     try {
       // Construct form data to be submitted
       const formData = {
         ...values,
+        status:"New",
+        admin_id: accessType?.admin_id,
         rental_adress: selectedProp,
         rental_unit: selectedUnit,
         work_category: values.work_category || selectedCategory,
         vendor: selectedVendor,
         entry_allowed: selectedEntry === "Yes" ? true : false,
-        statusUpdatedBy: `${vendorDetails.tenant_firstName} ${vendorDetails.tenant_lastName}`,
+        statusUpdatedBy: `${accessType.tenant_firstName} ${accessType.tenant_lastName}(Tenant)`,
       };
 
       // Make POST request to save workorder
-      const workOrderRes = await axios.post(`${baseUrl}/work-order/work-order`, { workOrder: formData });
-      console.log(workOrderRes, "yashu")
+      const workOrderRes = await axios.post(
+        `${baseUrl}/work-order/work-order`,
+        { workOrder: formData }
+      );
+      console.log(workOrderRes, "yashu");
       if (workOrderRes.status === 200 && workOrderRes.data.statusCode === 200) {
         toast.success("Work Order Added Successfully.", {
           position: "top-center",
           autoClose: 1000,
         });
-        navigate("/tenant/tenantwork");// Navigate to tenantwork page on success
+        navigate("/tenant/tenantwork"); // Navigate to tenantwork page on success
       } else {
         console.error(workOrderRes.data.message);
         toast.error(workOrderRes.data.message, {
@@ -367,9 +365,22 @@ const TAddWork = () => {
       });
     }
   }
+  let cookies = new Cookies();
+  const [accessType, setAccessType] = useState(null);
+  let cookie_id = localStorage.getItem("Tenant ID");
 
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
+      setAccessType(jwt);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
+  console.log("first--------", accessType?.admin_id);
   const WorkFormik = useFormik({
     initialValues: {
+      admin_id: accessType?.admin_id,
       work_subject: getData?.work_subject ? getData.work_subject : "",
       rental_adress: "",
       rental_unit: "",
@@ -389,23 +400,8 @@ const TAddWork = () => {
       // status: yup.string().required("Required"),
     }),
 
-
     onSubmit: handleSubmit,
-  },
-  );
-
-  let cookies = new Cookies();
-  const [accessType, setAccessType] = useState(null);
-  let cookie_id = localStorage.getItem("Tenant ID");
-
-  useEffect(() => {
-    if (localStorage.getItem("token")) {
-      const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt);
-    } else {
-      navigate("/auth/login");
-    }
-  }, [navigate]);
+  });
 
   const fetchRentals = () => {
     if (accessType?.tenant_id) {
@@ -418,7 +414,6 @@ const TAddWork = () => {
           } else {
             console.log("No data available");
           }
-
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -480,9 +475,9 @@ const TAddWork = () => {
           work_performed: WorkFormik.values.work_performed,
           workOrderImage: WorkFormik.values.workOrderImage,
           statusUpdatedBy:
-            vendorDetails.tenant_firstName +
+          accessType.tenant_firstName +
             " " +
-            vendorDetails.tenant_lastName,
+            accessType.tenant_lastName,
 
           // Add other fields as needed
         }
@@ -759,20 +754,20 @@ const TAddWork = () => {
                                   {propertyData.map((property, index) => (
                                     <DropdownItem
                                       key={index}
-                                      onClick={() => handlePropertyTypeSelect(property)}
+                                      onClick={() =>
+                                        handlePropertyTypeSelect(property)
+                                      }
                                     >
                                       {property.rental_adress}
                                     </DropdownItem>
                                   ))}
                                 </DropdownMenu>
 
-
-
                                 {WorkFormik.errors &&
-                                  WorkFormik.errors?.rental_adress &&
-                                  WorkFormik.touched &&
-                                  WorkFormik.touched?.rental_adress &&
-                                  WorkFormik.values.rental_adress === "" ? (
+                                WorkFormik.errors?.rental_adress &&
+                                WorkFormik.touched &&
+                                WorkFormik.touched?.rental_adress &&
+                                WorkFormik.values.rental_adress === "" ? (
                                   <div style={{ color: "red" }}>
                                     {WorkFormik.errors.rental_adress}
                                   </div>
@@ -828,10 +823,10 @@ const TAddWork = () => {
                                       )}
                                     </DropdownMenu>
                                     {WorkFormik.errors &&
-                                      WorkFormik.errors?.rental_unit &&
-                                      WorkFormik.touched &&
-                                      WorkFormik.touched?.rental_unit &&
-                                      WorkFormik.values.rental_unit === "" ? (
+                                    WorkFormik.errors?.rental_unit &&
+                                    WorkFormik.touched &&
+                                    WorkFormik.touched?.rental_unit &&
+                                    WorkFormik.values.rental_unit === "" ? (
                                       <div style={{ color: "red" }}>
                                         {WorkFormik.errors.rental_unit}
                                       </div>
@@ -891,7 +886,9 @@ const TAddWork = () => {
                                 </DropdownItem>
                                 <DropdownItem
                                   onClick={() =>
-                                    handleCategorySelection("Feedback/Suggestion")
+                                    handleCategorySelection(
+                                      "Feedback/Suggestion"
+                                    )
                                   }
                                 >
                                   Feedback/Suggestion
@@ -905,13 +902,17 @@ const TAddWork = () => {
                                 </DropdownItem>
                                 <DropdownItem
                                   onClick={() =>
-                                    handleCategorySelection("Maintenance Request")
+                                    handleCategorySelection(
+                                      "Maintenance Request"
+                                    )
                                   }
                                 >
                                   Maintenance Request
                                 </DropdownItem>
                                 <DropdownItem
-                                  onClick={() => handleCategorySelection("Other")}
+                                  onClick={() =>
+                                    handleCategorySelection("Other")
+                                  }
                                 >
                                   Other
                                 </DropdownItem>
@@ -955,7 +956,7 @@ const TAddWork = () => {
                                 );
                               }}
                               value={WorkFormik.values.work_category}
-                            // required
+                              // required
                             />
                             {/* {WorkFormik.touched.work_subject &&
                           WorkFormik.errors.work_subject ? (
@@ -1063,7 +1064,7 @@ const TAddWork = () => {
                               value={WorkFormik.values.work_performed}
                             />
                             {WorkFormik.touched.work_performed &&
-                              WorkFormik.errors.work_performed ? (
+                            WorkFormik.errors.work_performed ? (
                               <div style={{ color: "red" }}>
                                 {WorkFormik.errors.work_performed}
                               </div>

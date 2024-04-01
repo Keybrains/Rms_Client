@@ -87,6 +87,7 @@ import SuperAdminVendor from "components/superadmin/Admin/Vendor";
 import SuperAdminEmailForm from "components/superadmin/Email/EmailForm";
 import SuperAdminEmailTable from "components/superadmin/Email/EmailTable";
 import ResetPassword from "views/source/Resetpassword";
+import CreatePassword from "views/source/CreatePassword";
 
 //  ====================== admin sidebar icons ======================
 import Dashboard from "./assets/icons/AdminSidebar/dashboard.svg";
@@ -248,6 +249,12 @@ var routes = [
     path: "/Resetpassword",
     name: "Reset password",
     component: <ResetPassword />,
+    layout: "/auth",
+  },
+  {
+    path: "/createpassword",
+    name: "Create Password",
+    component: <CreatePassword />,
     layout: "/auth",
   },
   {

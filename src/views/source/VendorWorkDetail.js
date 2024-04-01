@@ -23,6 +23,7 @@ import {
 
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
+import { useFormik } from "formik";
 // import { Grid } from "react-loader-spinner";
 
 const VendorWorkDetail = () => {
@@ -45,17 +46,59 @@ const VendorWorkDetail = () => {
     setUpdateButton(true);
   };
   let navigate = useNavigate();
-
+  const updateWorkorderFormik = useFormik({
+    initialValues: {
+      status: "",
+      staffmember_name: "",
+      date: "",
+      staffmember_id: "",
+      message: "",
+      statusUpdatedBy: "",
+    },
+    onSubmit: (values) => {
+      //console.log(values);
+      // updateValues()
+      // updateWorkorder(values);
+    },
+  });
   const getOutstandData = async () => {
     if (workorder_id) {
       try {
-        const url = `${baseUrl}/work-order/workorder_details/${workorder_id}`;
-        const response = await axios.get(url);
-        console.log(response.data.data);
-        setoutstandDetails(response.data.data);
+        const response = await axios.get(
+          `${baseUrl}/work-order/workorder_details/${workorder_id}`
+        );
+        setoutstandDetails(response?.data?.data);
+
+        if (
+          response?.data?.data?.workorder_updates &&
+          response.data.data.workorder_updates.length > 0
+        ) {
+          const reversedUpdates = [
+            ...response?.data?.data?.workorder_updates,
+          ].reverse();
+
+          const latestUpdate = reversedUpdates[0];
+
+          setWorkOrderStatus(reversedUpdates);
+
+          updateWorkorderFormik.setValues({
+            status: response?.data?.data?.status,
+            staffmember_name: latestUpdate?.staffmember_name,
+            date: response?.data?.data?.date,
+            assigned_to: response?.data?.data.staff_data?.staffmember_name,
+            message: response?.data?.data?.message
+              ? response?.data?.data?.message
+              : "",
+            statusUpdatedBy: latestUpdate?.statusUpdatedBy
+              ? latestUpdate?.statusUpdatedBy
+              : "Admin",
+          });
+        } else {
+          console.log("No updates found in workorder_updates");
+        }
+
         setLoading(false);
-        //setWorkOrderStatus(response.data.data.workorder_status.reverse());
-        setImageDetails(response.data.data.workOrder_images);
+        setImageDetails(response?.data?.data?.workOrder_images);
       } catch (error) {
         console.error("Error fetching tenant details:", error);
         setError(error);
@@ -1137,10 +1180,10 @@ const VendorWorkDetail = () => {
                                     outstandDetails.priority === "High"
                                       ? "red"
                                       : outstandDetails.priority === "Medium"
-                                        ? "green"
-                                        : outstandDetails.priority === "Low"
-                                          ? "#FFD700"
-                                          : "inherit",
+                                      ? "green"
+                                      : outstandDetails.priority === "Low"
+                                      ? "#FFD700"
+                                      : "inherit",
                                 }}
                               >
                                 &nbsp;{outstandDetails?.priority}&nbsp;

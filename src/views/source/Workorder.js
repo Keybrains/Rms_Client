@@ -83,15 +83,15 @@ const Workorder = () => {
           `${baseUrl}/work-order/work-orders/${accessType?.admin_id}`
         );
         if (response?.data?.data) {
-          const filteredData = response.data.data.map((item) => ({
+          const filteredData = response.data.data?.map((item) => ({
             workOrder_id: item?.workOrderData?.workOrder_id,
             work_subject: item?.workOrderData?.work_subject,
             work_category: item?.workOrderData?.work_category,
             status: item?.workOrderData?.status,
             createdAt: item?.workOrderData?.createdAt,
             updateAt: item?.workOrderData?.updatedAt,
-            rental_id: item?.rentalAdress?.rental_id,
-            rental_adress: item?.rentalAdress?.rental_adress,
+            rental_id: item?.rentalAddress?.rental_id,
+            rental_adress: item?.rentalAddress?.rental_adress,
             unit_id: item?.rentalUnit?.unit_id,
             rental_unit: item?.rentalUnit?.rental_unit,
             staffmember_id: item?.staffMember?.staffmember_id,
@@ -99,21 +99,18 @@ const Workorder = () => {
           }));
           setWorkData(filteredData);
           setTotalPages(Math.ceil(filteredData.length / pageItem));
-          // setLoader(false);
         } else {
           setWorkData([]);
           setTotalPages(0);
         }
       } catch (error) {
-        // setLoader(false);
         console.error("Error fetching data:", error);
-      }
-      finally {
-        setLoader(false); 
+      } finally {
+        setLoader(false);
       }
     }
   };
-
+  
   const [accessType, setAccessType] = useState();
 
   useEffect(() => {
@@ -410,7 +407,7 @@ const Workorder = () => {
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
-                  {workData.length === 0 ? (
+                  {workData?.length === 0 ? (
                     <tbody>
                       <tr className="text-center">
                         <td colSpan="8" style={{ fontSize: "15px" }}>

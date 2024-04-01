@@ -42,7 +42,6 @@ const Forgetmail = () => {
 
     // Decode the token to get the email
     const decodedEmail = decodeURIComponent(token);
-
     // Set the email state
     setEmail(decodedEmail);
   }, [location.search]);
@@ -56,7 +55,7 @@ const Forgetmail = () => {
       try {
         setIsLoading(true)
         const response = await fetch(
-          `${baseUrl}/tenant/reset_password/${email}`,
+          `${baseUrl}/admin/reset_password/${email}`,
           {
             method: "PUT",
             headers: {
@@ -89,7 +88,7 @@ const Forgetmail = () => {
   };
 
   const handleSubmit = (event) => {
-    event.preventDefault(); // Prevent default form submission behavior
+    event.preventDefault(); 
     handleSendMail();
   };
 
@@ -105,19 +104,26 @@ const Forgetmail = () => {
     try {
       const data = {
         tenant_email: mail
-      }
-      const res = await axios.post("http://192.168.1.11:4000/api/tenant/passwordmail", data);
-      if (res) {
+      };
+      const res = await axios.post(`${baseUrl}/admin/passwordmail`, data);
+      if (res.status === 200) {
         toast.success('Mail Sent Successfully', {
           position: 'top-center',
-        })
-        navigate(`/auth/login`)
+          autoClose: 1000
+        });
+        setTimeout(() => {
+          navigate(`/auth/login`);
+        }, 2000);
+      } else {
+        throw new Error('Email sending failed');
       }
       setIsLoading(false);
     } catch (error) {
-      console.error("Network error:", error);
+      console.error('Error sending email:', error);
+      setIsLoading(false);
     }
-  }
+  };
+  
 
   return (
     <Col lg="5" md="7">

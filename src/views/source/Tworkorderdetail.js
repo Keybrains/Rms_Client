@@ -63,12 +63,12 @@ const TWorkOrderDetails = () => {
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
+  console.log("accessType", accessType);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
-      // setUser(jwt.userName);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
@@ -81,16 +81,64 @@ const TWorkOrderDetails = () => {
   };
 
   const [imagedetails, setImageDetails] = useState([]);
+  // const getOutstandData = async () => {
+  //   if (id) {
+  //     try {
+  //       const response = await axios.get(
+  //         `${baseUrl}/work-order/workorder_details/${id}`
+  //       );
+  //       setoutstandDetails(response.data.data);
+  //       console.log("fffffffffffffirst", response.data.data);
+  //       setLoading(false);
+  //       setWorkOrderStatus(response.data.data.workorder_updates.reverse());
+  //       setImageDetails(response.data.data.workOrderImage);
+  //     } catch (error) {
+  //       console.error("Error fetching tenant details:", error);
+  //       setError(error);
+  //       setLoading(false);
+  //     }
+  //   }
+  // };
   const getOutstandData = async () => {
     if (id) {
       try {
         const response = await axios.get(
           `${baseUrl}/work-order/workorder_details/${id}`
         );
-        setoutstandDetails(response.data.data);
+        setoutstandDetails(response?.data?.data);
+        console.log("firssssssssssst", response?.data?.data);
+
+        if (
+          response?.data?.data?.workorder_updates &&
+          response.data.data.workorder_updates.length > 0
+        ) {
+          const reversedUpdates = [
+            ...response?.data?.data?.workorder_updates,
+          ].reverse();
+
+          const latestUpdate = reversedUpdates[0];
+
+          setWorkOrderStatus(reversedUpdates);
+
+          setSelectedStatus(latestUpdate?.status);
+          setSelecteduser(latestUpdate?.staffmember_name);
+          console.log("latestUpdate", latestUpdate);
+          updateWorkorderFormik.setValues({
+            status: response?.data?.data?.status,
+            staffmember_name: latestUpdate?.staffmember_name,
+            date: latestUpdate?.date,
+            assigned_to: response?.data?.data.staff_data?.staffmember_name,
+            message: response?.data?.data?.message
+              ? response?.data?.data?.message
+              : "",
+            statusUpdatedBy: `${accessType?.tenant_firstName} ${accessType?.tenant_lastName}(Tenant)`,
+          });
+        } else {
+          console.log("No updates found in workorder_updates");
+        }
+
         setLoading(false);
-        //setWorkOrderStatus(response.data.data.workorder_status.reverse());
-        setImageDetails(response.data.data.workOrderImage);
+        setImageDetails(response?.data?.data?.workOrder_images);
       } catch (error) {
         console.error("Error fetching tenant details:", error);
         setError(error);
@@ -162,10 +210,10 @@ const TWorkOrderDetails = () => {
     initialValues: {
       status: "",
       staffmember_name: "",
-      due_date: "",
+      date: "",
       // assigned_to: "",
       message: "",
-      statusUpdatedBy: "",
+      statusUpdatedBy: `${accessType?.tenant_firstName} ${accessType?.tenant_lastName}(Tenant)`,
     },
     onSubmit: (values) => {
       //console.log(values);
@@ -174,21 +222,74 @@ const TWorkOrderDetails = () => {
     },
   });
 
+  // const updateValues = async () => {
+  //   console.log(selectedStatus, "selected status");
+  //   handleDialogClose();
+  //   const formatedDate = updateWorkorderFormik.values.date
+  //     ? new Date(updateWorkorderFormik.values.date)
+  //         .toISOString()
+  //         .split("T")[0]
+  //     : "";
+  //   await axios
+  //     .put(`${baseUrl}/workorder/updateworkorder/${outstandDetails._id}`, {
+  //       date: formatedDate,
+  //       staffmember_name: selecteduser,
+  //       message: updateWorkorderFormik.values.message,
+  //       status: selectedStatus,
+  //     })
+  //     .then((res) => {
+  //       console.log(res.data, "the wgike put");
+  //       getOutstandData();
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+
+  //   await axios
+  //     .put(`${baseUrl}/workorder/workorder/${outstandDetails._id}/status`, {
+  //       statusUpdatedBy:
+  //         tenantsDetails.tenant_firstName +
+  //         " " +
+  //         tenantsDetails.tenant_lastName +
+  //         "(Tenant)",
+  //       status:
+  //         selectedStatus !== outstandDetails.status ? selectedStatus : " ",
+  //       date:
+  //         formatedDate !== outstandDetails.date ? formatedDate : " ",
+  //       staffmember_name:
+  //         selecteduser !== outstandDetails.staffmember_name
+  //           ? selecteduser
+  //           : " ",
+  //       // updateAt: updatedAt,
+  //     })
+  //     .then((res) => {
+  //       console.log(res.data, "the status put");
+  //       getOutstandData();
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // };
   const updateValues = async () => {
     console.log(selectedStatus, "selected status");
     handleDialogClose();
-    const formatedDate = updateWorkorderFormik.values.due_date
-      ? new Date(updateWorkorderFormik.values.due_date)
-        .toISOString()
-        .split("T")[0]
+    const formattedDate = updateWorkorderFormik.values.date
+      ? new Date(updateWorkorderFormik.values.date).toISOString().split("T")[0]
       : "";
-    await axios
-      .put(`${baseUrl}/workorder/updateworkorder/${outstandDetails._id}`, {
-        due_date: formatedDate,
-        staffmember_name: selecteduser,
-        message: updateWorkorderFormik.values.message,
+
+    const workOrderData = {
+      workOrder: {
+        date: formattedDate,
+        staffmember_name: updateWorkorderFormik?.values?.staffmember_name,
+        // staffmember_id: updateWorkorderFormik.values.staffmember_id,
+        message: updateWorkorderFormik?.values?.message,
         status: selectedStatus,
-      })
+        statusUpdatedBy: `${accessType?.tenant_firstName} ${accessType?.tenant_lastName}(Tenant)`,
+      },
+    };
+
+    await axios
+      .put(`${baseUrl}/work-order/work-order/${id}`, workOrderData)
       .then((res) => {
         console.log(res.data, "the wgike put");
         getOutstandData();
@@ -196,33 +297,7 @@ const TWorkOrderDetails = () => {
       .catch((err) => {
         console.log(err);
       });
-
-    await axios
-      .put(`${baseUrl}/workorder/workorder/${outstandDetails._id}/status`, {
-        statusUpdatedBy:
-          tenantsDetails.tenant_firstName +
-          " " +
-          tenantsDetails.tenant_lastName +
-          "(Tenant)",
-        status:
-          selectedStatus !== outstandDetails.status ? selectedStatus : " ",
-        due_date:
-          formatedDate !== outstandDetails.due_date ? formatedDate : " ",
-        staffmember_name:
-          selecteduser !== outstandDetails.staffmember_name
-            ? selecteduser
-            : " ",
-        // updateAt: updatedAt,
-      })
-      .then((res) => {
-        console.log(res.data, "the status put");
-        getOutstandData();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   };
-
   const total = () => {
     let total = 0;
     outstandDetails?.partsandcharge_data?.map((item) => {
@@ -466,7 +541,7 @@ const TWorkOrderDetails = () => {
                                       .rental_adress || "N/A"}{" "}
                                     {outstandDetails?.unit_data?.rental_unit
                                       ? " - " +
-                                      outstandDetails?.unit_data?.rental_unit
+                                        outstandDetails?.unit_data?.rental_unit
                                       : null}
                                   </span>
                                 </Box>
@@ -622,7 +697,7 @@ const TWorkOrderDetails = () => {
                               </Box>
                             </Box>
                             {outstandDetails?.partsandcharge_data?.length > 0 &&
-                              outstandDetails?.partsandcharge_data ? (
+                            outstandDetails?.partsandcharge_data ? (
                               <Box
                                 // border="1px solid #ccc"
                                 border="0.5px solid #737791"
@@ -770,8 +845,8 @@ const TWorkOrderDetails = () => {
                                   Update
                                 </Button>
                               </Grid>
-                              {outstandDetails.workorder_status &&
-                                outstandDetails.workorder_status.length > 0 &&
+                              {outstandDetails.workorder_updates &&
+                                outstandDetails.workorder_updates.length > 0 &&
                                 workOrderStatus.map((item, index) => (
                                   <Grid item xs={12}>
                                     <Box
@@ -790,12 +865,18 @@ const TWorkOrderDetails = () => {
                                         }}
                                       >
                                         <div style={{ fontWeight: "bold" }}>
-                                          {item.statusUpdatedBy}{" "}
-                                          {item.createdAt
-                                            ? "Created this work order"
-                                            : "Updated this work order"}
+                                          {item.statusUpdatedBy}
+                                          {item.createdAt &&
+                                          (!item.updatedAt ||
+                                            item.createdAt === item.updatedAt)
+                                            ? " created this work order"
+                                            : " updated this work order"}
                                           <span style={{ fontSize: "13px" }}>
-                                            &nbsp;({item.updateAt})
+                                            &nbsp;(
+                                            {item.updatedAt
+                                              ? item.updatedAt
+                                              : item.createdAt}
+                                            )
                                           </span>
                                         </div>
                                       </div>
@@ -811,12 +892,10 @@ const TWorkOrderDetails = () => {
                                         {!Object.keys(item).includes(
                                           "status"
                                         ) ||
-                                          Object.keys(item).includes(
-                                            "due_date"
-                                          ) ||
-                                          item.status !== (" " || "") ||
-                                          item.due_date !== (" " || "") ||
-                                          item.staffmember_name !==
+                                        Object.keys(item).includes("date") ||
+                                        item.status !== (" " || "") ||
+                                        item.date !== (" " || "") ||
+                                        item.staffmember_name !==
                                           (" " || "") ? (
                                           <>
                                             <Grid
@@ -826,7 +905,7 @@ const TWorkOrderDetails = () => {
                                                 !Object.keys(item).includes(
                                                   "status"
                                                 ) ||
-                                                  item.status === (" " || null)
+                                                item.status === (" " || null)
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
@@ -838,14 +917,13 @@ const TWorkOrderDetails = () => {
                                               xs={4}
                                               style={
                                                 !Object.keys(item).includes(
-                                                  "due_date"
-                                                ) ||
-                                                  item.due_date === (" " || null)
+                                                  "date"
+                                                ) || item.date === (" " || null)
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
                                             >
-                                              Due Date: {item.due_date}
+                                              Due Date: {item.date}
                                             </Grid>
                                             <Grid
                                               item
@@ -853,7 +931,7 @@ const TWorkOrderDetails = () => {
                                               style={{
                                                 display:
                                                   item.staffmember_name &&
-                                                    item.staffmember_name.trim() !==
+                                                  item.staffmember_name.trim() !==
                                                     ""
                                                     ? "block"
                                                     : "none",
@@ -939,7 +1017,7 @@ const TWorkOrderDetails = () => {
                               </Box>
                             </Box>
                             {outstandDetails?.tenant_data &&
-                              typeof outstandDetails?.tenant_data === "object" ? (
+                            typeof outstandDetails?.tenant_data === "object" ? (
                               <Box
                                 style={{
                                   display: "flex",
@@ -1261,15 +1339,17 @@ const TWorkOrderDetails = () => {
                                     }}
                                     id="input-unitadd"
                                     type="date"
-                                    name="due_date"
-                                    value={
-                                      updateWorkorderFormik.values.due_date
-                                    }
+                                    name="date"
+                                    value={updateWorkorderFormik.values.date}
                                     onChange={
                                       updateWorkorderFormik.handleChange
                                     }
                                     onBlur={updateWorkorderFormik.handleBlur}
                                   />
+                                  {console.log(
+                                    updateWorkorderFormik.values.date,
+                                    "4546546464"
+                                  )}
                                   {/* {WorkFormik.touched.due_date &&
                             WorkFormik.errors.due_date ? (
                             <div style={{ color: "red" }}>
@@ -1623,7 +1703,7 @@ const TWorkOrderDetails = () => {
                               </Box>
 
                               {outstandDetails?.workOrder_images &&
-                                outstandDetails?.workOrder_images?.length > 0 ? (
+                              outstandDetails?.workOrder_images?.length > 0 ? (
                                 <Box
                                   style={{
                                     width: "100%",

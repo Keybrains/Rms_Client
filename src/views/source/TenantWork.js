@@ -54,6 +54,7 @@ const TenantWork = () => {
       setSearchQuery2("Over Due");
     }
   }, [status]);
+
   const baseUrl = process.env.REACT_APP_BASE_URL;
   let navigate = useNavigate();
   const [workData, setWorkData] = useState([]);
@@ -194,6 +195,7 @@ const TenantWork = () => {
       return filteredData;
     }
   };
+
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterRentalsBySearch();
     const paginatedData = filteredData?.slice(startIndex, endIndex);
