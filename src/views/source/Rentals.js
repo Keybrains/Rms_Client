@@ -500,7 +500,7 @@ const Rentals = () => {
       return updatedFiles;
     });
   };
-//mansi
+//mansi   
   const togglePhotoDialog = () => { };
 
   const handleUserSelection = (value) => {
