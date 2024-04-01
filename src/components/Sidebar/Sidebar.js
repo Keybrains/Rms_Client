@@ -1,579 +1,360 @@
-import React, { useEffect, useState } from "react";
-import { NavLink as NavLinkRRD, Link } from "react-router-dom";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import { PropTypes } from "prop-types";
-import Cookies from "universal-cookie";
-import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import Drawer from "@mui/material/Drawer";
-import List from "@mui/material/List";
-import Divider from "@mui/material/Divider";
-import ListItem from "@mui/material/ListItem";
-import { jwtDecode } from "jwt-decode";
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState } from "react";
 import {
-  Button,
-  Collapse,
-  DropdownMenu,
+  Link,
+  NavLink as NavLinkRRD,
+  useLocation,
+  useParams,
+} from "react-router-dom";
+import {
+  Col,
+  Dropdown,
   DropdownItem,
-  UncontrolledDropdown,
+  DropdownMenu,
   DropdownToggle,
-  FormGroup,
-  Media,
-  NavbarBrand,
-  Navbar,
+  Nav,
   NavItem,
   NavLink,
-  Nav,
-  Container,
   Row,
-  Col,
 } from "reactstrap";
+import routes from "routes";
+import "./style.css";
+import Key from "../../assets/icons/AdminSidebar/Key.svg";
+import DownArrow from "../../assets/icons/AdminSidebar/DownArrow.svg";
+import Thumb from "../../assets/icons/AdminSidebar/Thumb.svg";
+import Maintenance from "../../assets/icons/AdminSidebar/Maintenance.svg";
 
-const Sidebar = (props) => {
-  const baseUrl = process.env.REACT_APP_BASE_URL;
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [notificationCount, setNotificationCount] = useState(0);
-  const [notificationData, setNotificationData] = useState([]);
-
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-
-  useEffect(() => {
-    const handleWindowResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    window.addEventListener("resize", handleWindowResize);
-
-    return () => {
-      window.removeEventListener("resize", handleWindowResize);
-    };
-  }, []);
-
-  const notificationIconStyle = {
-    display: isMobile ? "block" : "none",
-    cursor: "pointer",
-    position: "relative",
-    marginRight: "-60px",
-  };
-
-  let navigate = useNavigate();
-  let Logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("Tenant ID");
-  };
-
+const Sidebar = ({ logo, isCollapse, toggleCollapse }) => {
+  const location = useLocation();
   const { admin } = useParams();
-
-  const [collapseOpen, setCollapseOpen] = useState(false);
-
-  const toggleCollapse = () => {
-    setCollapseOpen(!collapseOpen);
-  };
-
-  const closeCollapse = () => {
-    setCollapseOpen(false);
-  };
-
-  const handlePropertySelect = (property) => {
-    setSelectedProp(property);
-  };
-
-  const [selectedProp, setSelectedProp] = useState("Select");
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  useEffect(() => {
-    fetchNotification();
-  }, []);
-
-  const fetchNotification = async () => {
-    fetch(`${baseUrl}/notification/notification`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.statusCode === 200) {
-          const unreadNotifications = data.data.filter(
-            (notification) => !notification.isAdminread
-          );
-          setNotificationData(unreadNotifications);
-          setNotificationCount(unreadNotifications.length);
-        } else {
-          console.error("Error:", data.message);
-        }
-      })
-      .catch((error) => {
-        console.error("Network error:", error);
-      });
-  };
-
-  const navigateToDetails = (workorder_id) => {
-    axios
-      .get(`${baseUrl}/notification/notification/${workorder_id}?role=admin `)
-      .then((response) => {
-        if (response.status === 200) {
-          const updatedNotificationData = notificationData.map(
-            (notification) => {
-              if (notification.workorder_id === workorder_id) {
-                return { ...notification, isAdminread: true };
-              }
-              return notification;
-            }
-          );
-          setNotificationData(updatedNotificationData);
-          setNotificationCount(updatedNotificationData.length);
-          fetchNotification();
-        } else {
-          console.error(
-            `Failed to delete notification with workorder_id ${workorder_id}.`
-          );
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-
-    navigate(`/admin/addworkorder/${workorder_id}`);
-  };
-
-  const createLinks = (routes) => {
+  const createLinks = () => {
     const filteredRoutes = routes.filter(
       (prop) =>
-        (prop.name === "Rentals" ||
-          prop.name === "Dashboard" ||
-          prop.name === "Add Property Type" ||
-          prop.name === "Add Staff Member") &&
-        prop.layout !== "/superadmin"
+        (prop.name === "Dashboard" ||
+          prop.name === "Property Type" ||
+          prop.name === "Staff Member") &&
+        prop.layout === "/admin"
     );
     return filteredRoutes.map((prop, key) => {
-      const path = prop.layout == "/" + admin + "" ? "/" + admin : "/" + admin;
+      const path = prop.layout === "/" + admin ? "/" + admin : "/" + admin;
+      const isActive = location.pathname === path + prop.path;
       return (
         <NavItem key={key}>
           <NavLink
             to={path + prop.path}
             tag={NavLinkRRD}
-            onClick={closeCollapse}
+            style={{ justifyContent: isCollapse && "center" }}
+            className="d-flex align-items-center"
           >
-            <i className={prop.icon} />
-            {prop.name}
+            <span
+              style={{
+                marginRight: !isCollapse && "20px",
+                marginLeft: !isCollapse && "10px",
+              }}
+            >
+              {isActive ? (
+                <img src={prop.icon2} width={20} />
+              ) : (
+                <img src={prop.icon} width={20} />
+              )}
+            </span>
+            {!isCollapse && <>{prop.name}</>}
           </NavLink>
         </NavItem>
       );
     });
   };
 
-  const [accessType, setAccessType] = useState("");
-  const checkAdminExist = async () => {
-    if (admin) {
-      try {
-        const response = await axios.get(`${baseUrl}/admin/company/${admin}`);
-
-        const status = response.data.statusCode;
-
-        if (status != 200) {
-          navigate(`/${admin}/404`);
-        } else {
-          if (localStorage.getItem("token")) {
-            const jwt = jwtDecode(localStorage.getItem("token"));
-            if (jwt.company_name != admin) {
-              navigate(`/${admin}/404`);
-            } else {
-              setAccessType(jwt);
-            }
-          }
-        }
-      } catch (error) {
-        console.error("error in acheck admin exist", error);
-      }
-    }
+  const [isRentalDropdownOpen, setIsRentalDropdownOpen] = useState(false);
+  const toggleRentalDropdown = () => {
+    setIsRentalDropdownOpen(!isRentalDropdownOpen);
   };
 
-  useEffect(() => {
-    checkAdminExist();
-  }, [admin]);
+  const filteredRentalRoutes = routes.filter(
+    (prop) =>
+      (prop.name === "Property Table" ||
+        prop.name === "Rentalowner Table" ||
+        prop.name === "Tenants Table") &&
+      prop.layout === "/admin"
+  );
 
-  const { bgColor, routes, logo } = props;
-  let navbarBrandProps;
-  if (logo && logo.innerLink) {
-    navbarBrandProps = {
-      to: logo.innerLink,
-      tag: Link,
-    };
-  } else if (logo && logo.outterLink) {
-    navbarBrandProps = {
-      href: logo.outterLink,
-      target: "_blank",
-    };
-  }
+  const [isLeasingDropdownOpen, setIsLeasingDropdownOpen] = useState(false);
+  const toggleLeasingDropdown = () => {
+    setIsLeasingDropdownOpen(!isLeasingDropdownOpen);
+  };
+
+  const filteredLeasingRoutes = routes.filter(
+    (prop) =>
+      (prop.name === "Rent Roll" || prop.name === "Applicants") &&
+      prop.layout === "/admin"
+  );
+
+  const [isMaintenanceDropdownOpen, setIsMaintenanceDropdownOpen] =
+    useState(false);
+  const toggleMaintenanceDropdown = () => {
+    setIsMaintenanceDropdownOpen(!isMaintenanceDropdownOpen);
+  };
+
+  const filteredMaintenanceRoutes = routes.filter(
+    (prop) =>
+      (prop.name === "Vendor" || prop.name === "Work Order") &&
+      prop.layout === "/admin"
+  );
 
   return (
-    <Navbar
-      className="navbar-vertical fixed-left navbar-light bg-white"
-      expand="md"
-      id="sidenav-main"
-    >
-      <Container fluid>
-        <button
-          type="button"
-          class="btn btn-primary"
-          data-toggle="collapse"
-          data-target="#sidebar"
-        >
-          Toggle Sidebar
-        </button>
-        {logo ? (
-          <NavbarBrand className="pt-0" {...navbarBrandProps}>
-            <img
-              alt={logo.imgAlt}
-              className="navbar-brand-img"
-              src={logo.imgSrc}
-            />
-          </NavbarBrand>
-        ) : null}
-
-        <FormGroup
-          className="mb-0"
-          style={notificationIconStyle}
-          onClick={toggleSidebar}
-        >
-          <NotificationsIcon style={{ color: "black", fontSize: "30px" }} />
-          {notificationCount > 0 && (
+    <>
+      <div className={!isCollapse ? "sidebar" : "sidebar-active"}>
+        <Nav vertical>
+          <Link
+            to="/admin/index"
+            style={{
+              marginTop: "40px",
+              marginBottom: "30px",
+              justifyContent: isCollapse && "center",
+              padding: "15px",
+            }}
+          >
+            {isCollapse ? (
+              <img src={logo.imgSrc2} width={60} />
+            ) : (
+              <img src={logo.imgSrc} width={250} />
+            )}
+          </Link>
+          <div>
+            {createLinks()}
             <div
-              className="notification-circle"
               style={{
-                position: "absolute",
-                top: "-15px",
-                right: "-20px",
-                background: "red",
-                borderRadius: "50%",
-                padding: "0.1px 8px",
+                justifyContent: isCollapse && "center",
+                cursor: "pointer",
               }}
+              className="d-flex align-items-center nav-link"
             >
-              <span
-                className="notification-count"
-                style={{ color: "white", fontSize: "13px" }}
+              <Dropdown
+                isOpen={isRentalDropdownOpen}
+                toggle={toggleRentalDropdown}
               >
-                {notificationCount}
-              </span>
-            </div>
-          )}
-        </FormGroup>
-
-        <Nav className="align-items-center d-none d-md-flex" navbar>
-          <Drawer anchor="right" open={isSidebarOpen} onClose={toggleSidebar}>
-            <div
-              role="presentation"
-              onClick={toggleSidebar}
-              onKeyDown={toggleSidebar}
-            >
-              <List style={{ width: "250px" }}>
-                <h2 style={{ color: "blue", marginLeft: "15px" }}>
-                  Notifications
-                </h2>
-                <Divider />
-                {notificationData.map((data) => {
-                  const notificationTitle =
-                    data.notification_title || "No Title Available";
-                  const notificationDetails =
-                    data.notification_details || "No Details Available";
-                  const notificationTime = new Date(
-                    data.notification_time
-                  ).toLocaleString();
-
-                  return (
-                    <div key={data._id}>
-                      <ListItem
-                        style={{ cursor: "pointer" }}
-                        onClick={() => handlePropertySelect(data)}
+                <DropdownToggle
+                  tag="span"
+                  data-toggle="dropdown"
+                  aria-expanded={isRentalDropdownOpen}
+                  style={{
+                    display: "flex",
+                    justifyContent: isCollapse && "center",
+                    alignItems: "center",
+                    fontSize: "18px",
+                    fontWeight: "500",
+                    minWidth: !isCollapse ? "270px" : "64px",
+                  }}
+                >
+                  <Row className="w-100 d-flex justify-content-between">
+                    <Col>
+                      <span
+                        style={{
+                          marginRight: !isCollapse && "20px",
+                          marginLeft: !isCollapse && "10px",
+                          fontSize: "16px",
+                          fontWeight: "400",
+                        }}
                       >
-                        <div>
-                          <h4>{notificationTitle}</h4>
-                          <p>{notificationDetails}</p>
-                          <Row>
-                            <Col lg="8">
-                              <p>{notificationTime}</p>
-                            </Col>
-                            <Col>
-                              <Button
-                                variant="contained"
-                                color="primary"
-                                style={{
-                                  textTransform: "none",
-                                  fontSize: "12px",
-                                }}
-                                onClick={() =>
-                                  navigateToDetails(data.workorder_id)
-                                }
-                              >
-                                View
-                              </Button>
-                            </Col>
-                          </Row>
-                        </div>
-                        {/* <ListItemText
-                          primary={notificationTitle}
-                          secondary={notificationTime}
-                        />
-                        <ListItemText
-                          primary={notificationDetails}
-                          secondary="Notification Details"
-                        /> */}
-                      </ListItem>
-                      <Divider />
-                    </div>
-                  );
-                })}
-              </List>
+                        <img src={Key} width={20} alt="Key icon" />
+                      </span>
+                      {!isCollapse && <>{"Rental"}</>}
+                    </Col>
+                    <Col lg="1" className="d-flex justify-content-end">
+                      {!isCollapse && (
+                        <img src={DownArrow} width={20} alt="Down arrow icon" />
+                      )}
+                    </Col>
+                  </Row>
+                </DropdownToggle>
 
-              <Divider />
+                <DropdownMenu>
+                  {filteredRentalRoutes.map((prop, key) => {
+                    const path =
+                      prop.layout === "/" + admin ? "/" + admin : "/" + admin;
+                    const isActive = location.pathname === path + prop.path;
+                    return (
+                      <DropdownItem header className="text-dark" key={key}>
+                        <NavItem onClick={() => setIsRentalDropdownOpen(false)}>
+                          <NavLink
+                            to={path + prop.path}
+                            tag={NavLinkRRD}
+                            style={{ justifyContent: isCollapse && "center" }}
+                            className="d-flex my-nav-links align-items-center"
+                          >
+                            {prop.name?.split(" ")[0]}
+                          </NavLink>
+                        </NavItem>
+                      </DropdownItem>
+                    );
+                  })}
+                </DropdownMenu>
+              </Dropdown>
             </div>
-          </Drawer>
-        </Nav>
-
-        <Nav className="align-items-center d-md-none">
-          <UncontrolledDropdown nav>
-            <DropdownToggle nav>
-              <Media className="align-items-center">
-                <span className="avatar avatar-sm rounded-circle">
-                  <img
-                    alt="..."
-                    src={require("../../assets/img/theme/team-4-800x800.jpg")}
-                  />
-                </span>
-              </Media>
-            </DropdownToggle>
-            <DropdownMenu className="dropdown-menu-arrow" right>
-              <DropdownItem className="noti-title" header tag="div">
-                <h6 className="text-overflow m-0">Welcome!</h6>
-              </DropdownItem>
-              <DropdownItem
-                onClick={() => navigate("/" + admin + "/user-profile")}
+            <div
+              style={{
+                justifyContent: isCollapse && "center",
+                cursor: "pointer",
+              }}
+              className="d-flex align-items-center nav-link"
+            >
+              <Dropdown
+                isOpen={isLeasingDropdownOpen}
+                toggle={toggleLeasingDropdown}
               >
-                <i className="ni ni-single-02" />
-                <span>My profile</span>
-              </DropdownItem>
-              <DropdownItem onClick={() => navigate("/" + admin + "/settings")}>
-                <i className="ni ni-settings-gear-65" />
-                <span>Settings</span>
-              </DropdownItem>
-              {/* <DropdownItem to="/admin/user-profile" tag={Link}>
-                  <i className="ni ni-calendar-grid-58" />
-                  <span>Activity</span>
-                </DropdownItem>
-                <DropdownItem to="/admin/user-profile" tag={Link}>
-                  <i className="ni ni-support-16" />
-                  <span>Support</span> 
-                </DropdownItem> */}
-              <DropdownItem divider />
-              <DropdownItem
-                //  href="#rms"
-                to="/auth/login"
-                onClick={() => {
-                  Logout();
-                }}
-                tag={Link}
-              >
-                <i className="ni ni-user-run" />
-                <span>Logout</span>
-              </DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-        </Nav>
-
-        {/* Collapse */}
-        <Collapse navbar isOpen={collapseOpen}>
-          {/* Collapse header */}
-          <div className="navbar-collapse-header d-md-none">
-            <Row>
-              {logo ? (
-                <Col className="collapse-brand" xs="6">
-                  {logo.innerLink ? (
-                    <Link to={logo.innerLink}>
-                      <img alt={logo.imgAlt} src={logo.imgSrc} />
-                    </Link>
-                  ) : (
-                    <a href={logo.outterLink}>
-                      <img alt={logo.imgAlt} src={logo.imgSrc} />
-                    </a>
-                  )}
-                </Col>
-              ) : null}
-              <Col className="collapse-close" xs="6">
-                <button
-                  className="navbar-toggler"
-                  type="button"
-                  onClick={toggleCollapse}
+                <DropdownToggle
+                  tag="span"
+                  data-toggle="dropdown"
+                  aria-expanded={isLeasingDropdownOpen}
+                  style={{
+                    display: "flex",
+                    justifyContent: isCollapse && "center",
+                    alignItems: "center",
+                    fontSize: "18px",
+                    fontWeight: "500",
+                    minWidth: !isCollapse ? "270px" : "64px",
+                  }}
                 >
-                  <span />
-                  <span />
-                </button>
-              </Col>
-            </Row>
+                  <Row className="w-100 d-flex justify-content-between">
+                    <Col>
+                      <span
+                        style={{
+                          marginRight: !isCollapse && "20px",
+                          marginLeft: !isCollapse && "10px",
+                          fontSize: "16px",
+                          fontWeight: "400",
+                        }}
+                      >
+                        <img src={Thumb} width={20} alt="Thumb icon" />
+                      </span>
+                      {!isCollapse && <>{"Leasing"}</>}
+                    </Col>
+                    <Col lg="1" className="d-flex justify-content-end">
+                      {!isCollapse && (
+                        <img src={DownArrow} width={20} alt="Down arrow icon" />
+                      )}
+                    </Col>
+                  </Row>
+                </DropdownToggle>
+
+                <DropdownMenu>
+                  {filteredLeasingRoutes.map((prop, key) => {
+                    const path =
+                      prop.layout === "/" + admin ? "/" + admin : "/" + admin;
+                    const isActive = location.pathname === path + prop.path;
+                    return (
+                      <DropdownItem header className="text-dark" key={key}>
+                        <NavItem
+                          onClick={() => setIsLeasingDropdownOpen(false)}
+                        >
+                          <NavLink
+                            to={path + prop.path}
+                            tag={NavLinkRRD}
+                            style={{ justifyContent: isCollapse && "center" }}
+                            className="d-flex my-nav-links align-items-center"
+                          >
+                            {prop.name}
+                          </NavLink>
+                        </NavItem>
+                      </DropdownItem>
+                    );
+                  })}
+                </DropdownMenu>
+              </Dropdown>
+            </div>
+            <div
+              style={{
+                justifyContent: isCollapse && "center",
+                cursor: "pointer",
+              }}
+              className="d-flex align-items-center nav-link"
+            >
+              <Dropdown
+                isOpen={isMaintenanceDropdownOpen}
+                toggle={toggleMaintenanceDropdown}
+              >
+                <DropdownToggle
+                  tag="span"
+                  data-toggle="dropdown"
+                  aria-expanded={isMaintenanceDropdownOpen}
+                  style={{
+                    display: "flex",
+                    justifyContent: isCollapse && "center",
+                    alignItems: "center",
+                    fontSize: "18px",
+                    fontWeight: "500",
+                    minWidth: !isCollapse ? "270px" : "64px",
+                  }}
+                >
+                  <Row className="w-100 d-flex justify-content-between">
+                    <Col>
+                      <span
+                        style={{
+                          marginRight: !isCollapse && "20px",
+                          marginLeft: !isCollapse && "10px",
+                          fontSize: "16px",
+                          fontWeight: "400",
+                        }}
+                      >
+                        <img
+                          src={Maintenance}
+                          width={20}
+                          alt="Maintenance icon"
+                        />
+                      </span>
+                      {!isCollapse && <>{"Maintenance"}</>}
+                    </Col>
+                    <Col lg="1" className="d-flex justify-content-end">
+                      {!isCollapse && (
+                        <img src={DownArrow} width={20} alt="Down arrow icon" />
+                      )}
+                    </Col>
+                  </Row>
+                </DropdownToggle>
+
+                <DropdownMenu>
+                  {filteredMaintenanceRoutes.map((prop, key) => {
+                    const path =
+                      prop.layout === "/" + admin ? "/" + admin : "/" + admin;
+                    const isActive = location.pathname === path + prop.path;
+                    return (
+                      <DropdownItem header className="text-dark" key={key}>
+                        <NavItem
+                          onClick={() => setIsMaintenanceDropdownOpen(false)}
+                        >
+                          <NavLink
+                            to={path + prop.path}
+                            tag={NavLinkRRD}
+                            style={{ justifyContent: isCollapse && "center" }}
+                            className="d-flex my-nav-links align-items-center"
+                          >
+                            {prop.name}
+                          </NavLink>
+                        </NavItem>
+                      </DropdownItem>
+                    );
+                  })}
+                </DropdownMenu>
+              </Dropdown>
+            </div>
           </div>
-          {/* Form */}
-          {/* <Form className="mt-4 mb-3 d-md-none">
-            <InputGroup className="input-group-rounded input-group-merge">
-              <Input
-                aria-label="Search"
-                className="form-control-rounded form-control-prepended"
-                placeholder="Search"
-                type="search"
-              />
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>
-                  <span className="fa fa-search" />
-                </InputGroupText>
-              </InputGroupAddon>
-            </InputGroup>
-          </Form> */}
-          {/* Navigation */}
-          <Nav navbar>
-            {createLinks(routes)}
-            <UncontrolledDropdown nav>
-              <DropdownToggle nav caret>
-                <i className="ni ni-shop text-orange" /> Rentals
-              </DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem
-                  to={"/" + admin + "/propertiesTable"}
-                  tag={Link}
-                  onClick={toggleCollapse}
-                >
-                  Properties
-                </DropdownItem>
-                <DropdownItem
-                  to={"/" + admin + "/RentalownerTable"}
-                  tag={Link}
-                  onClick={toggleCollapse}
-                >
-                  Rental Owners
-                </DropdownItem>
-                <DropdownItem
-                  to={"/" + admin + "/TenantsTable"}
-                  tag={Link}
-                  onClick={toggleCollapse}
-                >
-                  Tenants
-                </DropdownItem>
-                {/* <DropdownItem to={"/"+admin+"/RentalownerTable"} tag={Link}>
-                  Rental Owners
-                </DropdownItem> */}
-              </DropdownMenu>
-            </UncontrolledDropdown>
-          </Nav>
-
-          <Nav navbar>
-            <UncontrolledDropdown nav>
-              <DropdownToggle nav caret>
-                <i className="ni ni-pin-3 text-orange" /> Leasing
-              </DropdownToggle>
-              <DropdownMenu>
-                {/* <DropdownItem to={"/"+admin+"/Listings"} tag={Link} >
-                Listings
-              </DropdownItem> */}
-                <DropdownItem
-                  to={"/" + admin + "/RentRoll"}
-                  tag={Link}
-                  onClick={toggleCollapse}
-                >
-                  Rent Roll
-                </DropdownItem>
-                <DropdownItem
-                  to={"/" + admin + "/Applicants"}
-                  tag={Link}
-                  onClick={toggleCollapse}
-                >
-                  Applicants
-                </DropdownItem>
-              </DropdownMenu>
-            </UncontrolledDropdown>
-          </Nav>
-
-          <Nav navbar>
-            <UncontrolledDropdown nav>
-              <DropdownToggle nav caret>
-                <i className="ni ni-settings text-grey" /> Maintenance
-              </DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem
-                  to={"/" + admin + "/vendor"}
-                  tag={Link}
-                  onClick={toggleCollapse}
-                >
-                  Vendors
-                </DropdownItem>
-                <DropdownItem
-                  to={"/" + admin + "/Workorder"}
-                  tag={Link}
-                  onClick={toggleCollapse}
-                >
-                  Work Order
-                </DropdownItem>
-              </DropdownMenu>
-            </UncontrolledDropdown>
-          </Nav>
-          <Nav navbar>
-            <UncontrolledDropdown nav>
-              <Button
-                color="primary"
-                className="buy-now-button"
-                onClick={() => navigate("/" + admin + "/Plans")}
-                size="sm"
-                style={{
-                  background: "rgb(48 52 58 / 70%)",
-                  color: "#fff",
-                  marginRight: "20px",
-                  width: "100% ",
-                }}
-              >
-                Buy
-              </Button>
-            </UncontrolledDropdown>
-          </Nav>
-
-          {/* <Nav navbar>
-            <UncontrolledDropdown nav>
-              <DropdownToggle nav caret>
-                <i className="ni ni-money-coins text-purple" /> Accounting
-              </DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem
-                  to={"/" + admin + "/GeneralLedger"}
-                  tag={Link}
-                  onClick={toggleCollapse}
-                >
-                  General Ledger
-                </DropdownItem>
-                <DropdownItem to={"/" + admin + "/Payment"} tag={Link} onClick={toggleCollapse}>
-                  Payment
-                </DropdownItem>
-              </DropdownMenu>
-            </UncontrolledDropdown>
-          </Nav> */}
-        </Collapse>
-      </Container>
-    </Navbar>
+        </Nav>
+        <span
+          className={isCollapse ? "collapse-btn-active" : "collapse-btn"}
+          onClick={(e) => {
+            toggleCollapse();
+          }}
+        >
+          {isCollapse ? (
+            <FontAwesomeIcon icon={faArrowRight} />
+          ) : (
+            <FontAwesomeIcon icon={faArrowLeft} />
+          )}
+        </span>
+      </div>
+    </>
   );
-};
-
-Sidebar.defaultProps = {
-  routes: [{}],
-};
-
-Sidebar.propTypes = {
-  // links that will be displayed inside the component
-  routes: PropTypes.arrayOf(PropTypes.object),
-  logo: PropTypes.shape({
-    // innerLink is for links that will direct the user within the app
-    // it will be rendered as <Link to="...">...</Link> tag
-    innerLink: PropTypes.string,
-    // outterLink is for links that will direct the user outside the app
-    // it will be rendered as simple <a href="...">...</a> tag
-    outterLink: PropTypes.string,
-    // the image src of the logo
-    imgSrc: PropTypes.string.isRequired,
-    // the alt for the img
-    imgAlt: PropTypes.string.isRequired,
-  }),
 };
 
 export default Sidebar;

@@ -32,7 +32,7 @@ import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormLabel from "@mui/material/FormLabel";
-import { Radio, RadioGroup, FormGroup } from "@mui/material";
+import { Radio, RadioGroup, FormGroup, Divider } from "@mui/material";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import moment from "moment";
@@ -43,7 +43,16 @@ import { Circles } from "react-loader-spinner";
 import deleterecord from "../assets/img/delete.png";
 import SuperAdminHeader from "../Headers/SuperAdminHeader";
 import { jwtDecode } from "jwt-decode";
-import { Col, Container, Row } from "reactstrap";
+import deleteicon from "../../../assets/icons/delete.svg";
+import {
+  Col,
+  Container,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Row,
+} from "reactstrap";
 
 const headCells = [
   {
@@ -99,7 +108,7 @@ function Rows(props) {
         </TableCell>
         <TableCell align="center" padding="checkbox">
           <Checkbox
-            color="primary"
+            style={{ color: "#152B51  " }}
             checked={isItemSelected}
             inputProps={{
               "aria-labelledby": labelId,
@@ -108,19 +117,51 @@ function Rows(props) {
         </TableCell>
 
         {/* <TableCell align="center">{ row + 1}</TableCell> */}
-        <TableCell align="center">{row?.plan_name}</TableCell>
+        <TableCell
+          align="center"
+          style={{ fontFamily: "Manrope", fontWeight: "500", fontSize: "18px" }}
+        >
+          {row?.plan_name}
+        </TableCell>
         <TableCell align="center">
           {row?.is_free_trial ? (
             <span className="badge badge-pill bg-warning text-dark">Free</span>
           ) : (
-            <span className="badge badge-pill bg-success">Paid</span>
+            <span
+              className="badge badge-pill "
+              style={{
+                width: "63px",
+                height: "30px",
+                borderRadius: "4px",
+                fontFamily: "Manrope",
+                fontSize: "16px",
+                fontWeight: "500",
+                color: "#fff",
+                backgroundColor: "#0B9010",
+              }}
+            >
+              Paid
+            </span>
           )}
         </TableCell>
-        <TableCell align="center">{row?.plan_price}</TableCell>
-        <TableCell align="center">
+        <TableCell
+          align="center"
+          style={{ fontFamily: "Manrope", fontWeight: "500", fontSize: "18px" }}
+        >
+          {row?.plan_price}
+        </TableCell>
+        <TableCell
+          align="center"
+          style={{ fontFamily: "Manrope", fontWeight: "500", fontSize: "18px" }}
+        >
           {row?.annual_discount != null ? row.annual_discount + "%" : "-"}
         </TableCell>
-        <TableCell align="center">{row?.billing_interval}</TableCell>
+        <TableCell
+          align="center"
+          style={{ fontFamily: "Manrope", fontWeight: "500", fontSize: "18px" }}
+        >
+          {row?.billing_interval}
+        </TableCell>
         {/* <TableCell align="center">
           {row.is_free_trial === true ? row?.plan_days : "Monthly"}
         </TableCell> */}
@@ -135,7 +176,10 @@ function Rows(props) {
             </span>
           )}
         </TableCell> */}
-        <TableCell align="center">
+        <TableCell
+          align="center"
+          style={{ fontFamily: "Manrope", fontWeight: "500", fontSize: "18px" }}
+        >
           {moment(row.createdAt).format("DD-MM-YYYY")}
         </TableCell>
 
@@ -155,16 +199,29 @@ function Rows(props) {
       <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
         <Collapse in={open} timeout="auto" unmountOnExit>
           <Box sx={{ paddingLeft: 15, margin: 2 }}>
-            <Typography variant="h6" gutterBottom component="div">
+            <Typography
+              variant="h6"
+              gutterBottom
+              component="div"
+              sx={{
+                fontFamily: "Poppins",
+                fontWeight: "600",
+                fontSize: "16px",
+                color: "#152B51",
+              }}
+            >
               Other Data :
             </Typography>
-            <hr />
+            {/* <hr /> */}
 
             <table
               style={{
-                fontFamily: "arial, sans-serif",
+                fontFamily: "Poppins",
+                fontWeight: "600",
+                fontSize: "16px",
+                color: "#152B51",
                 border: "collapse",
-                width: "50%",
+                width: "30%",
               }}
             >
               <tr>
@@ -234,10 +291,14 @@ const PlanList = () => {
   let [priorityData, setPriorityData] = useState([]);
   let [loader, setLoader] = useState(true);
   let [countData, setCountData] = useState(0);
+  const [pageItem, setPageItem] = React.useState(10);
+  const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
 
+  const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
   // pagination
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [totalPages, setTotalPages] = React.useState(1);
   const getData = async () => {
     try {
       const res = await axios.get(`${baseUrl}/plans/plans`, {
@@ -248,7 +309,7 @@ const PlanList = () => {
       });
       setLoader(false);
       setPriorityData(res.data.data);
-      setCountData(res.data.count); // Make sure to adjust the key here
+      setCountData(res.data.count);
     } catch (error) {
       console.error("Error fetching data:", error);
       setLoader(false);
@@ -437,11 +498,11 @@ const PlanList = () => {
   };
   return (
     <>
-      <SuperAdminHeader />
-      <Container className="mt--8 ml--10" fluid>
+      <SuperAdminHeader prop="Plans" />
+      <Container className="mx-3" fluid>
         <Row>
           <Col>
-            <div>
+            <div style={{ width: "95%" }}>
               <div id="main-btn-add-machinetype">
                 <div className="d-flex flex-row justify-content-end mb-2">
                   <Button
@@ -460,87 +521,103 @@ const PlanList = () => {
                     // }}
                     onClick={() => navigate("/superadmin/addplan")}
                     variant="contained"
-                    style={{ backgroundColor: "#4A5073", color: "#ffffff" }} // Set background color and text color
+                    style={{
+                      backgroundColor: "#152B51",
+                      color: "#ffffff",
+                      fontFamily: "Poppins",
+                      fontWeight: "500",
+                      fontSize: "18px",
+                    }}
                   >
-                    Add Plan
+                    Add Plans
                   </Button>
                 </div>
               </div>
+              <Toolbar
+                className="border-top border-bottom"
+                sx={{
+                  pl: { sm: 2 },
+                  pr: { xs: 1, sm: 1 },
+                  bgcolor: "#152B51", // Set the background color here
+                  color: "white", // Set the font color to white
+                  marginBottom: "18px",
+                  borderRadius: "10px",
+                  // boxShadow:"0px 4px 4px 0px #00000040;"
+                }}
+              >
+                {selected.length > 0 ? (
+                  <Typography
+                    sx={{ flex: "1 1 100%" }}
+                    color="inherit"
+                    variant="subtitle1"
+                    component="div"
+                  >
+                    {selected.length} selected
+                  </Typography>
+                ) : (
+                  <Typography
+                    sx={{
+                      flex: "1 1 100%",
+                      color: "#fff",
+                      fontFamily: "Manrope",
+                      fontWeight: "700",
+                      fontSize: "26px",
+                      boxShadow: "0px 4px 4px 0px #00000040",
+                    }}
+                    variant="h6"
+                    id="tableTitle"
+                    component="div"
+                  >
+                    Plans
+                  </Typography>
+                )}
 
+                <form className="form-inline">
+                  <input
+                    id="serchbar-size"
+                    className="form-control mr-sm-2"
+                    type="search"
+                    onChange={(e) => handleSearchData(e.target.value)}
+                    placeholder="Search here..."
+                    aria-label="Search"
+                  />
+                </form>
+
+                <>
+                  {selected.length > 0 ? (
+                    <Tooltip title="Delete">
+                      <IconButton onClick={() => handleDelete()}>
+                        <img
+                          src={deleteicon}
+                          style={{
+                            width: "20px",
+                            height: "20px",
+                            margin: "10px",
+                            alignItems: "center",
+                            color: "white",
+                          }}
+                        />
+                      </IconButton>
+                    </Tooltip>
+                  ) : null}
+                  {selected.length === 1 ? (
+                    <Tooltip title="Edit">
+                      <IconButton onClick={() => handleEdite(selected[0])}>
+                        <EditIcon style={{ color: "white" }} />
+                      </IconButton>
+                    </Tooltip>
+                  ) : null}
+                </>
+              </Toolbar>
               <Paper
                 sx={{
                   width: "100%",
                   backgroundColor: "#ffffff",
                   borderRadius: "8px",
+                  boxShadow: " 0px 4px 4px 0px #00000040 ",
                   overflow: "hidden",
                 }}
               >
-                <Toolbar
-                  className="border-top border-bottom"
-                  sx={{
-                    pl: { sm: 2 },
-                    pr: { xs: 1, sm: 1 },
-                    bgcolor: "#fff", // Set the background color here
-                    color: "white", // Set the font color to white
-                  }}
-                >
-                  {selected.length > 0 ? (
-                    <Typography
-                      sx={{ flex: "1 1 100%" }}
-                      color="inherit"
-                      variant="subtitle1"
-                      component="div"
-                    >
-                      {selected.length} selected
-                    </Typography>
-                  ) : (
-                    <Typography
-                      sx={{ flex: "1 1 100%", color: "black" }}
-                      variant="h6"
-                      id="tableTitle"
-                      component="div"
-                    >
-                      Plans
-                    </Typography>
-                  )}
-
-                  <form className="form-inline">
-                    <input
-                      id="serchbar-size"
-                      className="form-control mr-sm-2"
-                      type="search"
-                      onChange={(e) => handleSearchData(e.target.value)}
-                      placeholder="Search"
-                      aria-label="Search"
-                    />
-                  </form>
-
-                  <>
-                    {selected.length > 0 ? (
-                      <Tooltip title="Delete">
-                        <IconButton onClick={() => handleDelete()}>
-                          <img
-                            src={deleterecord}
-                            style={{
-                              width: "20px",
-                              height: "20px",
-                              margin: "10px",
-                              alignItems: "center",
-                            }}
-                          />
-                        </IconButton>
-                      </Tooltip>
-                    ) : null}
-                    {selected.length === 1 ? (
-                      <Tooltip title="Edit">
-                        <IconButton onClick={() => handleEdite(selected[0])}>
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
-                    ) : null}
-                  </>
-                </Toolbar>
-
                 {loader || searchLoader ? (
                   <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
                     <Circles
@@ -554,73 +631,156 @@ const PlanList = () => {
                     />
                   </div>
                 ) : (
-                  <TableContainer>
-                    <Table aria-label="collapsible table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell align="center"></TableCell>
+                  <>
+                    <TableContainer>
+                      <Table aria-label="collapsible table">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell align="center"></TableCell>
 
-                          <TableCell align="center" padding="checkbox">
-                            <Checkbox
-                              color="primary"
-                              indeterminate={
-                                selected.length > 0 &&
-                                selected.length < priorityData?.length
-                              }
-                              checked={
-                                priorityData?.length > 0 &&
-                                selected.length === priorityData?.length
-                              }
-                              onChange={(e) => {
-                                e.stopPropagation();
-                                handleSelectAllClick(e);
-                              }}
-                              inputProps={{
-                                "aria-label": "select all desserts",
-                              }}
-                            />
-                          </TableCell>
-                          {headCells.map((headCell, id) => {
+                            <TableCell align="center" padding="checkbox">
+                              <Checkbox
+                                style={{ color: "#152B51" }}
+                                indeterminate={
+                                  selected.length > 0 &&
+                                  selected.length < priorityData?.length
+                                }
+                                checked={
+                                  priorityData?.length > 0 &&
+                                  selected.length === priorityData?.length
+                                }
+                                onChange={(e) => {
+                                  e.stopPropagation();
+                                  handleSelectAllClick(e);
+                                }}
+                                inputProps={{
+                                  "aria-label": "select all desserts",
+                                }}
+                              />
+                            </TableCell>
+                            {headCells.map((headCell, id) => {
+                              return (
+                                <TableCell
+                                  key={id}
+                                  className="fw-bold"
+                                  align="center"
+                                  style={{
+                                    fontFamily: "Manrope",
+                                    fontSize: "20px",
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  {headCell.label}
+                                </TableCell>
+                              );
+                            })}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {priorityData?.map((row, index) => {
+                            const isItemSelected = isSelected(row.plan_id);
+                            const labelId = `enhanced-table-checkbox-${index}`;
                             return (
-                              <TableCell
-                                key={id}
-                                className="fw-bold"
-                                align="center"
-                              >
-                                {headCell.label}
-                              </TableCell>
+                              <Rows
+                                row={row}
+                                isItemSelected={isItemSelected}
+                                labelId={labelId}
+                                handleClick={handleClick}
+                                selected={selected}
+                                index={index}
+                                seletedEditData={seletedEditData}
+                              />
                             );
                           })}
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {priorityData?.map((row, index) => {
-                          const isItemSelected = isSelected(row.plan_id);
-                          const labelId = `enhanced-table-checkbox-${index}`;
-                          return (
-                            <Rows
-                              row={row}
-                              isItemSelected={isItemSelected}
-                              labelId={labelId}
-                              handleClick={handleClick}
-                              selected={selected}
-                              index={index}
-                              seletedEditData={seletedEditData}
-                            />
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                    <TablePagination
-                      rowsPerPageOptions={[5, 10, 25, 100]}
-                      component="div"
-                      count={countData}
-                      rowsPerPage={rowsPerPage}
-                      page={page}
-                      onPageChange={handleChangePage}
-                      onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                  </TableContainer>
+                        </TableBody>
+                      </Table>
+                      {priorityData.length > 0 ? (
+                        <Row>
+                          <Col className="text-right m-3">
+                            <Dropdown
+                              isOpen={leasedropdownOpen}
+                              toggle={toggle2}
+                            >
+                              <DropdownToggle caret>{pageItem}</DropdownToggle>
+                              <DropdownMenu>
+                                <DropdownItem
+                                  onClick={() => {
+                                    setRowsPerPage(10);
+                                    setPage(1);
+                                  }}
+                                >
+                                  10
+                                </DropdownItem>
+                                <DropdownItem
+                                  onClick={() => {
+                                    setRowsPerPage(25);
+                                    setPage(1);
+                                  }}
+                                >
+                                  25
+                                </DropdownItem>
+                                <DropdownItem
+                                  onClick={() => {
+                                    setRowsPerPage(50);
+                                    setPage(1);
+                                  }}
+                                >
+                                  50
+                                </DropdownItem>
+                                <DropdownItem
+                                  onClick={() => {
+                                    setRowsPerPage(100);
+                                    setPage(1);
+                                  }}
+                                >
+                                  100
+                                </DropdownItem>
+                              </DropdownMenu>
+                            </Dropdown>
+                            <Button
+                              className="p-0"
+                              style={{ backgroundColor: "#d0d0d0" }}
+                              onClick={() => handleChangePage(page - 1)}
+                              disabled={page === 1}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                fill="currentColor"
+                                className="bi bi-caret-left"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+                              </svg>
+                            </Button>
+                            <span>
+                              Page {page} of {totalPages}
+                            </span>{" "}
+                            <Button
+                              className="p-0"
+                              style={{ backgroundColor: "#d0d0d0" }}
+                              onClick={() => handleChangePage(page + 1)}
+                              disabled={page === totalPages}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                fill="currentColor"
+                                className="bi bi-caret-right"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+                              </svg>
+                            </Button>{" "}
+                          </Col>
+                        </Row>
+                      ) : (
+                        <></>
+                      )}
+                    </TableContainer>
+                  </>
                 )}
               </Paper>
             </div>

@@ -58,69 +58,134 @@ const VendorProfile = () => {
   return (
     <>
       <VendorHeader />
-
-      <Container className="mt--7" fluid>
+      <Container
+        fluid
+        style={{ marginTop: "4rem", height: "100vh" }}
+      >
+        <CardHeader
+          className=" mt-3 mb-3 mx-3"
+          style={{
+            backgroundColor: "#152B51",
+            borderRadius: "10px",
+            boxShadow: " 0px 4px 4px 0px #00000040 ",
+          }}
+        >
+          <h2
+            className="mb-0"
+            style={{
+              color: "#ffffff",
+              fontFamily: "Poppins",
+              fontWeight: "500",
+              fontSize: "26px",
+            }}
+          >
+            Personal Details
+          </h2>
+        </CardHeader>
         <Row>
-          <div className="col">
-            <Card className="shadow" style={{ backgroundColor: "#FFFEFA" }}>
-              <CardHeader className="border-0">
-                <h2 className="mb-0" style={{ color: "#36013F" }}>
-                  Personal Details
-                </h2>
-              </CardHeader>
-              <div className="table-responsive" style={{ padding: "15px" }}>
-                <Table
-                  className="align-items-center table-flush"
-                  responsive
-                  style={{ width: "100%" }}
-                >
-                  {loading ? (
-                    <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
-                      <RotatingLines
-                        strokeColor="grey"
-                        strokeWidth="5"
-                        animationDuration="0.75"
-                        width="50"
-                        visible={loading}
-                      />
-                    </div>
-                  ) : vendorDetails.vendor_id ? (
-                    <>
-                      <tbody
-                        className="tbbody p-0 m-0"
-                        style={{
-                          borderTopRightRadius: "5px",
-                          borderTopLeftRadius: "5px",
-                          borderBottomLeftRadius: "5px",
-                          borderBottomRightRadius: "5px",
-                        }}
-                      >
-                        <tr className="header">
-                          <th>First name</th>
-                          <th>Phone Number</th>
-                          <th>Email</th>
-                        </tr>
-                        <>
-                          <>
-                            <tr className="body">
-                              <td>{vendorDetails.vendor_name}</td>
-                              <td>{vendorDetails.vendor_phoneNumber}</td>
-                              <td>{vendorDetails.vendor_email}</td>
-                            </tr>
-                          </>
-                        </>
-                      </tbody>
-                    </>
-                  ) : (
-                    <tbody>
-                      <tr>
-                        <td>No vendor details found.</td>
-                      </tr>
-                    </tbody>
-                  )}
-                </Table>
-              </div>
-            </Card>
+          <div className="col mb-5" style={{}}>
+            {/* <Card className="shadow" style={{ backgroundColor: "#FFFEFA" }}> */}
+            {/* <CardHeader className="border-0">
+                                <h2 className="mb-0" style={{ color: "#36013F" }}>
+                                    Personal Details
+                                </h2>
+                            </CardHeader> */}
+
+            <Row
+              className="mx-3 py-0 mt-3"
+              style={{
+                border: ".5px solid rgba(50, 69, 103, 1)",
+                borderTopLeftRadius: "12px",
+                borderTopRightRadius: "12px",
+                height: "45px",
+                alignItems: "center",
+                borderBottom: "0px",
+                color: "#152B51",
+                fontWeight: "500",
+                fontFamily: "Poppins",
+                fontSize: "14px",
+                color: "#152B51",
+              }}
+            >
+              <Col
+                style={{
+                  borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                  height: "100%",
+                  alignItems: "center",
+                  display: "flex",
+                }}
+              >
+                First Name
+              </Col>
+
+              <Col
+                style={{
+                  borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                  height: "100%",
+                  alignItems: "center",
+                  display: "flex",
+                }}
+              >
+                Phone Number
+              </Col>
+              <Col
+                style={{
+                  height: "100%",
+                  alignItems: "center",
+                  display: "flex",
+                }}
+              >
+                Email
+              </Col>
+            </Row>
+            <Row
+              className="mx-3 py-0"
+              style={{
+                border: ".5px solid rgba(50, 69, 103, 1)",
+                borderBottomLeftRadius: "12px",
+                borderBottomRightRadius: "12px",
+                height: "45px",
+                alignItems: "center",
+                color: "#152B51",
+                fontWeight: "500",
+                fontFamily: "Poppins",
+                fontSize: "12px",
+                color: "#152B51",
+                boxShadow: " 0px 4px 4px 0px #00000040",
+              }}
+            >
+              <Col
+                style={{
+                  borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                  height: "100%",
+                  alignItems: "center",
+                  display: "flex",
+                }}
+              >
+                {vendorDetails.vendor_name}
+              </Col>
+
+              <Col
+                style={{
+                  borderRight: ".5px solid rgba(50, 69, 103, 1)",
+                  height: "100%",
+                  alignItems: "center",
+                  display: "flex",
+                }}
+              >
+                {vendorDetails.vendor_phoneNumber}
+              </Col>
+              <Col
+                style={{
+                  height: "100%",
+                  alignItems: "center",
+                  display: "flex",
+                }}
+              >
+                {vendorDetails.vendor_email}
+              </Col>
+            </Row>
+            {/* </Card> */}
           </div>
         </Row>
       </Container>

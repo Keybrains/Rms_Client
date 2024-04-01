@@ -2,6 +2,7 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import { alpha } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
+import "./nav.css";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -16,7 +17,8 @@ import axios from "axios";
 import Checkbox from "@mui/material/Checkbox";
 import EditIcon from "@mui/icons-material/Edit";
 import Tooltip from "@mui/material/Tooltip";
-import { Button } from "react-bootstrap";
+// import { Button } from "react-bootstrap";
+import { Button, DialogActions } from "@mui/material";
 import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import swal from "sweetalert";
@@ -37,15 +39,31 @@ import moment from "moment";
 import Switch from "@mui/material/Switch";
 // import { useHistory } from "react-router-dom";
 import { Circles } from "react-loader-spinner";
-import deleterecord from "../assets/img/delete.png";
+// import deleterecord from "../assets/img/delete.png";
 import SuperAdminHeader from "../Headers/SuperAdminHeader";
 
-import { Col, Container, Row } from "reactstrap";
+import {
+  Col,
+  Container,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Dropdown,
+  Row,
+} from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import ProfileIcon from "../Images/profile.png";
 import { jwtDecode } from "jwt-decode";
 import { useEffect } from "react";
 import LoginIcon from "@mui/icons-material/Login";
+
+import edit from "../../../assets/icons/edit.svg";
+import deleterecord from "../../../assets/icons/delete.svg";
+import usericon from "../../../assets/icons/Admin3.svg";
+import logout from "../../../assets/icons/Group 1000002974.svg";
+import leftarrow from "../../../assets/icons/left.svg";
+import rightarrow from "../../../assets/icons/right.svg";
+// import deleterecord from "../../../assets/img/icons/common/delete-swal.svg";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
@@ -71,27 +89,35 @@ const headCells = [
   {
     label: "end date",
   },
-
   {
     label: "Action",
   },
 ];
 
 function Rows(props) {
-  const { row, handleClick, isItemSelected, labelId, seletedEditData } = props;
+  const {
+    row,
+    handleClick,
+    isItemSelected,
+    labelId,
+    seletedEditData,
+    getData,
+  } = props;
   const navigate = useNavigate();
   const baseUrl = process.env.REACT_APP_BASE_URL;
 
   const handleLoginButtonClick = async () => {
     if (row.admin_id) {
       try {
-        // Make an HTTP request to your API endpoint with the adminId
         await axios.get(`${baseUrl}/login/${row.admin_id}`);
         console.log("API called successfully");
       } catch (error) {
         console.error("Error occurred while calling API:", error);
       }
     }
+  };
+  const checkboxStyle = {
+    backgroundColor: isItemSelected ? "red" : "transparent",
   };
 
   return (
@@ -100,9 +126,9 @@ function Rows(props) {
         hover
         onClick={(event) => {
           handleClick(event, row.admin_id);
-          // navigate(`/superadmin/staffmember/${row?.admin_id}`); 
+          // navigate(`/superadmin/staffmember/${row?.admin_id}`);
         }}
-        style={{ cursor: "pointer" }}
+        style={{ cursor: "pointer", color: "#152B51" }}
         role="checkbox"
         aria-checked={isItemSelected}
         tabIndex={-1}
@@ -111,6 +137,7 @@ function Rows(props) {
         <TableCell align="center" padding="checkbox">
           <Checkbox
             color="primary"
+            style={{ color: "#152B51" }}
             checked={isItemSelected}
             onClick={(event) => {
               event.stopPropagation();
@@ -122,17 +149,23 @@ function Rows(props) {
           />
         </TableCell>
         {/* <TableCell align="center">{ row + 1}</TableCell> */}
-        <TableCell align="left">
-          <img src={ProfileIcon} /> {row?.first_name} {row?.last_name}
+        <TableCell align="left" style={{ color: "#152B51" }}>
+          <img src={usericon} /> {row?.first_name} {row?.last_name}
         </TableCell>
-        <TableCell align="left">
+        <TableCell align="left" style={{ color: "#152B51" }}>
           {row?.planName}
         </TableCell>
 
-        <TableCell align="left">{row?.company_name}</TableCell>
-        <TableCell align="left">{row?.phone_number}</TableCell>
-        <TableCell align="left">{row?.email}</TableCell>
-        <TableCell align="left">
+        <TableCell align="left" style={{ color: "#152B51" }}>
+          {row?.company_name}
+        </TableCell>
+        <TableCell align="left" style={{ color: "#152B51" }}>
+          {row?.phone_number}
+        </TableCell>
+        <TableCell align="left" style={{ color: "#152B51" }}>
+          {row?.email}
+        </TableCell>
+        <TableCell align="left" style={{ color: "#152B51" }}>
           {row.subscription?.status === "active"
             ? `${moment(row.subscription?.start_date, "YYYY-MM-DD").format(
                 "DD-MM-YYYY"
@@ -142,30 +175,46 @@ function Rows(props) {
               )} 
               `}
         </TableCell>
-        <TableCell align="left">
+        <TableCell align="left" style={{ color: "#152B51" }}>
           {row.subscription?.status === "active"
             ? `${moment(row.subscription?.end_date, "YYYY-MM-DD").format(
                 "DD-MM-YYYY"
               )} `
-            : `${moment(row.trial?.end_date, "YYYY-MM-DD").format("DD-MM-YYYY")} 
+            : `${moment(row.trial?.end_date, "YYYY-MM-DD").format(
+                "DD-MM-YYYY"
+              )} 
               `}
         </TableCell>
 
- 
+        {/* <TableCell>
+          <Button
+            size="small"
+            variant="outlined"
+            sx={{ borderRadius: "80px" }}
+            color={row.status === "activate" ? "success" : "error"}
+            onClick={(event) => {
+              event.stopPropagation();
+              toggleAdminStatusWithConfirmation(row);
+            }}
+          >
+            {row.status === "activate" ? "Active" : "Inactive"}
+          </Button>
+        </TableCell> */}
         <TableCell align="center">
           <div className="d-flex">
             <div onClick={() => seletedEditData(row)} title="Edit">
-              <EditIcon />
+              <img src={edit} alt="edit"></img>
             </div>
             <div
-              className="ml-1"
+              className="ml-1 my-1"
               onClick={(event) => {
                 event.stopPropagation();
                 handleLoginButtonClick();
               }}
               title="Login"
             >
-              <LoginIcon />
+              {/* <LoginIcon /> */}
+              <img src={logout} alt="logout"></img>
             </div>
           </div>
         </TableCell>
@@ -185,6 +234,25 @@ function Rows(props) {
           <button onClick={handleLoginClick}>Login</button>
         </TableCell> */}
       </TableRow>
+      {/* <Dialog
+        open={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+      >
+        <DialogTitle>Confirm Action</DialogTitle>
+        <DialogContent>
+          Are you sure you want to{" "}
+          {selectedAdmin?.status === "activate" ? "deactivate" : "activate"}{" "}
+          {selectedAdmin?.first_name} {selectedAdmin?.last_name}?
+          {console.log(selectedAdmin?.status, "status")}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleStatusChangeConfirm} color="primary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog> */}
+      <ToastContainer />
     </React.Fragment>
   );
 }
@@ -271,12 +339,32 @@ export default function Admin() {
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
-  // Delete selected
   var handleDelete = () => {
-    swal("Are You Sure You Want TO Delete ?", {
-      buttons: ["No", "Yes"],
-    }).then(async (buttons) => {
-      if (buttons === true) {
+    swal({
+      text: " Are you sure you want to delete ?",
+      buttons: {
+        no: {
+          text: "No",
+          className: "swal-button",
+          style: {
+            backgroundColor: "#152B51",
+            marginRight: "10px", // Adjust spacing if necessary
+          },
+          value: false,
+        },
+        yes: {
+          text: "Yes",
+          className: "swal-button",
+          style: {
+            backgroundColor: "#152B51",
+          },
+          value: true,
+        },
+      },
+      padding: "2rem", // Adjust padding for centering
+      allowOutsideClick: false,
+    }).then(async (value) => {
+      if (value === true) {
         axios
           .delete(`${baseUrl}/admin/admin`, {
             data: selected,
@@ -396,23 +484,22 @@ export default function Admin() {
     setEditData(datas);
   };
 
-  // Formik
-  //   let [ProductDetailsFormik, setProductDetailsFormik] = useState({});
-  //   const FormikValues = () => {
-  //     const formik = useFormikContext();
-  //     React.useEffect(() => {
-  //       setProductDetailsFormik(formik.values);
-  //     }, [formik.values]);
-  //     return null;
-  //   };
+  const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
+  const [pageItem, setPageItem] = React.useState(10);
+  const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
+  const [totalPages, setTotalPages] = React.useState(1);
 
   return (
     <>
-      <SuperAdminHeader />
-      <Container className="mt--8 ml--10" fluid>
+      <SuperAdminHeader prop={"Admins"} />
+      <Container className="mx-5" fluid>
         <Row>
           <Col>
-            <div>
+            <div
+              style={{
+                width: "93%",
+              }}
+            >
               <div id="main-btn-add-machinetype">
                 <div className="d-flex flex-row justify-content-end mb-2">
                   <Button
@@ -424,13 +511,54 @@ export default function Admin() {
                       setEditData({});
                     }}
                     variant="contained"
-                    style={{ backgroundColor: "#4A5073", color: "#ffffff" }} // Set background color and text color
+                    style={{ backgroundColor: "#152B51", color: "white" }}
                   >
                     Add Admin
                   </Button>
                 </div>
               </div>
+              <Toolbar
+                className="border-top border-bottom"
+                sx={{
+                  pl: { sm: 2 },
+                  pr: { xs: 1, sm: 1 },
+                  bgcolor: "#fff", // Set the background color here
+                  color: "white", // Set the font color to white
+                  borderRadius: "10px",
+                  marginBottom: "18px",
+                  backgroundColor: "#152B51",
+                  border: "none",
+                }}
+              >
+                <Typography
+                  sx={{ flex: "1 1 97%", color: "white" }}
+                  variant="h6"
+                  id="tableTitle"
+                  component="div"
+                >
+                  Admin
+                </Typography>
 
+                <>
+                  {selected.length > 0 ? (
+                    <Tooltip title="Delete">
+                      <IconButton onClick={() => handleDelete()}>
+                        <img
+                          src={deleterecord}
+                          alt={"deleterecord"}
+                          style={{
+                            width: "20px",
+                            height: "20px",
+                            margin: "10px",
+                            alignItems: "center",
+                            color: "#fff",
+                          }}
+                        />
+                      </IconButton>
+                    </Tooltip>
+                  ) : null}
+                </>
+              </Toolbar>
               <Paper
                 sx={{
                   width: "100%",
@@ -439,54 +567,6 @@ export default function Admin() {
                   overflow: "hidden",
                 }}
               >
-                <Toolbar
-                  className="border-top border-bottom"
-                  sx={{
-                    pl: { sm: 2 },
-                    pr: { xs: 1, sm: 1 },
-                    bgcolor: "#fff", // Set the background color here
-                    color: "white", // Set the font color to white
-                  }}
-                >
-                  <Typography
-                    sx={{ flex: "1 1 100%", color: "black" }}
-                    variant="h6"
-                    id="tableTitle"
-                    component="div"
-                  >
-                    Admin
-                  </Typography>
-
-                  {/* <form className="form-inline">
-                    <input
-                      id="serchbar-size"
-                      className="form-control mr-sm-2"
-                      type="search"
-                      onChange={(e) => handleSearchData(e.target.value)}
-                      placeholder="Search"
-                      aria-label="Search"
-                    />
-                  </form> */}
-
-                  <>
-                    {selected.length > 0 ? (
-                      <Tooltip title="Delete">
-                        <IconButton onClick={() => handleDelete()}>
-                          <img
-                            src={deleterecord}
-                            style={{
-                              width: "20px",
-                              height: "20px",
-                              margin: "10px",
-                              alignItems: "center",
-                            }}
-                          />
-                        </IconButton>
-                      </Tooltip>
-                    ) : null}
-                  </>
-                </Toolbar>
-
                 {loader || searchLoader ? (
                   <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
                     <Circles
@@ -508,7 +588,7 @@ export default function Admin() {
 
                           <TableCell align="center" padding="checkbox">
                             <Checkbox
-                              color="primary"
+                              style={{ color: "#152B51" }} // Set custom checkbox color here
                               indeterminate={
                                 selected.length > 0 &&
                                 selected.length < adminData?.length
@@ -526,7 +606,7 @@ export default function Admin() {
                           {headCells.map((headCell, id) => {
                             return (
                               <TableCell
-                                style={{ fontWeight: "bold" }}
+                                style={{ fontWeight: "600", color: "#152B51" }}
                                 key={headCell.id}
                                 className="fw-bold"
                                 align="left"
@@ -550,20 +630,77 @@ export default function Admin() {
                               selected={selected}
                               index={index}
                               seletedEditData={seletedEditData}
+                              getData={getData}
+                              style={{ color: "#152B51" }}
                             />
                           );
                         })}
                       </TableBody>
                     </Table>
-                    <TablePagination
-                      rowsPerPageOptions={[5, 10, 25, 100]}
-                      component="div"
-                      count={countData}
-                      rowsPerPage={rowsPerPage}
-                      page={page}
-                      onPageChange={handleChangePage}
-                      onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
+                    {adminData.length > 0 ? (
+                      <Row>
+                        <Col className="text-right m-3">
+                          <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
+                            <DropdownToggle caret>{pageItem}</DropdownToggle>
+                            <DropdownMenu>
+                              <DropdownItem
+                                onClick={() => {
+                                  setRowsPerPage(10);
+                                  setPage(1);
+                                }}
+                              >
+                                10
+                              </DropdownItem>
+                              <DropdownItem
+                                onClick={() => {
+                                  setRowsPerPage(25);
+                                  setPage(1);
+                                }}
+                              >
+                                25
+                              </DropdownItem>
+                              <DropdownItem
+                                onClick={() => {
+                                  setRowsPerPage(50);
+                                  setPage(1);
+                                }}
+                              >
+                                50
+                              </DropdownItem>
+                              <DropdownItem
+                                onClick={() => {
+                                  setRowsPerPage(100);
+                                  setPage(1);
+                                }}
+                              >
+                                100
+                              </DropdownItem>
+                            </DropdownMenu>
+                          </Dropdown>
+                          <Button
+                            className="p-0"
+                            style={{}}
+                            onClick={() => handleChangePage(page - 1)}
+                            disabled={page === 1}
+                          >
+                            <img src={leftarrow} alt="leftarrow"></img>
+                          </Button>
+                          <span>
+                            Page {page} of {totalPages}
+                          </span>{" "}
+                          <Button
+                            className="p-0"
+                            style={{}}
+                            onClick={() => handleChangePage(page + 1)}
+                            disabled={page === totalPages}
+                          >
+                            <img src={rightarrow} alt="rightarrow"></img>
+                          </Button>{" "}
+                        </Col>
+                      </Row>
+                    ) : (
+                      <></>
+                    )}
                   </TableContainer>
                 )}
               </Paper>
@@ -572,8 +709,16 @@ export default function Admin() {
               fullWidth
               open={modalShowForPopupForm}
               onClose={() => setModalShowForPopupForm(false)}
+              style={{ boxShadow: "0px 4px 4px 0px #00000040" }}
             >
-              <DialogTitle>{"Admin Form"}</DialogTitle>
+              <DialogTitle
+                style={{
+                  boxShadow: "0px 4px 4px 0px #00000040",
+                  fontFamily: "Poppins",
+                }}
+              >
+                {"Admin Form"}
+              </DialogTitle>
               <DialogContent dividers>
                 <Formik
                   initialValues={{
@@ -619,12 +764,13 @@ export default function Admin() {
                             type="text"
                             size="small"
                             fullWidth
-                            placeholder="First Name *"
-                            label="First Name *"
+                            placeholder="Enter the first name here...* *"
+                            label="Enter the first name here...*"
                             name="first_name"
                             value={values.first_name}
                             onBlur={handleBlur}
                             onChange={handleChange}
+                            className="texmt"
                           />
                           {touched.first_name && errors.first_name ? (
                             <div className="text-danger">
@@ -639,8 +785,8 @@ export default function Admin() {
                             type="text"
                             size="small"
                             fullWidth
-                            placeholder="Last Name *"
-                            label="Last Name *"
+                            placeholder="Enter the last name here...*"
+                            label="Enter the last name here...*"
                             name="last_name"
                             value={values.last_name}
                             onBlur={handleBlur}
@@ -658,8 +804,8 @@ export default function Admin() {
                             type="text"
                             size="small"
                             fullWidth
-                            placeholder="Email *"
-                            label="Email *"
+                            placeholder="Enter the email here...*"
+                            label="Enter the email here...*"
                             name="email"
                             value={values.email}
                             onBlur={handleBlur}
@@ -675,8 +821,8 @@ export default function Admin() {
                             type="text"
                             size="small"
                             fullWidth
-                            placeholder="Company Name *"
-                            label="Company Name *"
+                            placeholder="Enter the company name here...*"
+                            label="Enter the company name here...*"
                             name="company_name"
                             value={values.company_name}
                             onBlur={handleBlur}
@@ -694,8 +840,8 @@ export default function Admin() {
                             type="number"
                             size="small"
                             fullWidth
-                            placeholder="Phone Number *"
-                            label="Phone Number *"
+                            placeholder="Enter the phone number here...*"
+                            label="Enter the phone number here...*"
                             name="phone_number"
                             value={values.phone_number}
                             onBlur={handleBlur}
@@ -713,8 +859,8 @@ export default function Admin() {
                             type="text"
                             size="small"
                             fullWidth
-                            placeholder="Password *"
-                            label="Password *"
+                            placeholder="Enter the password here...*"
+                            label="Enter the password here...*"
                             name="password"
                             value={values.password}
                             onBlur={handleBlur}
@@ -724,24 +870,26 @@ export default function Admin() {
                             <div className="text-danger">{errors.password}</div>
                           ) : null}
                         </div>
-
-                        {!id ? (
-                          <Button
-                            className="mt-3"
-                            type="submit"
-                            variant="primary"
-                          >
-                            Add
-                          </Button>
-                        ) : (
-                          <Button
-                            className="mt-3"
-                            type="submit"
-                            variant="warning"
-                          >
-                            Update
-                          </Button>
-                        )}
+                        <Button
+                          className="mt-3"
+                          type="submit"
+                          variant="primary"
+                          style={{
+                            backgroundColor: "#152B51",
+                            color: "white",
+                            fontFamily: "Poppins",
+                          }}
+                        >
+                          Add Admin
+                        </Button>
+                        <Button
+                          className="mt-3 mx-3"
+                          variant="primary"
+                          style={{ color: "#152B51", fontFamily: "Poppins" }}
+                          onClick={() => setModalShowForPopupForm(false)}
+                        >
+                          Cancel
+                        </Button>
                       </div>
                     </Form>
                   )}
@@ -750,6 +898,7 @@ export default function Admin() {
             </Dialog>
           </Col>
         </Row>
+
         <ToastContainer />
       </Container>
     </>

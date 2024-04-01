@@ -1,9 +1,6 @@
 import classnames from "classnames";
-
 import Chart from "chart.js";
-
 import { Line, Bar } from "react-chartjs-2";
-
 import {
   Button,
   Card,
@@ -19,59 +16,44 @@ import {
   Col,
 } from "reactstrap";
 import { jwtDecode } from "jwt-decode";
-// core components
 import {
   chartOptions,
   parseOptions,
   chartExample1,
   chartExample2,
-} from "variables/charts.js";
-
+} from "../../variables/charts";
+import { Doughnut } from "react-chartjs-2";
 import TenantsHeader from "components/Headers/TenantsHeader";
 import Cookies from "universal-cookie";
-// import { useNavigate } from "react-router-dom";
-
 import axios from "axios";
 import { RotatingLines } from "react-loader-spinner";
 import { useNavigate, useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import StaffHeader from "components/Headers/StaffHeader";
 import StaffWorkTable from "./StaffWorkTable";
+import Work from "../../assets/icons/Work Light.svg";
+import property from "../../assets/icons/AdminDashboard/Properti-icon.svg";
+import ArrowRight from "../../assets/icons/ArrowRight.svg";
 
 const StaffDashBoard = (props) => {
+  const [circularData, setCircularData] = useState({
+    datasets: [
+      {
+        data: [55, 45],
+        backgroundColor: ["#152B51 ", "#5A86D5"],
+        weight: 10,
+      },
+    ],
+  });
+
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const [activeNav, setActiveNav] = useState(1);
-  const [chartExample1Data, setChartExample1Data] = useState("data1");
+
   let navigate = useNavigate();
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
   }
-  const bgStyle = {
-    backgroundColor: "#b3e6b3",
-    paddingLeft: "10px",
-    // width:"300px"
-  };
-  const spStyle = {
-    color: "red",
-    // width:"300px"
-  };
-  const toggleNavs = (e, index) => {
-    e.preventDefault();
-    setActiveNav(index);
-    setChartExample1Data("data" + index);
-  };
-  const [showMoreNewOrders, setShowMoreNewOrders] = useState(false);
-  const [showMoreOverdueOrders, setShowMoreOverdueOrders] = useState(false);
+
   let [loader, setLoader] = useState(false);
-
-  // const handleViewMoreNewOrders = () => {
-  //   setShowMoreNewOrders(!showMoreNewOrders);
-  // };
-
-  // const handleViewMoreOverdueOrders = () => {
-  //   setShowMoreOverdueOrders(!showMoreOverdueOrders);
-  // };
-  let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
@@ -86,7 +68,6 @@ const StaffDashBoard = (props) => {
   const [propertycount, setpropertycount] = useState();
   const fetchPropertyCount = async () => {
     if (accessType?.staffmember_id && accessType?.admin_id) {
-      setLoader(true);
       try {
         const res = await axios.get(
           `${baseUrl}/staffmember/count/${accessType?.staffmember_id}/${accessType?.admin_id}`
@@ -104,47 +85,23 @@ const StaffDashBoard = (props) => {
     fetchPropertyCount();
   }, [accessType]);
 
-  const cardStyle = {
-    // background: `url(${require("../assets/img/us3.jpeg").default})`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    minHeight: "40vh",
-    alignItems: "center",
-    justifyContent: "center",
-    // display: 'flex',
-    fontFamily: "sans-serif",
-    fontSize: "35px",
-    color: "black",
-    // textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
-  };
-  const subcardStyle = {
-    backgroundColor: "#033E3E",
-    border: "none",
-    minHeight: "25vh",
-    color: "#fff",
-    fontSize: "25px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.10)",
-  };
-  const subbcardStyle = {
-    backgroundColor: "#033E3E",
-    border: "none",
-    minHeight: "25vh",
-    color: "#fff",
-    fontSize: "25px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.10)",
-  };
-  const smallCardStyle = {
-    backgroundColor: "#ffffff", // Background color of the small cards
-    padding: "10px",
-    margin: "10px",
-    borderRadius: "8px",
-    textAlign: "center",
-    height: "150px", // Adjusted height
-    boxShadow: "0px 2px 5px rgba(0, 0, 0, 1)", // Your desired box shadow
-  };
   const [newWorkOrders, setNewWorkOrders] = useState([]);
   const [overdueWorkOrders, setOverdueWorkOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const options = {
+    maintainAspectRatio: false,
+    cutoutPercentage: 70,
+    rotation: 1 * Math.PI,
+    tooltips: {
+      callbacks: {
+        label: function (tooltipItem, data) {
+          const label = data.labels[tooltipItem.index] || "";
+          const value = data.datasets[0].data[tooltipItem.index];
+          return `${label}: ${value}%`;
+        },
+      },
+    },
+  };
 
   useEffect(() => {
     const fetchWorkOrders = async () => {
@@ -153,304 +110,492 @@ const StaffDashBoard = (props) => {
           const [newResponse, overdueResponse] = await Promise.all([
             axios.get(
               `${baseUrl}/staffmember/dashboard_workorder/${accessType?.staffmember_id}/${accessType?.admin_id}`
-            ), // Replace this with your actual overdue work orders API endpoint
+            ),
           ]);
           setNewWorkOrders(newResponse.data.data.new_workorder);
           setOverdueWorkOrders(newResponse.data.data.overdue_workorder);
-          setLoading(false);
         } catch (error) {
           console.error("Error fetching work orders:", error);
+        } finally {
           setLoading(false);
         }
-      };
-    }
+      }
+    };
     fetchWorkOrders();
   }, [accessType]);
-  const [isPasOverdue, setIsPasOverdue] = useState(false);
-
-  const handleLabelClick = () => {
-    // Set isPasOverdue to true when the label is clicked
-    setIsPasOverdue(true);
-  };
 
   return (
     <>
-      <StaffHeader />
-      {/* Page content */}
-      <Container className="mt--7" fluid>
-        <div className="mb-3">
-          <Card
-            style={{
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              // minHeight: "25vh",
-
-              justifyContent: "center",
-              // display: 'flex',
-              // fontFamily: "sans-serif",
-              fontSize: "20px",
-              color: "black",
-            }}
-          >
-            <CardBody>
+      <StaffHeader prop="My Dashboard" />
+      <Container className="mx-3" fluid>
+        {loader ? (
+          <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+            <RotatingLines
+              strokeColor="grey"
+              strokeWidth="5"
+              animationDuration="0.75"
+              width="50"
+              visible={loader}
+            />
+          </div>
+        ) : (
+          <Row>
+            <Col className="mt-3" xl="12">
               <Row>
-                <Col lg="12">
-                  <Card>
-                    <CardBody style={cardStyle}>
-                      <div style={{ textAlign: "center" }}>
-                        Welcome to 302 Properties
-                      </div>
-                      {loader ? (
-                        <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
-                          <RotatingLines
-                            strokeColor="grey"
-                            strokeWidth="5"
-                            animationDuration="0.75"
-                            width="50"
-                            visible={loader}
-                          />
-                        </div>
-                      ) : (
-                        <>
-                          {propertycount === 0 ? (
-                            <div>Data not found</div>
-                          ) : (
-                            <>
-                              <Row
-                                style={{}}
-                                className="d-flex justify-content-around"
+                <Col lg={5}>
+                  <Row>
+                    <Col
+                      style={{
+                        fontFamily: "Poppins",
+                        color: "#fff",
+                      }}
+                    >
+                      <Card
+                        style={{
+                          cursor: "pointer",
+                          height: "250px",
+                          margin: "auto 20px",
+                          borderRadius: "20px",
+                          boxShadow: "rgba(0, 0, 0, 0.35) 0px 4px 4px 0",
+                          backgroundColor: "#152B51",
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
+                      >
+                        <CardBody
+                          style={{
+                            flexGrow: 1,
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "space-between",
+                          }}
+                          className="py-5"
+                        >
+                          <Row>
+                            <Col>
+                              <span
+                                style={{
+                                  width: "50px",
+                                  height: "50px",
+                                  borderRadius: "50%",
+                                  fontSize: "20px",
+                                  padding: "20px",
+                                  boxShadow: "rgba(0, 0, 0, 0.75) 0 4px 4px 0",
+                                }}
                               >
-                                <Col lg="4" sm="12" className="mb-3">
-                                  <Card style={subcardStyle}>
-                                    <CardBody className="d-flex flex-column justify-content-center  text-center mb-3">
-                                      <div className="d-flex align-items-center flex-column p-3 ">
-                                        <div
-                                          className="d-flex justify-content-center align-items-center"
-                                          style={{
-                                            color: "#cfd8dc",
-                                            width: "70px",
-                                            height: "70px",
-                                            fontSize: "30px",
-                                            borderRadius: "50%",
-                                            background:
-                                              "linear-gradient(125deg, #fff 10%,#033E3E,#263238)",
-                                          }}
-                                        >
-                                          <i className="ni ni-pin-3"></i>
-                                        </div>
-                                        <div
-                                          style={{
-                                            color: "cfd8dc",
-                                            fontSize: "20px",
-                                          }}
-                                        >
-                                          Properties
-                                        </div>
-                                      </div>
-                                      <div
-                                        style={{
-                                          color: "cfd8dc",
-                                          fontSize: "22px",
-                                          fontWeight: "bold",
-                                        }}
-                                      >
-                                        {propertycount?.property_staffMember}
-                                        {/* {propertycount} */}
-                                      </div>
-                                    </CardBody>
-                                  </Card>
-                                </Col>
-                                <Col lg="4" className="mb-3">
-                                  <Card style={subbcardStyle}>
-                                    <CardBody className="d-flex flex-column justify-content-center  text-center">
-                                      <div className="d-flex align-items-center flex-column p-3">
-                                        <div
-                                          className="d-flex justify-content-center align-items-center"
-                                          style={{
-                                            color: "white",
-                                            width: "70px",
-                                            height: "70px",
-                                            fontSize: "30px",
-                                            borderRadius: "50%",
-                                            background:
-                                              "linear-gradient(125deg, #fff 10%,#033E3E,#263238)",
-                                          }}
-                                        >
-                                          <i className="ni ni-badge"></i>
-                                        </div>
-                                        <div
-                                          style={{
-                                            color: "white",
-                                            fontSize: "20px",
-                                          }}
-                                        >
-                                          Work Orders
-                                        </div>
-                                      </div>
-                                      <div
-                                        style={{
-                                          color: "white",
-                                          fontSize: "22px",
-                                          fontWeight: "bold",
-                                        }}
-                                      >
-                                        {propertycount?.workorder_staffMember}
-                                      </div>
-                                    </CardBody>
-                                  </Card>
-                                </Col>
-                              </Row>
-                              <Row
-                                lg="12"
-                                className="d-flex justify-content-around"
+                                <img src={property} height={20} width={20} />
+                              </span>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col
+                              lg={12}
+                              className="d-flex justify-content-start pt-5"
+                            >
+                              <span
+                                style={{
+                                  fontFamily: "Poppins",
+                                  fontSize: "25px",
+                                  fontWeight: "600",
+                                }}
                               >
-                                <Col lg="5" md="12" sm="12" className="mb-3">
-                                  <Card
-                                    style={{
-                                      justifyContent: "center",
-                                      fontFamily: "sans-serif",
-                                      fontSize: "20px",
-                                      color: "black",
-                                      boxShadow: "0px 2px 5px rgba(0, 0, 0, 1)", // Your desired box shadow
-                                      // border:"0.5px solid black"
-                                    }}
-                                  >
-                                    <CardBody>
-                                      <div className="mb-2 d-flex justify-content-start">
-                                        <span
-                                          style={{
-                                            fontWeight: "bold",
-                                            fontSize: "28px",
-                                          }}
-                                        >
-                                          New Work Orders
-                                        </span>
-                                      </div>
-                                      <div className="col-lg-2">
-                                        <div className="d-flex justify-content-between mb-2">
-                                          <span className="">Total </span>
-                                          <span>{newWorkOrders.length}</span>
-                                        </div>
-                                      </div>
-                                      {newWorkOrders
-                                        .slice(0, 3)
-                                        .map((order, index) => (
-                                          <div key={index} style={bgStyle}>
-                                            <div className="d-flex justify-content-start">
-                                              <span className="">
-                                                {order.work_subject}
-                                              </span>
-                                            </div>
-                                            <div
-                                              className="col-lg-10"
-                                              style={{ fontSize: "14px" }}
-                                            >
-                                              <label className="d-flex justify-content-between mb-1 leackage-status">
-                                                <span>{order.date}</span>
-                                                <span>{order.status}</span>
-                                              </label>
-                                            </div>
-                                          </div>
-                                        ))}
-                                      <label
-                                        className="d-flex justify-content-start"
-                                        style={{
-                                          cursor: "pointer",
-                                          color: "blue",
-                                        }}
-                                        // onClick={handleViewMoreNewOrders}
-                                        onClick={() =>
-                                          navigate("/staff/staffworktable")
-                                        }
-                                      >
-                                        View All
-                                        {/* {showMoreNewOrders
-                                          ? "View Less"
-                                          : "View All"} */}
-                                      </label>
-                                    </CardBody>
-                                  </Card>
-                                </Col>
+                                {propertycount?.property_staffMember
+                                  .toString()
+                                  .padStart(2, "0")}
+                              </span>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col lg={12} className="pt-3">
+                              <span
+                                style={{
+                                  fontFamily: "Poppins",
+                                  fontSize: "20px",
+                                  fontWeight: "500",
+                                }}
+                                onClick={() => navigate("/staff/staffproperty")}
+                              >
+                                Properties{" "}
+                                <img src={ArrowRight} height={12} width={12} />
+                              </span>
+                            </Col>
+                          </Row>
+                        </CardBody>
+                      </Card>
+                    </Col>
+                    <Col
+                      style={{
+                        fontFamily: "Poppins",
+                        color: "#fff",
+                      }}
+                    >
+                      <Card
+                        style={{
+                          cursor: "pointer",
+                          height: "250px",
+                          margin: "auto 20px",
+                          borderRadius: "20px",
+                          boxShadow: "rgba(0, 0, 0, 0.35) 0px 4px 4px 0",
+                          backgroundColor: "#324B77",
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
+                      >
+                        <CardBody
+                          style={{
+                            flexGrow: 1,
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "space-between",
+                          }}
+                          className="py-5"
+                        >
+                          <Row>
+                            <Col>
+                              <span
+                                style={{
+                                  width: "50px",
+                                  height: "50px",
+                                  borderRadius: "50%",
+                                  fontSize: "20px",
+                                  padding: "20px",
+                                  boxShadow: "rgba(0, 0, 0, 0.75) 0 4px 4px 0",
+                                }}
+                              >
+                                <img src={Work} height={20} width={20} />
+                              </span>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col
+                              lg={12}
+                              className="d-flex justify-content-start pt-5"
+                            >
+                              <span
+                                style={{
+                                  fontFamily: "Poppins",
+                                  fontSize: "25px",
+                                  fontWeight: "600",
+                                }}
+                              >
+                                {propertycount?.workorder_staffMember
+                                  .toString()
+                                  .padStart(2, "0")}
+                              </span>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col lg={12} className="pt-3">
+                              <span
+                                style={{
+                                  fontFamily: "Poppins",
+                                  fontSize: "20px",
+                                  fontWeight: "500",
+                                }}
+                                onClick={() =>
+                                  navigate("/staff/staffworktable")
+                                }
+                              >
+                                Work Orders{" "}
+                                <img src={ArrowRight} height={12} width={12} />
+                              </span>
+                            </Col>
+                          </Row>
+                        </CardBody>
+                      </Card>
+                    </Col>
+                  </Row>
+                </Col>
+                <Col lg={7}>
+                  <Row>
+                    <Col
+                      style={{
+                        fontFamily: "Poppins",
+                        color: "#fff",
+                      }}
+                    >
+                      <Card
+                        style={{
+                          cursor: "pointer",
+                          height: "253px",
+                          fontWeight: "600",
+                          margin: "auto 20px",
+                          borderRadius: "20px",
+                          boxShadow: "rgba(0, 0, 0, 0.35) 0px 4px 4px 0",
+                          backgroundColor: "#fff",
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
+                      >
+                        <CardHeader
+                          className="d-flex justify-content-center"
+                          style={{
+                            backgroundColor: "#152B51",
+                            borderRadius: "20px 20px 0 0",
+                            fontSize: "20px",
+                          }}
+                        >
+                          New Work Order
+                        </CardHeader>
+                        <CardBody
+                          style={{
+                            flexGrow: 1,
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "space-between",
+                          }}
+                          className="py-5"
+                        >
+                          <Row>
+                            <Col
+                              lg={12}
+                              className="d-flex justify-content-center "
+                            >
+                              <span
+                                style={{
+                                  height: "auto",
+                                  fontWeight: "600",
+                                  fontSize: "24px",
+                                  color: "#5A86D5",
+                                }}
+                              >
+                                Total:{" "}
+                                {newWorkOrders?.length
+                                  .toString()
+                                  .padStart(2, "0")}
+                              </span>
+                            </Col>
+                          </Row>
 
-                                <Col lg="5" md="12" sm="12">
-                                  <Card
-                                    style={{
-                                      justifyContent: "center",
-                                      fontFamily: "sans-serif",
-                                      fontSize: "20px",
-                                      color: "black",
-                                      boxShadow: "0px 2px 5px rgba(0, 0, 0, 1)",
-                                    }}
-                                  >
-                                    <CardBody>
-                                      <div className="mb-2 d-flex justify-content-start">
-                                        <span
-                                          style={{
-                                            fontWeight: "bold",
-                                            fontSize: "28px",
-                                          }}
-                                        >
-                                          Overdue Work Orders
-                                        </span>
-                                      </div>
-                                      <div className="col-lg-2">
-                                        <div className="d-flex justify-content-between mb-2">
-                                          <span className="">Total </span>
-                                          <span>
-                                            {overdueWorkOrders.length}
-                                          </span>
-                                        </div>
-                                      </div>
-                                      {overdueWorkOrders
-                                        .slice(0, 3)
-                                        .map((order, index) => (
-                                          <div key={index} style={bgStyle}>
-                                            <div className="d-flex justify-content-start">
-                                              <span className="">
-                                                {order.work_subject}
-                                              </span>
-                                            </div>
-                                            <div
-                                              className="col-lg-10"
-                                              style={{ fontSize: "14px" }}
-                                            >
-                                              <label className="d-flex justify-content-between mb-1 leackage-status text-danger">
-                                                <span>{order.date}</span>
-                                                <span>{order.status}</span>
-                                              </label>
-                                            </div>
-                                          </div>
-                                        ))}
-                                      <label
-                                        className="d-flex justify-content-start"
-                                        style={{
-                                          cursor: "pointer",
-                                          color: "blue",
-                                        }}
-                                        onClick={() =>
-                                          navigate(
-                                            "/staff/staffworktable?status=Over Due"
-                                          )
-                                        }
-                                      >
-                                        View All
-                                      </label>
-                                    </CardBody>
-                                  </Card>
-                                </Col>
-                              </Row>
-                            </>
-                          )}
-                        </>
-                      )}
-                    </CardBody>
-                  </Card>
+                          <Row>
+                            <Col
+                              lg={12}
+                              className="d-flex justify-content-center mt-3"
+                            >
+                              <span
+                                className="d-flex justify-content-center "
+                                style={{
+                                  fontFamily: "Poppins",
+                                  fontSize: "15px",
+                                  fontWeight: "600",
+                                  color: "#fff",
+                                  backgroundColor: "#152B51",
+                                  width: "100px",
+                                  height: "30",
+                                  borderRadius: "6px",
+                                  padding: "6px",
+                                }}
+                                onClick={() =>
+                                  navigate("/staff/staffworktable")
+                                }
+                              >
+                                View All
+                              </span>
+                            </Col>
+                          </Row>
+                        </CardBody>
+                      </Card>
+                    </Col>
+                    <Col
+                      style={{
+                        fontFamily: "Poppins",
+                        color: "#fff",
+                      }}
+                    >
+                      <Card
+                        style={{
+                          cursor: "pointer",
+                          height: "253px",
+                          margin: "auto 20px",
+                          borderRadius: "20px",
+                          boxShadow: "rgba(0, 0, 0, 0.35) 0px 4px 4px 0",
+                          backgroundColor: "#fff",
+                          display: "flex",
+                          flexDirection: "column",
+                          fontWeight: "600",
+                        }}
+                      >
+                        <CardHeader
+                          className="d-flex justify-content-center"
+                          style={{
+                            backgroundColor: "#5A86D5",
+                            borderRadius: "20px 20px 0 0",
+                            fontSize: "20px",
+                          }}
+                        >
+                          Overdue Work Order
+                        </CardHeader>
+                        <CardBody
+                          style={{
+                            flexGrow: 1,
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "space-between",
+                          }}
+                          className="py-5 "
+                        >
+                          <Row>
+                            <Col
+                              lg={12}
+                              className="d-flex justify-content-center "
+                            >
+                              <span
+                                style={{
+                                  width: "auto",
+                                  height: "auto",
+                                  fontWeight: "600",
+                                  fontSize: "24px",
+                                  // padding: "20px",
+                                  color: "#5A86D5",
+                                  // boxShadow: "rgba(0, 0, 0, 0.75) 0 4px 4px 0",
+                                }}
+                              >
+                                Total:{" "}
+                                {overdueWorkOrders?.length
+                                  .toString()
+                                  .padStart(2, "0")}
+                              </span>
+                            </Col>
+                          </Row>
+
+                          <Row>
+                            <Col
+                              lg={12}
+                              className="d-flex justify-content-center mt-3"
+                            >
+                              <span
+                                className="d-flex justify-content-center "
+                                style={{
+                                  fontFamily: "Poppins",
+                                  fontSize: "15px",
+                                  fontWeight: "600",
+                                  color: "#fff",
+                                  backgroundColor: "#5A86D5",
+                                  width: "100px",
+                                  height: "30",
+                                  borderRadius: "6px",
+                                  padding: "6px",
+                                }}
+                                onClick={() =>
+                                  navigate(
+                                    "/staff/staffworktable?status=Over Due"
+                                  )
+                                }
+                              >
+                                View All
+                              </span>
+                            </Col>
+                          </Row>
+                        </CardBody>
+                      </Card>
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
-            </CardBody>
-          </Card>
-        </div>
-        <div>{/* Small Cards */}</div>
+              <Row>
+                <Col className="mt-3" xl="2">
+                  <div
+                    className=""
+                    style={{
+                      textAlign: "center",
+                      marginTop: "20px",
+                      width: "300px",
+                      fontSize: "24px",
+                      fontWeight: 700,
+                      color: "#525459",
+                      fontFamily: "Manrope",
+                    }}
+                  >
+                    {" "}
+                    Analytic
+                  </div>
+                  <div
+                    style={{
+                      textAlign: "center",
+                      marginTop: "20px",
+                      position: "relative",
+                      width: "300px",
+                    }}
+                  >
+                    <Doughnut
+                      data={circularData}
+                      options={options}
+                      width={250}
+                      height={250}
+                    />
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: "bold",
+                          color: "Secondary",
+                        }}
+                      >
+                        Total Work Orders
+                      </span>
+                      <br />
+                      <span
+                        style={{
+                          fontSize: "24px",
+                          fontWeight: "bold",
+                          color: "#030303",
+                        }}
+                      >
+                        {propertycount?.workorder_staffMember
+                          .toString()
+                          .padStart(2, "0")}
+                      </span>
+                    </div>
+                  </div>
+                </Col>
+                <Col
+                  className="mx-5"
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  <Col>
+                    <Row className="mb-5" style={{ marginTop: "60px" }}>
+                      <i
+                        className="fa-solid fa-square mx-2"
+                        style={{ color: "#152B51", fontSize: "20px" }}
+                      ></i>
+                      <span
+                        style={{
+                          color: "#1C1C1E",
+                          fontSize: "16px",
+                          fontFamily: "Poppins",
+                        }}
+                      >
+                        New Work Orders
+                      </span>
+                    </Row>
+                    <Row>
+                      <i
+                        className="fa-solid fa-square mx-2"
+                        style={{ color: "#5A86D5", fontSize: "20px" }}
+                      ></i>
+                      <span
+                        style={{
+                          color: "#1C1C1E",
+                          fontSize: "16px",
+                          fontFamily: "Poppins",
+                        }}
+                      >
+                        Overdue Work Orders
+                      </span>
+                    </Row>
+                  </Col>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        )}
       </Container>
     </>
   );

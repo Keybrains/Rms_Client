@@ -6,7 +6,7 @@ import {
   Navigate,
   useParams,
 } from "react-router-dom";
-import Sidebar from "components/Sidebar/Sidebar copy";
+import Sidebar from "components/Sidebar/Sidebar";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 
 import routes from "routes.js";

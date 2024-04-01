@@ -1,4 +1,6 @@
 import { React, useEffect, useState } from "react";
+import { withStyles } from "@mui/styles";
+
 import {
   TextField,
   FormControl,
@@ -11,13 +13,13 @@ import {
   FormControlLabel,
   Checkbox,
   Grid,
-  Switch,
 } from "@mui/material";
+
 import SuperAdminHeader from "../Headers/SuperAdminHeader";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Button, ToggleButton } from "react-bootstrap";
-
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { ToastContainer, toast } from "react-toastify";
 import {
   Card,
@@ -29,6 +31,7 @@ import {
   Table,
 } from "reactstrap";
 import CheckIcon from "@mui/icons-material/Check";
+import Switch from "@mui/material/Switch";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
@@ -45,7 +48,6 @@ const AddPlanForm = () => {
   const [isApplicantCount, setApplicantCount] = useState(false);
   const [isVendorCount, setVendorCount] = useState(false);
   const [isStaffCount, setStaffCount] = useState(false);
-
   useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
@@ -60,6 +62,20 @@ const AddPlanForm = () => {
       features: "",
     },
   ]);
+
+  const CustomSwitch = withStyles({
+    switchBase: {
+      color: "#ffffff", // Change the color to the desired color when unchecked
+      "&$checked": {
+        color: "#152B51", // Change the color to white when the Switch is checked
+      },
+      "&$checked + $track": {
+        backgroundColor: "#152B51", // Change the track color when the Switch is checked
+      },
+    },
+    checked: {},
+    track: {},
+  })(Switch);
 
   const addInputField = () => {
     setInputFields([
@@ -245,9 +261,9 @@ const AddPlanForm = () => {
   }, [id]);
 
   return (
-    <div>
+    <div style={{ backgroundColor: "#fff" }}>
       <SuperAdminHeader />
-      <Container className="mt--8" fluid>
+      <Container className="mt-5 mx-3" fluid style={{width: "95%"}}>
         <Row>
           <Col xs="12" sm="6">
             <FormGroup className="">
@@ -257,23 +273,52 @@ const AddPlanForm = () => {
           </Col>
           <Col className="text-right">
             <Button
-              className="mb-2"
-              color="primary"
-              size="sm"
+              className="text-capitalize"
+              size="small"
               onClick={() => navigate("/superadmin/plans")}
-              style={{ background: "white", color: "blue" }}
+              style={{
+                backgroundColor: "#152B51",
+                color: "#ffffff",
+                fontFamily: "Poppins",
+                fontWeight: "500",
+                fontSize: "18px",
+                boxShadow: " 0px 4px 4px 0px #00000040 ",
+              }}
             >
               Back
             </Button>
           </Col>
         </Row>
 
+        <CardHeader
+          className=" mt-3 mb-3"
+          style={{
+            backgroundColor: "#152B51",
+            borderRadius: "10px",
+            boxShadow: " 0px 4px 4px 0px #00000040 ",
+          }}
+        >
+          <h3
+            className="mb-0"
+            style={{
+              color: "#ffffff",
+              fontFamily: "Poppins",
+              fontWeight: "500",
+              fontSize: "18px",
+            }}
+          >
+            {!id ? "Add Plan " : "Edit Plan "}
+          </h3>
+        </CardHeader>
         <Row>
           <div className="col">
-            <Card className="shadow">
-              <CardHeader className="border-0">
-                <h3 className="mb-0">{!id ? "Add Plan " : "Edit Plan "}</h3>
-              </CardHeader>
+            <Card
+              className="shadow"
+              style={{
+                border: "1px Solid #324567",
+                boxShadow: " 0px 4px 4px 0px #00000040 ",
+              }}
+            >
               <div className="table-responsive">
                 <div className="m-3">
                   {(id && plan && Object.keys(plan).length > 0) || !id ? (
@@ -331,7 +376,7 @@ const AddPlanForm = () => {
                               type="text"
                               size="small"
                               fullWidth
-                              placeholder="Add Plan *"
+                              placeholder="Enter plan name here...*"
                               label="Plan Name*"
                               name="plan_name"
                               value={values.plan_name}
@@ -339,6 +384,7 @@ const AddPlanForm = () => {
                               onChange={handleChange}
                               error={touched.plan_name && !!errors.plan_name}
                               helperText={touched.plan_name && errors.plan_name}
+                              style={{ color: "#152B51" }}
                             />
                           </div>
                           <div className="mb-3 col-lg-8 col-md-12">
@@ -346,7 +392,7 @@ const AddPlanForm = () => {
                               type="number"
                               size="small"
                               fullWidth
-                              placeholder="Add Price *"
+                              placeholder="Enter cost per billing cycle here...*"
                               label="Cost Per Billing Cycle *"
                               name="plan_price"
                               value={values.plan_price}
@@ -356,18 +402,22 @@ const AddPlanForm = () => {
                               helperText={
                                 touched.plan_price && errors.plan_price
                               }
+                              style={{ color: "#152B51" }}
                             />
                           </div>
                           <div className="mb-3 col-lg-8 col-md-12">
-                            <FormControl fullWidth>
-                              <InputLabel size="small" color="success">
+                            <FormControl fullWidth style={{ color: "#152B51" }}>
+                              <InputLabel
+                                size="small"
+                                style={{ color: "#152B51" }}
+                              >
                                 Plan Billing Interval
                               </InputLabel>
                               <Select
                                 size="small"
                                 label="Select Billing-Interval"
                                 name="billing_interval"
-                                color="success"
+                                // color="success"
                                 value={values.billing_interval}
                                 onBlur={handleBlur}
                                 onChange={handleChange}
@@ -376,23 +426,132 @@ const AddPlanForm = () => {
                                     maxHeight: 250,
                                   },
                                 }}
+                                style={{ color: "#152B51" }}
                               >
-                                <MenuItem value={"1"}>1</MenuItem>
-                                <MenuItem value={"2"}>2</MenuItem>
-                                <MenuItem value={"3 (Quarterly)"}>
+                                <MenuItem
+                                  style={{
+                                    color: "#152B51",
+                                    fontFamily: "Poppins",
+                                    fontSize: "14px",
+                                    fontWeight: "400",
+                                  }}
+                                  value={"1"}
+                                >
+                                  1
+                                </MenuItem>
+                                <MenuItem
+                                  style={{
+                                    color: "#152B51",
+                                    fontFamily: "Poppins",
+                                    fontSize: "14px",
+                                    fontWeight: "400",
+                                  }}
+                                  value={"2"}
+                                >
+                                  2
+                                </MenuItem>
+                                <MenuItem
+                                  style={{
+                                    color: "#152B51",
+                                    fontFamily: "Poppins",
+                                    fontSize: "14px",
+                                    fontWeight: "400",
+                                  }}
+                                  value={"3 (Quarterly)"}
+                                >
                                   3 (Quarterly)
                                 </MenuItem>
-                                <MenuItem value={"4"}>4</MenuItem>
-                                <MenuItem value={"5"}>5</MenuItem>
-                                <MenuItem value={"6 (Bi-Annually)"}>
+                                <MenuItem
+                                  style={{
+                                    color: "#152B51",
+                                    fontFamily: "Poppins",
+                                    fontSize: "14px",
+                                    fontWeight: "400",
+                                  }}
+                                  value={"4"}
+                                >
+                                  4
+                                </MenuItem>
+                                <MenuItem
+                                  style={{
+                                    color: "#152B51",
+                                    fontFamily: "Poppins",
+                                    fontSize: "14px",
+                                    fontWeight: "400",
+                                  }}
+                                  value={"5"}
+                                >
+                                  5
+                                </MenuItem>
+                                <MenuItem
+                                  style={{
+                                    color: "#152B51",
+                                    fontFamily: "Poppins",
+                                    fontSize: "14px",
+                                    fontWeight: "400",
+                                  }}
+                                  value={"6 (Bi-Annually)"}
+                                >
                                   6 (Bi-Annually)
                                 </MenuItem>
-                                <MenuItem value={"7"}>7</MenuItem>
-                                <MenuItem value={"8"}>8</MenuItem>
-                                <MenuItem value={"9"}>9</MenuItem>
-                                <MenuItem value={"10"}>10</MenuItem>
-                                <MenuItem value={"11"}>11</MenuItem>
-                                <MenuItem value={"12 (Annually)"}>
+                                <MenuItem
+                                  style={{
+                                    fontFamily: "Poppins",
+                                    fontSize: "14px",
+                                    fontWeight: "400",
+                                  }}
+                                  value={"7"}
+                                >
+                                  7
+                                </MenuItem>
+                                <MenuItem
+                                  style={{
+                                    fontFamily: "Poppins",
+                                    fontSize: "14px",
+                                    fontWeight: "400",
+                                  }}
+                                  value={"8"}
+                                >
+                                  8
+                                </MenuItem>
+                                <MenuItem
+                                  style={{
+                                    fontFamily: "Poppins",
+                                    fontSize: "14px",
+                                    fontWeight: "400",
+                                  }}
+                                  value={"9"}
+                                >
+                                  9
+                                </MenuItem>
+                                <MenuItem
+                                  style={{
+                                    fontFamily: "Poppins",
+                                    fontSize: "14px",
+                                    fontWeight: "400",
+                                  }}
+                                  value={"10"}
+                                >
+                                  10
+                                </MenuItem>
+                                <MenuItem
+                                  style={{
+                                    fontFamily: "Poppins",
+                                    fontSize: "14px",
+                                    fontWeight: "400",
+                                  }}
+                                  value={"11"}
+                                >
+                                  11
+                                </MenuItem>
+                                <MenuItem
+                                  style={{
+                                    fontFamily: "Poppins",
+                                    fontSize: "14px",
+                                    fontWeight: "400",
+                                  }}
+                                  value={"12 (Annually)"}
+                                >
                                   12 (Annually)
                                 </MenuItem>
                               </Select>
@@ -437,7 +596,6 @@ const AddPlanForm = () => {
                                   fullWidth
                                   label="Charge on Day of Month *"
                                   name="day_of_month"
-                                  color="success"
                                   value={values.day_of_month}
                                   onBlur={handleBlur}
                                   onChange={handleChange}
@@ -446,6 +604,7 @@ const AddPlanForm = () => {
                                       maxHeight: 250,
                                     },
                                   }}
+                                  style={{ color: "#152B51" }}
                                 >
                                   {[...Array(28).keys()].map((day) => (
                                     <MenuItem key={day + 1} value={day + 1}>
@@ -460,7 +619,7 @@ const AddPlanForm = () => {
                             <div className="mb-3 col-lg-4 col-md-6 d-flex">
                               <div style={{ width: "170px" }}>
                                 <FormLabel component={"legend"}>
-                                  <Switch
+                                  <CustomSwitch
                                     checked={values.isPropertyCount}
                                     onChange={(e) => {
                                       onChangePropertyToggle(e);
@@ -505,7 +664,7 @@ const AddPlanForm = () => {
                             <div className="mb-3 col-lg-4 col-md-6 d-flex">
                               <div style={{ width: "170px" }}>
                                 <FormLabel component={"legend"}>
-                                  <Switch
+                                  <CustomSwitch
                                     checked={values.isTenantCount}
                                     onChange={(e) => {
                                       onChangeTenantToggle(e);
@@ -553,7 +712,7 @@ const AddPlanForm = () => {
                             <div className="mb-3 col-lg-4 col-md-6 d-flex">
                               <div style={{ width: "170px" }}>
                                 <FormLabel component={"legend"}>
-                                  <Switch
+                                  <CustomSwitch
                                     checked={values.isLeaseCount}
                                     onChange={(e) => {
                                       onChangeLeaseToggle(e);
@@ -600,7 +759,7 @@ const AddPlanForm = () => {
                             <div className="mb-3 col-lg-4 col-md-6 d-flex">
                               <div style={{ width: "170px" }}>
                                 <FormLabel component={"legend"}>
-                                  <Switch
+                                  <CustomSwitch
                                     checked={values.isRentalOwnerCount}
                                     onChange={(e) => {
                                       onChangeRentalOwnerToggle(e);
@@ -649,7 +808,7 @@ const AddPlanForm = () => {
                             <div className="mb-3 col-lg-4 col-md-6 d-flex">
                               <div style={{ width: "170px" }}>
                                 <FormLabel component={"legend"}>
-                                  <Switch
+                                  <CustomSwitch
                                     checked={values.isApplicantCount}
                                     onChange={(e) => {
                                       onChangeApplicantToggle(e);
@@ -694,7 +853,7 @@ const AddPlanForm = () => {
                             <div className="mb-3 col-lg-4 col-md-6 d-flex">
                               <div style={{ width: "170px" }}>
                                 <FormLabel component={"legend"}>
-                                  <Switch
+                                  <CustomSwitch
                                     checked={values.isStaffCount}
                                     onChange={(e) => {
                                       onChangeStaffToggle(e);
@@ -742,7 +901,7 @@ const AddPlanForm = () => {
                             <div className="mb-3 col-lg-4 col-md-6 d-flex">
                               <div style={{ width: "170px" }}>
                                 <FormLabel component={"legend"}>
-                                  <Switch
+                                  <CustomSwitch
                                     checked={values.isVendorCount}
                                     onChange={(e) => {
                                       onChangeVendorToggle(e);
@@ -786,7 +945,7 @@ const AddPlanForm = () => {
                             </div>
                             <div className="mb-3 col-lg-4 col-md-6 d-flex">
                               <FormLabel component={"legend"}>
-                                <Switch
+                                <CustomSwitch
                                   name="payment_functionality"
                                   value={values.payment_functionality}
                                   checked={values.payment_functionality}
@@ -799,7 +958,15 @@ const AddPlanForm = () => {
                           </div>
 
                           <div className="mb-3 col-8">
-                            <FormLabel component="legend">
+                            <FormLabel
+                              component="legend"
+                              style={{
+                                fontFamily: "Poppins",
+                                fontWeight: "500",
+                                fontSize: "14px",
+                                color: "#152B51",
+                              }}
+                            >
                               Add Features:
                             </FormLabel>
 
@@ -819,7 +986,7 @@ const AddPlanForm = () => {
                                         value={features}
                                         name="features"
                                         className="form-control"
-                                        placeholder="Features"
+                                        placeholder="Enter features here..."
                                       />
                                     </div>
                                   </div>
@@ -842,8 +1009,18 @@ const AddPlanForm = () => {
                             <div className="row">
                               <div className="col-sm-12">
                                 <div
-                                  className="btn btn-outline-primary"
-                                  sm
+                                  className="btn"
+                                  style={{
+                                    color: "#152B51",
+                                    border: "1px solid #152B51",
+                                    borderRadius: "6px",
+                                    fontFamily: "Poppins",
+                                    fontWeight: "400",
+                                    fontSize: "14px",
+                                    padding: "6px 12px",
+                                    lineHeight: "1.5",
+                                    backgroundColor: "transparent",
+                                  }}
                                   onClick={() => addInputField()}
                                 >
                                   Add New
@@ -855,8 +1032,14 @@ const AddPlanForm = () => {
                             <Button
                               className="mt-3"
                               type="submit"
-                              variant="success"
                               disabled={loader}
+                              style={{
+                                backgroundColor: "#152B51",
+                                color: "#fff",
+                                fontFamily: "Poppins",
+                                fontSize: "14px",
+                                fontWeight: "400",
+                              }}
                             >
                               {loader
                                 ? "Loading..."
@@ -869,6 +1052,12 @@ const AddPlanForm = () => {
                               type=""
                               variant=""
                               onClick={() => navigate("/superadmin/plans")}
+                              style={{
+                                color: "#152B51",
+                                fontFamily: "Poppins",
+                                fontSize: "14px",
+                                fontWeight: "400",
+                              }}
                             >
                               Cancel
                             </Button>

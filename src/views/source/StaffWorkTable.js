@@ -37,10 +37,6 @@ const StaffWorkTable = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loader, setLoader] = useState(false);
   const [staffmember_name, setStaffMember] = useState("");
-  const [staffDetails, setStaffDetails] = useState({});
-  //console.log("staffname", staffmember_name);
-  //console.log(staffDetails);
-  //ecte.log("workData", workData);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [pageItem, setPageItem] = React.useState(10);
@@ -62,32 +58,6 @@ const StaffWorkTable = () => {
       navigate("/auth/login");
     }
   }, [navigate]);
-
-  let cookie_id = localStorage.getItem("Staff ID");
-
-  // const getWorkData = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       `${baseUrl}/addstaffmember/staffmember_summary/${cookie_id}`
-  //     );
-  //     if (response.data && response.data.data) {
-  //       console.log(response.data.data,"sonani");
-  //       setStaffDetails(response.data.data);
-
-  //       setStaffMember(response.data.data.staffmember_name);
-  //       setTotalPages(Math.ceil(response.data.data.length / pageItem)||1);
-  //     } else {
-  //       console.error("Invalid or missing data in API response.");
-  //     }
-  //     setLoader(false);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getWorkData();
-  // }, [pageItem]);
 
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
@@ -128,24 +98,6 @@ const StaffWorkTable = () => {
     navigate(`/staff/staffworkdetails/${workorder_id}`);
     console.log(workorder_id, "id is -===0");
   };
-
-  // const filterRentalsBySearch = () => {
-  //   if (!searchQuery) {
-  //     return workData;
-  //   }
-
-  //   return workData.filter((rental) => {
-  //     const lowerCaseQuery = searchQuery.toLowerCase();
-  //     return (
-  //       rental.work_subject.toLowerCase().includes(lowerCaseQuery) ||
-  //       rental.work_category.toLowerCase().includes(lowerCaseQuery) ||
-  //       rental.status.toLowerCase().includes(lowerCaseQuery) ||
-  //       rental.rental_adress.toLowerCase().includes(lowerCaseQuery)||
-  //       rental.staffmember_name.toLowerCase().includes(lowerCaseQuery)||
-  //       rental.priority.toLowerCase().includes(lowerCaseQuery)
-  //     );
-  //   });
-  // };
 
   const filterRentalsBySearch = () => {
     if (searchQuery2 && !searchQuery) {
@@ -199,49 +151,67 @@ const StaffWorkTable = () => {
   return (
     <>
       <StaffHeader />
-      <Container className="mt--8" fluid>
+      <Container fluid className="bg-white h-100">
         <Row>
-          <Col xs="12" sm="6">
-            <FormGroup>
-              <h1 style={{ color: "white" }}>Work Orders</h1>
-            </FormGroup>
-          </Col>
-        </Row>
-        <br />
-        <Row>
-          <div className="col">
-            <Card className="shadow">
+          <Col xs="12">
+            <CardHeader
+              className=" mt-3 mb-3 mx-4"
+              style={{
+                backgroundColor: "#152B51",
+                borderRadius: "10px",
+                boxShadow: " 0px 4px 4px 0px #00000040 ",
+              }}
+            >
+              <h2
+                className="mb-0"
+                style={{
+                  color: "#ffffff",
+                  fontFamily: "Poppins",
+                  fontWeight: "500",
+                  fontSize: "26px",
+                }}
+              >
+                 Work Orders
+              </h2>
+            </CardHeader>
+            <Row
+              className="mx-2 mt-4 d-flex align-items-center py-1"
+              style={{ borderRadius: "10px", height: "69px" }}
+            >
               <CardHeader className="border-0">
                 <Row>
-                  <Col
-                    xs="12"
-                    sm="6"
-                    className="d-flex"
-                    style={{ gap: "10px" }}
-                  >
+                  <Col xs="12" sm="6" className="d-flex">
                     <FormGroup>
                       <Input
                         fullWidth
                         type="text"
-                        placeholder="Search"
+                        placeholder="Search here..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         style={{
                           width: "100%",
                           maxWidth: "200px",
+                          boxShadow: " 0px 4px 4px 0px #00000040",
                           minWidth: "200px",
                         }}
                       />
                     </FormGroup>
+                    <Dropdown
+                      isOpen={search}
+                      toggle={toggle3}
 
-                    <Dropdown isOpen={search} toggle={toggle3}>
+                      className="mx-2"
+
+                    >
                       <DropdownToggle
                         caret
                         style={{
-                          boxShadow: "none",
+                          boxShadow: " 0px 4px 4px 0px #00000040",
                           border: "1px solid #ced4da",
                           maxWidth: "200px",
                           minWidth: "200px",
+                          backgroundColor: "transparent",
+                          color: "#A7A7A7"
                         }}
                       >
                         {searchQuery2
@@ -304,157 +274,86 @@ const StaffWorkTable = () => {
                   </Col>
                 </Row>
               </CardHeader>
-              <Table className="align-items-center table-flush" responsive>
-                {loader ? (
-                  <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
-                    <RotatingLines
-                      strokeColor="grey"
-                      strokeWidth="5"
-                      animationDuration="0.75"
-                      width="50"
-                      visible={loader}
-                    />
-                  </div>
-                ) : workData.length === 0 ? (
-                  <>
-                    <tbody>
-                      <tr className="text-center">
-                        <td colSpan="8" style={{ fontSize: "15px" }}>
-                          No Work Order Added
-                        </td>
-                      </tr>
-                    </tbody>
-                  </>
-                ) : (
-                  <>
-                    <thead className="thead-light">
-                      <tr>
-                        <th scope="col">Work Order</th>
-                        <th scope="col">Property</th>
-                        <th scope="col">Category</th>
-                        <th scope="col">priority</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Created At</th>
-                        <th scope="col">Updated At</th>
-                        <th scope="col">Due Date</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filterTenantsBySearchAndPage().map((vendor) => (
-                        <tr
-                          key={vendor?.workOrder_id}
-                          onClick={() =>
-                            navigateToDetails(vendor?.workOrder_id)
-                          }
-                          style={{ cursor: "pointer" }}
-                        >
-                          <td>{vendor?.work_subject}</td>
-                          <td>
-                            {vendor?.rental_data?.rental_adress}-
-                            {vendor?.unit_data?.rental_unit}{" "}
-                            {vendor?.unit_data?.rental_unit
-                              ? " - " + vendor?.unit_data?.rental_unit
-                              : null}
-                          </td>
-                          <td>{vendor?.work_category}</td>
-                          <td>{vendor?.priority}</td>
-                          <td>{vendor?.status}</td>
-                          <td>{vendor?.createdAt}</td>
-                          <td>{vendor?.updateAt || "-"}</td>
-                          <td>{vendor?.date || "-"}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </>
-                )}
-              </Table>
-              {paginatedData.length > 0 ? (
-                <Row>
-                  <Col className="text-right m-3">
-                    <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
-                      <DropdownToggle caret>{pageItem}</DropdownToggle>
-                      <DropdownMenu>
-                        <DropdownItem
-                          onClick={() => {
-                            setPageItem(10);
-                            setCurrentPage(1);
-                          }}
-                        >
-                          10
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() => {
-                            setPageItem(25);
-                            setCurrentPage(1);
-                          }}
-                        >
-                          25
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() => {
-                            setPageItem(50);
-                            setCurrentPage(1);
-                          }}
-                        >
-                          50
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() => {
-                            setPageItem(100);
-                            setCurrentPage(1);
-                          }}
-                        >
-                          100
-                        </DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                    <Button
-                      className="p-0"
-                      style={{ backgroundColor: "#d0d0d0" }}
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        fill="currentColor"
-                        className="bi bi-caret-left"
-                        viewBox="0 0 16 16"
+            </Row>
+            
+            <Row
+              className="mx-3 mt-3 d-flex align-items-center py-1"
+              style={{ borderRadius: "10px", height: "69px" }}
+            >
+              <Col>
+                <Row
+                  className="mx-1 d-flex align-items-center"
+                  style={{
+                    border: "2px solid rgba(50, 69, 103, 1)",
+                    borderTopLeftRadius: "12px",
+                    borderTopRightRadius: "12px",
+                    height: "45px",
+                    fontFamily: "poppins",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    boxShadow: " 0px 4px 4px 0px #00000040",
+
+                  }}
+                >
+                  <Col>Work Order</Col>
+                  <Col>Property</Col>
+                  <Col>Category</Col>
+                  <Col>Priority</Col>
+                  <Col>Status</Col>
+                  <Col>Created At</Col>
+                  <Col>Updated At</Col>
+                  <Col>Due Date</Col>
+                </Row>
+                <Row
+                  className="mx-1 mt-3"
+                  style={{
+                    border: "0.5px solid rgba(50, 69, 103, 1)",
+                    borderBottomLeftRadius: "12px",
+                    borderBottomRightRadius: "12px",
+                    overflow: "hidden",
+                    fontSize: "16px",
+                    fontWeight: "600",
+                    lineHeight: "19.12px",
+                  }}
+                >
+                  <Col>
+                    {filterTenantsBySearchAndPage().map((vendor) => (
+                      <Row
+                        key={vendor?.workOrder_id}
+                        className="d-flex align-items-center"
+                        onClick={() => navigateToDetails(vendor?.workOrder_id)}
+                        style={{
+                          cursor: "pointer",
+                          border: "0.5px solid rgba(50, 69, 103, 1)",
+                          fontSize: "12px",
+                          height: "40px",
+                          fontFamily: "poppins",
+                          fontWeight: "600",
+                          lineHeight: "10.93px",
+                        }}
                       >
-                        <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
-                      </svg>
-                    </Button>
-                    <span>
-                      Page {currentPage} of {totalPages}
-                    </span>{" "}
-                    <Button
-                      className="p-0"
-                      style={{ backgroundColor: "#d0d0d0" }}
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        fill="currentColor"
-                        className="bi bi-caret-right"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
-                      </svg>
-                    </Button>{" "}
+                        <Col>{vendor?.work_subject}</Col>
+                        <Col>
+                          {vendor?.rental_data?.rental_adress}-
+                          {vendor?.unit_data?.rental_unit}{" "}
+                          {vendor?.unit_data?.rental_unit
+                            ? " - " + vendor?.unit_data?.rental_unit
+                            : null}
+                        </Col>
+                        <Col>{vendor?.work_category}</Col>
+                        <Col>{vendor?.priority}</Col>
+                        <Col>{vendor?.status}</Col>
+                        <Col>{vendor?.createdAt}</Col>
+                        <Col>{vendor?.updatedAt || "-"}</Col>
+                        <Col>{vendor?.date || "-"}</Col>
+                      </Row>
+                    ))}
                   </Col>
                 </Row>
-              ) : (
-                <></>
-              )}
-            </Card>
-          </div>
+              </Col>
+            </Row>
+          </Col>
         </Row>
-        <br />
-        <br />
       </Container>
     </>
   );
