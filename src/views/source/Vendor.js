@@ -27,6 +27,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import Cookies from "universal-cookie";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import deleicon from "../../assets/img/icons/common/delete.svg";
+import editicon from "../../assets/img/icons/common/editicon.svg";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+
 
 const Vendor = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -258,13 +263,9 @@ const Vendor = () => {
   return (
     <>
       <Header />
-      <Container className="mt--8" fluid>
+      <Container className="" fluid style={{ marginTop: "3rem", height: "100vh" }}>
+
         <Row>
-          <Col xs="12" sm="6">
-            <FormGroup className="">
-              <h1 style={{ color: "white" }}>Vendor</h1>
-            </FormGroup>
-          </Col>
 
           <Col className="text-right">
             {/* <Button
@@ -277,7 +278,7 @@ const Vendor = () => {
               Add Vendor
             </Button> */}
             <Button
-              color="primary"
+              // color="primary"
               onClick={() => {
                 if (countRes.statusCode === 201) {
                   swal(
@@ -289,11 +290,36 @@ const Vendor = () => {
                   navigate("/" + admin + "/addvendor");
                 }
               }}
-              size="sm"
-              style={{ background: "white", color: "blue" }}
+              size="small"
+              style={{ background: "#152B51", color: "#fff" }}
+
             >
               Add Vendor
             </Button>
+          </Col>
+
+          <Col xs="12" lg="12" sm="6">
+           
+            <CardHeader
+              className=" mt-3 "
+              style={{
+                backgroundColor: "#152B51",
+                borderRadius: "10px",
+                boxShadow: " 0px 4px 4px 0px #00000040 ",
+              }}
+            >
+              <h2
+                className=""
+                style={{
+                  color: "#ffffff",
+                  fontFamily: "Poppins",
+                  fontWeight: "500",
+                  fontSize: "26px",
+                }}
+              >
+                Vendor
+              </h2>
+            </CardHeader>
           </Col>
         </Row>
         <br />
@@ -311,100 +337,118 @@ const Vendor = () => {
                 />
               </div>
             ) : (
-              <Card className="shadow">
-                <CardHeader className="border-0">
-                  <Row>
-                    <Col xs="12" sm="6">
-                      <FormGroup className="">
-                        <Input
-                          fullWidth
-                          type="text"
-                          placeholder="Search"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          style={{
-                            width: "100%",
-                            maxWidth: "200px",
-                            minWidth: "200px",
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col className="d-flex justify-content-end">
-                      <FormGroup>
-                        <p>
-                          Added :{" "}
-                          <b style={{ color: "blue", fontWeight: 1000 }}>
-                            {countRes.vendorCount}
-                          </b>{" "}
-                          {" / "}
-                          Total :{" "}
-                          <b style={{ color: "blue", fontWeight: 1000 }}>
-                            {countRes.vendorCountLimit}
-                          </b>
-                        </p>
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                </CardHeader>
-                <Table className="align-items-center table-flush" responsive>
-                  <thead className="thead-light">
-                    <tr>
-                      <th scope="col">
+              <>
+                {/* <Card className="shadow"> */}
+                {/* <CardHeader className="border-0"> */}
+                <Row className="mb-3">
+                  <Col xs="12" sm="6">
+                    <FormGroup className="">
+                      <Input
+                        fullWidth
+                        type="text"
+                        placeholder="Search here..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        style={{
+                          width: "100%",
+                          maxWidth: "200px",
+                          minWidth: "200px",
+                          boxShadow: " 0px 4px 4px 0px #00000040",
+                          border: "1px solid #ced4da",
+                        }}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col className="d-flex justify-content-end">
+                    <FormGroup>
+                      <p style={{ fontFamily: "Poppins", fontSize: "18px", fontWeight: "500" }}>
+
+                        Added :{" "}
+                        <b style={{ color: "#152B51", fontWeight: 1000 }}>
+
+                          {countRes.vendorCount}
+                        </b>{" "}
+                        {" / "}
+                        Total :{" "}
+                        <b style={{ color: "#152B51", fontWeight: 1000 }}>
+
+                          {countRes.vendorCountLimit}
+                        </b>
+                      </p>
+                    </FormGroup>
+                  </Col>
+                </Row>
+                {/* </CardHeader> */}
+                <Table className="align-items-center table-flush" responsive style={{ borderCollapse: "collapse" }}>
+                  <thead className="" style={{
+                    height: "45px",
+                    fontSize: "14px",
+                    fontFamily: "poppins",
+                    fontWeight: "600",
+                    boxShadow: " 0px 4px 4px 0px #00000040",
+                  }}>
+                    <tr style={{
+                      border: "2px solid rgba(50, 69, 103, 1)",
+                    }}>
+                      <th scope="col" style={{
+                        borderTopLeftRadius: "15px",
+
+                        color: "#152B51"
+                      }}>
                         Name
                         {sortBy.includes("vendor_name") ? (
                           upArrow.includes("vendor_name") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("vendor_name")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("vendor_name")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("vendor_name")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Phone Number
                         {sortBy.includes("vendor_phoneNumber") ? (
                           upArrow.includes("vendor_phoneNumber") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("vendor_phoneNumber")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("vendor_phoneNumber")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("vendor_phoneNumber")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Mail ID
                         {sortBy.includes("vendor_email") ? (
                           upArrow.includes("vendor_email") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("vendor_email")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("vendor_email")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("vendor_email")}
                           />
                         )}
                       </th>
-                      <th scope="col">ACTION</th>
+                      <th scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>ACTION</th>
                     </tr>
                   </thead>
                   {vendorData?.length === 0 ? (
@@ -415,25 +459,40 @@ const Vendor = () => {
                     </tbody>
                   ) : (
                     <tbody>
+                      <tr style={{
+                        border: "none",
+                      }}>
+                        {/* Empty row */}
+                        <td colSpan="9"></td>
+                      </tr>
                       {filterTenantsBySearchAndPage()?.map((vendor) => (
-                        <tr key={vendor.vendor_id}>
-                          <td>{vendor.vendor_name}</td>
-                          <td>{vendor.vendor_phoneNumber}</td>
-                          <td>{vendor.vendor_email}</td>
-                          <td>
+                        <tr key={vendor.vendor_id} style={{
+                          border: "0.5px solid rgba(50, 69, 103, 1)",
+                          fontSize: "12px",
+                          height: "40px",
+                          fontFamily: "poppins",
+                          fontWeight: "600",
+                          lineHeight: "10.93px",
+                        }}>
+                          <td className="bordertopintd">{vendor.vendor_name}</td>
+                          <td className="bordertopintd">{vendor.vendor_phoneNumber}</td>
+                          <td className="bordertopintd">{vendor.vendor_email}</td>
+                          <td className="bordertopintd">
                             <div style={{ display: "flex", gap: "5px" }}>
                               <div
                                 style={{ cursor: "pointer" }}
                                 onClick={() => deleteVendor(vendor.vendor_id)}
                               >
-                                <DeleteIcon />
+                                <img src={deleicon} width={20} height={20} />
+
                               </div>
                               &nbsp; &nbsp;
                               <div
                                 style={{ cursor: "pointer" }}
                                 onClick={() => editVendor(vendor.vendor_id)}
                               >
-                                <EditIcon />
+                                <img src={editicon} width={20} height={20} />
+
                               </div>
                             </div>
                           </td>
@@ -524,7 +583,8 @@ const Vendor = () => {
                 ) : (
                   <></>
                 )}
-              </Card>
+                {/* </Card> */}
+              </>
             )}
           </div>
         </Row>

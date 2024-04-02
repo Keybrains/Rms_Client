@@ -206,7 +206,7 @@ const RentalownerTable = () => {
             </Button> */}
             <Button
               // color="primary"
-              className="mr-4"
+              // className="mr-4"
 
               onClick={() => {
                 if (countRes.statusCode === 201) {
@@ -233,7 +233,7 @@ const RentalownerTable = () => {
               <h1 style={{ color: "white" }}>Property Type</h1>
             </FormGroup> */}
             <CardHeader
-              className=" mt-3 mx-4"
+              className=" mt-3 "
               style={{
                 backgroundColor: "#152B51",
                 borderRadius: "10px",
@@ -271,8 +271,8 @@ const RentalownerTable = () => {
             ) : (
               <>
               {/* <Card className="shadow"> */}
-                <CardHeader className="border-0">
-                  <Row>
+                {/* <CardHeader className="border-0"> */}
+                  <Row className="mb-3"> 
                     <Col xs="12" sm="6">
                       <FormGroup className="">
                         <Input
@@ -310,15 +310,27 @@ const RentalownerTable = () => {
                       </FormGroup>
                     </Col>
                   </Row>
-                </CardHeader>
-                {/* <Table className="align-items-center table-flush" responsive>
-                  <thead className="thead-light">
-                    <tr>
-                      <th scope="col">First Name</th>
-                      <th scope="col">Last Name</th>
-                      <th scope="col">Phone</th>
-                      <th scope="col">Email</th>
-                      <th scope="col">Action</th>
+                {/* </CardHeader> */}
+                <Table className="align-items-center table-flush" responsive style={{ borderCollapse: "collapse" }}>
+                  <thead className="" style={{
+                    height: "45px",
+                    fontSize: "14px",
+                    fontFamily: "poppins",
+                    fontWeight: "600",
+                    boxShadow: " 0px 4px 4px 0px #00000040",
+                  }}>
+                    <tr style={{
+                      border: "2px solid rgba(50, 69, 103, 1)",
+                    }}>
+                      <th scope="col" style={{
+                        borderTopLeftRadius: "15px",
+
+                        color: "#152B51"
+                      }}>First Name</th>
+                      <th scope="col" style={{ color: "#152B51" }}>Last Name</th>
+                      <th scope="col" style={{ color: "#152B51" }}>Phone</th>
+                      <th scope="col" style={{ color: "#152B51" }}>Email</th>
+                      <th scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>Action</th>
                     </tr>
                   </thead>
                   {rentalsData.length === 0 ?(
@@ -331,6 +343,12 @@ const RentalownerTable = () => {
                     </tbody>
                   ) : (
                     <tbody>
+                       <tr style={{
+                        border: "none",
+                      }}>
+                        {/* Empty row */}
+                        <td colSpan="9"></td>
+                      </tr>
                       {filterRentalOwnersBySearch()?.map((rentalOwner) => (
                         <tr
                           key={rentalOwner.rentalowner_id}
@@ -339,14 +357,21 @@ const RentalownerTable = () => {
                               rentalOwner.rentalowner_id
                             )
                           }
-                          style={{ cursor: "pointer" }}
+                          style={{
+                            border: "0.5px solid rgba(50, 69, 103, 1)",
+                            fontSize: "12px",
+                            height: "40px",
+                            fontFamily: "poppins",
+                            fontWeight: "600",
+                            lineHeight: "10.93px",
+                          }}
                         >
-                          <td>{rentalOwner.rentalOwner_firstName}</td>
-                          <td>{rentalOwner.rentalOwner_lastName}</td>
+                          <td className="bordertopintd">{rentalOwner.rentalOwner_firstName}</td>
+                          <td className="bordertopintd">{rentalOwner.rentalOwner_lastName}</td>
                          
-                          <td>{rentalOwner.rentalOwner_phoneNumber}</td>
-                          <td>{rentalOwner.rentalOwner_primaryEmail}</td>
-                          <td style={{}}>
+                          <td className="bordertopintd">{rentalOwner.rentalOwner_phoneNumber}</td>
+                          <td className="bordertopintd">{rentalOwner.rentalOwner_primaryEmail}</td>
+                          <td className="bordertopintd" style={{}}>
                             <div style={{ display: "flex", gap: "5px" }}>
                               <div
                                 style={{ cursor: "pointer" }}
@@ -355,7 +380,7 @@ const RentalownerTable = () => {
                                   deleteTenant(rentalOwner.rentalowner_id);
                                 }}
                               >
-                                <DeleteIcon />
+                               <img src={deleicon} width={20} height={20} />
                               </div>
                               &nbsp; &nbsp; &nbsp;
                               <div
@@ -365,7 +390,7 @@ const RentalownerTable = () => {
                                   editRentalOwner(rentalOwner.rentalowner_id);
                                 }}
                               >
-                                <EditIcon />
+                                <img src={editicon} width={20} height={20} />
                               </div>
                             </div>
                           </td>
@@ -374,8 +399,8 @@ const RentalownerTable = () => {
                     </tbody>
                   )}
 
-                </Table> */}
-                 <Row
+                </Table>
+                 {/* <Row
                   className="mx-4 mt-3 d-flex align-items-center py-1"
                   style={{ borderRadius: "10px", height: "auto" }}
                 >
@@ -502,7 +527,7 @@ const RentalownerTable = () => {
                       </Row>
                     )}
                   </Col>
-                </Row>
+                </Row> */}
               {/* </Card> */}
               </>
             )}

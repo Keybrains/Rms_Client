@@ -755,7 +755,7 @@ const TAddWork = () => {
                                   ) : (
                                     <p>No data available</p>
                                   )} */}
-                                  {console.log(propertyData, "yash")}
+
                                   {propertyData.map((property, index) => (
                                     <DropdownItem
                                       key={index}
@@ -791,6 +791,13 @@ const TAddWork = () => {
                                 <label
                                   className="form-control-label"
                                   htmlFor="input-unit"
+                                  style={{
+                                    // marginBottom: "10px",
+                                    fontWeight: "500",
+                                    fontFamily: "Poppins",
+                                    fontSize: "16px",
+                                    color: "#8A95A8",
+                                  }}
                                 >
                                   Unit *
                                 </label>
@@ -801,7 +808,13 @@ const TAddWork = () => {
                                     isOpen={unitDropdownOpen}
                                     toggle={toggle11}
                                   >
-                                    <DropdownToggle caret>
+                                    <DropdownToggle caret style={{
+                                      width: "100%", boxShadow: " 0px 4px 4px 0px #00000040",
+                                      border: "1px solid #ced4da",
+
+                                      backgroundColor: "transparent",
+                                      color: "#A7A7A7"
+                                    }}>
                                       {selectedUnit
                                         ? selectedUnit
                                         : "Select Unit"}
@@ -939,6 +952,11 @@ const TAddWork = () => {
                             <br />
                             <br />
                             <Input
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width:"60%",
+                            }}
                               className="form-control-alternative"
                               id="input-work-subject"
                               placeholder="Enter Other Category"
@@ -1137,7 +1155,7 @@ const TAddWork = () => {
                       <button
                         type="submit"
                         className="btn btn-primary"
-                        style={{ backgroundColor: "#152B51", cursor: "pointer" }}
+                        style={{ backgroundColor: "#152B51", color:"white",cursor: "pointer" }}
                         onSubmit={(e) => {
                           e.preventDefault();
                           editworkorder(vid);
@@ -1153,7 +1171,7 @@ const TAddWork = () => {
                           e.preventDefault();
                           handleSubmit(WorkFormik.values);
                         }}
-                        style={{ backgroundColor: "#152B51" }}
+                        style={{ backgroundColor: "#152B51",color:"white" }}
                       >
                         Add Work Order
                       </button>

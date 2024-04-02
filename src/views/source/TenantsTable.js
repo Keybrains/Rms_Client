@@ -33,6 +33,11 @@ import "jspdf-autotable";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import { useState } from "react";
+import deleicon from "../../assets/img/icons/common/delete.svg";
+import editicon from "../../assets/img/icons/common/editicon.svg";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+
 
 const TenantsTable = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -348,17 +353,15 @@ const TenantsTable = () => {
   return (
     <>
       <Header />
-      <Container className="mt--8" fluid>
+      {/* <Container className="mt--8" fluid> */}
+      <Container className="" fluid style={{ marginTop: "3rem", height: "100vh" }}>
+
         <Row>
-          <Col xs="12" sm="6">
-            <FormGroup className="">
-              <h1 style={{ color: "white" }}>Tenants</h1>
-            </FormGroup>
-          </Col>
 
           <Col className="text-right">
             <Button
-              color="primary"
+              // color="primary"
+              // className="mr-4"
               onClick={() => {
                 if (countRes.statusCode === 201) {
                   swal(
@@ -370,11 +373,37 @@ const TenantsTable = () => {
                   navigate("/" + admin + "/Leaseing");
                 }
               }}
-              size="sm"
-              style={{ background: "white", color: "blue" }}
+              size="small"
+              style={{ background: "#152B51", color: "#fff" }}
+
             >
               Add New Tenant
             </Button>
+          </Col>
+          <Col xs="12" lg="12" sm="6">
+            {/* <FormGroup className="">
+              <h1 style={{ color: "white" }}>Tenants</h1>
+            </FormGroup> */}
+            <CardHeader
+              className=" mt-3 "
+              style={{
+                backgroundColor: "#152B51",
+                borderRadius: "10px",
+                boxShadow: " 0px 4px 4px 0px #00000040 ",
+              }}
+            >
+              <h2
+                className=""
+                style={{
+                  color: "#ffffff",
+                  fontFamily: "Poppins",
+                  fontWeight: "500",
+                  fontSize: "26px",
+                }}
+              >
+                Tenants
+              </h2>
+            </CardHeader>
           </Col>
         </Row>
         <br />
@@ -391,139 +420,157 @@ const TenantsTable = () => {
                 />
               </div>
             ) : (
-              <Card className="shadow">
-                <CardHeader className="border-0">
-                  <Row>
-                    <Col xs="12" sm="6">
-                      <FormGroup className="">
-                        <Input
-                          fullWidth
-                          type="text"
-                          placeholder="Search"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          style={{
-                            width: "100%",
-                            maxWidth: "200px",
-                            minWidth: "200px",
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col className="d-flex justify-content-end">
-                      <FormGroup>
-                        <p>
-                          Added :{" "}
-                          <b style={{ color: "blue", fontWeight: 1000 }}>
-                            {countRes.rentalCount}
-                          </b>{" "}
-                          {" / "}
-                          Total :{" "}
-                          <b style={{ color: "blue", fontWeight: 1000 }}>
-                            {countRes.propertyCountLimit}
-                          </b>
-                        </p>
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                </CardHeader>
-                <Table className="align-items-center table-flush" responsive>
-                  <thead className="thead-light">
-                    <tr>
-                      <th scope="col">
+              <>
+                {/* <Card className="shadow"> */}
+                {/* <CardHeader className="border-0"> */}
+                <Row className="mb-3">
+                  <Col xs="12" sm="6">
+                    <FormGroup className="">
+                      <Input
+                        fullWidth
+                        type="text"
+                        placeholder="Search here..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        style={{
+                          width: "100%",
+                          maxWidth: "200px",
+                          minWidth: "200px",
+                          boxShadow: " 0px 4px 4px 0px #00000040",
+                          border: "1px solid #ced4da",
+                        }}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col className="d-flex justify-content-end">
+                    <FormGroup>
+                      <p style={{ fontFamily: "Poppins", fontSize: "18px", fontWeight: "500" }}>
+
+                        Added :{" "}
+                        <b style={{ color: "#152B51", fontWeight: 1000 }}>
+
+                          {countRes.rentalCount}
+                        </b>{" "}
+                        {" / "}
+                        Total :{" "}
+                        <b style={{ color: "#152B51", fontWeight: 1000 }}>
+
+                          {countRes.propertyCountLimit}
+                        </b>
+                      </p>
+                    </FormGroup>
+                  </Col>
+                </Row>
+                {/* </CardHeader> */}
+                <Table className="align-items-center table-flush" responsive style={{ borderCollapse: "collapse" }}>
+                  <thead className="" style={{
+                    height: "45px",
+                    fontSize: "14px",
+                    fontFamily: "poppins",
+                    fontWeight: "600",
+                    boxShadow: " 0px 4px 4px 0px #00000040",
+                  }}>
+                    <tr style={{
+                      border: "2px solid rgba(50, 69, 103, 1)",
+                    }}>
+                      <th scope="col" style={{
+                        borderTopLeftRadius: "15px",
+
+                        color: "#152B51"
+                      }}>
                         Tenant name
                         {sortBy.includes("tenant_firstName") ? (
                           upArrow.includes("tenant_firstName") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("tenant_firstName")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("tenant_firstName")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("tenant_firstName")}
                           />
                         )}
                       </th>
 
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Phone
                         {sortBy.includes("tenant_phoneNumber") ? (
                           upArrow.includes("tenant_phoneNumber") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("tenant_phoneNumber")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("tenant_phoneNumber")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("tenant_phoneNumber")}
                           />
                         )}
                       </th>
 
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Email
                         {sortBy.includes("tenant_email") ? (
                           upArrow.includes("tenant_email") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("tenant_email")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("tenant_email")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("tenant_email")}
                           />
                         )}
                       </th>
 
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Created At
                         {sortBy.includes("createdAt") ? (
                           upArrow.includes("createdAt") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("createdAt")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("createdAt")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("createdAt")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Last Updated{" "}
                         {sortBy.includes("updatedAt") ? (
                           upArrow.includes("updatedAt") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("updatedAt")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("updatedAt")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("updatedAt")}
                           />
                         )}
                       </th>
-                      <th scope="col">Action</th>
+                      <th scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>Action</th>
                     </tr>
                   </thead>
                   {tentalsData.length === 0 ? (
@@ -536,6 +583,12 @@ const TenantsTable = () => {
                     </tbody>
                   ) : (
                     <tbody>
+                      <tr style={{
+                        border: "none",
+                      }}>
+                        {/* Empty row */}
+                        <td colSpan="9"></td>
+                      </tr>
                       {filterTenantsBySearchAndPage().map((tenant) => (
                         <>
                           <tr
@@ -543,18 +596,26 @@ const TenantsTable = () => {
                             onClick={() =>
                               navigateToTenantsDetails(tenant.tenant_id)
                             }
-                            style={{ cursor: "pointer" }}
+                            style={{
+                              cursor: "pointer",
+                              border: "0.5px solid rgba(50, 69, 103, 1)",
+                              fontSize: "12px",
+                              height: "40px",
+                              fontFamily: "poppins",
+                              fontWeight: "600",
+                              lineHeight: "10.93px",
+                            }}
                           >
-                            <td>
+                            <td className="bordertopintd">
                               {tenant.tenant_firstName} {tenant.tenant_lastName}
                             </td>
-                            <td>{tenant.tenant_phoneNumber}</td>
-                            <td>{tenant.tenant_email}</td>
-                            <td>{tenant.createdAt} </td>
-                            <td>
+                            <td className="bordertopintd">{tenant.tenant_phoneNumber}</td>
+                            <td className="bordertopintd">{tenant.tenant_email}</td>
+                            <td className="bordertopintd">{tenant.createdAt} </td>
+                            <td className="bordertopintd">
                               {tenant.updatedAt ? tenant.updatedAt : "-"}{" "}
                             </td>
-                            <td>
+                            <td className="bordertopintd">
                               <div style={{ display: "flex", gap: "5px" }}>
                                 <div
                                   style={{ cursor: "pointer" }}
@@ -563,7 +624,8 @@ const TenantsTable = () => {
                                     deleteTenants(tenant.tenant_id);
                                   }}
                                 >
-                                  <DeleteIcon />
+                                  <img src={deleicon} width={20} height={20} />
+
                                 </div>
                                 <div
                                   style={{ cursor: "pointer" }}
@@ -572,17 +634,10 @@ const TenantsTable = () => {
                                     editLeasing(tenant.tenant_id);
                                   }}
                                 >
-                                  <EditIcon />
+                                  <img src={editicon} width={20} height={20} />
+
                                 </div>
-                                {/* <div
-                                style={{ cursor: "pointer" }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  generatePDF(tenant.tenant_id);
-                                }}
-                              >
-                                <PictureAsPdfIcon />
-                              </div> */}
+
                               </div>
                             </td>
                           </tr>
@@ -591,6 +646,206 @@ const TenantsTable = () => {
                     </tbody>
                   )}
                 </Table>
+                {/* <Row
+                  className="mx-4 mt-3 d-flex align-items-center py-1"
+                  style={{ borderRadius: "10px", height: "auto" }}
+                >
+                  <Col>
+                    <Row
+                      className="d-flex align-items-center"
+                      style={{
+                        border: "2px solid rgba(50, 69, 103, 1)",
+                        borderTopLeftRadius: "12px",
+                        borderTopRightRadius: "12px",
+                        height: "45px",
+                        fontSize: "14px",
+                        fontFamily: "poppins",
+                        fontWeight: "600",
+                        boxShadow: " 0px 4px 4px 0px #00000040",
+                      }}
+                    >
+                      <Col style={{ color: "#152B51" }}>
+                           Tenant name
+                        {sortBy.includes("tenant_firstName") ? (
+                          upArrow.includes("tenant_firstName") ? (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("tenant_firstName")}
+                            />
+                          ) : (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("tenant_firstName")}
+                            />
+                          )
+                        ) : (
+                          <ArrowDropDownIcon
+                            onClick={() => sortData("tenant_firstName")}
+                          />
+                        )}
+                      </Col>
+                      <Col style={{ color: "#152B51" }}>
+                         Phone
+                        {sortBy.includes("tenant_phoneNumber") ? (
+                          upArrow.includes("tenant_phoneNumber") ? (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("tenant_phoneNumber")}
+                            />
+                          ) : (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("tenant_phoneNumber")}
+                            />
+                          )
+                        ) : (
+                          <ArrowDropDownIcon
+                            onClick={() => sortData("tenant_phoneNumber")}
+                          />
+                        )}
+                      </Col>
+
+                      <Col style={{ color: "#152B51" }}>
+
+                       
+                         Email
+                        {sortBy.includes("tenant_email") ? (
+                          upArrow.includes("tenant_email") ? (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("tenant_email")}
+                            />
+                          ) : (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("tenant_email")}
+                            />
+                          )
+                        ) : (
+                          <ArrowDropDownIcon
+                            onClick={() => sortData("tenant_email")}
+                          />
+                        )}
+                      </Col>
+                      <Col style={{ color: "#152B51" }}>
+                      
+                         Created At
+                        {sortBy.includes("createdAt") ? (
+                          upArrow.includes("createdAt") ? (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("createdAt")}
+                            />
+                          ) : (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("createdAt")}
+                            />
+                          )
+                        ) : (
+                          <ArrowDropDownIcon
+                            onClick={() => sortData("createdAt")}
+                          />
+                        )}
+                      </Col>
+                      <Col style={{ color: "#152B51" }}>
+
+                         Last Updated{" "}
+                        {sortBy.includes("updatedAt") ? (
+                          upArrow.includes("updatedAt") ? (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("updatedAt")}
+                            />
+                          ) : (
+                            <ArrowDropUpIcon
+                              onClick={() => sortData("updatedAt")}
+                            />
+                          )
+                        ) : (
+                          <ArrowDropDownIcon
+                            onClick={() => sortData("updatedAt")}
+                          />
+                        )}
+                      </Col>
+                      <Col style={{ color: "#152B51" }}>
+                        Action{" "}
+
+                      </Col>
+                    </Row>
+                    {tentalsData.length === 0 ? (
+                    <tbody>
+                      <tr className="text-center">
+                        <td colSpan="8" style={{ fontSize: "15px" }}>
+                          No Tenants Added
+                        </td>
+                      </tr>
+                    </tbody>
+                  ) : (
+                      <Row
+                        className="mt-3"
+                        style={{
+                          border: "0.5px solid rgba(50, 69, 103, 1)",
+                          borderBottomLeftRadius: "12px",
+                          borderBottomRightRadius: "12px",
+                          overflow: "hidden",
+                          fontSize: "16px",
+                          fontWeight: "600",
+                          // lineHeight: "19.12px",
+                        }}
+                      >
+                        <Col>
+                        {filterTenantsBySearchAndPage().map((tenant) => (
+                            <Row
+                            key={tenant.tenant_id}
+                              className="d-flex align-items-center"
+                              onClick={() =>
+                                navigateToTenantsDetails(tenant.tenant_id)
+                              }
+
+                              style={{
+                                cursor: "pointer",
+                                border: "0.5px solid rgba(50, 69, 103, 1)",
+                                fontSize: "12px",
+                                height: "40px",
+                                fontFamily: "poppins",
+                                fontWeight: "600",
+                                lineHeight: "10.93px",
+                              }}
+                            >
+                              <Col style={{ color: "#152B51" }}>{tenant?.tenant_firstName} {tenant?.tenant_lastName} </Col>
+                              <Col style={{ color: "#152B51" }}>{tenant?.tenant_phoneNumber}</Col>
+                              <Col style={{ color: "#152B51" }}>{tenant?.tenant_email}
+                              </Col>
+                              <Col style={{ color: "#152B51" }}>
+                              {tenant.createdAt} 
+                              </Col>
+                              <Col style={{ color: "#152B51" }}>
+                              {tenant.updatedAt ? tenant.updatedAt : "-"}{" "}
+                              </Col>
+                              <Col> 
+                               <div style={{ display: "flex" }}>
+                                <div
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteTenants(tenant.tenant_id);
+                                  }}
+                                >
+                                  <img src={deleicon} width={20} height={20} />
+
+                                </div>
+                                &nbsp; &nbsp; &nbsp;
+                                <div
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    editLeasing(tenant.tenant_id);
+                                  }}
+                                >
+                                  <img src={editicon} width={20} height={20} />
+
+                                </div>
+                              </div></Col>
+                            </Row>
+                          )
+                          )}
+                        </Col>
+                      </Row>
+                    )}
+                  </Col>
+                </Row> */}
                 {paginatedData.length > 0 ? (
                   <Row>
                     <Col className="text-right m-3">
@@ -673,7 +928,9 @@ const TenantsTable = () => {
                 ) : (
                   <></>
                 )}
-              </Card>
+                {/* </Card> */}
+              </>
+
             )}
           </div>
         </Row>

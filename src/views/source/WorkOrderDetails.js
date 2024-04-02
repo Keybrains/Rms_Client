@@ -8,6 +8,8 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Header from "components/Headers/Header";
+import profile from "../../assets/img/icons/common/profile1.svg";
+
 import {
   Card,
   CardHeader,
@@ -44,6 +46,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useFormik } from "formik";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 
 const WorkOrderDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -130,9 +133,11 @@ const WorkOrderDetails = () => {
   const SmallSummaryCard = ({ label, value, textTruncate }) => {
     return (
       <div className="small-summary-card p-3">
-        <h6 className="text-uppercase text-muted mb-0">{label}</h6>
+        <h6 className="text-uppercase text-muted mb-0" style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>{label}</h6>
         <span
           className={`font-weight-bold ${textTruncate ? "text-truncate" : ""}`}
+          style={{ fontSize: "16px", fontFamily: "Poppins", fontWeight: "500", color: "#152B51" }}
+
         >
           {value}
         </span>
@@ -368,354 +373,424 @@ const WorkOrderDetails = () => {
     <>
       <Header />
       {/* Page content */}
-      <Container className="mt--8" fluid>
+      <Container className="" fluid>
         <Row>
-          <Col xs="12" sm="6">
-            <FormGroup className="">
-              <h1 style={{ color: "white" }}>Work Order Details</h1>
-            </FormGroup>
-          </Col>
           <Col className="text-right">
             <Button
-              color="primary"
+              // color="primary"
+              className="mr-4"
               href="#rms"
               onClick={() => navigate(`/${admin}/Workorder`)}
-              size="sm"
-              style={{ background: "white", color: "blue" }}
+              size="small"
+              style={{ background: "#152B51", color: "#fff" }}
+
             >
               Back
             </Button>
+          </Col>
+
+          {/* <Col xs="12" sm="6">
+            <FormGroup className="">
+              <h1 style={{ color: "white" }}>Work Order Details</h1>
+            </FormGroup>
+          </Col> */}
+          <Col xs="12" lg="12" sm="6">
+            <FormGroup className="">
+              {/* <h1 style={{ color: "red" }}>Work Order Details</h1> */}
+            </FormGroup>
+            <CardHeader
+              className=" mt-3 mx-4"
+              style={{
+                backgroundColor: "#152B51",
+                borderRadius: "10px",
+                boxShadow: " 0px 4px 4px 0px #00000040 ",
+              }}
+            >
+              <h2
+                className=""
+                style={{
+                  color: "#ffffff",
+                  fontFamily: "Poppins",
+                  fontWeight: "500",
+                  fontSize: "26px",
+                }}
+              >
+                Work Order Details
+              </h2>
+            </CardHeader>
           </Col>
         </Row>
         <br />
         {/* Table */}
         <Row>
           <div className="col">
-            <Card className="shadow">
-              <CardHeader className="border-0">
-                <ToggleButtonGroup
-                  color="primary"
-                  // value={alignment}
-                  exclusive
-                  onChange={handleChange}
-                  aria-label="Platform"
-                >
-                  <ToggleButton
-                    value="Summary"
-                    style={{
-                      border: "none",
-                      background: "none",
-                      textTransform: "capitalize",
-                      cursor: "pointer",
-                      color: activeButton === "Summary" ? "blue" : "inherit",
-                      // textDecoration: activeButton === 'Summary' ? 'underline' : 'none',
-                    }}
-                    // onMouseEnter={() => handleMouseEnter("Summary")}
-                    // onMouseLeave={handleMouseLeave}
-                    onClick={() => setActiveButton("Summary")}
-                  >
-                    Summary
-                  </ToggleButton>
+            {/* <Card className="shadow"> */}
+            <CardHeader className=" border-0 d-flex justify-content-between align-items-center">
 
-                  <ToggleButton
-                    value="Task"
-                    style={{
-                      border: "none",
-                      background: "none",
-                      textTransform: "capitalize",
-                      cursor: "pointer",
-                      color: activeButton === "Task" ? "blue" : "inherit",
-                      // textDecoration: activeButton === 'Task' ? 'underline' : 'none',
-                    }}
-                    // onMouseEnter={() => handleMouseEnter("Task")}
-                    // onMouseLeave={handleMouseLeave}
-                    onClick={() => setActiveButton("Task")}
-                  >
-                    Task
-                  </ToggleButton>
-                </ToggleButtonGroup>
-              </CardHeader>
-              <div className="table-responsive">
-                {activeButton === "Summary" && (
-                  <div className="container-fluid">
-                    <Row className="mb-4">
-                      <Col lg="8" md="12">
-                        {loading ? (
-                          <div>Loading Work Order details...</div>
-                        ) : error ? (
-                          <div>Error: {error.message}</div>
-                        ) : outstandDetails?.workOrder_id ? (
-                          <>
+              <ToggleButtonGroup
+                color="primary"
+                // value={alignment}
+                exclusive
+                onChange={handleChange}
+                aria-label="Platform"
+              >
+                <ToggleButton
+                  value="Summary"
+                  style={{
+                    border: "none",
+                    background: "none",
+                    textTransform: "capitalize",
+                    cursor: "pointer",
+                    fontSize: "18px",
+                    fontFamily: "Poppins",
+                    fontWeight: "600",
+                    color: activeButton === "Summary" ? "#152B51" : "inherit",
+                    // textDecoration: activeButton === 'Summary' ? 'underline' : 'none',
+                  }}
+                  // onMouseEnter={() => handleMouseEnter("Summary")}
+                  // onMouseLeave={handleMouseLeave}
+                  onClick={() => setActiveButton("Summary")}
+                >
+                  Summary
+                </ToggleButton>
+
+                <ToggleButton
+                  value="Task"
+                  style={{
+                    border: "none",
+                    background: "none",
+                    textTransform: "capitalize",
+                    cursor: "pointer",
+                    fontSize: "18px",
+                    fontFamily: "Poppins",
+                    fontWeight: "600",
+                    color: activeButton === "Task" ? "#152B51" : "inherit",
+                    // textDecoration: activeButton === 'Task' ? 'underline' : 'none',
+                  }}
+                  // onMouseEnter={() => handleMouseEnter("Task")}
+                  // onMouseLeave={handleMouseLeave}
+                  onClick={() => setActiveButton("Task")}
+                >
+                  Task
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </CardHeader>
+            <div className="table-responsive">
+              {activeButton === "Summary" && (
+                <div className="container-fluid">
+                  <Row className="mb-4">
+                    <Col lg="8" md="12">
+                      {loading ? (
+                        <div>Loading Work Order details...</div>
+                      ) : error ? (
+                        <div>Error: {error.message}</div>
+                      ) : outstandDetails?.workOrder_id ? (
+                        <>
+                          <Box
+                            // border="1px solid #ccc"
+                            border="0.5px solid #737791"
+
+                            borderRadius="10px"
+                            padding="16px"
+                            maxWidth="900px"
+                            margin="20px"
+                            boxShadow=" 0px 4px 4px 0px #00000040"
+
+                          >
                             <Box
-                              border="1px solid #ccc"
-                              borderRadius="8px"
-                              padding="16px"
-                              maxWidth="700px"
-                              margin="20px"
+                              display="flex"
+                              alignItems="center"
+                              marginBottom="20px"
                             >
                               <Box
+                                width="40px"
+                                height="40px"
                                 display="flex"
                                 alignItems="center"
-                                marginBottom="20px"
-                              >
-                                <Box
-                                  width="40px"
-                                  height="40px"
-                                  display="flex"
-                                  alignItems="center"
-                                  justifyContent="center"
-                                  backgroundColor="grey"
-                                  borderRadius="8px"
-                                  color="white"
-                                  fontSize="24px"
-                                  marginRight="16px"
-                                >
-                                  <AssignmentOutlinedIcon />
-                                </Box>
-                                <Box flex="1">
-                                  <h2
-                                    className="text text-lg"
-                                    style={{ color: "blue" }}
-                                  >
-                                    {outstandDetails?.work_subject || "N/A"}
-                                  </h2>
-                                  <span>
-                                    {outstandDetails?.property_data
-                                      ?.rental_adress || "N/A"}
-                                  </span>
-                                </Box>
-                              </Box>
-                              <Box
-                                display="flex"
-                                flexDirection={{ xs: "column", md: "row" }}
-                                alignItems="stretch"
-                              >
-                                {/* Left side */}
-                                <Box
-                                  flex="1"
-                                  className={{ xs: "col-12", md: "col-7" }}
-                                  marginBottom={{ xs: "20px", md: "0" }}
-                                >
-                                  <FormGroup marginBottom="20px">
-                                    <label
-                                      className="form-control-label"
-                                      htmlFor="input-property"
-                                      style={{
-                                        marginBottom: "10px",
-                                        fontWeight: "bold",
-                                      }}
-                                    >
-                                      Description
-                                    </label>
-                                    <span
-                                      style={{
-                                        fontSize: "13px",
-                                        display: "block",
-                                        marginTop: "5px",
-                                      }}
-                                    >
-                                      {outstandDetails?.work_performed || "N/A"}
-                                    </span>
-                                  </FormGroup>
-                                  <FormGroup marginBottom="20px">
-                                    <label
-                                      className="form-control-label"
-                                      htmlFor="input-property"
-                                      style={{
-                                        marginBottom: "10px",
-                                        fontWeight: "bold",
-                                      }}
-                                    >
-                                      Permission to enter
-                                    </label>
-                                    <span
-                                      style={{
-                                        fontSize: "13px",
-                                        display: "block",
-                                        marginTop: "5px",
-                                      }}
-                                    >
-                                      {outstandDetails?.entry_allowed
-                                        ? "Yes"
-                                        : "No"}
-                                    </span>
-                                  </FormGroup>
-                                  <FormGroup marginBottom="20px">
-                                    <label
-                                      className="form-control-label"
-                                      htmlFor="input-property"
-                                      style={{
-                                        marginBottom: "10px",
-                                        fontWeight: "bold",
-                                      }}
-                                    >
-                                      Vendor Notes
-                                    </label>
-                                    <span
-                                      style={{
-                                        fontSize: "13px",
-                                        display: "block",
-                                        marginTop: "5px",
-                                      }}
-                                    >
-                                      {outstandDetails?.vendor_notes || "N/A"}
-                                    </span>
-                                  </FormGroup>
-                                </Box>
-
-                                {/* Right side */}
-
-                                <Box flex="1" className="d-flex flex-column">
-                                  <Row
-                                    style={{
-                                      border: "1px solid #ccc",
-                                      borderRadius: "8px",
-                                      margin: "15px auto",
-                                      width: "100%",
-                                    }}
-                                  >
-                                    <Col style={{ padding: "0 8px" }}>
-                                      <SmallSummaryCard
-                                        label="Status"
-                                        value={outstandDetails?.status || "N/A"}
-                                        textTruncate // add this prop to enable text truncation
-                                      />
-                                    </Col>
-                                  </Row>
-                                  <Row
-                                    style={{
-                                      border: "1px solid #ccc",
-                                      borderRadius: "8px",
-                                      margin: "15px auto",
-                                      width: "100%",
-                                    }}
-                                  >
-                                    <Col style={{ padding: "0 8px" }}>
-                                      <SmallSummaryCard
-                                        label="Due Date"
-                                        value={outstandDetails?.date || "N/A"}
-                                        textTruncate // add this prop to enable text truncation
-                                      />
-                                    </Col>
-                                  </Row>
-                                  <Row
-                                    style={{
-                                      border: "1px solid #ccc",
-                                      borderRadius: "8px",
-                                      margin: "15px auto",
-                                      width: "100%",
-                                    }}
-                                  >
-                                    <Col style={{ padding: "0 8px" }}>
-                                      <SmallSummaryCard
-                                        label="Assignees"
-                                        value={
-                                          outstandDetails?.staff_data
-                                            .staffmember_name || "N/A"
-                                        }
-                                        textTruncate // add this prop to enable text truncation
-                                      />
-                                    </Col>
-                                  </Row>
-                                </Box>
-                              </Box>
-                            </Box>
-                            {outstandDetails?.partsandcharge_data?.length > 0 &&
-                              outstandDetails?.partsandcharge_data ? (
-                              <Box
-                                border="1px solid #ccc"
+                                justifyContent="center"
+                                backgroundColor="#152B51"
                                 borderRadius="8px"
-                                padding="16px"
-                                maxWidth="700px"
-                                margin="20px"
-                                style={{
-                                  marginRight: "auto",
-                                  overflowX: "auto",
-                                }} // Center the box horizontally
+                                color="white"
+                                fontSize="24px"
+                                marginRight="16px"
                               >
+                                {/* <AssignmentOutlinedIcon /> */}
+                                <FormatListBulletedIcon />
+
+                              </Box>
+                              <Box flex="1">
                                 <h2
                                   className="text text-lg"
-                                  style={{ color: "blue" }}
+                                  style={{ color: "#152B51" }}
                                 >
-                                  Parts and Labor
+                                  {outstandDetails?.work_subject || "N/A"}
                                 </h2>
-                                <Box overflowX="auto">
-                                  <table
+                                <span>
+                                  {outstandDetails?.property_data
+                                    ?.rental_adress || "N/A"}
+                                </span>
+                              </Box>
+                            </Box>
+                            <Box
+                              display="flex"
+                              flexDirection={{ xs: "column", md: "row" }}
+                              alignItems="stretch"
+                            >
+                              {/* Left side */}
+                              <Box
+                                flex="1"
+                                className={{ xs: "col-12", md: "col-7" }}
+                                marginBottom={{ xs: "20px", md: "0" }}
+                              >
+                                <FormGroup marginBottom="20px" style={{ padding: "15px" }}>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-property"
                                     style={{
-                                      width: "100%",
-                                      borderCollapse: "collapse",
+                                      marginBottom: "10px",
+                                      fontWeight: "500",
+                                      fontFamily: "Poppins",
+                                      fontSize: "16px",
+                                      color: "#152B51",
                                     }}
                                   >
-                                    <thead>
-                                      <tr>
-                                        <th style={tableHeaderStyle}>QTY</th>
-                                        <th style={tableHeaderStyle}>
-                                          ACCOUNT
-                                        </th>
-                                        <th style={tableHeaderStyle}>
-                                          DESCRIPTION
-                                        </th>
-                                        <th style={tableHeaderStyle}>PRICE</th>
-                                        <th style={tableHeaderStyle}>AMOUNT</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {/* Add your table rows dynamically here */}
-                                      {outstandDetails?.partsandcharge_data?.map(
-                                        (item, index) => (
-                                          <tr key={index}>
-                                            <td style={tableCellStyle}>
-                                              {item.parts_quantity}
-                                            </td>
-                                            <td style={tableCellStyle}>
-                                              {item.account}
-                                            </td>
-                                            <td style={tableCellStyle}>
-                                              {item.description}
-                                            </td>
-                                            <td
-                                              style={{
-                                                ...tableCellStyle,
-                                                textAlign: "right",
-                                              }}
-                                            >
-                                              ${item.parts_price}
-                                            </td>
-                                            <td
-                                              style={{
-                                                ...tableCellStyle,
-                                                textAlign: "right",
-                                              }}
-                                            >
-                                              ${item.amount}
-                                            </td>
-                                          </tr>
-                                        )
-                                      )}
-                                    </tbody>
-                                    <tfoot>
-                                      <tr>
-                                        <td
-                                          colSpan="4"
-                                          style={tableHeaderStyle}
-                                        >
-                                          Total
-                                        </td>
-                                        <td
-                                          style={{
-                                            ...tableFooterStyle,
-                                            textAlign: "right",
-                                          }}
-                                        >
-                                          ${total()}
-                                        </td>
-                                      </tr>
-                                    </tfoot>
-                                  </table>
-                                </Box>
+                                    Description
+                                  </label>
+                                  <span
+                                    style={{
+                                      fontWeight: "400",
+                                      fontFamily: "Poppins",
+                                      fontSize: "14px",
+                                      display: "block",
+                                      marginTop: "5px",
+                                    }}
+                                  >
+                                    {outstandDetails?.work_performed || "N/A"}
+                                  </span>
+                                </FormGroup>
+                                <FormGroup marginBottom="20px" style={{ padding: "15px" }}>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-property"
+                                    style={{
+                                      marginBottom: "10px",
+                                      fontWeight: "500",
+                                      fontFamily: "Poppins",
+                                      fontSize: "16px",
+                                      color: "#152B51",
+                                    }}
+                                  >
+                                    Permission to enter
+                                  </label>
+                                  <span
+                                    style={{
+                                      fontWeight: "400",
+                                      fontFamily: "Poppins",
+                                      fontSize: "14px",
+                                      display: "block",
+                                      marginTop: "5px",
+                                    }}
+                                  >
+                                    {outstandDetails?.entry_allowed
+                                      ? "Yes"
+                                      : "No"}
+                                  </span>
+                                </FormGroup>
+                                <FormGroup marginBottom="20px" style={{ padding: "15px" }}>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-property"
+                                    style={{
+                                      marginBottom: "10px",
+                                      fontWeight: "500",
+                                      fontFamily: "Poppins",
+                                      fontSize: "16px",
+                                      color: "#152B51",
+                                    }}
+                                  >
+                                    Vendor Notes
+                                  </label>
+                                  <span
+                                    style={{
+                                      fontWeight: "400",
+                                      fontFamily: "Poppins",
+                                      fontSize: "14px",
+                                      display: "block",
+                                      marginTop: "5px",
+                                    }}
+                                  >
+                                    {outstandDetails?.vendor_notes || "N/A"}
+                                  </span>
+                                </FormGroup>
                               </Box>
-                            ) : null}
-                            {/* <Grid
+
+                              {/* Right side */}
+
+                              <Box flex="1" className="d-flex flex-column  justify-content-end">
+                                <Row
+                                  style={{
+                                    border: "1px solid #ccc",
+                                    borderRadius: "8px",
+                                    margin: "15px auto",
+                                    width: "60%",
+                                  }}
+                                >
+                                  <Col style={{ padding: "0 8px" }}>
+                                    <SmallSummaryCard
+                                      label="Status"
+                                      value={outstandDetails?.status || "N/A"}
+                                      textTruncate // add this prop to enable text truncation
+                                    />
+                                  </Col>
+                                </Row>
+                                <Row
+                                  style={{
+                                    border: "1px solid #ccc",
+                                    borderRadius: "8px",
+                                    margin: "15px auto",
+                                    width: "60%",
+                                  }}
+                                >
+                                  <Col style={{ padding: "0 8px" }}>
+                                    <SmallSummaryCard
+                                      label="Due Date"
+                                      value={outstandDetails?.date || "N/A"}
+                                      textTruncate // add this prop to enable text truncation
+                                    />
+                                  </Col>
+                                </Row>
+                                <Row
+                                  style={{
+                                    border: "1px solid #ccc",
+                                    borderRadius: "8px",
+                                    margin: "15px auto",
+                                    width: "60%",
+                                  }}
+                                >
+                                  <Col style={{ padding: "0 8px" }}>
+                                    <SmallSummaryCard
+                                      label="Assignees"
+                                      value={
+                                        outstandDetails?.staff_data
+                                          ?.staffmember_name || "N/A"
+                                      }
+                                      textTruncate // add this prop to enable text truncation
+                                    />
+                                  </Col>
+                                </Row>
+                              </Box>
+                            </Box>
+                          </Box>
+                          {outstandDetails?.partsandcharge_data?.length > 0 &&
+                            outstandDetails?.partsandcharge_data ? (
+                            <Box
+                              border="0.5px solid #737791"
+                              borderRadius="10px"
+                              padding="16px"
+                              maxWidth="900px"
+                              boxShadow=" 0px 4px 4px 0px #00000040"
+                              margin="20px"
+                              style={{
+                                marginRight: "auto",
+                                overflowX: "auto",
+                              }} // Center the box horizontally
+                            >
+                              <h2
+                                className="text text-lg"
+                                style={{ color: "#152B51", fontWeight: "500", fontFamily: "Poppins", fontSize: "16px", }}
+
+                              >
+                                Parts and Labor
+                              </h2>
+                              <Box overflowX="auto">
+                                <table
+                                  style={{
+                                    width: "100%",
+                                    borderCollapse: "collapse",
+                                  }}
+                                >
+                                  <thead>
+                                    <tr style={{
+                                      fontWeight: "500",
+                                      fontFamily: "Poppins",
+                                      fontSize: "14px", color: "#152B51"
+                                    }} >
+                                      <th style={tableHeaderStyle}>QTY</th>
+                                      <th style={tableHeaderStyle}>
+                                        ACCOUNT
+                                      </th>
+                                      <th style={tableHeaderStyle}>
+                                        DESCRIPTION
+                                      </th>
+                                      <th style={tableHeaderStyle}>PRICE</th>
+                                      <th style={tableHeaderStyle}>AMOUNT</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {/* Add your table rows dynamically here */}
+                                    {outstandDetails?.partsandcharge_data?.map(
+                                      (item, index) => (
+                                        <tr key={index}>
+                                          <td style={tableCellStyle}>
+                                            {item.parts_quantity}
+                                          </td>
+                                          <td style={tableCellStyle}>
+                                            {item.account}
+                                          </td>
+                                          <td style={tableCellStyle}>
+                                            {item.description}
+                                          </td>
+                                          <td
+                                            style={{
+                                              ...tableCellStyle,
+                                              textAlign: "right",
+                                            }}
+                                          >
+                                            ${item.parts_price}
+                                          </td>
+                                          <td
+                                            style={{
+                                              ...tableCellStyle,
+                                              textAlign: "right",
+                                            }}
+                                          >
+                                            ${item.amount}
+                                          </td>
+                                        </tr>
+                                      )
+                                    )}
+                                  </tbody>
+                                  <tfoot>
+                                    <tr>
+                                      <td
+                                        colSpan="4"
+                                        style={{
+                                          ...tableFooterStyle,
+                                          fontWeight: "400",
+                                          fontFamily: "Poppins",
+                                          fontSize: "14px", color: "#152B51"
+                                        }}
+                                      >
+                                        Total
+                                      </td>
+                                      <td
+                                        style={{
+                                          ...tableFooterStyle,
+                                          textAlign: "right",
+                                          fontWeight: "400",
+                                          fontFamily: "Poppins",
+                                          fontSize: "14px", color: "#152B51"
+                                        }}
+                                      >
+                                        ${total()}
+                                      </td>
+                                    </tr>
+                                  </tfoot>
+                                </table>
+                              </Box>
+                            </Box>
+                          ) : null}
+                          {/* <Grid
                               container
                               border="1px solid #ccc"
                               borderRadius="8px"
@@ -842,33 +917,70 @@ const WorkOrderDetails = () => {
                                   </Grid>
                                 ))}
                             </Grid> */}
-                          </>
-                        ) : (
-                          <div>No details found.</div>
-                        )}
-                      </Col>
-                      <Col lg="4" md="12">
-                        {outstandDetails?.workOrder_id ? (
+                        </>
+                      ) : (
+                        <div>No details found.</div>
+                      )}
+                    </Col>
+                    <Col lg="4" md="12">
+                      {outstandDetails?.workOrder_id ? (
+                        <Box
+                          // border="1px solid #ccc"
+                          border="0.5px solid #737791"
+                          borderRadius="10px"
+                          boxShadow=" 0px 4px 4px 0px #00000040"
+                          maxWidth="100%"
+                          margin="20px"
+                        >
                           <Box
-                            border="1px solid #ccc"
-                            borderRadius="8px"
-                            maxWidth="100%" // Use 100% to make it responsive
-                            margin="20px"
+                            className="align-item-center text-center"
+
+                            borderBottom="1px solid #ccc"
+                            style={{
+                              width: "100%",
+                              padding: "16px",
+                              textAlign: "left",
+                              boxShadow: " 0px 4px 4px 0px #00000040",
+                              color: "#5e72e4",
+                            }}
                           >
-                            <Box
-                              borderBottom="1px solid #ccc"
-                              style={{
-                                minWidth: "100%",
-                                padding: "16px 16px 5px 16px",
-                                color: "#5e72e4",
-                              }}
+                            <span className="text" style={{ color: "#152B51", fontWeight: "500", fontFamily: "Poppins", fontSize: "16px", }}
                             >
-                              <h3 className="text" style={{ color: "blue" }}>
-                                Contacts
-                              </h3>
+                              Contacts
+                            </span>
+                          </Box>
+                          <Box
+                            borderBottom="1px solid #ccc"
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              minWidth: "100%",
+                              padding: "16px 16px 5px 16px",
+                            }}
+                          >
+                            <Box width="16px" marginRight="10px">
+                              {/* SVG icon */}
+                              <img src={profile} height={20} width={20} />
+
                             </Box>
                             <Box
-                              borderBottom="1px solid #ccc"
+                              width="100%"
+                              style={{ minWidth: "100%", padding: "0 16px" }}
+                            >
+                              <span style={{ color: "#152B51", fontWeight: "500", fontFamily: "Poppins", fontSize: "16px", }}>Vendor</span> <br />
+                              <span style={{
+                                fontWeight: "400",
+                                fontFamily: "Poppins",
+                                fontSize: "14px",
+                              }}>
+                                {outstandDetails?.vendor_data?.vendor_name ||
+                                  "N/A"}
+                              </span>
+                            </Box>
+                          </Box >
+                          {outstandDetails?.tenant_data &&
+                            typeof outstandDetails?.tenant_data === "object" ? (
+                            <Box
                               style={{
                                 display: "flex",
                                 alignItems: "center",
@@ -877,366 +989,372 @@ const WorkOrderDetails = () => {
                               }}
                             >
                               <Box width="16px" marginRight="10px">
-                                {/* SVG icon */}
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="24"
-                                  height="24"
-                                  fill="currentColor"
-                                  className="bi bi-person-fill"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
-                                </svg>
+                                <img src={profile} height={20} width={20} />
+
                               </Box>
                               <Box
                                 width="100%"
-                                style={{ minWidth: "100%", padding: "0 16px" }}
+                                style={{
+                                  minWidth: "100%",
+                                  padding: "0 16px",
+                                }}
                               >
-                                <span style={detailstyle}>Vendor</span> <br />
-                                <span>
-                                  {outstandDetails?.vendor_data.vendor_name ||
-                                    "N/A"}
+                                <span style={{ color: "#152B51", fontWeight: "500", fontFamily: "Poppins", fontSize: "16px", }}>Tenant</span> <br />
+                                <span style={{
+                                  fontWeight: "400",
+                                  fontFamily: "Poppins",
+                                  fontSize: "14px",
+                                }}>
+                                  {outstandDetails?.tenant_data
+                                    .tenant_firstName ? (
+                                    <>
+                                      {
+                                        outstandDetails?.tenant_data
+                                          .tenant_firstName
+                                      }{" "}
+                                      {
+                                        outstandDetails?.tenant_data
+                                          .tenant_lastName
+                                      }
+                                    </>
+                                  ) : (
+                                    ""
+                                  )}
                                 </span>
                               </Box>
                             </Box>
-                            {outstandDetails?.tenant_data &&
-                              typeof outstandDetails?.tenant_data === "object" ? (
-                              <Box
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  minWidth: "100%",
-                                  padding: "16px 16px 5px 16px",
-                                }}
-                              >
-                                <Box width="16px" marginRight="10px">
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="currentColor"
-                                    className="bi bi-person-fill"
-                                    viewBox="0 0 16 16"
-                                  >
-                                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
-                                  </svg>
-                                </Box>
-                                <Box
-                                  width="100%"
-                                  style={{
-                                    minWidth: "100%",
-                                    padding: "0 16px",
-                                  }}
-                                >
-                                  <span style={detailstyle}>Tenant</span> <br />
-                                  <span>
-                                    {outstandDetails?.tenant_data
-                                      .tenant_firstName ? (
-                                      <>
-                                        {
-                                          outstandDetails?.tenant_data
-                                            .tenant_firstName
-                                        }{" "}
-                                        {
-                                          outstandDetails?.tenant_data
-                                            .tenant_lastName
-                                        }
-                                      </>
-                                    ) : (
-                                      ""
-                                    )}
-                                  </span>
-                                </Box>
-                              </Box>
-                            ) : null}
-                          </Box>
-                        ) : null}
-                        {outstandDetails ? (
-                          <>
+                          ) : null}
+                        </Box>
+                      ) : null}
+                      {outstandDetails ? (
+                        <>
+                          <Box
+                            border="0.5px solid #737791"
+                            borderRadius="10px"
+                            maxWidth="100%"
+                            margin="20px"
+                            display="flex"
+                            boxShadow=" 0px 4px 4px 0px #00000040"
+                            flexDirection="column"
+                            alignItems="center" // Center content horizontally
+                          >
                             <Box
-                              border="1px solid #ccc"
-                              borderRadius="8px"
-                              maxWidth="100%" // Use 100% to make it responsive
-                              margin="20px"
-                              display="flex"
-                              flexDirection="column"
-                              alignItems="center" // Center content horizontally
+                              className="align-item-center text-center"
+                              borderBottom="1px solid #ccc"
+                              style={{
+                                width: "100%",
+                                padding: "16px",
+                                textAlign: "left",
+                                boxShadow: " 0px 4px 4px 0px #00000040",
+                                color: "#5e72e4",
+                              }}
+                            >
+                              <span
+                                style={{ color: "#152B51", fontWeight: "500", fontFamily: "Poppins", fontSize: "16px", }}
+
+                              >
+                                Property
+                              </span>
+                            </Box>
+
+                            <Box
+                              style={{
+                                width: "100%",
+                                padding: "5px 16px",
+                                display: "flex",
+                                alignItems: "center",
+                              }}
                             >
                               <Box
-                                borderBottom="1px solid #ccc"
+                                width="100%"
                                 style={{
-                                  width: "100%",
-                                  padding: "16px",
-                                  textAlign: "left",
-                                  color: "#5e72e4",
+                                  minWidth: "100%",
+                                  textAlign: "center",
                                 }}
                               >
-                                <h3 className="text" style={{ color: "blue" }}>
-                                  Property
-                                </h3>
-                              </Box>
-
-                              <Box
-                                style={{
-                                  width: "100%",
-                                  padding: "5px 16px",
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <Box
-                                  width="100%"
-                                  style={{
-                                    minWidth: "100%",
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  <span>
-                                    {outstandDetails?.property_data
-                                      ?.rental_adress || "N/A"}
-                                    {outstandDetails?.property_data
-                                      ?.rental_units ? (
-                                      " (" +
-                                      outstandDetails?.property_data
-                                        ?.rental_units +
-                                      ")"
-                                    ) : (
-                                      <></>
-                                    )}
-                                  </span>
-                                </Box>
-                              </Box>
-                              <Box
-                                style={{
-                                  width: "100%",
-                                  padding: "5px 16px",
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <Box
-                                  width="100%"
-                                  style={{
-                                    minWidth: "100%",
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  <span>
-                                    {outstandDetails?.property_data
-                                      ?.rental_city ? (
-                                      <>
-                                        {
-                                          outstandDetails?.property_data
-                                            ?.rental_city
-                                        }
-                                        ,
-                                      </>
-                                    ) : (
-                                      ""
-                                    )}{" "}
-                                    {outstandDetails?.property_data
-                                      ?.rental_state ? (
-                                      <>
-                                        {
-                                          outstandDetails?.property_data
-                                            ?.rental_state
-                                        }
-                                        ,
-                                      </>
-                                    ) : (
-                                      ""
-                                    )}{" "}
-                                    <br />
-                                    {outstandDetails?.property_data
-                                      ?.rental_country ? (
-                                      <>
-                                        {
-                                          outstandDetails?.property_data
-                                            ?.rental_country
-                                        }
-                                        ,
-                                      </>
-                                    ) : (
-                                      ""
-                                    )}{" "}
-                                    {outstandDetails?.property_data
-                                      ?.rental_postcode ? (
-                                      <>
-                                        {
-                                          outstandDetails?.property_data
-                                            ?.rental_postcode
-                                        }
-                                        .
-                                      </>
-                                    ) : (
-                                      ""
-                                    )}
-                                  </span>
-                                </Box>
+                                <span>
+                                  {outstandDetails?.property_data
+                                    ?.rental_adress || "N/A"}
+                                  {outstandDetails?.property_data
+                                    ?.rental_units ? (
+                                    " (" +
+                                    outstandDetails?.property_data
+                                      ?.rental_units +
+                                    ")"
+                                  ) : (
+                                    <></>
+                                  )}
+                                </span>
                               </Box>
                             </Box>
-                          </>
-                        ) : (
-                          <></>
-                        )}
-                      </Col>
-                    </Row>
-                  </div>
-                )}
-
-                {activeButton === "Task" && (
-                  <div className="container-fluid">
-                    <Row className="mb-4">
-                      <Col lg="8" md="12">
-                        <Box
-                          border="1px solid #ccc"
-                          borderRadius="8px"
-                          padding="16px"
-                          maxWidth="700px"
-                          margin={"20px"}
-                        >
-                          <Row>
-                            <Col lg="2">
+                            <Box
+                              style={{
+                                width: "100%",
+                                padding: "5px 16px",
+                                display: "flex",
+                                alignItems: "center",
+                              }}
+                            >
                               <Box
-                                width="40px"
-                                height="40px"
-                                display="flex"
-                                alignItems="center"
-                                justifyContent="center"
-                                backgroundColor="grey"
-                                borderRadius="8px"
-                                color="white"
-                                fontSize="24px"
+                                width="100%"
+                                style={{
+                                  minWidth: "100%",
+                                  textAlign: "center",
+                                }}
                               >
-                                <AssignmentOutlinedIcon />
+                                <span>
+                                  {outstandDetails?.property_data
+                                    ?.rental_city ? (
+                                    <>
+                                      {
+                                        outstandDetails?.property_data
+                                          ?.rental_city
+                                      }
+                                      ,
+                                    </>
+                                  ) : (
+                                    ""
+                                  )}{" "}
+                                  {outstandDetails?.property_data
+                                    ?.rental_state ? (
+                                    <>
+                                      {
+                                        outstandDetails?.property_data
+                                          ?.rental_state
+                                      }
+                                      ,
+                                    </>
+                                  ) : (
+                                    ""
+                                  )}{" "}
+                                  {outstandDetails?.property_data
+                                    ?.rental_country ? (
+                                    <>
+                                      {
+                                        outstandDetails?.property_data
+                                          ?.rental_country
+                                      }
+                                      ,
+                                    </>
+                                  ) : (
+                                    ""
+                                  )}{" "}
+                                  {outstandDetails?.property_data
+                                    ?.rental_postcode ? (
+                                    <>
+                                      {
+                                        outstandDetails?.property_data
+                                          ?.rental_postcode
+                                      }
+                                      .
+                                    </>
+                                  ) : (
+                                    ""
+                                  )}
+                                </span>
                               </Box>
+                            </Box>
+                          </Box>
+                        </>
+                      ) : (
+                        <></>
+                      )}
+                    </Col>
+                  </Row>
+                </div>
+              )}
+
+              {activeButton === "Task" && (
+                <div className="container-fluid">
+                  <Row className="mb-4">
+                    <Col lg="8" md="12">
+                      <Box
+                        border="0.5px solid #737791"
+                        borderRadius="10px"
+                        padding="16px"
+                        maxWidth="900px"
+                        margin={"20px"}
+                        boxShadow=" 0px 4px 4px 0px #00000040"
+                      >
+                        <Row style={{ justifyContent: "space-between" }}>
+                          <Col lg="8" className="d-flex" style={{ alignItems: "center" }}>
+                            <Box
+                              width="40px"
+                              height="40px"
+                              display="flex"
+                              alignItems="center"
+                              justifyContent="center"
+                              backgroundColor="#152B51"
+                              borderRadius="8px"
+                              color="white"
+                              fontSize="24px"
+
+                            >
+                              <FormatListBulletedIcon />
+                            </Box>
+                            <Col>
+                              <h2
+                                className=""
+                                style={{ color: "#152B51", marginBottom: 0, fontFamily: "poppins" }}
+                              >
+                                {outstandDetails?.work_subject || "N/A"}
+                              </h2>
+
+                              <span className="my-o" style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
+                                {outstandDetails.property_data?.rental_adress ||
+                                  "N/A"}
+                                {outstandDetails?.unit_data?.rental_unit ? (
+                                  " (" +
+                                  outstandDetails?.unit_data?.rental_unit +
+                                  ")"
+                                ) : (
+                                  <></>
+                                )}
+                              </span>
+
                             </Col>
-                            <Col lg="8">
+                          </Col>
+
+                          <Col lg="2" className="text-end">
+                            <span
+                              style={{
+                                display: "flex",
+                                justifyContent: "flex-end",
+                              }}
+                            >
                               <span
                                 style={{
                                   border: "2px solid",
                                   borderColor:
-                                    outstandDetails?.priority === "High"
+                                    outstandDetails.priority === "High"
                                       ? "red"
-                                      : outstandDetails?.priority === "Medium"
+                                      : outstandDetails.priority === "Medium"
                                         ? "green"
-                                        : outstandDetails?.priority === "Low"
+                                        : outstandDetails.priority === "Low"
                                           ? "#FFD700"
                                           : "inherit",
-                                  borderRadius: "15px",
-                                  padding: "2px",
+                                  borderRadius: "8px",
+                                  padding: "4px",
                                   fontSize: "15px",
                                   color:
-                                    outstandDetails?.priority === "High"
+                                    outstandDetails.priority === "High"
                                       ? "red"
-                                      : outstandDetails?.priority === "Medium"
+                                      : outstandDetails.priority === "Medium"
                                         ? "green"
-                                        : outstandDetails?.priority === "Low"
+                                        : outstandDetails.priority === "Low"
                                           ? "#FFD700"
                                           : "inherit",
                                 }}
                               >
                                 &nbsp;{outstandDetails?.priority}&nbsp;
                               </span>
-                              <h2 className="text-lg" style={{ color: "blue" }}>
-                                {outstandDetails?.work_subject || "N/A"}
-                              </h2>
+                            </span>
+                            {console.log(outstandDetails)}
+                          </Col>
+                        </Row>
+                        <br />
+                        <Row>
+                          <Col lg="6">
+                            <FormGroup>
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-property"
+                                style={{ fontSize: "16px", fontFamily: "Poppins", fontWeight: "500", color: "#152B51" }}
 
-                              <span className="">
-                                {outstandDetails?.property_data
-                                  ?.rental_adress || "N/A"}
+                              >
+                                Description
+                              </label>
+                              <br />
+                              <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
+
+                                {outstandDetails?.work_performed || "N/A"}
                               </span>
-                            </Col>
-                          </Row>
-                          <br />
-                          <Row>
-                            <Col lg="6">
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-property"
-                                >
-                                  Description
-                                </label>
-                                <br />
-                                <span style={{ fontSize: "13px" }}>
-                                  {outstandDetails?.work_performed || "N/A"}
-                                </span>
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col lg="6">
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-property"
-                                >
-                                  Status
-                                </label>
-                                <br />
-                                <span style={{ fontSize: "13px" }}>
-                                  {outstandDetails?.status || "N/A"}
-                                </span>
-                              </FormGroup>
-                            </Col>
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col lg="8">
+                            <FormGroup>
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-property"
+                                style={{ fontSize: "16px", fontFamily: "Poppins", fontWeight: "500", color: "#152B51" }}
 
-                            <Col lg="6">
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-property"
-                                >
-                                  Due Date
-                                </label>
-                                <br />
-                                <span style={{ fontSize: "13px" }}>
-                                  {formatDateWithoutTime(
-                                    outstandDetails?.date
-                                  ) || "N/A"}
-                                </span>
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col lg="6">
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-property"
-                                >
-                                  Assignees
-                                </label>
-                                <br />
-                                <span style={{ fontSize: "13px" }}>
-                                  {outstandDetails?.staff_data
-                                    .staffmember_name || "N/A"}
-                                </span>
-                              </FormGroup>
-                            </Col>
-                            <Col lg="6">
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-property"
-                                >
-                                  Permission to enter
-                                </label>
-                                <br />
-                                <span style={{ fontSize: "13px" }}>
-                                  {outstandDetails?.entry_allowed
-                                    ? "Yes"
-                                    : "No"}{" "}
-                                </span>
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                        </Box>
-                      </Col>
+                              >
+                                Status
+                              </label>
+                              <br />
+                              <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
 
-                      <Col lg="4" md="12">
-                        {/* <Box
+                                {outstandDetails?.status || "N/A"}
+                              </span>
+                            </FormGroup>
+                          </Col>
+
+                          <Col lg="4">
+                            <FormGroup>
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-property"
+                                style={{ fontSize: "16px", fontFamily: "Poppins", fontWeight: "500", color: "#152B51" }}
+
+                              >
+                                Due Date
+                              </label>
+                              <br />
+                              <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
+
+                                {formatDateWithoutTime(
+                                  outstandDetails?.date
+                                ) || "N/A"}
+                              </span>
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col lg="8">
+                            <FormGroup>
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-property"
+                                style={{ fontSize: "16px", fontFamily: "Poppins", fontWeight: "500", color: "#152B51" }}
+
+                              >
+                                Assignees
+                              </label>
+                              <br />
+                              <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
+
+                                {outstandDetails?.staff_data
+                                  ?.staffmember_name || "N/A"}
+                              </span>
+                            </FormGroup>
+                          </Col>
+                          <Col lg="4">
+                            <FormGroup>
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-property"
+                                style={{ fontSize: "16px", fontFamily: "Poppins", fontWeight: "500", color: "#152B51" }}
+
+                              >
+                                Permission to enter
+                              </label>
+                              <br />
+                              <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
+
+                                {outstandDetails?.entry_allowed
+                                  ? "Yes"
+                                  : "No"}{" "}
+                              </span>
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                      </Box>
+                    </Col>
+
+                    <Col lg="4" md="12">
+                      {/* <Box
                       border="1px solid #ccc"
                       borderRadius="8px"
                       padding="16px"
@@ -1244,179 +1362,189 @@ const WorkOrderDetails = () => {
                       margin={"20px"}
                     > */}
 
-                        {outstandDetails ? (
-                          <>
+                      {outstandDetails ? (
+                        <>
+                          <Box
+                            border="0.5px solid #737791"
+                            borderRadius="10px"
+                            maxWidth="100%"
+                            margin="20px"
+                            display="flex"
+                            flexDirection="column"
+                            alignItems="center"
+                            boxShadow=" 0px 4px 4px 0px #00000040"
+                          >
                             <Box
-                              border="1px solid #ccc"
-                              borderRadius="8px"
-                              maxWidth="100%" // Use 100% to make it responsive
-                              margin="20px"
-                              display="flex"
-                              flexDirection="column"
-                              alignItems="center" // Center content horizontally
+                              className="align-item-center text-center"
+                              borderBottom="1px solid #ccc"
+                              style={{
+                                width: "100%",
+                                padding: "10px",
+                                textAlign: "left",
+                                color: "#152B51",
+                                boxShadow: "0px 4px 4px 0px #00000040",
+                                marginBottom: "10px"
+                              }}
                             >
+                              <span className="text" style={{ color: "#152B51", fontWeight: "500", fontFamily: "Poppins", fontSize: "16px", }}
+                              >
+                                Images
+                              </span>
+                            </Box>
+                            {outstandDetails?.workOrder_images &&
+                              outstandDetails?.workOrder_images.length > 0 ? (
                               <Box
-                                borderBottom="1px solid #ccc"
                                 style={{
                                   width: "100%",
                                   padding: "16px",
-                                  textAlign: "left",
-                                  color: "#5e72e4",
+                                  marginTop: "10px",
+                                  display: "flex",
+                                  flexWrap: "wrap",
+                                  justifyContent: "center",
+                                  fontFamily: "poppins",
+
                                 }}
                               >
-                                <h2 className="text" style={{ color: "blue" }}>
-                                  Images
-                                </h2>
-                              </Box>
-                              {outstandDetails?.workOrder_images &&
-                                outstandDetails?.workOrder_images.length > 0 ? (
-                                <Box
-                                  style={{
-                                    width: "100%",
-                                    padding: "16px",
-                                    marginTop: "10px",
-                                    display: "flex",
-                                    flexWrap: "wrap",
-                                    justifyContent: "center",
-                                  }}
-                                >
-                                  {outstandDetails?.workOrder_images.map(
-                                    (imageUrl, index) => (
-                                      <Box
-                                        key={index}
-                                        width="48%"
+                                {outstandDetails?.workOrder_images.map(
+                                  (imageUrl, index) => (
+                                    <Box
+                                      key={index}
+                                      width="48%"
+                                      style={{
+                                        minWidth: "48%",
+                                        margin: "1%",
+                                      }}
+                                    >
+                                      <img
+                                        src={
+                                          !isBlobURL(imageUrl)
+                                            ? `${imageGetUrl}/${imageUrl}`
+                                            : imageUrl
+                                        }
+                                        alt={`property ${index}`}
                                         style={{
-                                          minWidth: "48%",
-                                          margin: "1%",
+                                          width: "100%",
+                                          height: "100%",
+                                          borderRadius: "8px",
+                                          border: "1px solid #ccc",
                                         }}
-                                      >
-                                        <img
-                                          src={
-                                            !isBlobURL(imageUrl)
-                                              ? `${imageGetUrl}/${imageUrl}`
-                                              : imageUrl
-                                          }
-                                          alt={`property ${index}`}
-                                          style={{
-                                            width: "100%",
-                                            height: "100%",
-                                            borderRadius: "8px",
-                                            border: "1px solid #ccc",
-                                          }}
-                                        />
-                                      </Box>
-                                    )
-                                  )}
-                                </Box>
-                              ) : (
-                                "No Images Attached"
-                              )}
-                              <br />
-                              <Box
-                                style={{
-                                  width: "100%",
-                                  padding: "5px 16px",
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <Box
-                                  width="100%"
-                                  style={{
-                                    minWidth: "100%",
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  <span>
-                                    {outstandDetails?.property_data
-                                      ?.rental_adress || "N/A"}{" "}
-                                    (
-                                    {outstandDetails?.unit_data?.rental_unit ||
-                                      ""}
-                                    )
-                                  </span>
-                                </Box>
+                                      />
+                                    </Box>
+                                  )
+                                )}
                               </Box>
+                            ) : (
+                              <div className="mt-3">
+                                No Images Attached
+                              </div>
+                            )}
+                            <br />
+                            <Box
+                              style={{
+                                width: "100%",
+                                padding: "5px 16px",
+                                display: "flex",
+                                alignItems: "center",
+                              }}
+                            >
                               <Box
+                                width="100%"
                                 style={{
-                                  width: "100%",
-                                  padding: "5px 16px",
-                                  display: "flex",
-                                  alignItems: "center",
+                                  minWidth: "100%",
+                                  textAlign: "center",
                                 }}
                               >
-                                <Box
-                                  width="100%"
-                                  style={{
-                                    minWidth: "100%",
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  <span>
-                                    {outstandDetails?.property_data
-                                      ?.rental_city ? (
-                                      <>
-                                        {
-                                          outstandDetails?.property_data
-                                            ?.rental_city
-                                        }
-                                        ,
-                                      </>
-                                    ) : (
-                                      ""
-                                    )}{" "}
-                                    {outstandDetails?.property_data
-                                      ?.rental_state ? (
-                                      <>
-                                        {
-                                          outstandDetails?.property_data
-                                            ?.rental_state
-                                        }
-                                        ,
-                                      </>
-                                    ) : (
-                                      ""
-                                    )}{" "}
-                                    <br />
-                                    {outstandDetails?.property_data
-                                      ?.rental_country ? (
-                                      <>
-                                        {
-                                          outstandDetails?.property_data
-                                            ?.rental_country
-                                        }
-                                        ,
-                                      </>
-                                    ) : (
-                                      ""
-                                    )}{" "}
-                                    {outstandDetails?.property_data
-                                      ?.rental_postcode ? (
-                                      <>
-                                        {
-                                          outstandDetails?.property_data
-                                            ?.rental_postcode
-                                        }
-                                        .
-                                      </>
-                                    ) : (
-                                      ""
-                                    )}
-                                  </span>
-                                </Box>
+                                <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
+
+                                  {outstandDetails?.property_data
+                                    ?.rental_adress || "N/A"}{" "}
+                                  (
+                                  {outstandDetails?.unit_data?.rental_unit ||
+                                    ""}
+                                  )
+                                </span>
                               </Box>
                             </Box>
-                          </>
-                        ) : (
-                          <>No Details Found</>
-                        )}
-                      </Col>
-                    </Row>
-                  </div>
-                )}
-              </div>
-              <br />
-            </Card>
+                            <Box
+                              style={{
+                                width: "100%",
+                                padding: "5px 16px",
+                                display: "flex",
+                                alignItems: "center",
+                              }}
+                            >
+                              <Box
+                                width="100%"
+                                style={{
+                                  minWidth: "100%",
+                                  textAlign: "center",
+                                }}
+                              >
+                                <span style={{ fontSize: "14px", fontFamily: "Poppins", fontWeight: "400" }}>
+
+                                  {outstandDetails?.property_data
+                                    ?.rental_city ? (
+                                    <>
+                                      {
+                                        outstandDetails?.property_data
+                                          ?.rental_city
+                                      }
+                                      ,
+                                    </>
+                                  ) : (
+                                    ""
+                                  )}{" "}
+                                  {outstandDetails?.property_data
+                                    ?.rental_state ? (
+                                    <>
+                                      {
+                                        outstandDetails?.property_data
+                                          ?.rental_state
+                                      }
+                                      ,
+                                    </>
+                                  ) : (
+                                    ""
+                                  )}{" "}
+                                  {outstandDetails?.property_data
+                                    ?.rental_country ? (
+                                    <>
+                                      {
+                                        outstandDetails?.property_data
+                                          ?.rental_country
+                                      }
+                                      ,
+                                    </>
+                                  ) : (
+                                    ""
+                                  )}{" "}
+                                  {outstandDetails?.property_data
+                                    ?.rental_postcode ? (
+                                    <>
+                                      {
+                                        outstandDetails?.property_data
+                                          ?.rental_postcode
+                                      }
+                                      .
+                                    </>
+                                  ) : (
+                                    ""
+                                  )}
+                                </span>
+                              </Box>
+                            </Box>
+                          </Box>
+                        </>
+                      ) : (
+                        <>No Details Found</>
+                      )}
+                    </Col>
+                  </Row>
+                </div>
+              )}
+            </div>
+            <br />
+            {/* </Card> */}
           </div>
         </Row>
         <br />

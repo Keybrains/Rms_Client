@@ -182,37 +182,69 @@ const AddVendor = () => {
 
   return (
     <>
-      <AddVendorHeader />
+      {/* <AddVendorHeader /> */}
       {/* Page content */}
-      <Container className="mt--7" fluid>
+      <Container className="" fluid style={{ marginTop: "4rem", height: "100vh" }}>
+
+        <Col xs="12" lg="12" sm="6">
+          {/* <FormGroup className="">
+              <h1 style={{ color: "white" }}>Property Type</h1>
+            </FormGroup> */}
+          <CardHeader
+            className=" mt-3 mx-2"
+            style={{
+              backgroundColor: "#152B51",
+              borderRadius: "10px",
+              boxShadow: " 0px 4px 4px 0px #00000040 ",
+            }}
+          >
+            <h2
+              className=""
+              style={{
+                color: "#ffffff",
+                fontFamily: "Poppins",
+                fontWeight: "500",
+                fontSize: "26px",
+              }}
+            >
+              {vendor_id ? "Edit Vendor" : "Add Vendor"}
+
+
+            </h2>
+          </CardHeader>
+        </Col>
         <Row>
           <Col className="order-xl-1" xl="12">
-            <Card className="bg-secondary shadow">
-              <CardHeader className="bg-white border-0">
-                <Row className="align-items-center">
-                  <Col xs="8">
-                    <h3 className="mb-0">
-                      {vendor_id ? "Edit Vendor" : "New Vendor"}
-                    </h3>
-                  </Col>
-                </Row>
-              </CardHeader>
+            <Card className="bg-white shadow mt-3 mx-4" style={{ boxShadow: "0px 4px 4px 0px #00000040", border: "1px solid #324567" }}>
+
               <CardBody>
                 <Form onSubmit={VendorFormik.handleSubmit}>
-                  <div className="pl-lg-4">
+                  <div className="">
                     <Row>
-                      <Col lg="6">
+                      <Col lg="4">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-staffmember-name"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Vendor Name *
                           </label>
                           <Input
+                           style={{
+                            boxShadow: " 0px 4px 4px 0px #00000040 ",
+                            borderRadius: "6px",
+                            width: "60%",
+                          }}
                             className="form-control-alternative"
                             id="input-staffmember-name"
-                            placeholder="Add Name"
+                            placeholder="Enter vendor name here..."
                             type="text"
                             name="vendor_name"
                             onBlur={VendorFormik.handleBlur}
@@ -230,20 +262,32 @@ const AddVendor = () => {
                     </Row>
                   </div>
 
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="6">
+                  <div className="">
+                    <Row className="mt-2">
+                      <Col lg="4">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="staffmember_phoneNumber"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Phone Number *
                           </label>
                           <Input
+                           style={{
+                            boxShadow: " 0px 4px 4px 0px #00000040 ",
+                            borderRadius: "6px",
+                            width: "60%",
+                          }}
                             className="form-control-alternative"
                             id="staffmember_phoneNumber"
-                            placeholder="Phone Number"
+                            placeholder="Enter phone number here..."
                             type="text"
                             name="vendor_phoneNumber"
                             onBlur={VendorFormik.handleBlur}
@@ -269,20 +313,32 @@ const AddVendor = () => {
                     </Row>
                   </div>
 
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="6">
+                  <div className="">
+                    <Row className="mt-2"> 
+                      <Col lg="4">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="staffmember_email"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Email *
                           </label>
                           <Input
+                           style={{
+                            boxShadow: " 0px 4px 4px 0px #00000040 ",
+                            borderRadius: "6px",
+                            width: "60%",
+                          }}
                             className="form-control-alternative"
                             id="staffmember_email"
-                            placeholder="Email"
+                            placeholder="Enter email here..."
                             type="text"
                             name="vendor_email"
                             onBlur={VendorFormik.handleBlur}
@@ -300,21 +356,30 @@ const AddVendor = () => {
                     </Row>
                   </div>
 
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="6">
+                  <div className="">
+                    <Row className="mt-2 mb-3">
+                      <Col lg="4">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="staffmember_password"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Password *
                           </label>
-                          <div style={{ display: "flex" }}>
+                          <div style={{ display: "flex", boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width: "60%", }}>
                             <Input
                               className="form-control-alternative"
                               id="staffmember_password"
-                              placeholder="Password"
+                              placeholder="Enter password here..."
                               name="vendor_password"
                               type={showPassword ? "text" : "password"}
                               onBlur={VendorFormik.handleBlur}
@@ -348,40 +413,43 @@ const AddVendor = () => {
                     {submitLoader ? (
                       <Button
                         type="submit"
-                        className="btn btn-primary ml-4"
-                        style={{ background: "green", color: "white" }}
+                        className="btn ml-3"
+                        style={{ background: "#152B51", color: "white" }}
+
                         disabled
                       >
                         Loading...
                       </Button>
                     ) : (
-                  <button
-                    type="submit"
-                    className="btn btn-primary ml-4"
-                    style={{ background: "green" }}
-                    disabled={!VendorFormik.isValid} 
-                    onClick={() => {
-                      VendorFormik.handleSubmit(); 
-                    }}
-                  >
-                     {vendor_id ? "Update Vendor" : "Add Vendor" }  
-                  </button>)}
+                      <Button
+                        type="submit"
+                        className="btn ml-3"
+                        style={{ background: "#152B51", color: "white", fontFamily: "Poppins", fontWeight: "400", fontSize: "14px", cursor: "pointer" }}
 
-                  <button
-                    color="primary"
-                    className="btn btn-success"
-                    onClick={handleCloseButtonClick}
-                    size="sm"
-                    style={{ background: "white", color: "black" }}
-                  >
-                    Cancel
-                  </button>
-                   {/* Conditional message */}
-                   {!VendorFormik.isValid && (
-                    <div style={{ color: 'red', marginTop: '10px' }}>
-                      Please fill in all fields correctly.
-                    </div>
-                  )}
+                        disabled={!VendorFormik.isValid}
+                        onClick={() => {
+                          VendorFormik.handleSubmit();
+                        }}
+                      >
+                        {vendor_id ? "Update Vendor" : "Add Vendor"}
+                      </Button>)}
+
+                    <Button
+                      // color="primary"
+                      className="btn"
+                      onClick={handleCloseButtonClick}
+                      size="small"
+                      style={{ background: "white", color: "#152B51" }}
+
+                    >
+                      Cancel
+                    </Button>
+                    {/* Conditional message */}
+                    {!VendorFormik.isValid && (
+                      <div style={{ color: 'red', marginTop: '10px' }}>
+                        Please fill in all fields correctly.
+                      </div>
+                    )}
                   </Row>
                 </Form>
               </CardBody>

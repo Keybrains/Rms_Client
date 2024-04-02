@@ -455,7 +455,7 @@ const PropertiesTables = () => {
             <Button
               // color="primary"
               //  href="#rms"
-              className="mr-4"
+              // className="mr-4"
               onClick={() => {
                 if (countRes.statusCode === 201) {
                   swal(
@@ -479,7 +479,7 @@ const PropertiesTables = () => {
               <h1 style={{ color: "white" }}>Property Type</h1>
             </FormGroup> */}
             <CardHeader
-              className=" mt-3 mx-4"
+              className=" mt-3 "
               style={{
                 backgroundColor: "#152B51",
                 borderRadius: "10px",
@@ -517,7 +517,7 @@ const PropertiesTables = () => {
               <>
                 {/* <Card className="shadow"> */}
                 <CardHeader className="border-0">
-                  <Row className="d-flex mx-2">
+                  <Row className="d-flex ">
                     <Col>
                       <Row>
                         <FormGroup className="mr-sm-2">
@@ -609,199 +609,211 @@ const PropertiesTables = () => {
                     </Col>
                   </Row>
                 </CardHeader>
-                {/* <Table className="align-items-center table-flush" responsive>
-                  <thead className="thead-light">
-                    <tr>
-                      <th scope="col">
+                <Table className="align-items-center table-flush" responsive style={{ borderCollapse: "collapse" }}>
+                  <thead className="" style={{
+                    height: "45px",
+                    fontSize: "14px",
+                    fontFamily: "poppins",
+                    fontWeight: "600",
+                    boxShadow: " 0px 4px 4px 0px #00000040",
+                  }}>
+                    <tr style={{
+                      border: "2px solid rgba(50, 69, 103, 1)",
+                    }}> 
+                      <th scope="col" style={{
+                        borderTopLeftRadius: "15px",
+
+                        color: "#152B51"
+                      }}>
                         Property{" "}
                         {sortBy.includes("rental_adress") ? (
                           upArrow.includes("rental_adress") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("rental_adress")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("rental_adress")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("rental_adress")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Property Typess{" "}
                         {sortBy.includes("type") ? (
                           upArrow.includes("type") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("type")}
                             />
                           ) : (
-                            <ArrowUpwardIcon onClick={() => sortData("type")} />
+                            <ArrowDropUpIcon onClick={() => sortData("type")} />
                           )
                         ) : (
-                          <ArrowUpwardIcon onClick={() => sortData("type")} />
+                          <ArrowDropDownIcon onClick={() => sortData("type")} />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Property Sub Type{" "}
                         {sortBy.includes("property_type") ? (
                           upArrow.includes("property_type") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("property_type")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("property_type")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("property_type")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Rental Owners Name{" "}
                         {sortBy.includes("rentalOwner_firstName") ? (
                           upArrow.includes("rentalOwner_firstName") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("rentalOwner_firstName")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("rentalOwner_firstName")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("rentalOwner_firstName")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Rental Company Name{" "}
                         {sortBy.includes("rentalOwner_companyName") ? (
                           upArrow.includes("rentalOwner_companyName") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() =>
                                 sortData("rentalOwner_companyName")
                               }
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() =>
                                 sortData("rentalOwner_companyName")
                               }
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("rentalOwner_companyName")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Locality{" "}
                         {sortBy.includes("rental_city") ? (
                           upArrow.includes("rental_city") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("rental_city")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("rental_city")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("rental_city")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Primary Email{" "}
                         {sortBy.includes("rentalOwner_primaryEmail") ? (
                           upArrow.includes("rentalOwner_primaryEmail") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() =>
                                 sortData("rentalOwner_primaryEmail")
                               }
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() =>
                                 sortData("rentalOwner_primaryEmail")
                               }
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("rentalOwner_primaryEmail")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Phone Number
                         {sortBy.includes("rentalOwner_phoneNumber") ? (
                           upArrow.includes("rentalOwner_phoneNumber") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() =>
                                 sortData("rentalOwner_phoneNumber")
                               }
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() =>
                                 sortData("rentalOwner_phoneNumber")
                               }
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("rentalOwner_phoneNumber")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Created At{" "}
                         {sortBy.includes("createdAt") ? (
                           upArrow.includes("createdAt") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("createdAt")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("createdAt")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("createdAt")}
                           />
                         )}
                       </th>
-                      <th>
+                      <th style={{ color: "#152B51" }}>
                         Last Updated At{" "}
                         {sortBy.includes("updatedAt") ? (
                           upArrow.includes("updatedAt") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("updatedAt")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("updatedAt")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("updatedAt")}
                           />
                         )}
                       </th>
 
-                      <th scope="col">ACTION</th>
+                      <th scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>ACTION</th>
                     </tr>
                   </thead>
                   {rentalsData.length === 0 ? (
@@ -814,6 +826,12 @@ const PropertiesTables = () => {
                     </tbody>
                   ) : (
                     <tbody>
+                       <tr style={{
+                        border: "none",
+                      }}>
+                        {/* Empty row */}
+                        <td colSpan="9"></td>
+                      </tr>
                       {filterRentalsBySearchAndPage()?.map((Rental) => (
                         <>
                           <tr
@@ -821,39 +839,47 @@ const PropertiesTables = () => {
                             onClick={() =>
                               navigateToPropDetails(Rental.rental_id)
                             }
-                            style={{ cursor: "pointer" }}
+                            style={{
+                              cursor: "pointer",
+                              border: "0.5px solid rgba(50, 69, 103, 1)",
+                              fontSize: "12px",
+                              height: "40px",
+                              fontFamily: "poppins",
+                              fontWeight: "600",
+                              lineHeight: "10.93px",
+                            }}
                           >
-                            <td>{Rental.rental_adress}</td>
-                            <td>{Rental?.property_type_data?.property_type}</td>
-                            <td>
+                            <td className="bordertopintd">{Rental.rental_adress}</td>
+                            <td className="bordertopintd">{Rental?.property_type_data?.property_type}</td>
+                            <td className="bordertopintd">
                               {Rental?.property_type_data?.propertysub_type}
                             </td>
-                            <td>
+                            <td className="bordertopintd">
                               {Rental.rental_owner_data.rentalOwner_firstName}{" "}
                               {Rental.rental_owner_data.rentalOwner_lastName}
                             </td>
-                            <td>
+                            <td className="bordertopintd">
                               {Rental.rental_owner_data.rentalOwner_companyName}
                             </td>
-                            <td>{`${Rental.rental_city}`}</td>
-                            <td>
+                            <td className="bordertopintd">{`${Rental.rental_city}`}</td>
+                            <td className="bordertopintd">
                               {
                                 Rental.rental_owner_data
                                   .rentalOwner_primaryEmail
                               }
                             </td>
-                            <td>
+                            <td className="bordertopintd">
                               {Rental.rental_owner_data.rentalOwner_phoneNumber}
                             </td>
-                            <td>
+                            <td className="bordertopintd">
                               {moment(Rental.createdAt).format("DD-MM-YYYY")}
                             </td>
-                            <td>
+                            <td className="bordertopintd">
                               {Rental.updatedAt
                                 ? moment(Rental.updatedAt).format("DD-MM-YYYY")
                                 : "-"}
                             </td>
-                            <td style={{}}>
+                            <td  className="bordertopintd">
                               <div style={{ display: "flex", gap: "5px" }}>
                                 <div
                                   style={{ cursor: "pointer" }}
@@ -862,7 +888,7 @@ const PropertiesTables = () => {
                                     deleteRentals(Rental.rental_id, Rental);
                                   }}
                                 >
-                                  <DeleteIcon />
+                                   <img src={deleicon} width={20} height={20} />
                                 </div>
                                 <div
                                   style={{ cursor: "pointer" }}
@@ -871,7 +897,7 @@ const PropertiesTables = () => {
                                     editProperty(Rental.rental_id);
                                   }}
                                 >
-                                  <EditIcon />
+                                   <img src={editicon} width={20} height={20} />
                                 </div>
                               </div>
                             </td>
@@ -881,8 +907,8 @@ const PropertiesTables = () => {
                       ))}
                     </tbody>
                   )}
-                </Table> */}
-                <Row
+                </Table>
+                {/* <Row
                   className="mx-4 mt-3 d-flex align-items-center py-1 responsive"
                   style={{ borderRadius: "10px", height: "auto", overflow: "auto" }}
                 >
@@ -1206,7 +1232,7 @@ const PropertiesTables = () => {
                       </Row>
                     )}
                   </Col>
-                </Row>
+                </Row> */}
                 {paginatedData.length > 0 ? (
                   <Row>
                     <Col className="text-right m-3">

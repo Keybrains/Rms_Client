@@ -375,10 +375,10 @@ const VendorWorkDetail = () => {
                                   className="text-lg"
                                   style={{ color: "#152B51" }}
                                 >
-                                  {outstandDetails.work_subject || "N/A"}
+                                  {outstandDetails?.work_subject || "N/A"}
                                 </h2>
                                 <span>
-                                  {outstandDetails.property_data
+                                  {outstandDetails?.property_data
                                     .rental_adress || "N/A"}
                                 </span>
                               </Box>
@@ -1316,7 +1316,7 @@ const VendorWorkDetail = () => {
                                 )}
                               </Box>
                             ) : (
-                              <div className="mt-3">
+                              <div className = "mt-3">
                                 No Images Attached
                               </div>
                             )}

@@ -28,6 +28,10 @@ import { RotatingLines } from "react-loader-spinner";
 import Cookies from "universal-cookie";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import deleicon from "../../assets/img/icons/common/delete.svg";
+import editicon from "../../assets/img/icons/common/editicon.svg";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 const RentRoll = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -246,14 +250,9 @@ const RentRoll = () => {
   return (
     <>
       <Header />
-      <Container className="mt--8" fluid>
-        <Row>
-          <Col xs="12" sm="6">
-            <FormGroup className="">
-              <h1 style={{ color: "white" }}>Rent Roll</h1>
-            </FormGroup>
-          </Col>
+      <Container className="" fluid style={{ marginTop: "3rem", height: "100vh" }}>
 
+        <Row>
           <Col className="text-right">
             {/* <Button
               color="primary"
@@ -264,7 +263,8 @@ const RentRoll = () => {
               Add New Lease
             </Button> */}
             <Button
-              color="primary"
+              className=""
+              // color="primary"
               onClick={() => {
                 if (countRes.statusCode === 201) {
                   swal(
@@ -276,11 +276,36 @@ const RentRoll = () => {
                   navigate("/" + admin + "/RentRollLeaseing");
                 }
               }}
-              size="sm"
-              style={{ background: "white", color: "blue" }}
+              size="small"
+              style={{ background: "#152B51", color: "#fff" }}
             >
               Add New Lease
             </Button>
+          </Col>
+          <Col xs="12" lg="12" sm="6">
+            {/* <FormGroup className="">
+              <h1 style={{ color: "white" }}>Property Type</h1>
+            </FormGroup> */}
+            <CardHeader
+              className=" mt-3 "
+              style={{
+                backgroundColor: "#152B51",
+                borderRadius: "10px",
+                boxShadow: " 0px 4px 4px 0px #00000040 ",
+              }}
+            >
+              <h2
+                className=""
+                style={{
+                  color: "#ffffff",
+                  fontFamily: "Poppins",
+                  fontWeight: "500",
+                  fontSize: "26px",
+                }}
+              >
+                Rent Roll
+              </h2>
+            </CardHeader>
           </Col>
         </Row>
         <br />
@@ -297,155 +322,173 @@ const RentRoll = () => {
                 />
               </div>
             ) : (
-              <Card className="shadow">
-                <CardHeader className="border-0">
-                  <Row>
-                    <Col xs="12" sm="6">
-                      <FormGroup className="">
-                        <Input
-                          fullWidth
-                          type="text"
-                          placeholder="Search"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          style={{
-                            width: "100%",
-                            maxWidth: "200px",
-                            minWidth: "200px",
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col className="d-flex justify-content-end">
-                      <FormGroup>
-                        <p>
-                          Added :{" "}
-                          <b style={{ color: "blue", fontWeight: 1000 }}>
-                            {countRes.leaseCount}
-                          </b>{" "}
-                          {" / "}
-                          Total :{" "}
-                          <b style={{ color: "blue", fontWeight: 1000 }}>
-                            {countRes.leaseCountLimit}
-                          </b>
-                        </p>
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                </CardHeader>
-                <Table className="align-items-center table-flush" responsive>
-                  <thead className="thead-light">
-                    <tr>
-                      <th scope="col">
+              <>
+                {/* <Card className="shadow"> */}
+                {/* <CardHeader className="border-0"> */}
+                <Row className="mb-3" >
+                  <Col xs="12" sm="6">
+                    <FormGroup className="">
+                      <Input
+                        fullWidth
+                        type="text"
+                        placeholder="Search here..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        style={{
+                          width: "100%",
+                          maxWidth: "200px",
+                          minWidth: "200px",
+                          boxShadow: " 0px 4px 4px 0px #00000040",
+                          border: "1px solid #ced4da",
+                        }}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col className="d-flex justify-content-end">
+                    <FormGroup>
+                      <p style={{ fontFamily: "Poppins", fontSize: "18px", fontWeight: "500" }}>
+
+                        Added :{" "}
+                        <b style={{ color: "#152B51", fontWeight: 1000 }}>
+
+                          {countRes.leaseCount}
+                        </b>{" "}
+                        {" / "}
+                        Total :{" "}
+                        <b style={{ color: "#152B51", fontWeight: 1000 }}>
+
+                          {countRes.leaseCountLimit}
+                        </b>
+                      </p>
+                    </FormGroup>
+                  </Col>
+                </Row>
+                {/* </CardHeader> */}
+                <Table className="align-items-center table-flush" responsive style={{ borderCollapse: "collapse" }}>
+                  <thead className="" style={{
+                    height: "45px",
+                    fontSize: "14px",
+                    fontFamily: "poppins",
+                    fontWeight: "600",
+                    boxShadow: " 0px 4px 4px 0px #00000040",
+                  }}>
+                    <tr style={{
+                      border: "2px solid rgba(50, 69, 103, 1)",
+                    }} >
+                      <th scope="col" style={{
+                        borderTopLeftRadius: "15px",
+
+                        color: "#152B51"
+                      }}>
                         Tenant Name
                         {sortBy.includes("tenant_firstName") ? (
                           upArrow.includes("tenant_firstName") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("tenant_firstName")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("tenant_firstName")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("tenant_firstName")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Lease
                         {sortBy.includes("rental_adress") ? (
                           upArrow.includes("rental_adress") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("rental_adress")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("rental_adress")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("rental_adress")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Type
                         {sortBy.includes("lease_type") ? (
                           upArrow.includes("lease_type") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("lease_type")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("lease_type")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("lease_type")}
                           />
                         )}
                       </th>
 
-                      <th scope="col">Status</th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>Status</th>
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Start Date-End Date
                         {sortBy.includes("start_date") ? (
                           upArrow.includes("start_date") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("start_date")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("start_date")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("start_date")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Rent
                         {sortBy.includes("amount") ? (
                           upArrow.includes("amount") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("amount")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("amount")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon onClick={() => sortData("amount")} />
+                          <ArrowDropDownIcon onClick={() => sortData("amount")} />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Created At
                         {sortBy.includes("createdAt") ? (
                           upArrow.includes("createdAt") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("createdAt")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("createdAt")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("createdAt")}
                           />
                         )}
                       </th>
-                      <th scope="col">Last Updated</th>
-                      <th scope="col">ACTION</th>
+                      <th scope="col" style={{ color: "#152B51" }}>Last Updated</th>
+                      <th scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>ACTION</th>
                     </tr>
                   </thead>
                   {tenantsData.length === 0 ? (
@@ -458,6 +501,12 @@ const RentRoll = () => {
                     </tbody>
                   ) : (
                     <tbody>
+                      <tr style={{
+                        border: "none",
+                      }}>
+                        {/* Empty row */}
+                        <td colSpan="9"></td>
+                      </tr>
                       {filterTenantsBySearchAndPage()?.map((tenant) => (
                         <>
                           <tr
@@ -465,30 +514,66 @@ const RentRoll = () => {
                             onClick={() =>
                               navigateToRentRollDetails(tenant.lease_id)
                             }
-                            style={{ cursor: "pointer" }}
+                            // style={{ cursor: "pointer" }}
+                            style={{
+                              cursor: "pointer",
+                              border: "0.5px solid rgba(50, 69, 103, 1)",
+                              fontSize: "12px",
+                              height: "40px",
+                              fontFamily: "poppins",
+                              fontWeight: "600",
+                              lineHeight: "10.93px",
+                            }}
                           >
-                            <td>
+                            <td style={{
+                              borderTop: "0.5px solid rgba(50, 69, 103, 1)",
+
+                            }}>
                               {tenant.tenant_firstName} {tenant.tenant_lastName}
                             </td>
-                            <td>
+                            <td style={{
+                              borderTop: "0.5px solid rgba(50, 69, 103, 1)",
+
+                            }}>
                               {tenant.rental_adress}{" "}
                               {tenant.rental_unit
                                 ? " - " + tenant.rental_unit
                                 : null}{" "}
                             </td>
-                            <td>{tenant.lease_type}</td>
-                            <td>
+                            <td style={{
+                              borderTop: "0.5px solid rgba(50, 69, 103, 1)",
+
+                            }}>{tenant.lease_type}</td>
+                            <td style={{
+                              borderTop: "0.5px solid rgba(50, 69, 103, 1)",
+
+                            }}>
                               {getStatus(tenant.start_date, tenant.end_date)}
                             </td>
-                            <td>
+                            <td style={{
+                              borderTop: "0.5px solid rgba(50, 69, 103, 1)",
+
+                            }}>
                               {tenant.start_date} to {tenant.end_date}
                             </td>
-                            <td>{tenant.amount}</td>
-                            <td>{tenant.createdAt} </td>
-                            <td>
+                            <td style={{
+                              borderTop: "0.5px solid rgba(50, 69, 103, 1)",
+
+                            }}>{tenant.amount}</td>
+                            <td style={{
+                              borderTop: "0.5px solid rgba(50, 69, 103, 1)",
+
+                            }}>{tenant.createdAt} </td>
+                            <td style={{
+                              borderTop: "0.5px solid rgba(50, 69, 103, 1)",
+
+                            }}>
                               {tenant.updatedAt ? tenant.updatedAt : "-"}{" "}
                             </td>
-                            <td style={{}}>
+                            <td style={{
+                              borderTop: "0.5px solid rgba(50, 69, 103, 1)",
+
+                            }}>
                               <div style={{ display: "flex", gap: "5px" }}>
                                 <div
                                   style={{ cursor: "pointer" }}
@@ -497,7 +582,8 @@ const RentRoll = () => {
                                     deleteTenant(tenant.lease_id);
                                   }}
                                 >
-                                  <DeleteIcon />
+                                  <img src={deleicon} width={20} height={20} />
+
                                 </div>
                                 <div
                                   style={{ cursor: "pointer" }}
@@ -506,7 +592,8 @@ const RentRoll = () => {
                                     editLeasing(tenant.lease_id);
                                   }}
                                 >
-                                  <EditIcon />
+                                  <img src={editicon} width={20} height={20} />
+
                                 </div>
                               </div>
                             </td>
@@ -598,7 +685,8 @@ const RentRoll = () => {
                 ) : (
                   <></>
                 )}
-              </Card>
+                {/* </Card> */}
+              </>
             )}
           </Grid>
         </Grid>

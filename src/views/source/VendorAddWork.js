@@ -2178,7 +2178,10 @@ const VendorAddWork = () => {
                             <br />
                             <div style={{ display: "flex" }}>
                               <Col xs="3">
-                                <Label check>
+                                <Label check 
+                                    style={{ fontFamily: "Poppins", fontSize: "14px", fontWeight: "400", color: "#152B514D" }}
+                                
+                                >
                                   <Input
                                     type="radio"
                                     name="priority"
@@ -2186,7 +2189,6 @@ const VendorAddWork = () => {
                                     checked={selectedPriority === "High"}
                                     onChange={handlePriorityChange}
                                     disabled // Set disabled to make it readonly
-                                    style={{ fontFamily: "Poppins", fontSize: "14px", fontWeight: "400", color: selectedPriority === "High" ? "#152B51" : "inherit", }}
 
                                   />
                                   High
@@ -2194,7 +2196,10 @@ const VendorAddWork = () => {
                               </Col>
                               &nbsp;
                               <Col xs="4">
-                                <Label check>
+                                <Label check
+                                    style={{ fontFamily: "Poppins", fontSize: "14px", fontWeight: "400", color: "#152B514D" }}
+                                
+                                >
                                   <Input
                                     type="radio"
                                     name="priority"
@@ -2202,7 +2207,6 @@ const VendorAddWork = () => {
                                     checked={selectedPriority === "Medium"}
                                     onChange={handlePriorityChange}
                                     disabled // Set disabled to make it readonly
-                                    style={{ fontFamily: "Poppins", fontSize: "14px", fontWeight: "400", color: selectedPriority === "High" ? "#152B51" : "inherit", }}
 
                                   />
                                   Medium
@@ -2210,7 +2214,10 @@ const VendorAddWork = () => {
                               </Col>
                               &nbsp;
                               <Col xs="4">
-                                <Label check>
+                                <Label check 
+                                    style={{ fontFamily: "Poppins", fontSize: "14px", fontWeight: "400", color: "#152B514D"}}
+                                
+                                >
                                   <Input
                                     type="radio"
                                     name="priority"
@@ -2218,7 +2225,6 @@ const VendorAddWork = () => {
                                     checked={selectedPriority === "Low"}
                                     onChange={handlePriorityChange}
                                     disabled // Set disabled to make it readonly
-                                    style={{ fontFamily: "Poppins", fontSize: "14px", fontWeight: "400", color: selectedPriority === "High" ? "#152B51" : "inherit", }}
 
                                   />
                                   Low

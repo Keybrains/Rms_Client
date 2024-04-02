@@ -205,22 +205,15 @@ const AddPropertyType = () => {
                 fontSize: "26px",
               }}
             >
-              Add Property Type
+              {id ? "Edit Property Type" : "Add Property Type"}
+
             </h2>
           </CardHeader>
         </Col>
         <Row>
           <Col className="order-xl-1" xl="12">
             <Card className="bg-white shadow mt-3 mx-4" style={{ boxShadow: " 0px 4px 4px 0px #00000040", border: "1px solid #324567" }}>
-              <CardHeader className="bg-white border-0 ">
-                <Row className="align-items-center ">
-                  <Col xs="8">
-                    <h3 className="mb-0" style={{ fontSize: "18px", fontWeight: "600", fontFamily: "Poppins", color: "#152B51" }}>
-                      {id ? "Edit Property Type" : "New Property Type"}
-                    </h3>
-                  </Col>
-                </Row>
-              </CardHeader>
+             
               <CardBody>
                 <Form onSubmit={propertyFormik.handleSubmit}>
                   <div className="">

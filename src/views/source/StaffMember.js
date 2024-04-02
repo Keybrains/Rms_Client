@@ -323,7 +323,7 @@ const StaffMember = () => {
             <Button
               // color="primary"
               //  href="#rms"
-              className="mr-4"
+              // className="mr-4"
               onClick={() => {
                 if (countRes.statusCode === 201) {
                   swal(
@@ -347,7 +347,7 @@ const StaffMember = () => {
               <h1 style={{ color: "white" }}>Property Type</h1>
             </FormGroup> */}
             <CardHeader
-              className=" mt-3 mx-4"
+              className=" mt-3 "
               style={{
                 backgroundColor: "#152B51",
                 borderRadius: "10px",
@@ -387,8 +387,8 @@ const StaffMember = () => {
             ) : (
               <>
                 {/* <Card className="shadow"> */}
-                <CardHeader className="border-0">
-                  <Row>
+                {/* <CardHeader className="border-0"> */}
+                  <Row className="mb-3">
                     <Col xs="12" sm="6">
                       <FormGroup className="">
                         <Input
@@ -409,7 +409,7 @@ const StaffMember = () => {
                     </Col>
                     <Col className="d-flex justify-content-end">
                       <FormGroup>
-                        <p style={{fontFamily:"Poppins", fontSize:"18px", fontWeight:"500"}}>
+                        <p style={{ fontFamily: "Poppins", fontSize: "18px", fontWeight: "500" }}>
                           Added :{" "}
                           <b style={{ color: "#152B51", fontWeight: 1000 }}>
                             {countRes.rentalCount}
@@ -423,111 +423,123 @@ const StaffMember = () => {
                       </FormGroup>
                     </Col>
                   </Row>
-                </CardHeader>
+                {/* </CardHeader> */}
 
-                {/* <Table className="align-items-center table-flush" responsive>
-                  <thead className="thead-light">
-                    <tr>
-                      <th scope="col">
+                <Table className="align-items-center table-flush" responsive style={{ borderCollapse: "collapse" }}>
+                  <thead className="" style={{
+                    height: "45px",
+                    fontSize: "14px",
+                    fontFamily: "poppins",
+                    fontWeight: "600",
+                    boxShadow: " 0px 4px 4px 0px #00000040",
+                  }}>
+                    <tr style={{
+                      border: "2px solid rgba(50, 69, 103, 1)",
+                    }}>
+                      <th scope="col" style={{
+                        borderTopLeftRadius: "15px",
+
+                        color: "#152B51"
+                      }}>
                         NAME
                         {sortBy.includes("staffmember_name") ? (
                           upArrow.includes("staffmember_name") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("staffmember_name")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("staffmember_name")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("staffmember_name")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         DESIGNATION
                         {sortBy.includes("staffmember_designation") ? (
                           upArrow.includes("staffmember_designation") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() =>
                                 sortData("staffmember_designation")
                               }
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() =>
                                 sortData("staffmember_designation")
                               }
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("staffmember_designation")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Contact
                         {sortBy.includes("staffmember_phoneNumber") ? (
                           upArrow.includes("staffmember_phoneNumber") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() =>
                                 sortData("staffmember_phoneNumber")
                               }
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() =>
                                 sortData("staffmember_phoneNumber")
                               }
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("staffmember_phoneNumber")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Mail Id
                         {sortBy.includes("staffmember_email") ? (
                           upArrow.includes("staffmember_email") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("staffmember_email")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("staffmember_email")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("staffmember_email")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Created at
                         {sortBy.includes("createdAt") ? (
                           upArrow.includes("createdAt") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("createdAt")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("createdAt")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("createdAt")}
                           />
                         )}
                       </th>
-                      <th scope="col">Updated at</th>
-                      <th scope="col">ACTION</th>
+                      <th scope="col" style={{ color: "#152B51" }}>Updated at</th>
+                      <th scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>ACTION</th>
                     </tr>
                   </thead>
                   {StaffMemberData.length === 0 ? (
@@ -540,15 +552,29 @@ const StaffMember = () => {
                     </tbody>
                   ) : (
                     <tbody>
+                      <tr style={{
+                        border: "none",
+                      }}>
+                        {/* Empty row */}
+                        <td colSpan="9"></td>
+                      </tr>
                       {filterTenantsBySearchAndPage().map((staff) => (
-                        <tr key={staff._id}>
-                          <td>{staff.staffmember_name}</td>
-                          <td>{staff.staffmember_designation}</td>
-                          <td>{staff.staffmember_phoneNumber}</td>
-                          <td>{staff.staffmember_email}</td>
-                          <td>{staff.createdAt}</td>
-                          <td>{staff.updatedAt ? staff.updatedAt : "-"}</td>
-                          <td>
+                        <tr key={staff._id}
+                          style={{
+                            border: "0.5px solid rgba(50, 69, 103, 1)",
+                            fontSize: "12px",
+                            height: "40px",
+                            fontFamily: "poppins",
+                            fontWeight: "600",
+                            lineHeight: "10.93px",
+                          }}>
+                          <td className="bordertopintd">{staff.staffmember_name}</td>
+                          <td className="bordertopintd">{staff.staffmember_designation}</td>
+                          <td className="bordertopintd">{staff.staffmember_phoneNumber}</td>
+                          <td className="bordertopintd">{staff.staffmember_email}</td>
+                          <td className="bordertopintd">{staff.createdAt}</td>
+                          <td className="bordertopintd">{staff.updatedAt ? staff.updatedAt : "-"}</td>
+                          <td className="bordertopintd">
                             <div style={{ display: "flex" }}>
                               <div
                                 style={{ cursor: "pointer" }}
@@ -556,7 +582,8 @@ const StaffMember = () => {
                                   deleteStaffMember(staff.staffmember_id)
                                 }
                               >
-                                <DeleteIcon />
+                                <img src={deleicon} width={20} height={20} />
+
                               </div>
                               &nbsp; &nbsp; &nbsp;
                               <div
@@ -565,7 +592,8 @@ const StaffMember = () => {
                                   editStaffMember(staff.staffmember_id)
                                 }
                               >
-                                <EditIcon />
+                                <img src={editicon} width={20} height={20} />
+
                               </div>
                             </div>
                           </td>
@@ -573,8 +601,8 @@ const StaffMember = () => {
                       ))}
                     </tbody>
                   )}
-                </Table> */}
-                <Row
+                </Table>
+                {/* <Row
                   className="mx-4 mt-3 d-flex align-items-center py-1"
                   style={{ borderRadius: "10px", height: "auto" }}
                 >
@@ -785,7 +813,7 @@ const StaffMember = () => {
                       </Row>
                     )}
                   </Col>
-                </Row>
+                </Row> */}
                 {paginatedData.length > 0 ? (
                   <Row>
                     <Col className="text-right m-3">

@@ -301,7 +301,8 @@ const Rentals = () => {
                 fontSize: "26px",
               }}
             >
-              Add Rental Owner
+              {id ? "Edit Rental Owner" : "Add Rental Owner"}
+
             </h2>
           </CardHeader>
         </Col>
@@ -311,10 +312,10 @@ const Rentals = () => {
               <CardHeader className="bg-white border-0">
                 {/* <Row className="align-items-center">
                   <Col xs="8"> */}
-                <h3 className="mb-0" style={{ fontSize: "18px", fontWeight: "600", fontFamily: "Poppins", color: "#152B51" }}>
+                {/* <h3 className="mb-0" style={{ fontSize: "18px", fontWeight: "600", fontFamily: "Poppins", color: "#152B51" }}>
 
                   {id ? "Edit Rental Owner" : "New Rental Owner"}
-                </h3>
+                </h3> */}
                 {/* </Col>
                   
                 </Row> */}
@@ -961,23 +962,23 @@ const Rentals = () => {
                       </Row>
                       {/* </FormGroup> */}
 
-                        <Row className="mt-2">
-                          <Col lg="3">
-                      <FormGroup className="mb-0">
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-property"
-                          style={{
-                            // marginBottom: "10px",
-                            fontWeight: "500",
-                            fontFamily: "Poppins",
-                            fontSize: "16px",
-                            color: "#8A95A8",
-                          }}
-                        >
-                          Street Address
-                        </label>
-                      </FormGroup>
+                      <Row className="mt-2">
+                        <Col lg="3">
+                          <FormGroup className="mb-0">
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-property"
+                              style={{
+                                // marginBottom: "10px",
+                                fontWeight: "500",
+                                fontFamily: "Poppins",
+                                fontSize: "16px",
+                                color: "#8A95A8",
+                              }}
+                            >
+                              Street Address
+                            </label>
+                          </FormGroup>
                           <Input
                             style={{
                               boxShadow: " 0px 4px 4px 0px #00000040 ",

@@ -2555,7 +2555,7 @@ fieldset:disabled a.btn {
 .btn-secondary {
   color: #212529;
   background-color: #f7fafc;
-  border-color: #f7fafc;
+  /* border-color: #f7fafc; */
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 .btn-secondary:hover {
@@ -21504,6 +21504,10 @@ button:focus,
   outline: none;
 }
 
+.bordertopintd{
+  border-top: 0.5px solid rgba(50, 69, 103, 1) !important;
+}
+
 @keyframes show-navbar-dropdown {
   0% {
     opacity: 0;
@@ -21529,6 +21533,8 @@ button:focus,
 .table .badge i {
   margin-right: 10px;
 }
+
+
 
 /*# sourceMappingURL=argon-dashboard-react.css.map */
 

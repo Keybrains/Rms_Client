@@ -1504,21 +1504,27 @@ function TenantAddPayment() {
                           >
                             <thead>
                               <tr style={{
-                                fontFamily: "Poppins", fontSize: "16px", fontWeight: "600", color: "#152B51",
+                                fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#152B51",
                                 border: "1px solid #152B51",
 
                               }}
                               >
                                 <th style={{
-                                  border: "1px solid #152B51",
-                                }}>Account</th>
+                                fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#152B51",
+                                border: "1px solid #152B51",
+
+                              }}>Account</th>
                                 {!payment_id &&
                                   <th style={{
+                                    fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#152B51",
                                     border: "1px solid #152B51",
+    
                                   }}>Balance</th>}
                                 <th style={{
-                                  border: "1px solid #152B51",
-                                }}>Amount</th>
+                                fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#152B51",
+                                border: "1px solid #152B51",
+
+                              }}>Amount</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -1750,11 +1756,15 @@ function TenantAddPayment() {
                                   border: "1px solid #152B51",
                                 }}>
                                   <th style={{
-                                    border: "1px solid #152B51",
-                                  }}>Total</th>
+                                fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#152B51",
+                                border: "1px solid #152B51",
+
+                              }}>Total</th>
                                   <th style={{
-                                    border: "1px solid #152B51",
-                                  }}>{total.toFixed(2)}</th>
+                                fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#152B51",
+                                border: "1px solid #152B51",
+
+                              }}>{total.toFixed(2)}</th>
                                 </tr>
                                 {Number(
                                   generalledgerFormik.values.total_amount || 0
@@ -1796,7 +1806,7 @@ function TenantAddPayment() {
                                   >
                                     <Button
                                       type="button"
-                                      className="btn "
+                                      className="btn"
                                       onClick={handleAddRow}
                                       style={{ color: "white", backgroundColor: "#152B51" }}
                                     >

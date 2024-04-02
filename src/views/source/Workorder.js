@@ -29,6 +29,10 @@ import { RotatingLines } from "react-loader-spinner";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import { useEffect } from "react";
+import deleicon from "../../assets/img/icons/common/delete.svg";
+import editicon from "../../assets/img/icons/common/editicon.svg";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 const Workorder = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -90,8 +94,8 @@ const Workorder = () => {
             status: item?.workOrderData?.status,
             createdAt: item?.workOrderData?.createdAt,
             updateAt: item?.workOrderData?.updatedAt,
-            rental_id: item?.rentalAdress?.rental_id,
-            rental_adress: item?.rentalAdress?.rental_adress,
+            rental_id: item?.rentalAddress?.rental_id,
+            rental_adress: item?.rentalAddress?.rental_adress,
             unit_id: item?.rentalUnit?.unit_id,
             rental_unit: item?.rentalUnit?.rental_unit,
             staffmember_id: item?.staffMember?.staffmember_id,
@@ -100,6 +104,7 @@ const Workorder = () => {
           setWorkData(filteredData);
           setTotalPages(Math.ceil(filteredData.length / pageItem));
           // setLoader(false);
+          console.log(response?.data?.data, "janak")
         } else {
           setWorkData([]);
           setTotalPages(0);
@@ -109,7 +114,7 @@ const Workorder = () => {
         console.error("Error fetching data:", error);
       }
       finally {
-        setLoader(false); 
+        setLoader(false);
       }
     }
   };
@@ -272,25 +277,47 @@ const Workorder = () => {
     <>
       <Header />
       {/* Page content */}
-      <Container className="mt--8" fluid>
+      <Container className="" fluid style={{ marginTop: "3rem", height: "100vh" }}>
+
         {/* Table */}
         <Row>
-          <Col xs="12" sm="6">
-            <FormGroup className="">
-              <h1 style={{ color: "white" }}>Work Orders</h1>
-            </FormGroup>
-          </Col>
 
           <Col className="text-right">
             <Button
-              color="primary"
+              // color="primary"
               //  href="#rms"
               onClick={() => navigate("/" + admin + "/addworkorder")}
-              size="sm"
-              style={{ background: "white", color: "blue" }}
+              size="small"
+              style={{ background: "#152B51", color: "#fff" }}
             >
               Add Work Order
             </Button>
+          </Col>
+
+          <Col xs="12" lg="12" sm="6">
+            {/* <FormGroup className="">
+              <h1 style={{ color: "white" }}>Property Type</h1>
+            </FormGroup> */}
+            <CardHeader
+              className=" mt-3 "
+              style={{
+                backgroundColor: "#152B51",
+                borderRadius: "10px",
+                boxShadow: " 0px 4px 4px 0px #00000040 ",
+              }}
+            >
+              <h2
+                className=""
+                style={{
+                  color: "#ffffff",
+                  fontFamily: "Poppins",
+                  fontWeight: "500",
+                  fontSize: "26px",
+                }}
+              >
+                Work Orders
+              </h2>
+            </CardHeader>
           </Col>
         </Row>
         <br />
@@ -308,106 +335,121 @@ const Workorder = () => {
                 />
               </div>
             ) : (
-              <Card className="shadow">
-                <CardHeader className="border-0">
-                  <Row>
-                    <Col xs="12" sm="6">
-                      <FormGroup>
-                        <Input
-                          fullWidth
-                          type="text"
-                          placeholder="Search"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          style={{
-                            width: "100%",
-                            maxWidth: "200px",
-                            minWidth: "200px",
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                </CardHeader>
-                <Table className="align-items-center table-flush" responsive>
-                  <thead className="thead-light">
-                    <tr>
-                      <th scope="col">
+              <>
+                {/* <Card className="shadow"> */}
+                {/* <CardHeader className="border-0"> */}
+                <Row className="mb-3">
+                  <Col xs="12" sm="6">
+                    <FormGroup>
+                      <Input
+                        fullWidth
+                        type="text"
+                        placeholder="Search here..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        style={{
+                          width: "100%",
+                          maxWidth: "200px",
+                          minWidth: "200px",
+                          boxShadow: " 0px 4px 4px 0px #00000040",
+                          border: "1px solid #ced4da",
+                        }}
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
+                {/* </CardHeader> */}
+                <Table className="align-items-center table-flush" responsive style={{ borderCollapse: "collapse" }}>
+                  <thead className="" style={{
+                    height: "45px",
+                    fontSize: "14px",
+                    fontFamily: "poppins",
+                    fontWeight: "600",
+                    boxShadow: " 0px 4px 4px 0px #00000040",
+                  }}>
+                    <tr style={{
+                      border: "2px solid rgba(50, 69, 103, 1)",
+                    }}>
+                      <th scope="col" style={{
+                        borderTopLeftRadius: "15px",
+
+                        color: "#152B51"
+                      }}>
                         Work Order
                         {sortBy.includes("work_subject") ? (
                           upArrow.includes("work_subject") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("work_subject")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("work_subject")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("work_subject")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Property
                         {sortBy.includes("rental_adress") ? (
                           upArrow.includes("rental_adress") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("rental_adress")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("rental_adress")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("rental_adress")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Category
                         {sortBy.includes("work_category") ? (
                           upArrow.includes("work_category") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("work_category")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("work_category")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("work_category")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Assigned
                         {sortBy.includes("staffmember_name") ? (
                           upArrow.includes("staffmember_name") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("staffmember_name")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("staffmember_name")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("staffmember_name")}
                           />
                         )}
                       </th>
-                      <th scope="col">Status</th>
-                      <th scope="col">Created At</th>
-                      <th scope="col">Updated At</th>
-                      <th scope="col">ACTION</th>
+                      <th scope="col" style={{ color: "#152B51" }}>Status</th>
+                      <th scope="col" style={{ color: "#152B51" }}>Created At</th>
+                      <th scope="col" style={{ color: "#152B51" }}>Updated At</th>
+                      <th scope="col"  style={{ borderTopRightRadius: "15px", color: "#152B51" }}>ACTION</th>
                     </tr>
                   </thead>
                   {workData.length === 0 ? (
@@ -420,26 +462,40 @@ const Workorder = () => {
                     </tbody>
                   ) : (
                     <tbody>
+                      <tr style={{
+                        border: "none",
+                      }}>
+                        {/* Empty row */}
+                        <td colSpan="9"></td>
+                      </tr>
                       {filterTenantsBySearchAndPage().map((rental) => (
                         <tr
                           key={rental.workOrder_id}
                           onClick={() => navigateToDetails(rental.workOrder_id)}
-                          style={{ cursor: "pointer" }}
+                          style={{
+                            cursor: "pointer",
+                            border: "0.5px solid rgba(50, 69, 103, 1)",
+                            fontSize: "12px",
+                            height: "40px",
+                            fontFamily: "poppins",
+                            fontWeight: "600",
+                            lineHeight: "10.93px",
+                          }}
                         >
-                          <td>{rental.work_subject}</td>
-                          <td>
+                          <td className="bordertopintd">{rental.work_subject}</td>
+                          <td className="bordertopintd">
                             {rental.rental_adress}{" "}
                             {rental.rental_units
                               ? " - " + rental.rental_units
                               : null}
                           </td>
-                          <td>{rental.work_category}</td>
-                          <td>{rental.staffmember_name || "-"}</td>
-                          <td>{rental.status || "-"}</td>
-                          <td>{rental.createdAt}</td>
-                          <td>{rental.updateAt || "-"}</td>
+                          <td className="bordertopintd">{rental.work_category}</td>
+                          <td className="bordertopintd">{rental.staffmember_name || "-"}</td>
+                          <td className="bordertopintd">{rental.status || "-"}</td>
+                          <td className="bordertopintd">{rental.createdAt}</td>
+                          <td className="bordertopintd">{rental.updateAt || "-"}</td>
 
-                          <td>
+                          <td className="bordertopintd">
                             <div style={{ display: "flex", gap: "0px" }}>
                               <div
                                 style={{ cursor: "pointer" }}
@@ -448,7 +504,8 @@ const Workorder = () => {
                                   deleteRentals(rental.workOrder_id);
                                 }}
                               >
-                                <DeleteIcon />
+                                <img src={deleicon} width={20} height={20} />
+
                               </div>
                               &nbsp; &nbsp; &nbsp;
                               <div
@@ -458,7 +515,8 @@ const Workorder = () => {
                                   editWorkOrder(rental.workOrder_id);
                                 }}
                               >
-                                <EditIcon />
+                                <img src={editicon} width={20} height={20} />
+
                               </div>
                             </div>
                           </td>
@@ -549,7 +607,8 @@ const Workorder = () => {
                 ) : (
                   <></>
                 )}
-              </Card>
+                {/* </Card> */}
+              </>
             )}
           </div>
         </Row>

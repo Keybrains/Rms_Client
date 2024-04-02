@@ -125,8 +125,8 @@ const AddStaffMember = () => {
         const res = await axios.post(
           `${baseUrl}/staffmember/staff_member`,
           object
-          );
-          console.log(object, "yash", res)
+        );
+        console.log(object, "yash", res)
         if (res.data.statusCode === 200) {
           handleResponse(res);
         } else if (res.data.statusCode === 201) {
@@ -184,7 +184,7 @@ const AddStaffMember = () => {
       {/* <AddStaffMemberHeader /> */}
       {/* Page content */}
       <Container className="" fluid style={{ marginTop: "4rem", height: "100vh" }}>
-      <Col xs="12" lg="12" sm="6">
+        <Col xs="12" lg="12" sm="6">
           {/* <FormGroup className="">
               <h1 style={{ color: "white" }}>Property Type</h1>
             </FormGroup> */}
@@ -205,25 +205,25 @@ const AddStaffMember = () => {
                 fontSize: "26px",
               }}
             >
-              Add Staff Member
+              {id ? "Edit Staff Member" : "Add Staff Member"}
+
             </h2>
           </CardHeader>
         </Col>
         <Row>
           <Col className="order-xl-1" xl="12">
-            <Card className="bg-white shadow mt-3 mx-4" style={{boxShadow: "0px 4px 4px 0px #00000040",border: "1px solid #324567"}}
+            <Card className="bg-white shadow mt-3 mx-4" style={{ boxShadow: "0px 4px 4px 0px #00000040", border: "1px solid #324567" }}
               onSubmit={StaffMemberFormik.handleSubmit}
             >
-              <CardHeader className="bg-white border-0">
+              {/* <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
                   <Col xs="8">
-                  <h3 className="mb-0" style={{ fontSize: "18px", fontWeight: "600", fontFamily: "Poppins", color: "#152B51" }}>
+                    <h3 className="mb-0" style={{ fontSize: "18px", fontWeight: "600", fontFamily: "Poppins", color: "#152B51" }}>
 
-                      {id ? "Edit Staff Member" : "New Staff Member"}
                     </h3>
                   </Col>
                 </Row>
-              </CardHeader>
+              </CardHeader> */}
               <CardBody>
                 <Form>
                   <div className="">
@@ -244,11 +244,11 @@ const AddStaffMember = () => {
                             Staff Member Name *
                           </label>
                           <Input
-                          style={{
-                            boxShadow: " 0px 4px 4px 0px #00000040 ",
-                            borderRadius: "6px",
-                            width:"60%",
-                          }}
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width: "60%",
+                            }}
                             className="form-control-alternative"
                             id="input-staffmember-name"
                             placeholder="Enter staff member name here..."
@@ -263,7 +263,7 @@ const AddStaffMember = () => {
                             value={StaffMemberFormik.values.staffmember_name}
                           />
                           {StaffMemberFormik.touched.staffmember_name &&
-                          StaffMemberFormik.errors.staffmember_name ? (
+                            StaffMemberFormik.errors.staffmember_name ? (
                             <div style={{ color: "red" }}>
                               {StaffMemberFormik.errors.staffmember_name}
                             </div>
@@ -292,11 +292,11 @@ const AddStaffMember = () => {
                             Designation
                           </label>
                           <Input
-                          style={{
-                            boxShadow: " 0px 4px 4px 0px #00000040 ",
-                            borderRadius: "6px",
-                            width:"60%",
-                          }}
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width: "60%",
+                            }}
                             className="form-control-alternative"
                             id="input-staffmember-desg"
                             placeholder="Manager"
@@ -309,7 +309,7 @@ const AddStaffMember = () => {
                             }
                           />
                           {StaffMemberFormik.touched.staffmember_designation &&
-                          StaffMemberFormik.errors.staffmember_designation ? (
+                            StaffMemberFormik.errors.staffmember_designation ? (
                             <div style={{ color: "red" }}>
                               {StaffMemberFormik.errors.staffmember_designation}
                             </div>
@@ -338,11 +338,11 @@ const AddStaffMember = () => {
                             Phone Number *
                           </label>
                           <Input
-                          style={{
-                            boxShadow: " 0px 4px 4px 0px #00000040 ",
-                            borderRadius: "6px",
-                            width:"60%",
-                          }}
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width: "60%",
+                            }}
                             className="form-control-alternative"
                             id="staffmember_phoneNumber"
                             placeholder="Enter phone number here..."
@@ -363,7 +363,7 @@ const AddStaffMember = () => {
                             }}
                           />
                           {StaffMemberFormik.touched.staffmember_phoneNumber &&
-                          StaffMemberFormik.errors.staffmember_phoneNumber ? (
+                            StaffMemberFormik.errors.staffmember_phoneNumber ? (
                             <div style={{ color: "red" }}>
                               {StaffMemberFormik.errors.staffmember_phoneNumber}
                             </div>
@@ -386,11 +386,11 @@ const AddStaffMember = () => {
                             Email *
                           </label>
                           <Input
-                          style={{
-                            boxShadow: " 0px 4px 4px 0px #00000040 ",
-                            borderRadius: "6px",
-                            width:"60%",
-                          }}
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width: "60%",
+                            }}
                             className="form-control-alternative"
                             id="staffmember_email"
                             placeholder="Enter email here..."
@@ -401,7 +401,7 @@ const AddStaffMember = () => {
                             value={StaffMemberFormik.values.staffmember_email.toLowerCase()}
                           />
                           {StaffMemberFormik.touched.staffmember_email &&
-                          StaffMemberFormik.errors.staffmember_email ? (
+                            StaffMemberFormik.errors.staffmember_email ? (
                             <div style={{ color: "red" }}>
                               {StaffMemberFormik.errors.staffmember_email}
                             </div>
@@ -431,11 +431,11 @@ const AddStaffMember = () => {
                           </label>
                           <div style={{ display: "flex" }}>
                             <Input
-                            style={{
-                              boxShadow: " 0px 4px 4px 0px #00000040 ",
-                              borderRadius: "6px",
-                              width:"60%",
-                            }}
+                              style={{
+                                boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                borderRadius: "6px",
+                                width: "60%",
+                              }}
                               className="form-control-alternative"
                               id="staffmember_password"
                               placeholder="Enter password here..."
@@ -456,7 +456,7 @@ const AddStaffMember = () => {
                             </Button>
                           </div>
                           {StaffMemberFormik.touched.staffmember_password &&
-                          StaffMemberFormik.errors.staffmember_password ? (
+                            StaffMemberFormik.errors.staffmember_password ? (
                             <div style={{ color: "red" }}>
                               {StaffMemberFormik.errors.staffmember_password}
                             </div>
@@ -481,7 +481,7 @@ const AddStaffMember = () => {
                       <Button
                         type="submit"
                         className="ml-3"
-                        style={{ background: "#152B51", color: "white", fontFamily: "Poppins", fontWeight: "400", fontSize: "14px", cursor: "pointer"}}
+                        style={{ background: "#152B51", color: "white", fontFamily: "Poppins", fontWeight: "400", fontSize: "14px", cursor: "pointer" }}
                         disabled={!StaffMemberFormik.isValid}
                       >
                         {id ? "Update Staff Member" : "Add Staff Member"}

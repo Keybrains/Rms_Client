@@ -42,6 +42,11 @@ import axios from "axios";
 import { useFormik } from "formik";
 import Edit from "@mui/icons-material/Edit";
 import { jwtDecode } from "jwt-decode";
+import deleicon from "../../assets/img/icons/common/delete.svg";
+import editicon from "../../assets/img/icons/common/editicon.svg";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+
 
 const Applicants = () => {
   const { admin } = useParams();
@@ -684,29 +689,13 @@ const Applicants = () => {
     <>
       <Header />
       {/* Page content */}
-      <Container className="mt--8" fluid>
+      <Container className="" fluid style={{ marginTop: "3rem", height: "100vh" }}>
+
         <Row>
-          <Col xs="12" sm="6">
-            <FormGroup>
-              <h1 style={{ color: "white" }}>Applicants</h1>
-            </FormGroup>
-          </Col>
           <Col className="text-right">
-            {/* <Button
-              color="primary"
-              // href="#rms"
-              onClick={openModal}
-              // onClick={() => {
-              //   setSelectedApplicant({})
-              //   openModal()
-              // }}
-              size="sm"
-              style={{ background: "white", color: "blue" }}
-            >
-              Add New Applicant
-            </Button> */}
+
             <Button
-              color="primary"
+              // color="primary"
               onClick={() => {
                 if (countRes.statusCode === 201) {
                   swal(
@@ -719,11 +708,37 @@ const Applicants = () => {
                   openModal();
                 }
               }}
-              size="sm"
-              style={{ background: "white", color: "blue" }}
+              size="small"
+              style={{ background: "#152B51", color: "#fff" }}
+
             >
               Add New Applicant
             </Button>
+          </Col>
+
+
+          <Col xs="12" lg="12" sm="6">
+
+            <CardHeader
+              className=" mt-3 "
+              style={{
+                backgroundColor: "#152B51",
+                borderRadius: "10px",
+                boxShadow: " 0px 4px 4px 0px #00000040 ",
+              }}
+            >
+              <h2
+                className=""
+                style={{
+                  color: "#ffffff",
+                  fontFamily: "Poppins",
+                  fontWeight: "500",
+                  fontSize: "26px",
+                }}
+              >
+                Applicants
+              </h2>
+            </CardHeader>
           </Col>
         </Row>
         <br />
@@ -740,77 +755,94 @@ const Applicants = () => {
                 />
               </div>
             ) : (
-              <Card className="shadow">
-                <CardHeader className="border-0">
-                  <Row>
+              <>
+                {/* <Card className="shadow"> */}
+                {/* <CardHeader className="border-0"> */}
+                  <Row className="mb-3">
                     <Col xs="12" sm="6">
                       <FormGroup className="">
                         <Input
                           fullWidth
                           type="text"
-                          placeholder="Search"
+                          placeholder="Search here..."
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           style={{
                             width: "100%",
                             maxWidth: "200px",
                             minWidth: "200px",
+                            boxShadow: " 0px 4px 4px 0px #00000040",
+                            border: "1px solid #ced4da",
                           }}
                         />
                       </FormGroup>
                     </Col>
                     <Col className="d-flex justify-content-end">
                       <FormGroup>
-                        <p>
+                        <p style={{ fontFamily: "Poppins", fontSize: "18px", fontWeight: "500" }}>
+
                           Added :{" "}
-                          <b style={{ color: "blue", fontWeight: 1000 }}>
+                          <b style={{ color: "#152B51", fontWeight: 1000 }}>
+
                             {countRes.applicantCount}
                           </b>{" "}
                           {" / "}
                           Total :{" "}
-                          <b style={{ color: "blue", fontWeight: 1000 }}>
+                          <b style={{ color: "#152B51", fontWeight: 1000 }}>
+
                             {countRes.applicantCountLimit}
                           </b>
                         </p>
                       </FormGroup>
                     </Col>
                   </Row>
-                </CardHeader>
-                <Table className="align-items-center table-flush" responsive>
-                  <thead className="thead-light">
-                    <tr>
-                      <th scope="col">
+                {/* </CardHeader> */}
+                <Table className="align-items-center table-flush" responsive style={{ borderCollapse: "collapse" }}>
+                  <thead className="" style={{
+                    height: "45px",
+                    fontSize: "14px",
+                    fontFamily: "poppins",
+                    fontWeight: "600",
+                    boxShadow: " 0px 4px 4px 0px #00000040",
+                  }}>
+                    <tr style={{
+                      border: "2px solid rgba(50, 69, 103, 1)",
+                    }}>
+                      <th scope="col" style={{
+                        borderTopLeftRadius: "15px",
+                        color: "#152B51"
+                      }}>
                         FirstName
                         {sortBy.includes("applicant_firstName") ? (
                           upArrow.includes("applicant_firstName") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("applicant_firstName")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("applicant_firstName")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("applicant_firstName")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         LastName
                         {sortBy.includes("applicant_lastName") ? (
                           upArrow.includes("applicant_lastName") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("applicant_lastName")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("applicant_lastName")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("applicant_lastName")}
                           />
                         )}
@@ -819,81 +851,81 @@ const Applicants = () => {
                       {/* <th scope="col">Listed</th> */}
                       {/* <th scope="col">Unit</th> */}
                       {/* <th scope="col">Phone</th> */}
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Email
                         {sortBy.includes("applicant_email") ? (
                           upArrow.includes("applicant_email") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("applicant_email")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("applicant_email")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("applicant_email")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Phone Number
                         {sortBy.includes("tenant_mobileNumber") ? (
                           upArrow.includes("tenant_mobileNumber") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("tenant_mobileNumber")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("tenant_mobileNumber")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("tenant_mobileNumber")}
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Property
                         {sortBy.includes("rental_adress") ? (
                           upArrow.includes("rental_adress") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("rental_adress")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("rental_adress")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("rental_adress")}
                           />
                         )}
                       </th>
-                      <th scope="col">Status</th>
-                      <th scope="col">
+                      <th scope="col" style={{ color: "#152B51" }}>Status</th>
+                      <th scope="col" style={{ color: "#152B51" }}>
                         Created At
                         {sortBy.includes("createAt") ? (
                           upArrow.includes("createAt") ? (
-                            <ArrowDownwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("createAt")}
                             />
                           ) : (
-                            <ArrowUpwardIcon
+                            <ArrowDropUpIcon
                               onClick={() => sortData("createAt")}
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
+                          <ArrowDropDownIcon
                             onClick={() => sortData("createAt")}
                           />
                         )}
                       </th>
-                      <th scope="col">Updated At</th>
-                      <th scope="col">Actions</th>
+                      <th scope="col" style={{ color: "#152B51" }}>Updated At</th>
+                      <th scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>Actions</th>
 
                       {/* <th scope="col">Last Updated</th> */}
                       {/* <th scope="col">% complete</th> */}
@@ -909,6 +941,12 @@ const Applicants = () => {
                     </tbody>
                   ) : (
                     <tbody>
+                      <tr style={{
+                        border: "none",
+                      }}>
+                        {/* Empty row */}
+                        <td colSpan="9"></td>
+                      </tr>
                       {filterTenantsBySearchAndPage()?.map(
                         (applicant, index) => (
                           <tr
@@ -918,12 +956,21 @@ const Applicants = () => {
                                 `/${admin}/Applicants/${applicant.applicant_id}`
                               )
                             }
+                            style={{
+                              cursor: "pointer",
+                              border: "0.5px solid rgba(50, 69, 103, 1)",
+                              fontSize: "12px",
+                              height: "40px",
+                              fontFamily: "poppins",
+                              fontWeight: "600",
+                              lineHeight: "10.93px",
+                            }}
                           >
-                            <td>{applicant?.applicant_firstName}</td>
-                            <td>{applicant?.applicant_lastName}</td>
-                            <td>{applicant?.applicant_email}</td>
-                            <td>{applicant?.applicant_phoneNumber}</td>
-                            <td>
+                            <td className="bordertopintd">{applicant?.applicant_firstName}</td>
+                            <td className="bordertopintd">{applicant?.applicant_lastName}</td>
+                            <td className="bordertopintd">{applicant?.applicant_email}</td>
+                            <td className="bordertopintd">{applicant?.applicant_phoneNumber}</td>
+                            <td className="bordertopintd">
                               {applicant?.rental_data?.rental_adress}{" "}
                               {applicant?.unit_data &&
                                 applicant?.unit_data?.rental_unit
@@ -931,26 +978,26 @@ const Applicants = () => {
                                 : null}
                             </td>
 
-                            <td>
+                            <td className="bordertopintd">
                               {applicant?.applicant_status?.status ||
                                 "Undecided"}
                             </td>
-                            <td>{applicant?.createdAt}</td>
-                            <td>{applicant?.updatedAt || " - "}</td>
-                            <td>
+                            <td className="bordertopintd">{applicant?.createdAt}</td>
+                            <td className="bordertopintd">{applicant?.updatedAt || " - "}</td>
+                            <td className="bordertopintd">
                               {/* <DeleteIcon
                               onClick={(e) => {
                                 e.stopPropagation();
                                 deleteRentals(applicant._id);
                               }}
                             /> */}
-                              <EditIcon
+                              <img src={editicon} width={20} height={20}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleEdit(applicant);
                                 }}
-                                style={{ cursor: "pointer" }}
-                              />
+                                style={{ cursor: "pointer" }} />
+
                             </td>
                           </tr>
                         )
@@ -1040,7 +1087,8 @@ const Applicants = () => {
                 ) : (
                   <></>
                 )}
-              </Card>
+                {/* </Card> */}
+              </>
             )}
           </div>
         </Row>

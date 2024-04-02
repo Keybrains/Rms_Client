@@ -617,7 +617,8 @@ const Rentals = () => {
                 fontSize: "26px",
               }}
             >
-              Add Property
+              {rental_id ? "Edit Property" : "Add Property"}
+
             </h2>
           </CardHeader>
         </Col>
@@ -628,7 +629,7 @@ const Rentals = () => {
               <Card className="bg-white shadow mt-3 mx-4" style={{ boxShadow: "0px 4px 4px 0px #00000040", border: "1px solid #324567" }}
 
               >
-                <CardHeader className="bg-white border-0">
+                {/* <CardHeader className="bg-white border-0">
                   <Row className="align-items-center">
                     <Col xs="8">
                       <h3 className="mb-0" style={{ fontSize: "18px", fontWeight: "600", fontFamily: "Poppins", color: "#152B51" }}>
@@ -638,7 +639,7 @@ const Rentals = () => {
                     </Col>
                     <Col className="text-right" xs="4"></Col>
                   </Row>
-                </CardHeader>
+                </CardHeader> */}
                 <CardBody>
                   <Form role="form" open={open} onClose={handleClose}>
                     <h6 className="heading-small  mb-4" style={{
@@ -1044,12 +1045,12 @@ const Rentals = () => {
 
                 <CardBody>
                   <Form role="form" open={open} onClose={handleClose}>
-                    <h6 className="heading-small  " style={{
+                  <h6 className="heading-small  mb-4" style={{
                       // marginBottom: "10px",
-                      fontWeight: "600",
+                      fontWeight: "500",
                       fontFamily: "Poppins",
-                      fontSize: "18px",
-                      color: "#152B51",
+                      fontSize: "16px",
+                      color: "#B9BFCB",
                     }}>
                       Owner information
                     </h6>
@@ -1065,7 +1066,7 @@ const Rentals = () => {
                                 fontWeight: "500",
                                 fontFamily: "Poppins",
                                 fontSize: "16px",
-                                color: "#B9BFCB",
+                                color: "#152B51",
                               }}
                             >
                               Who is the property owner? (Required)
@@ -1840,15 +1841,15 @@ const Rentals = () => {
                                   </Button>
                                   <Button
                                     style={{ backgroundColor: "transparent", color: "#152B51" }}
-                                    
+
                                     onClick={handleClose}>Cancel</Button>
-                                    {!rentalOwnerFormik.isValid && (
-                                      <div
-                                        style={{ color: "red", marginTop: "10px" }}
-                                      >
-                                        Please fill in all fields correctly.
-                                      </div>
-                                    )}
+                                  {!rentalOwnerFormik.isValid && (
+                                    <div
+                                      style={{ color: "red", marginTop: "10px" }}
+                                    >
+                                      Please fill in all fields correctly.
+                                    </div>
+                                  )}
                                 </DialogActions>
                               </Form>
                             </Dialog>
@@ -1993,7 +1994,7 @@ const Rentals = () => {
                                 fontWeight: "500",
                                 fontFamily: "Poppins",
                                 fontSize: "16px",
-                                color: "#B9BFCB",
+                                color: "#152B51",
                               }}
                             >
                               Who will be the primary manager of this property?
@@ -2093,13 +2094,13 @@ const Rentals = () => {
 
                   <CardBody>
                     <div className="">
-                      <h6 className="heading-small " style={{
-                        // marginBottom: "10px",
-                        fontWeight: "600",
-                        fontFamily: "Poppins",
-                        fontSize: "18px",
-                        color: "#152B51",
-                      }}>
+                    <h6 className="heading-small  mb-4" style={{
+                      // marginBottom: "10px",
+                      fontWeight: "500",
+                      fontFamily: "Poppins",
+                      fontSize: "16px",
+                      color: "#B9BFCB",
+                    }}>
                         Residential Unit
                       </h6>
                       <FormGroup>
@@ -2111,7 +2112,7 @@ const Rentals = () => {
                             fontWeight: "500",
                             fontFamily: "Poppins",
                             fontSize: "16px",
-                            color: "#B9BFCB",
+                            color: "#152B51",
                           }}
                         >
                           Enter Residential Units
@@ -2608,19 +2609,26 @@ const Rentals = () => {
 
                   <CardBody>
                     <div className="">
-                      <h6 className="heading-small " style={{
-                        // marginBottom: "10px",
-                        fontWeight: "600",
-                        fontFamily: "Poppins",
-                        fontSize: "18px",
-                        color: "#152B51",
-                      }}>
+                    <h6 className="heading-small  mb-4" style={{
+                      // marginBottom: "10px",
+                      fontWeight: "500",
+                      fontFamily: "Poppins",
+                      fontSize: "16px",
+                      color: "#B9BFCB",
+                    }}>
                         Commercial Unit
                       </h6>
                       <FormGroup>
                         <label
                           className="form-control-label"
                           htmlFor="input-address"
+                          style={{
+                            // marginBottom: "10px",
+                            fontWeight: "500",
+                            fontFamily: "Poppins",
+                            fontSize: "16px",
+                            color: "#152B51",
+                          }}
                         >
                           Enter Commercial Units
                         </label>
@@ -3061,7 +3069,7 @@ const Rentals = () => {
         </Form>
 
         <Modal isOpen={isModalOpen} toggle={closeModal}>
-          
+
           <ModalHeader toggle={closeModal} className="mt-2">
             <span style={{ fontSize: "18px", fontweight: "500", fontFamily: "Poppins", color: "#152B51" }}>Add Property Type</span>
           </ModalHeader>

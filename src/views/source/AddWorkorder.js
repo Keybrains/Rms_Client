@@ -45,14 +45,14 @@ const AddWorkorder = () => {
   const [entrydropdownOpen, setentrydropdownOpen] = useState(false);
   const [userdropdownOpen, setuserdropdownOpen] = useState(false);
   const [statusdropdownOpen, setstatusdropdownOpen] = useState(false);
-  const [selectedProp, setSelectedProp] = useState("Select");
+  const [selectedProp, setSelectedProp] = useState("Select here...");
   const [selectedUnit, setSelectedUnit] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Select");
-  const [selectedVendor, setSelectedVendor] = useState("Select");
-  const [selectedCharge, setSelectedCharge] = useState("Select");
-  const [selectedTenant, setSelectedTenant] = useState("Select");
-  const [selectedEntry, setSelectedEntry] = useState("Select");
-  const [selecteduser, setSelecteduser] = useState("Select");
+  const [selectedCategory, setSelectedCategory] = useState("Select here...");
+  const [selectedVendor, setSelectedVendor] = useState("Select here...");
+  const [selectedCharge, setSelectedCharge] = useState("Select here...");
+  const [selectedTenant, setSelectedTenant] = useState("Select here...");
+  const [selectedEntry, setSelectedEntry] = useState("Select here...");
+  const [selecteduser, setSelecteduser] = useState("Select here...");
   const [selectedStatus, setSelectedStatus] = useState("New");
   const [unitData, setUnitData] = useState([]);
   const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
@@ -277,7 +277,7 @@ const AddWorkorder = () => {
           setSelectedFiles(response?.data?.data?.workOrder_images || []);
           setSelectedTenant(
             tenant_data?.tenant_firstName + " " + tenant_data?.tenant_lastName ||
-              "Select"
+            "Select"
           );
 
           WorkFormik.setValues({
@@ -298,8 +298,8 @@ const AddWorkorder = () => {
             tenant_id: tenant_data?.tenant_id || "",
             tenant_name:
               tenant_data?.tenant_firstName +
-                " " +
-                tenant_data?.tenant_lastName || "",
+              " " +
+              tenant_data?.tenant_lastName || "",
             invoice_number: "",
             work_charge: response?.data?.data?.work_charge_to || "",
             entry_allowed:
@@ -500,7 +500,7 @@ const AddWorkorder = () => {
     if (accessType?.admin_id) {
       try {
         const res = await axios.get(
-          `${baseUrl}/rentals/dropdown_rentals/${accessType?.admin_id}`
+          `${baseUrl}/rentals/rentals/${accessType?.admin_id}`
         );
         if (res.data?.statusCode === 200) {
           setPropertyData(res.data?.data);
@@ -512,7 +512,6 @@ const AddWorkorder = () => {
       }
     }
   };
-
   const fetchStaffData = () => {
     fetch(`${baseUrl}/staffmember/staff_member/${accessType?.admin_id}`)
       .then((response) => response?.json())
@@ -533,7 +532,7 @@ const AddWorkorder = () => {
     fetchPropertyData();
     setVendorsName();
     fetchStaffData();
-  }, [accessType]);
+  }, [accessType?.admin_id]);
 
   const [selectedFiles, setSelectedFiles] = useState([]);
   const fileData = (e, type) => {
@@ -681,7 +680,7 @@ const AddWorkorder = () => {
         });
       }
       console.log(res);
-    } catch (error) {}
+    } catch (error) { }
     setLoader(false);
   };
 
@@ -729,42 +728,67 @@ const AddWorkorder = () => {
 
   return (
     <>
-      <AddWorkorderHeader />
+      {/* <AddWorkorderHeader /> */}
 
-      <Container className="mt--7" fluid>
+      <Container className="" fluid style={{ marginTop: "4rem", height: "100vh" }}>
+
+        <Col xs="12" lg="12" sm="6">
+          <CardHeader
+            className=" mt-3 mx-2"
+            style={{
+              backgroundColor: "#152B51",
+              borderRadius: "10px",
+              boxShadow: " 0px 4px 4px 0px #00000040 ",
+            }}
+          >
+            <h2
+              className=""
+              style={{
+                color: "#ffffff",
+                fontFamily: "Poppins",
+                fontWeight: "500",
+                fontSize: "26px",
+              }}
+            >
+              {id ? "Edit Work Order" : "Add Work Order"}
+
+            </h2>
+          </CardHeader>
+        </Col>
         <Row>
           <Col className="order-xl-1" xl="12">
-            <Card
-              className="bg-secondary shadow"
+            <Card className="bg-white shadow mt-3 mx-4 " style={{ boxShadow: " 0px 4px 4px 0px #00000040", border: "1px solid #324567" }}
               onSubmit={WorkFormik.handleSubmit}
             >
-              <CardHeader className="bg-white border-0">
-                <Row className="align-items-center">
-                  <Col xs="8">
-                    <h3 className="mb-0">
-                      {id ? "Edit Work Order" : "New Work Order"}
-                    </h3>
-                  </Col>
-                </Row>
-              </CardHeader>
               <CardBody>
                 <Form>
-                  <div className="pl-lg-4">
+                  <div className="">
                     <Row>
-                      <Col lg="6">
+                      <Col lg="4">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-member"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Subject *
                           </label>
                           <br />
-                          <br />
                           <Input
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width: "60%",
+                            }}
                             className="form-control-alternative"
                             id="work_subject"
-                            placeholder="Add Subject"
+                            placeholder="Enter subject here..."
                             type="text"
                             name="work_subject"
                             onBlur={WorkFormik.handleBlur}
@@ -776,7 +800,7 @@ const AddWorkorder = () => {
                         </FormGroup>
                       </Col>
                     </Row>
-                    <Row>
+                    <Row className="mt-2">
                       <Col>
                         <FormGroup
                           style={{
@@ -787,6 +811,13 @@ const AddWorkorder = () => {
                           <label
                             className="form-control-label"
                             htmlFor="input-unitadd"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Photo
                           </label>
@@ -807,8 +838,15 @@ const AddWorkorder = () => {
                               name={`workOrderImage`}
                               onChange={(e) => fileData(e)}
                             />
-                            <label htmlFor={`workOrderImage`}>
-                              <b style={{ fontSize: "20px" }}>+</b> Add
+                            <label className="d-flex justify-content-center" htmlFor={`workOrderImage`} 
+                              style={{
+                                fontFamily: "Poppins", fontSize: "14px", fontWeight: "400", color: "white", backgroundColor: "#152B51", borderRadius: "6px", padding: "5px",
+                                boxShadow: " 0px 4px 4px 0px #00000040",
+
+                              }}
+                            >
+                              {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
+                              Upload 
                             </label>
                           </span>
                         </FormGroup>
@@ -892,13 +930,20 @@ const AddWorkorder = () => {
                     </FormGroup>
                   </div>
 
-                  <div className="pl-lg-4">
+                  <div className="">
                     <Row>
                       <Col lg="4">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-desg"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Property *
                           </label>
@@ -908,18 +953,26 @@ const AddWorkorder = () => {
                               toggle={toggle1}
                               onBlur={WorkFormik.handleBlur}
                             >
-                              <DropdownToggle caret style={{ width: "100%" }}>
+                              <DropdownToggle caret style={{
+                                width: "100%", boxShadow: " 0px 4px 4px 0px #00000040",
+                                border: "1px solid #ced4da",
+
+                                backgroundColor: "transparent",
+                                color: "#A7A7A7"
+                              }}>
                                 {selectedProp
                                   ? selectedProp
                                   : "Select a property..."}
                                 &nbsp;&nbsp;&nbsp;&nbsp;
                               </DropdownToggle>
                               <DropdownMenu
+
                                 style={{
-                                  width: "100%",
+                                  width: "max-content",
                                   maxHeight: "200px",
                                   overflowY: "auto",
                                   overflowX: "hidden",
+
                                 }}
                               >
                                 {propertyData.map((property, index) => (
@@ -934,10 +987,10 @@ const AddWorkorder = () => {
                                 ))}
                               </DropdownMenu>
                               {WorkFormik.errors &&
-                              WorkFormik.errors?.rental_adress &&
-                              WorkFormik.touched &&
-                              WorkFormik.touched?.rental_adress &&
-                              WorkFormik.values.rental_adress === "" ? (
+                                WorkFormik.errors?.rental_adress &&
+                                WorkFormik.touched &&
+                                WorkFormik.touched?.rental_adress &&
+                                WorkFormik.values.rental_adress === "" ? (
                                 <div style={{ color: "red" }}>
                                   {WorkFormik.errors.rental_adress}
                                 </div>
@@ -956,6 +1009,13 @@ const AddWorkorder = () => {
                               <label
                                 className="form-control-label"
                                 htmlFor="input-unit"
+                                style={{
+                                  // marginBottom: "10px",
+                                  fontWeight: "500",
+                                  fontFamily: "Poppins",
+                                  fontSize: "16px",
+                                  color: "#8A95A8",
+                                }}
                               >
                                 Unit *
                               </label>
@@ -964,7 +1024,13 @@ const AddWorkorder = () => {
                                   isOpen={unitDropdownOpen}
                                   toggle={toggle11}
                                 >
-                                  <DropdownToggle caret>
+                                  <DropdownToggle caret style={{
+                                    width: "100%", boxShadow: " 0px 4px 4px 0px #00000040",
+                                    border: "1px solid #ced4da",
+
+                                    backgroundColor: "transparent",
+                                    color: "#A7A7A7"
+                                  }}>
                                     {selectedUnit
                                       ? selectedUnit
                                       : "Select Unit"}
@@ -991,10 +1057,10 @@ const AddWorkorder = () => {
                                     )}
                                   </DropdownMenu>
                                   {WorkFormik.errors &&
-                                  WorkFormik.errors?.rental_unit &&
-                                  WorkFormik.touched &&
-                                  WorkFormik.touched?.rental_unit &&
-                                  WorkFormik.values.rental_unit === "" ? (
+                                    WorkFormik.errors?.rental_unit &&
+                                    WorkFormik.touched &&
+                                    WorkFormik.touched?.rental_unit &&
+                                    WorkFormik.values.rental_unit === "" ? (
                                     <div style={{ color: "red" }}>
                                       {WorkFormik.errors.rental_unit}
                                     </div>
@@ -1007,13 +1073,15 @@ const AddWorkorder = () => {
                     </Row>
                   </div>
 
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="4">
+                  <div className="">
+                    <Row className="mt-2">
+                      <Col lg="2">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-desg"
+                            style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                           >
                             Category *
                           </label>
@@ -1022,7 +1090,13 @@ const AddWorkorder = () => {
                             isOpen={categorydropdownOpen}
                             toggle={toggle2}
                           >
-                            <DropdownToggle caret style={{ width: "100%" }}>
+                            <DropdownToggle caret style={{
+                              width: "100%", boxShadow: " 0px 4px 4px 0px #00000040",
+                              border: "1px solid #ced4da",
+
+                              backgroundColor: "transparent",
+                              color: "#A7A7A7"
+                            }}>
                               {selectedCategory} &nbsp;&nbsp;&nbsp;&nbsp;
                             </DropdownToggle>
                             <DropdownMenu style={{ width: "100%" }}>
@@ -1070,10 +1144,10 @@ const AddWorkorder = () => {
                               </DropdownItem>
                             </DropdownMenu>
                             {WorkFormik.errors &&
-                            WorkFormik.errors?.work_category &&
-                            WorkFormik.touched &&
-                            WorkFormik.touched?.work_category &&
-                            WorkFormik.values.work_category === "" ? (
+                              WorkFormik.errors?.work_category &&
+                              WorkFormik.touched &&
+                              WorkFormik.touched?.work_category &&
+                              WorkFormik.values.work_category === "" ? (
                               <div style={{ color: "red" }}>
                                 {WorkFormik.errors.work_category}
                               </div>
@@ -1087,6 +1161,8 @@ const AddWorkorder = () => {
                           <label
                             className="form-control-label"
                             htmlFor="input-desg"
+                            style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                           >
                             Vendor *
                           </label>
@@ -1095,7 +1171,12 @@ const AddWorkorder = () => {
                             isOpen={vendordropdownOpen}
                             toggle={toggle3}
                           >
-                            <DropdownToggle caret style={{ width: "100%" }}>
+                            <DropdownToggle caret style={{
+                              width: "100%", boxShadow: " 0px 4px 4px 0px #00000040",
+                              border: "1px solid #ced4da",
+                              backgroundColor: "transparent",
+                              color: "#A7A7A7"
+                            }}>
                               {selectedVendor} &nbsp;&nbsp;&nbsp;&nbsp;
                             </DropdownToggle>
                             <DropdownMenu style={{ width: "100%" }}>
@@ -1109,10 +1190,10 @@ const AddWorkorder = () => {
                               ))}
                             </DropdownMenu>
                             {WorkFormik.errors &&
-                            WorkFormik.errors?.vendor_name &&
-                            WorkFormik.touched &&
-                            WorkFormik.touched?.vendor_name &&
-                            WorkFormik.values.vendor_name === "" ? (
+                              WorkFormik.errors?.vendor_name &&
+                              WorkFormik.touched &&
+                              WorkFormik.touched?.vendor_name &&
+                              WorkFormik.values.vendor_name === "" ? (
                               <div style={{ color: "red" }}>
                                 {WorkFormik.errors.vendor_name}
                               </div>
@@ -1133,12 +1214,19 @@ const AddWorkorder = () => {
                           <label
                             className="form-control-label"
                             htmlFor="input-member"
+                            style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                           >
                             Other Category
                           </label>
                           <br />
-                          <br />
+
                           <Input
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width: "60%",
+                            }}
                             className="form-control-alternative"
                             id="input-work-subject"
                             placeholder="Enter Other Category"
@@ -1158,19 +1246,28 @@ const AddWorkorder = () => {
                     </Row>
                   </div>
 
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="4">
+                  <div className="">
+                    <Row className="mt-2">
+                      <Col lg="2">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-desg"
+                            style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                           >
                             Entry Allowed
                           </label>
                           <br />
-                          <Dropdown isOpen={entrydropdownOpen} toggle={toggle4}>
-                            <DropdownToggle caret style={{ width: "100%" }}>
+                          <Dropdown isOpen={entrydropdownOpen} toggle={toggle4}
+
+                          >
+                            <DropdownToggle caret style={{
+                              width: "100%", boxShadow: " 0px 4px 4px 0px #00000040",
+                              border: "1px solid #ced4da",
+                              backgroundColor: "transparent",
+                              color: "#A7A7A7"
+                            }}>
                               {selectedEntry} &nbsp;&nbsp;&nbsp;&nbsp;
                             </DropdownToggle>
                             <DropdownMenu style={{ width: "100%" }}>
@@ -1193,6 +1290,8 @@ const AddWorkorder = () => {
                           <label
                             className="form-control-label"
                             htmlFor="input-desg"
+                            style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                           >
                             Assigned To *
                           </label>
@@ -1202,7 +1301,12 @@ const AddWorkorder = () => {
                               isOpen={userdropdownOpen}
                               toggle={toggle5}
                             >
-                              <DropdownToggle caret>
+                              <DropdownToggle caret style={{
+                                width: "100%", boxShadow: " 0px 4px 4px 0px #00000040",
+                                border: "1px solid #ced4da",
+                                backgroundColor: "transparent",
+                                color: "#A7A7A7"
+                              }}>
                                 {selecteduser ? selecteduser : "Select"}
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                               </DropdownToggle>
@@ -1226,9 +1330,9 @@ const AddWorkorder = () => {
                                 ))}
                               </DropdownMenu>
                               {WorkFormik.errors &&
-                              WorkFormik.errors?.staffmember_name &&
-                              WorkFormik.touched &&
-                              WorkFormik.touched?.staffmember_name ? (
+                                WorkFormik.errors?.staffmember_name &&
+                                WorkFormik.touched &&
+                                WorkFormik.touched?.staffmember_name ? (
                                 <div style={{ color: "red" }}>
                                   {WorkFormik.errors.staffmember_name}
                                 </div>
@@ -1240,21 +1344,27 @@ const AddWorkorder = () => {
                     </Row>
                   </div>
 
-                  <div className="pl-lg-4">
-                    <Row>
+                  <div className="">
+                    <Row className="mt-2">
                       <Col lg="6">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-member"
+                            style={{ fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#8A95A8" }}
+
                           >
                             Work To Be Performed
                           </label>
                           <br />
                           <Input
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                            }}
                             className="form-control-alternative"
                             id="input-name"
-                            placeholder=""
+                            placeholder="Enter here..."
                             type="textarea"
                             name="work_performed"
                             onBlur={WorkFormik.handleBlur}
@@ -1264,7 +1374,7 @@ const AddWorkorder = () => {
                             value={WorkFormik.values.work_performed}
                           />
                           {WorkFormik.touched.work_performed &&
-                          WorkFormik.errors.work_performed ? (
+                            WorkFormik.errors.work_performed ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.work_performed}
                             </div>
@@ -1273,15 +1383,29 @@ const AddWorkorder = () => {
                       </Col>
                     </Row>
                   </div>
+                </Form>
+                <br />
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+        <Row>
+          <Col className="order-xl-1" xl="12">
+            <Card className="bg-white shadow mt-3 mb-3 mx-4 " style={{ boxShadow: " 0px 4px 4px 0px #00000040", border: "1px solid #324567" }}
 
-                  <div className="pl-lg-4">
+            >
+              <CardBody>
+                <Form>
+                  <div className="">
                     <label
-                      className="form-control-label pl-lg-3"
+                      className="form-control-label "
                       htmlFor="input-desg"
+                      style={{ fontFamily: "Poppins", fontSize: "18px", fontWeight: "600", color: "#152B51" }}
+
                     >
                       Parts and Labor
                     </label>
-                    <Col lg="12">
+                    <Col lg="12" >
                       <FormGroup>
                         <div className="table-responsive">
                           <Table
@@ -1289,24 +1413,58 @@ const AddWorkorder = () => {
                             responsive
                             style={{
                               borderCollapse: "collapse",
-                              border: "1px solid #ddd",
+                              border: "1px solid #152B51",
+                              overflow: "hidden",
+                              boxShadow: " 0px 4px 4px 0px #00000040",
                             }}
                           >
-                            <thead className="thead-light">
-                              <tr>
-                                <th>Qty</th>
-                                <th>Account</th>
-                                <th>Description</th>
-                                <th>Price</th>
-                                <th>Total</th>
+                            <thead className="">
+                              <tr style={{
+                                fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#152B51",
+                                border: "1px solid #152B51",
+
+                              }}>
+                                <th style={{
+                                  fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#152B51",
+                                  border: "1px solid #152B51",
+
+                                }}>Qty</th>
+                                <th style={{
+                                  fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#152B51",
+                                  border: "1px solid #152B51",
+
+                                }}>Account</th>
+                                <th style={{
+                                  fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#152B51",
+                                  border: "1px solid #152B51",
+
+                                }}>Description</th>
+                                <th style={{
+                                  fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#152B51",
+                                  border: "1px solid #152B51",
+
+                                }}>Price</th>
+                                <th style={{
+                                  fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#152B51",
+                                  border: "1px solid #152B51",
+
+                                }}>Total</th>
                               </tr>
                             </thead>
                             <tbody>
                               {WorkFormik.values.entries?.map(
                                 (entry, index) => (
-                                  <tr key={index}>
-                                    <td>
+                                  <tr key={index} style={{
+                                    border: "1px solid #152B51",
+                                  }}>
+                                    <td style={{
+                                      border: "1px solid #152B51",
+                                    }}>
                                       <Input
+                                        style={{
+                                          boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                          borderRadius: "6px",
+                                        }}
                                         className="form-control-alternative"
                                         id="input-unitadd"
                                         placeholder="Quantity"
@@ -1318,11 +1476,11 @@ const AddWorkorder = () => {
                                         value={entry.part_qty}
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .part_qty ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .part_qty ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -1331,14 +1489,21 @@ const AddWorkorder = () => {
                                         </div>
                                       ) : null}
                                     </td>
-                                    <td>
+                                    <td style={{
+                                      border: "1px solid #152B51",
+                                    }}>
                                       <Dropdown
                                         isOpen={entry.dropdownOpen}
                                         toggle={() => toggleDropdown(index)}
                                       >
                                         <DropdownToggle
                                           caret
-                                          style={{ width: "100%" }}
+                                          style={{
+                                            width: "100%", boxShadow: " 0px 4px 4px 0px #00000040",
+                                            border: "1px solid #ced4da",
+                                            backgroundColor: "transparent",
+                                            color: "#A7A7A7"
+                                          }}
                                         >
                                           {entry.account_type || "Select"}{" "}
                                           &nbsp;&nbsp;&nbsp;&nbsp;
@@ -1523,8 +1688,14 @@ const AddWorkorder = () => {
                                         </DropdownMenu>
                                       </Dropdown>
                                     </td>
-                                    <td>
+                                    <td style={{
+                                      border: "1px solid #152B51",
+                                    }}>
                                       <Input
+                                        style={{
+                                          boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                          borderRadius: "6px",
+                                        }}
                                         className="form-control-alternative"
                                         id="input-unitadd"
                                         placeholder="Description"
@@ -1535,11 +1706,11 @@ const AddWorkorder = () => {
                                         value={entry.description}
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .description ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .description ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -1548,8 +1719,14 @@ const AddWorkorder = () => {
                                         </div>
                                       ) : null}
                                     </td>
-                                    <td>
+                                    <td style={{
+                                      border: "1px solid #152B51",
+                                    }}>
                                       <Input
+                                        style={{
+                                          boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                          borderRadius: "6px",
+                                        }}
                                         className="form-control-alternative"
                                         id="input-unitadd"
                                         placeholder="Price"
@@ -1567,11 +1744,11 @@ const AddWorkorder = () => {
                                         }}
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .part_price ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .part_price ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -1580,8 +1757,14 @@ const AddWorkorder = () => {
                                         </div>
                                       ) : null}
                                     </td>
-                                    <td>
+                                    <td style={{
+                                      border: "1px solid #152B51",
+                                    }}>
                                       <Input
+                                        style={{
+                                          boxShadow: " 0px 4px 4px 0px #00000040 ",
+                                          borderRadius: "6px",
+                                        }}
                                         className="form-control-alternative"
                                         id="input-unitadd"
                                         placeholder="Total"
@@ -1593,11 +1776,11 @@ const AddWorkorder = () => {
                                         disabled // Disable the input
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .total_amount ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .total_amount ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -1606,7 +1789,9 @@ const AddWorkorder = () => {
                                         </div>
                                       ) : null}
                                     </td>
-                                    <td style={{ border: "none" }}>
+                                    <td style={{
+                                      border: "1px solid #152B51",
+                                    }}>
                                       <ClearIcon
                                         type="button"
                                         style={{
@@ -1621,47 +1806,89 @@ const AddWorkorder = () => {
                                   </tr>
                                 )
                               )}
-                              <tr>
-                                <th>Total</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th>{final_total_amount.toFixed(2)}</th>
+                              <tr style={{
+                                border: "1px solid #152B51",
+                              }}>
+                                <th style={{
+                                  fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#152B51",
+                                  border: "1px solid #152B51",
+
+                                }}>Total</th>
+                                <th style={{
+                                  border: "1px solid #152B51",
+                                }}></th>
+                                <th style={{
+                                  border: "1px solid #152B51",
+                                }}></th>
+                                <th style={{
+                                  border: "1px solid #152B51",
+                                }}></th>
+                                <th style={{
+                                  fontFamily: "Poppins", fontSize: "16px", fontWeight: "500", color: "#152B51",
+                                  border: "1px solid #152B51",
+
+                                }}>{final_total_amount.toFixed(2)}</th>
                               </tr>
                             </tbody>
-                            <tfoot>
-                              <tr>
-                                <td colSpan="4">
+                            {/* <tfoot>
+                              <tr >
+                                <td colSpan="4" style={{
+                                  border: "1px solid #152B51",
+                                }}>
                                   <Button
                                     type="button"
-                                    className="btn btn-primary"
+                                    className="btn"
                                     onClick={handleAddRow}
+                                    style={{ color: "white", backgroundColor: "#152B51" }}
                                   >
                                     Add Row
                                   </Button>
                                 </td>
                               </tr>
-                            </tfoot>
+                            </tfoot> */}
                           </Table>
                         </div>
                       </FormGroup>
                     </Col>
                   </div>
-                  <div className="pl-lg-4">
-                    <Row>
+                  <div className="pl-lg-2">
+
+                  <Button
+                    type="button"
+                    className="btn"
+                    onClick={handleAddRow}
+                    style={{ color: "white", backgroundColor: "#152B51" }}
+                  >
+                    Add Row
+                  </Button>
+                  </div>
+                  <div >
+                    <Row className="mt-3">
                       <Col lg="6">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-member"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
+
                           >
                             Vendor Notes
                           </label>
                           <br />
                           <Input
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                            }}
                             className="form-control-alternative"
                             id="input-name"
-                            placeholder=""
+                            placeholder="Enter here..."
                             type="textarea"
                             name="vendor_note"
                             onBlur={WorkFormik.handleBlur}
@@ -1671,7 +1898,7 @@ const AddWorkorder = () => {
                             value={WorkFormik.values.vendor_note}
                           />
                           {WorkFormik.touched.vendor_note &&
-                          WorkFormik.errors.vendor_note ? (
+                            WorkFormik.errors.vendor_note ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.vendor_note}
                             </div>
@@ -1681,7 +1908,7 @@ const AddWorkorder = () => {
                     </Row>
                   </div>
 
-                  <div className="pl-lg-4">
+                  <div >
                     <Row>
                       {isDisplay === "true" ? (
                         <Col lg="4">
@@ -1689,6 +1916,13 @@ const AddWorkorder = () => {
                             <label
                               className="form-control-label"
                               htmlFor="input-desg"
+                              style={{
+                                // marginBottom: "10px",
+                                fontWeight: "500",
+                                fontFamily: "Poppins",
+                                fontSize: "16px",
+                                color: "#8A95A8",
+                              }}
                             >
                               Charge Work To
                             </label>
@@ -1697,7 +1931,13 @@ const AddWorkorder = () => {
                               isOpen={chargedropdownOpen}
                               toggle={toggle7}
                             >
-                              <DropdownToggle caret style={{ width: "100%" }}>
+                              <DropdownToggle caret style={{
+                                width: "100%", boxShadow: " 0px 4px 4px 0px #00000040",
+                                border: "1px solid #ced4da",
+
+                                backgroundColor: "transparent",
+                                color: "#A7A7A7"
+                              }}>
                                 {selectedCharge} &nbsp;&nbsp;&nbsp;&nbsp;
                               </DropdownToggle>
                               <DropdownMenu style={{ width: "100%" }}>
@@ -1713,7 +1953,7 @@ const AddWorkorder = () => {
                                 </DropdownItem>
                               </DropdownMenu>
                               {WorkFormik.touched.work_charge &&
-                              WorkFormik.errors.work_charge ? (
+                                WorkFormik.errors.work_charge ? (
                                 <div style={{ color: "red" }}>
                                   {WorkFormik.errors.work_charge}
                                 </div>
@@ -1729,6 +1969,13 @@ const AddWorkorder = () => {
                               <label
                                 className="form-control-label"
                                 htmlFor="input-desg"
+                                style={{
+                                  // marginBottom: "10px",
+                                  fontWeight: "500",
+                                  fontFamily: "Poppins",
+                                  fontSize: "16px",
+                                  color: "#8A95A8",
+                                }}
                               >
                                 Tenant
                               </label>
@@ -1737,7 +1984,13 @@ const AddWorkorder = () => {
                                 isOpen={tenantdownOpen}
                                 toggle={toggle8}
                               >
-                                <DropdownToggle caret style={{ width: "100%" }}>
+                                <DropdownToggle caret style={{
+                                  width: "100%", boxShadow: " 0px 4px 4px 0px #00000040",
+                                  border: "1px solid #ced4da",
+
+                                  backgroundColor: "transparent",
+                                  color: "#A7A7A7"
+                                }}>
                                   {selectedTenant} &nbsp;&nbsp;&nbsp;&nbsp;
                                 </DropdownToggle>
                                 <DropdownMenu style={{ width: "100%" }}>
@@ -1747,14 +2000,14 @@ const AddWorkorder = () => {
                                       onClick={() => {
                                         setSelectedTenant(
                                           item?.tenant_firstName +
-                                            " " +
-                                            item?.tenant_lastName
+                                          " " +
+                                          item?.tenant_lastName
                                         );
                                         WorkFormik.setFieldValue(
                                           "tenant_name",
                                           item?.tenant_firstName +
-                                            " " +
-                                            item?.tenant_lastName
+                                          " " +
+                                          item?.tenant_lastName
                                         );
                                         WorkFormik.setFieldValue(
                                           "tenant_id",
@@ -1778,13 +2031,20 @@ const AddWorkorder = () => {
                     </Row>
                   </div>
 
-                  <div className="pl-lg-4">
-                    <Row>
+                  <div >
+                    <Row className="mt-2">
                       <Col lg="3">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-desg"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Priority
                           </label>
@@ -1792,39 +2052,64 @@ const AddWorkorder = () => {
                           <div className="pl-lg-4">
                             <Row>
                               <Col xs="3">
-                                <Label check>
+                                <Label check style={{
+                                  // marginBottom: "10px",
+                                  fontWeight: "400",
+                                  fontFamily: "Poppins",
+                                  fontSize: "14px",
+                                  color: "#152B514D",
+                                }}>
                                   <Input
                                     type="radio"
                                     name="priority"
                                     value="High"
                                     checked={selectedPriority === "High"}
                                     onChange={handlePriorityChange}
+
                                   />
                                   High
                                 </Label>
                               </Col>
                               &nbsp;
                               <Col xs="4">
-                                <Label check>
+                                <Label check
+                                  style={{
+                                    // marginBottom: "10px",
+                                    fontWeight: "400",
+                                    fontFamily: "Poppins",
+                                    fontSize: "14px",
+                                    color: "#152B514D",
+                                  }}
+                                >
                                   <Input
                                     type="radio"
                                     name="priority"
                                     value="Medium"
                                     checked={selectedPriority === "Medium"}
                                     onChange={handlePriorityChange}
+
                                   />
                                   Medium
                                 </Label>
                               </Col>
                               &nbsp; &nbsp;
                               <Col xs="4">
-                                <Label check>
+                                <Label check
+                                  style={{
+                                    // marginBottom: "10px",
+                                    fontWeight: "400",
+                                    fontFamily: "Poppins",
+                                    fontSize: "14px",
+                                    color: "#152B514D",
+                                  }}
+                                >
                                   <Input
                                     type="radio"
                                     name="priority"
                                     value="Low"
                                     checked={selectedPriority === "Low"}
                                     onChange={handlePriorityChange}
+
                                   />
                                   Low
                                 </Label>
@@ -1836,13 +2121,20 @@ const AddWorkorder = () => {
                     </Row>
                   </div>
 
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="3">
+                  <div className="">
+                    <Row className="mt-3">
+                      <Col lg="2">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-desg"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Status *
                           </label>
@@ -1852,7 +2144,13 @@ const AddWorkorder = () => {
                               isOpen={statusdropdownOpen}
                               toggle={toggle6}
                             >
-                              <DropdownToggle caret>
+                              <DropdownToggle caret style={{
+                                width: "100%", boxShadow: " 0px 4px 4px 0px #00000040",
+                                border: "1px solid #ced4da",
+
+                                backgroundColor: "transparent",
+                                color: "#A7A7A7"
+                              }}>
                                 {selectedStatus ? selectedStatus : "Select"}
                                 &nbsp;&nbsp;&nbsp;&nbsp;
                               </DropdownToggle>
@@ -1887,10 +2185,10 @@ const AddWorkorder = () => {
                                 </DropdownItem>
                               </DropdownMenu>
                               {WorkFormik.errors &&
-                              WorkFormik.errors?.status &&
-                              WorkFormik.touched &&
-                              WorkFormik.touched?.status &&
-                              WorkFormik.values.status === "" ? (
+                                WorkFormik.errors?.status &&
+                                WorkFormik.touched &&
+                                WorkFormik.touched?.status &&
+                                WorkFormik.values.status === "" ? (
                                 <div style={{ color: "red" }}>
                                   {WorkFormik.errors.status}
                                 </div>
@@ -1904,11 +2202,23 @@ const AddWorkorder = () => {
                           <label
                             className="form-control-label"
                             htmlFor="input-unitadd"
+                            style={{
+                              // marginBottom: "10px",
+                              fontWeight: "500",
+                              fontFamily: "Poppins",
+                              fontSize: "16px",
+                              color: "#8A95A8",
+                            }}
                           >
                             Due Date
                           </label>
                           <br />
                           <Input
+                            style={{
+                              boxShadow: " 0px 4px 4px 0px #00000040 ",
+                              borderRadius: "6px",
+                              width: "60%",
+                            }}
                             className="form-control-alternative"
                             id="input-unitadd"
                             type="date"
@@ -1918,7 +2228,7 @@ const AddWorkorder = () => {
                             value={WorkFormik.values.due_date}
                           />
                           {WorkFormik.touched.due_date &&
-                          WorkFormik.errors.due_date ? (
+                            WorkFormik.errors.due_date ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.due_date}
                             </div>
@@ -1927,52 +2237,58 @@ const AddWorkorder = () => {
                       </Col>
                     </Row>
                   </div>
-                  {loader ? (
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      style={{ background: "green", cursor: "not-allowed" }}
-                      disabled
+
+                  <div className="mt-3">
+
+                    {loader ? (
+                      <Button
+                        type="submit"
+                        className="btn"
+                        style={{ backgroundColor: "#152B51", cursor: "not-allowed", color: "white" }}
+                        disabled
+                      >
+                        Loading...
+                      </Button>
+                    ) : id ? (
+                      <Button
+                        type="submit"
+                        className="btn"
+                        style={{ backgroundColor: "#152B51", cursor: "pointer", color: "white" }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          editworkorder(vid);
+                        }}
+                      >
+                        Update Work Order
+                      </Button>
+                    ) : (
+                      <Button
+                        type="submit"
+                        className="btn "
+                        style={{ backgroundColor: "#152B51", cursor: "pointer", color: "white" }}
+                        disabled={!WorkFormik.isValid}
+                      >
+                        Add Work Order
+                      </Button>
+                    )}
+                    <Button
+                      // color="primary"
+                      className="btn"
+                      onClick={handleCloseButtonClick}
+                      size="small"
+                      style={{ backgroundColor: "white", color: "#152B51" }}
+
                     >
-                      Loading...
-                    </button>
-                  ) : id ? (
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      style={{ background: "green", cursor: "pointer" }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        editworkorder(vid);
-                      }}
-                    >
-                      Update Work Order
-                    </button>
-                  ) : (
-                    <button
-                      type="submit"
-                      className="btn btn-primary ml-4"
-                      style={{ background: "green" }}
-                      disabled={!WorkFormik.isValid}
-                    >
-                      Add Work Order
-                    </button>
-                  )}
-                  <button
-                    color="primary"
-                    className="btn btn-primary"
-                    onClick={handleCloseButtonClick}
-                    size="sm"
-                    style={{ background: "white", color: "black" }}
-                  >
-                    Cancel
-                  </button>
+                      Cancel
+                    </Button>
+                  </div>
                   {/* Conditional message */}
                   {!WorkFormik.isValid && (
                     <div style={{ color: "red", marginTop: "10px" }}>
                       Please fill in all fields correctly.
                     </div>
                   )}
+
                 </Form>
                 <br />
               </CardBody>
