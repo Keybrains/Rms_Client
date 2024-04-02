@@ -138,7 +138,8 @@ const DashBoard2 = () => {
 
   const fetchCounts = async () => {
     try {
-      const res = await axios.get(`${baseUrl}/admin/superadmin_count`);
+      const res = await axios.get(`http://localhost:4000/api/admin/superadmin_count`);
+      console.log(res, "yash");
       if (res.data.statusCode === 200) {
         setData({
           plans: res.data.plan,
@@ -396,7 +397,7 @@ const DashBoard2 = () => {
                         Admin
                       </Col>
                       <Col style={{ fontSize: "18px" }} lg={12}>
-                        Total: 20
+                        Total: {data.admins.totalAdmin}
                       </Col>
                     </Row>
                     <Row
@@ -404,7 +405,7 @@ const DashBoard2 = () => {
                       className="w-100 d-flex justify-content-between"
                     >
                       <Col xs={6} sm={6} md={8} lg={12} xl={6}>
-                        <CircleProgressBar value={20} />
+                        <CircleProgressBar value={data.admins.totalAdmin} />
                       </Col>
                       <Col
                         xs={6}
@@ -451,7 +452,7 @@ const DashBoard2 = () => {
                         Active Admin
                       </Col>
                       <Col style={{ fontSize: "18px" }} lg={12}>
-                        Total: 15
+                        Total: {data.admins.activeAdmin}
                       </Col>
                     </Row>
                     <Row
@@ -459,7 +460,7 @@ const DashBoard2 = () => {
                       className="w-100 d-flex justify-content-between"
                     >
                       <Col xs={6} sm={6} md={8} lg={12} xl={6}>
-                        <CircleProgressBar value={15} />
+                        <CircleProgressBar value={data.admins.activeAdmin} />
                       </Col>
                       <Col
                         xs={6}
@@ -506,7 +507,7 @@ const DashBoard2 = () => {
                         Inactive Admin
                       </Col>
                       <Col style={{ fontSize: "18px" }} lg={12}>
-                        Total: 05
+                        Total: {data.admins.inactiveAdmin}
                       </Col>
                     </Row>
                     <Row
@@ -514,7 +515,7 @@ const DashBoard2 = () => {
                       className="w-100 d-flex justify-content-between"
                     >
                       <Col xs={6} sm={6} md={8} lg={12} xl={6}>
-                        <CircleProgressBar value={5} />
+                        <CircleProgressBar value={data.admins.inactiveAdmin} />
                       </Col>
                       <Col
                         xs={6}
