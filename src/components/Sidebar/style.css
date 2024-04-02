@@ -7,7 +7,7 @@
   left: 0;
   background-color: #fff;
   padding-top: 10px;
-  display: flex;
+  padding: 0 25px;
   justify-content: center;
   border-right: 2px solid #152B51;
   z-index: 9;
@@ -21,7 +21,7 @@
   left: 0;
   background-color: #fff;
   padding-top: 10px;
-  display: flex;
+  padding: 0 25px;
   justify-content: center;
   border-right: 2px solid #152B51;
   z-index: 9;
