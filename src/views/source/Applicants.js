@@ -808,7 +808,7 @@ const Applicants = () => {
                     <tr style={{
                       border: "2px solid rgba(50, 69, 103, 1)",
                     }}>
-                      <th scope="col" style={{
+                      <th className="tablefontstyle" scope="col" style={{
                         borderTopLeftRadius: "15px",
                         color: "#152B51"
                       }}>
@@ -829,7 +829,7 @@ const Applicants = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         LastName
                         {sortBy.includes("applicant_lastName") ? (
                           upArrow.includes("applicant_lastName") ? (
@@ -851,7 +851,7 @@ const Applicants = () => {
                       {/* <th scope="col">Listed</th> */}
                       {/* <th scope="col">Unit</th> */}
                       {/* <th scope="col">Phone</th> */}
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Email
                         {sortBy.includes("applicant_email") ? (
                           upArrow.includes("applicant_email") ? (
@@ -869,7 +869,7 @@ const Applicants = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Phone Number
                         {sortBy.includes("tenant_mobileNumber") ? (
                           upArrow.includes("tenant_mobileNumber") ? (
@@ -887,7 +887,7 @@ const Applicants = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Property
                         {sortBy.includes("rental_adress") ? (
                           upArrow.includes("rental_adress") ? (
@@ -905,8 +905,8 @@ const Applicants = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>Status</th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>Status</th>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Created At
                         {sortBy.includes("createAt") ? (
                           upArrow.includes("createAt") ? (
@@ -924,8 +924,8 @@ const Applicants = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>Updated At</th>
-                      <th scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>Actions</th>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>Updated At</th>
+                      <th className="tablefontstyle" scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>Actions</th>
 
                       {/* <th scope="col">Last Updated</th> */}
                       {/* <th scope="col">% complete</th> */}
@@ -966,11 +966,11 @@ const Applicants = () => {
                               lineHeight: "10.93px",
                             }}
                           >
-                            <td className="bordertopintd">{applicant?.applicant_firstName}</td>
-                            <td className="bordertopintd">{applicant?.applicant_lastName}</td>
-                            <td className="bordertopintd">{applicant?.applicant_email}</td>
-                            <td className="bordertopintd">{applicant?.applicant_phoneNumber}</td>
-                            <td className="bordertopintd">
+                            <td className="bordertopintd tablebodyfont">{applicant?.applicant_firstName}</td>
+                            <td className="bordertopintd tablebodyfont">{applicant?.applicant_lastName}</td>
+                            <td className="bordertopintd tablebodyfont">{applicant?.applicant_email}</td>
+                            <td className="bordertopintd tablebodyfont">{applicant?.applicant_phoneNumber}</td>
+                            <td className="bordertopintd tablebodyfont">
                               {applicant?.rental_data?.rental_adress}{" "}
                               {applicant?.unit_data &&
                                 applicant?.unit_data?.rental_unit
@@ -978,13 +978,13 @@ const Applicants = () => {
                                 : null}
                             </td>
 
-                            <td className="bordertopintd">
+                            <td className="bordertopintd tablebodyfont">
                               {applicant?.applicant_status?.status ||
                                 "Undecided"}
                             </td>
-                            <td className="bordertopintd">{applicant?.createdAt}</td>
-                            <td className="bordertopintd">{applicant?.updatedAt || " - "}</td>
-                            <td className="bordertopintd">
+                            <td className="bordertopintd tablebodyfont">{applicant?.createdAt}</td>
+                            <td className="bordertopintd tablebodyfont">{applicant?.updatedAt || " - "}</td>
+                            <td className="bordertopintd tablebodyfont">
                               {/* <DeleteIcon
                               onClick={(e) => {
                                 e.stopPropagation();

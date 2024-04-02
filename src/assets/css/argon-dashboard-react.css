@@ -21508,6 +21508,18 @@ button:focus,
   border-top: 0.5px solid rgba(50, 69, 103, 1) !important;
 }
 
+.tablefontstyle{
+  font-family: Poppins;
+  font-size: 14px !important;
+  font-weight: 600;
+}
+
+.tablebodyfont{
+  font-family: Poppins;
+  font-size: 16px !important;
+  font-weight: 500;
+}
+
 @keyframes show-navbar-dropdown {
   0% {
     opacity: 0;

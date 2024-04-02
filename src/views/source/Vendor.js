@@ -390,7 +390,7 @@ const Vendor = () => {
                     <tr style={{
                       border: "2px solid rgba(50, 69, 103, 1)",
                     }}>
-                      <th scope="col" style={{
+                      <th className="tablefontstyle" scope="col" style={{
                         borderTopLeftRadius: "15px",
 
                         color: "#152B51"
@@ -412,7 +412,7 @@ const Vendor = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Phone Number
                         {sortBy.includes("vendor_phoneNumber") ? (
                           upArrow.includes("vendor_phoneNumber") ? (
@@ -430,7 +430,7 @@ const Vendor = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Mail ID
                         {sortBy.includes("vendor_email") ? (
                           upArrow.includes("vendor_email") ? (
@@ -448,7 +448,7 @@ const Vendor = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>ACTION</th>
+                      <th className="tablefontstyle" scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>ACTION</th>
                     </tr>
                   </thead>
                   {vendorData?.length === 0 ? (
@@ -474,11 +474,11 @@ const Vendor = () => {
                           fontWeight: "600",
                           lineHeight: "10.93px",
                         }}>
-                          <td className="bordertopintd">{vendor.vendor_name}</td>
-                          <td className="bordertopintd">{vendor.vendor_phoneNumber}</td>
-                          <td className="bordertopintd">{vendor.vendor_email}</td>
-                          <td className="bordertopintd">
-                            <div style={{ display: "flex", gap: "5px" }}>
+                          <td className="bordertopintd tablebodyfont">{vendor.vendor_name}</td>
+                          <td className="bordertopintd tablebodyfont">{vendor.vendor_phoneNumber}</td>
+                          <td className="bordertopintd tablebodyfont">{vendor.vendor_email}</td>
+                          <td className="bordertopintd tablebodyfont">
+                            <div style={{ display: "flex", }}>
                               <div
                                 style={{ cursor: "pointer" }}
                                 onClick={() => deleteVendor(vendor.vendor_id)}

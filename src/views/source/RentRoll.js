@@ -375,7 +375,7 @@ const RentRoll = () => {
                     <tr style={{
                       border: "2px solid rgba(50, 69, 103, 1)",
                     }} >
-                      <th scope="col" style={{
+                      <th className="tablefontstyle" scope="col" style={{
                         borderTopLeftRadius: "15px",
 
                         color: "#152B51"
@@ -397,7 +397,7 @@ const RentRoll = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Lease
                         {sortBy.includes("rental_adress") ? (
                           upArrow.includes("rental_adress") ? (
@@ -415,7 +415,7 @@ const RentRoll = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Type
                         {sortBy.includes("lease_type") ? (
                           upArrow.includes("lease_type") ? (
@@ -434,8 +434,8 @@ const RentRoll = () => {
                         )}
                       </th>
 
-                      <th scope="col" style={{ color: "#152B51" }}>Status</th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>Status</th>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Start Date-End Date
                         {sortBy.includes("start_date") ? (
                           upArrow.includes("start_date") ? (
@@ -453,7 +453,7 @@ const RentRoll = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Rent
                         {sortBy.includes("amount") ? (
                           upArrow.includes("amount") ? (
@@ -469,7 +469,7 @@ const RentRoll = () => {
                           <ArrowDropDownIcon onClick={() => sortData("amount")} />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Created At
                         {sortBy.includes("createdAt") ? (
                           upArrow.includes("createdAt") ? (
@@ -487,8 +487,8 @@ const RentRoll = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>Last Updated</th>
-                      <th scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>ACTION</th>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>Last Updated</th>
+                      <th className="tablefontstyle" scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>ACTION</th>
                     </tr>
                   </thead>
                   {tenantsData.length === 0 ? (
@@ -525,55 +525,28 @@ const RentRoll = () => {
                               lineHeight: "10.93px",
                             }}
                           >
-                            <td style={{
-                              borderTop: "0.5px solid rgba(50, 69, 103, 1)",
-
-                            }}>
+                            <td className="bordertopintd tablebodyfont">
                               {tenant.tenant_firstName} {tenant.tenant_lastName}
                             </td>
-                            <td style={{
-                              borderTop: "0.5px solid rgba(50, 69, 103, 1)",
-
-                            }}>
+                            <td className="bordertopintd tablebodyfont">
                               {tenant.rental_adress}{" "}
                               {tenant.rental_unit
                                 ? " - " + tenant.rental_unit
                                 : null}{" "}
                             </td>
-                            <td style={{
-                              borderTop: "0.5px solid rgba(50, 69, 103, 1)",
-
-                            }}>{tenant.lease_type}</td>
-                            <td style={{
-                              borderTop: "0.5px solid rgba(50, 69, 103, 1)",
-
-                            }}>
+                            <td className="bordertopintd tablebodyfont">{tenant.lease_type}</td>
+                            <td className="bordertopintd tablebodyfont">
                               {getStatus(tenant.start_date, tenant.end_date)}
                             </td>
-                            <td style={{
-                              borderTop: "0.5px solid rgba(50, 69, 103, 1)",
-
-                            }}>
+                            <td className="bordertopintd tablebodyfont">
                               {tenant.start_date} to {tenant.end_date}
                             </td>
-                            <td style={{
-                              borderTop: "0.5px solid rgba(50, 69, 103, 1)",
-
-                            }}>{tenant.amount}</td>
-                            <td style={{
-                              borderTop: "0.5px solid rgba(50, 69, 103, 1)",
-
-                            }}>{tenant.createdAt} </td>
-                            <td style={{
-                              borderTop: "0.5px solid rgba(50, 69, 103, 1)",
-
-                            }}>
+                            <td className="bordertopintd tablebodyfont">{tenant.amount}</td>
+                            <td className="bordertopintd tablebodyfont">{tenant.createdAt} </td>
+                            <td className="bordertopintd tablebodyfont">
                               {tenant.updatedAt ? tenant.updatedAt : "-"}{" "}
                             </td>
-                            <td style={{
-                              borderTop: "0.5px solid rgba(50, 69, 103, 1)",
-
-                            }}>
+                            <td className="bordertopintd tablebodyfont">
                               <div style={{ display: "flex", gap: "5px" }}>
                                 <div
                                   style={{ cursor: "pointer" }}

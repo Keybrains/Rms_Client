@@ -428,7 +428,7 @@ const PropertyType = () => {
                       border: "2px solid rgba(50, 69, 103, 1)",
                     }}>
 
-                      <th scope="col" style={{
+                      <th className="tablefontstyle" scope="col" style={{
                         borderTopLeftRadius: "15px",
 
                         color: "#152B51"
@@ -450,7 +450,7 @@ const PropertyType = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Sub Type
                         {sortBy.includes("propertysub_type") ? (
                           upArrow.includes("propertysub_type") ? (
@@ -468,7 +468,7 @@ const PropertyType = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Created At
                         {sortBy.includes("createdAt") ? (
                           upArrow.includes("createdAt") ? (
@@ -486,8 +486,8 @@ const PropertyType = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>Updated At</th>
-                      <th scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>Action</th>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>Updated At</th>
+                      <th className="tablefontstyle" scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>Action</th>
                     </tr>
                   </thead>
                   {propertyData?.length === 0 ? (
@@ -515,15 +515,15 @@ const PropertyType = () => {
                           fontWeight: "600",
                           lineHeight: "10.93px",
                         }}>
-                          <td className="bordertopintd"> {property.property_type}</td>
-                          <td className="bordertopintd">{property.propertysub_type}</td>
-                          <td className="bordertopintd">
+                          <td className="bordertopintd tablebodyfont"> {property.property_type}</td>
+                          <td className="bordertopintd tablebodyfont">{property.propertysub_type}</td>
+                          <td className="bordertopintd tablebodyfont">
                             {moment(property.createdAt).format("DD-MM-YYYY")}
                           </td>
-                          <td className="bordertopintd">
+                          <td className="bordertopintd tablebodyfont">
                             {moment(property.updatedAt).format("DD-MM-YYYY")}
                           </td>
-                          <td className="bordertopintd">
+                          <td className="bordertopintd tablebodyfont">
                             <div style={{ display: "flex" }}>
                               <div
                                 style={{ cursor: "pointer" }}

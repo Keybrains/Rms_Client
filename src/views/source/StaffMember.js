@@ -436,7 +436,7 @@ const StaffMember = () => {
                     <tr style={{
                       border: "2px solid rgba(50, 69, 103, 1)",
                     }}>
-                      <th scope="col" style={{
+                      <th className="tablefontstyle" scope="col" style={{
                         borderTopLeftRadius: "15px",
 
                         color: "#152B51"
@@ -458,7 +458,7 @@ const StaffMember = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         DESIGNATION
                         {sortBy.includes("staffmember_designation") ? (
                           upArrow.includes("staffmember_designation") ? (
@@ -480,7 +480,7 @@ const StaffMember = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Contact
                         {sortBy.includes("staffmember_phoneNumber") ? (
                           upArrow.includes("staffmember_phoneNumber") ? (
@@ -502,7 +502,7 @@ const StaffMember = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Mail Id
                         {sortBy.includes("staffmember_email") ? (
                           upArrow.includes("staffmember_email") ? (
@@ -520,7 +520,7 @@ const StaffMember = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Created at
                         {sortBy.includes("createdAt") ? (
                           upArrow.includes("createdAt") ? (
@@ -533,13 +533,13 @@ const StaffMember = () => {
                             />
                           )
                         ) : (
-                          <ArrowDropDownIcon
+                          <ArrowDropDownIcon tablebodyfont
                             onClick={() => sortData("createdAt")}
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>Updated at</th>
-                      <th scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>ACTION</th>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>Updated at</th>
+                      <th className="tablefontstyle" scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>ACTION</th>
                     </tr>
                   </thead>
                   {StaffMemberData.length === 0 ? (
@@ -568,13 +568,13 @@ const StaffMember = () => {
                             fontWeight: "600",
                             lineHeight: "10.93px",
                           }}>
-                          <td className="bordertopintd">{staff.staffmember_name}</td>
-                          <td className="bordertopintd">{staff.staffmember_designation}</td>
-                          <td className="bordertopintd">{staff.staffmember_phoneNumber}</td>
-                          <td className="bordertopintd">{staff.staffmember_email}</td>
-                          <td className="bordertopintd">{staff.createdAt}</td>
-                          <td className="bordertopintd">{staff.updatedAt ? staff.updatedAt : "-"}</td>
-                          <td className="bordertopintd">
+                          <td className="bordertopintd tablebodyfont">{staff.staffmember_name}</td>
+                          <td className="bordertopintd tablebodyfont">{staff.staffmember_designation}</td>
+                          <td className="bordertopintd tablebodyfont">{staff.staffmember_phoneNumber}</td>
+                          <td className="bordertopintd tablebodyfont">{staff.staffmember_email}</td>
+                          <td className="bordertopintd tablebodyfont">{staff.createdAt}</td>
+                          <td className="bordertopintd tablebodyfont">{staff.updatedAt ? staff.updatedAt : "-"}</td>
+                          <td className="bordertopintd tablebodyfont">
                             <div style={{ display: "flex" }}>
                               <div
                                 style={{ cursor: "pointer" }}

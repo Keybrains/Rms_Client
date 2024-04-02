@@ -322,15 +322,15 @@ const RentalownerTable = () => {
                     <tr style={{
                       border: "2px solid rgba(50, 69, 103, 1)",
                     }}>
-                      <th scope="col" style={{
+                      <th className="tablefontstyle" scope="col" style={{
                         borderTopLeftRadius: "15px",
 
                         color: "#152B51"
                       }}>First Name</th>
-                      <th scope="col" style={{ color: "#152B51" }}>Last Name</th>
-                      <th scope="col" style={{ color: "#152B51" }}>Phone</th>
-                      <th scope="col" style={{ color: "#152B51" }}>Email</th>
-                      <th scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>Action</th>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>Last Name</th>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>Phone</th>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>Email</th>
+                      <th className="tablefontstyle" scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>Action</th>
                     </tr>
                   </thead>
                   {rentalsData.length === 0 ?(
@@ -366,13 +366,13 @@ const RentalownerTable = () => {
                             lineHeight: "10.93px",
                           }}
                         >
-                          <td className="bordertopintd">{rentalOwner.rentalOwner_firstName}</td>
-                          <td className="bordertopintd">{rentalOwner.rentalOwner_lastName}</td>
+                          <td className="bordertopintd tablebodyfont ">{rentalOwner.rentalOwner_firstName}</td>
+                          <td className="bordertopintd tablebodyfont ">{rentalOwner.rentalOwner_lastName}</td>
                          
-                          <td className="bordertopintd">{rentalOwner.rentalOwner_phoneNumber}</td>
-                          <td className="bordertopintd">{rentalOwner.rentalOwner_primaryEmail}</td>
-                          <td className="bordertopintd" style={{}}>
-                            <div style={{ display: "flex", gap: "5px" }}>
+                          <td className="bordertopintd tablebodyfont ">{rentalOwner.rentalOwner_phoneNumber}</td>
+                          <td className="bordertopintd tablebodyfont ">{rentalOwner.rentalOwner_primaryEmail}</td>
+                          <td className="bordertopintd tablebodyfont " style={{}}>
+                            <div style={{ display: "flex", }}>
                               <div
                                 style={{ cursor: "pointer" }}
                                 onClick={(e) => {

@@ -755,13 +755,13 @@ const AddWorkorder = () => {
             </h2>
           </CardHeader>
         </Col>
-        <Row>
-          <Col className="order-xl-1" xl="12">
-            <Card className="bg-white shadow mt-3 mx-4 " style={{ boxShadow: " 0px 4px 4px 0px #00000040", border: "1px solid #324567" }}
-              onSubmit={WorkFormik.handleSubmit}
-            >
-              <CardBody>
-                <Form>
+        <Form onSubmit={WorkFormik.handleSubmit}>
+          <Row>
+            <Col className="order-xl-1" xl="12">
+
+              <Card className="bg-white shadow mt-3 mx-4 " style={{ boxShadow: " 0px 4px 4px 0px #00000040", border: "1px solid #324567" }}>
+                <CardBody>
+
                   <div className="">
                     <Row>
                       <Col lg="4">
@@ -838,15 +838,15 @@ const AddWorkorder = () => {
                               name={`workOrderImage`}
                               onChange={(e) => fileData(e)}
                             />
-                            <label className="d-flex justify-content-center" htmlFor={`workOrderImage`} 
+                            <label className="d-flex justify-content-center" htmlFor={`workOrderImage`}
                               style={{
-                                fontFamily: "Poppins", fontSize: "14px", fontWeight: "400", color: "white", backgroundColor: "#152B51", borderRadius: "6px", padding: "5px",
+                                fontFamily: "Poppins", fontSize: "14px", fontWeight: "400", color: "white", backgroundColor: "#152B51", borderRadius: "6px", padding: "5px", width: "6%",
                                 boxShadow: " 0px 4px 4px 0px #00000040",
 
                               }}
                             >
                               {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
-                              Upload 
+                              Upload
                             </label>
                           </span>
                         </FormGroup>
@@ -932,7 +932,7 @@ const AddWorkorder = () => {
 
                   <div className="">
                     <Row>
-                      <Col lg="4">
+                      <Col lg="2">
                         <FormGroup>
                           <label
                             className="form-control-label"
@@ -961,7 +961,7 @@ const AddWorkorder = () => {
                                 color: "#A7A7A7"
                               }}>
                                 {selectedProp
-                                  ? selectedProp
+                                  ? selectedProp.length > 18 ? selectedProp.substring(0, 18) + "..." : selectedProp
                                   : "Select a property..."}
                                 &nbsp;&nbsp;&nbsp;&nbsp;
                               </DropdownToggle>
@@ -1000,7 +1000,7 @@ const AddWorkorder = () => {
                         </FormGroup>
                       </Col>
 
-                      <Col lg="4">
+                      <Col lg="6">
                         {selectedProp &&
                           unitData &&
                           unitData[0] &&
@@ -1383,19 +1383,19 @@ const AddWorkorder = () => {
                       </Col>
                     </Row>
                   </div>
-                </Form>
-                <br />
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-        <Row>
-          <Col className="order-xl-1" xl="12">
-            <Card className="bg-white shadow mt-3 mb-3 mx-4 " style={{ boxShadow: " 0px 4px 4px 0px #00000040", border: "1px solid #324567" }}
 
-            >
-              <CardBody>
-                <Form>
+                  <br />
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+          <Row>
+            <Col className="order-xl-1" xl="12">
+              <Card className="bg-white shadow mt-3 mb-3 mx-4 " style={{ boxShadow: " 0px 4px 4px 0px #00000040", border: "1px solid #324567" }}
+
+              >
+                <CardBody>
+
                   <div className="">
                     <label
                       className="form-control-label "
@@ -1830,7 +1830,7 @@ const AddWorkorder = () => {
                                 }}>{final_total_amount.toFixed(2)}</th>
                               </tr>
                             </tbody>
-                            {/* <tfoot>
+                            <tfoot>
                               <tr >
                                 <td colSpan="4" style={{
                                   border: "1px solid #152B51",
@@ -1845,23 +1845,23 @@ const AddWorkorder = () => {
                                   </Button>
                                 </td>
                               </tr>
-                            </tfoot> */}
+                            </tfoot>
                           </Table>
                         </div>
                       </FormGroup>
                     </Col>
                   </div>
-                  <div className="pl-lg-2">
+                  {/* <div className="pl-lg-2">
 
-                  <Button
-                    type="button"
-                    className="btn"
-                    onClick={handleAddRow}
-                    style={{ color: "white", backgroundColor: "#152B51" }}
-                  >
-                    Add Row
-                  </Button>
-                  </div>
+                    <Button
+                      type="button"
+                      className="btn"
+                      onClick={handleAddRow}
+                      style={{ color: "white", backgroundColor: "#152B51" }}
+                    >
+                      Add Row
+                    </Button>
+                  </div> */}
                   <div >
                     <Row className="mt-3">
                       <Col lg="6">
@@ -2062,6 +2062,7 @@ const AddWorkorder = () => {
                                   <Input
                                     type="radio"
                                     name="priority"
+                                    id="checked"
                                     value="High"
                                     checked={selectedPriority === "High"}
                                     onChange={handlePriorityChange}
@@ -2083,6 +2084,7 @@ const AddWorkorder = () => {
                                 >
                                   <Input
                                     type="radio"
+                                    id="checked"
                                     name="priority"
                                     value="Medium"
                                     checked={selectedPriority === "Medium"}
@@ -2106,6 +2108,7 @@ const AddWorkorder = () => {
                                   <Input
                                     type="radio"
                                     name="priority"
+                                    id="checked"
                                     value="Low"
                                     checked={selectedPriority === "Low"}
                                     onChange={handlePriorityChange}
@@ -2238,50 +2241,7 @@ const AddWorkorder = () => {
                     </Row>
                   </div>
 
-                  <div className="mt-3">
 
-                    {loader ? (
-                      <Button
-                        type="submit"
-                        className="btn"
-                        style={{ backgroundColor: "#152B51", cursor: "not-allowed", color: "white" }}
-                        disabled
-                      >
-                        Loading...
-                      </Button>
-                    ) : id ? (
-                      <Button
-                        type="submit"
-                        className="btn"
-                        style={{ backgroundColor: "#152B51", cursor: "pointer", color: "white" }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          editworkorder(vid);
-                        }}
-                      >
-                        Update Work Order
-                      </Button>
-                    ) : (
-                      <Button
-                        type="submit"
-                        className="btn "
-                        style={{ backgroundColor: "#152B51", cursor: "pointer", color: "white" }}
-                        disabled={!WorkFormik.isValid}
-                      >
-                        Add Work Order
-                      </Button>
-                    )}
-                    <Button
-                      // color="primary"
-                      className="btn"
-                      onClick={handleCloseButtonClick}
-                      size="small"
-                      style={{ backgroundColor: "white", color: "#152B51" }}
-
-                    >
-                      Cancel
-                    </Button>
-                  </div>
                   {/* Conditional message */}
                   {!WorkFormik.isValid && (
                     <div style={{ color: "red", marginTop: "10px" }}>
@@ -2289,14 +2249,60 @@ const AddWorkorder = () => {
                     </div>
                   )}
 
-                </Form>
-                <br />
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
+
+                  <br />
+                </CardBody>
+              </Card>
+              <div className=" pl-lg-4 " style={{ marginTop: "28px", marginBottom: "20px" }}>
+
+                {loader ? (
+                  <Button
+                    type="submit"
+                    className="btn"
+                    style={{ backgroundColor: "#152B51", cursor: "not-allowed", color: "white" }}
+                    disabled
+                  >
+                    Loading...
+                  </Button>
+                ) : id ? (
+                  <Button
+                    type="submit"
+                    className="btn"
+                    style={{ backgroundColor: "#152B51", cursor: "pointer", color: "white" }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      editworkorder(vid);
+                    }}
+                  >
+                    Update Work Order
+                  </Button>
+                ) : (
+                  <Button
+                    type="submit"
+                    className="btn "
+                    style={{ backgroundColor: "#152B51", cursor: "pointer", color: "white" }}
+                    disabled={!WorkFormik.isValid}
+                  >
+                    Add Work Order
+                  </Button>
+                )}
+                <Button
+                  // color="primary"
+                  className="btn"
+                  onClick={handleCloseButtonClick}
+                  size="small"
+                  style={{ backgroundColor: "white", color: "#152B51" }}
+
+                >
+                  Cancel
+                </Button>
+              </div>
+
+            </Col>
+          </Row>
+        </Form>
         <ToastContainer />
-      </Container>
+      </Container >
     </>
   );
 };

@@ -473,10 +473,10 @@ const TenantsTable = () => {
                     <tr style={{
                       border: "2px solid rgba(50, 69, 103, 1)",
                     }}>
-                      <th scope="col" style={{
+                      <th className="tablefontstyle" scope="col" style={{
                         borderTopLeftRadius: "15px",
+                        color: "#152B51",
 
-                        color: "#152B51"
                       }}>
                         Tenant name
                         {sortBy.includes("tenant_firstName") ? (
@@ -496,7 +496,7 @@ const TenantsTable = () => {
                         )}
                       </th>
 
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Phone
                         {sortBy.includes("tenant_phoneNumber") ? (
                           upArrow.includes("tenant_phoneNumber") ? (
@@ -515,7 +515,7 @@ const TenantsTable = () => {
                         )}
                       </th>
 
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Email
                         {sortBy.includes("tenant_email") ? (
                           upArrow.includes("tenant_email") ? (
@@ -534,7 +534,7 @@ const TenantsTable = () => {
                         )}
                       </th>
 
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Created At
                         {sortBy.includes("createdAt") ? (
                           upArrow.includes("createdAt") ? (
@@ -552,7 +552,7 @@ const TenantsTable = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Last Updated{" "}
                         {sortBy.includes("updatedAt") ? (
                           upArrow.includes("updatedAt") ? (
@@ -570,7 +570,7 @@ const TenantsTable = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>Action</th>
+                      <th className="tablefontstyle" scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>Action</th>
                     </tr>
                   </thead>
                   {tentalsData.length === 0 ? (
@@ -606,13 +606,13 @@ const TenantsTable = () => {
                               lineHeight: "10.93px",
                             }}
                           >
-                            <td className="bordertopintd">
+                            <td className="bordertopintd tablebodyfont ">
                               {tenant.tenant_firstName} {tenant.tenant_lastName}
                             </td>
-                            <td className="bordertopintd">{tenant.tenant_phoneNumber}</td>
-                            <td className="bordertopintd">{tenant.tenant_email}</td>
-                            <td className="bordertopintd">{tenant.createdAt} </td>
-                            <td className="bordertopintd">
+                            <td className="bordertopintd tablebodyfont ">{tenant.tenant_phoneNumber}</td>
+                            <td className="bordertopintd tablebodyfont ">{tenant.tenant_email}</td>
+                            <td className="bordertopintd tablebodyfont ">{tenant.createdAt} </td>
+                            <td className="bordertopintd tablebodyfont ">
                               {tenant.updatedAt ? tenant.updatedAt : "-"}{" "}
                             </td>
                             <td className="bordertopintd">

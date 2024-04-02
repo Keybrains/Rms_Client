@@ -370,7 +370,7 @@ const Workorder = () => {
                     <tr style={{
                       border: "2px solid rgba(50, 69, 103, 1)",
                     }}>
-                      <th scope="col" style={{
+                      <th className="tablefontstyle" scope="col" style={{
                         borderTopLeftRadius: "15px",
 
                         color: "#152B51"
@@ -392,7 +392,7 @@ const Workorder = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Property
                         {sortBy.includes("rental_adress") ? (
                           upArrow.includes("rental_adress") ? (
@@ -410,7 +410,7 @@ const Workorder = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Category
                         {sortBy.includes("work_category") ? (
                           upArrow.includes("work_category") ? (
@@ -428,7 +428,7 @@ const Workorder = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Assigned
                         {sortBy.includes("staffmember_name") ? (
                           upArrow.includes("staffmember_name") ? (
@@ -446,10 +446,10 @@ const Workorder = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>Status</th>
-                      <th scope="col" style={{ color: "#152B51" }}>Created At</th>
-                      <th scope="col" style={{ color: "#152B51" }}>Updated At</th>
-                      <th scope="col"  style={{ borderTopRightRadius: "15px", color: "#152B51" }}>ACTION</th>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>Status</th>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>Created At</th>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>Updated At</th>
+                      <th className="tablefontstyle" scope="col"  style={{ borderTopRightRadius: "15px", color: "#152B51" }}>ACTION</th>
                     </tr>
                   </thead>
                   {workData.length === 0 ? (
@@ -482,21 +482,21 @@ const Workorder = () => {
                             lineHeight: "10.93px",
                           }}
                         >
-                          <td className="bordertopintd">{rental.work_subject}</td>
-                          <td className="bordertopintd">
+                          <td className="bordertopintd tablebodyfont">{rental.work_subject}</td>
+                          <td className="bordertopintd tablebodyfont">
                             {rental.rental_adress}{" "}
                             {rental.rental_units
                               ? " - " + rental.rental_units
                               : null}
                           </td>
-                          <td className="bordertopintd">{rental.work_category}</td>
-                          <td className="bordertopintd">{rental.staffmember_name || "-"}</td>
-                          <td className="bordertopintd">{rental.status || "-"}</td>
-                          <td className="bordertopintd">{rental.createdAt}</td>
-                          <td className="bordertopintd">{rental.updateAt || "-"}</td>
+                          <td className="bordertopintd tablebodyfont">{rental.work_category}</td>
+                          <td className="bordertopintd tablebodyfont">{rental.staffmember_name || "-"}</td>
+                          <td className="bordertopintd tablebodyfont">{rental.status || "-"}</td>
+                          <td className="bordertopintd tablebodyfont">{rental.createdAt}</td>
+                          <td className="bordertopintd tablebodyfont">{rental.updateAt || "-"}</td>
 
-                          <td className="bordertopintd">
-                            <div style={{ display: "flex", gap: "0px" }}>
+                          <td className="bordertopintd tablebodyfont">
+                            <div style={{ display: "flex" , gap: "0px" }}>
                               <div
                                 style={{ cursor: "pointer" }}
                                 onClick={(e) => {

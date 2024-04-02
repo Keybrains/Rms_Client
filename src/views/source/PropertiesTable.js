@@ -619,10 +619,9 @@ const PropertiesTables = () => {
                   }}>
                     <tr style={{
                       border: "2px solid rgba(50, 69, 103, 1)",
-                    }}> 
-                      <th scope="col" style={{
-                        borderTopLeftRadius: "15px",
-
+                    }}>
+                      <th className="tablefontstyle" scope="col" style={{
+                        borderTopLeftRadius: "15px", 
                         color: "#152B51"
                       }}>
                         Property{" "}
@@ -642,8 +641,8 @@ const PropertiesTables = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
-                        Property Typess{" "}
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
+                        Property Types{" "}
                         {sortBy.includes("type") ? (
                           upArrow.includes("type") ? (
                             <ArrowDropUpIcon
@@ -656,7 +655,7 @@ const PropertiesTables = () => {
                           <ArrowDropDownIcon onClick={() => sortData("type")} />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Property Sub Type{" "}
                         {sortBy.includes("property_type") ? (
                           upArrow.includes("property_type") ? (
@@ -674,7 +673,7 @@ const PropertiesTables = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Rental Owners Name{" "}
                         {sortBy.includes("rentalOwner_firstName") ? (
                           upArrow.includes("rentalOwner_firstName") ? (
@@ -692,7 +691,7 @@ const PropertiesTables = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Rental Company Name{" "}
                         {sortBy.includes("rentalOwner_companyName") ? (
                           upArrow.includes("rentalOwner_companyName") ? (
@@ -714,7 +713,7 @@ const PropertiesTables = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Locality{" "}
                         {sortBy.includes("rental_city") ? (
                           upArrow.includes("rental_city") ? (
@@ -732,7 +731,7 @@ const PropertiesTables = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Primary Email{" "}
                         {sortBy.includes("rentalOwner_primaryEmail") ? (
                           upArrow.includes("rentalOwner_primaryEmail") ? (
@@ -754,7 +753,7 @@ const PropertiesTables = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Phone Number
                         {sortBy.includes("rentalOwner_phoneNumber") ? (
                           upArrow.includes("rentalOwner_phoneNumber") ? (
@@ -776,7 +775,7 @@ const PropertiesTables = () => {
                           />
                         )}
                       </th>
-                      <th scope="col" style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" scope="col" style={{ color: "#152B51" }}>
                         Created At{" "}
                         {sortBy.includes("createdAt") ? (
                           upArrow.includes("createdAt") ? (
@@ -794,7 +793,7 @@ const PropertiesTables = () => {
                           />
                         )}
                       </th>
-                      <th style={{ color: "#152B51" }}>
+                      <th className="tablefontstyle" style={{ color: "#152B51" }}>
                         Last Updated At{" "}
                         {sortBy.includes("updatedAt") ? (
                           upArrow.includes("updatedAt") ? (
@@ -813,7 +812,7 @@ const PropertiesTables = () => {
                         )}
                       </th>
 
-                      <th scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>ACTION</th>
+                      <th className="tablefontstyle" scope="col" style={{ borderTopRightRadius: "15px", color: "#152B51" }}>ACTION</th>
                     </tr>
                   </thead>
                   {rentalsData.length === 0 ? (
@@ -826,7 +825,7 @@ const PropertiesTables = () => {
                     </tbody>
                   ) : (
                     <tbody>
-                       <tr style={{
+                      <tr style={{
                         border: "none",
                       }}>
                         {/* Empty row */}
@@ -849,37 +848,37 @@ const PropertiesTables = () => {
                               lineHeight: "10.93px",
                             }}
                           >
-                            <td className="bordertopintd">{Rental.rental_adress}</td>
-                            <td className="bordertopintd">{Rental?.property_type_data?.property_type}</td>
-                            <td className="bordertopintd">
+                            <td className="bordertopintd tablebodyfont">{Rental.rental_adress}</td>
+                            <td className="bordertopintd tablebodyfont">{Rental?.property_type_data?.property_type}</td>
+                            <td className="bordertopintd tablebodyfont">
                               {Rental?.property_type_data?.propertysub_type}
                             </td>
-                            <td className="bordertopintd">
+                            <td className="bordertopintd tablebodyfont">
                               {Rental.rental_owner_data.rentalOwner_firstName}{" "}
                               {Rental.rental_owner_data.rentalOwner_lastName}
                             </td>
-                            <td className="bordertopintd">
+                            <td className="bordertopintd tablebodyfont">
                               {Rental.rental_owner_data.rentalOwner_companyName}
                             </td>
-                            <td className="bordertopintd">{`${Rental.rental_city}`}</td>
-                            <td className="bordertopintd">
+                            <td className="bordertopintd tablebodyfont">{`${Rental.rental_city}`}</td>
+                            <td className="bordertopintd tablebodyfont">
                               {
                                 Rental.rental_owner_data
                                   .rentalOwner_primaryEmail
                               }
                             </td>
-                            <td className="bordertopintd">
+                            <td className="bordertopintd tablebodyfont">
                               {Rental.rental_owner_data.rentalOwner_phoneNumber}
                             </td>
-                            <td className="bordertopintd">
+                            <td className="bordertopintd tablebodyfont">
                               {moment(Rental.createdAt).format("DD-MM-YYYY")}
                             </td>
-                            <td className="bordertopintd">
+                            <td className="bordertopintd tablebodyfont">
                               {Rental.updatedAt
                                 ? moment(Rental.updatedAt).format("DD-MM-YYYY")
                                 : "-"}
                             </td>
-                            <td  className="bordertopintd">
+                            <td className="bordertopintd tablebodyfont">
                               <div style={{ display: "flex", gap: "5px" }}>
                                 <div
                                   style={{ cursor: "pointer" }}
@@ -888,7 +887,7 @@ const PropertiesTables = () => {
                                     deleteRentals(Rental.rental_id, Rental);
                                   }}
                                 >
-                                   <img src={deleicon} width={20} height={20} />
+                                  <img src={deleicon} width={20} height={20} />
                                 </div>
                                 <div
                                   style={{ cursor: "pointer" }}
@@ -897,12 +896,12 @@ const PropertiesTables = () => {
                                     editProperty(Rental.rental_id);
                                   }}
                                 >
-                                   <img src={editicon} width={20} height={20} />
+                                  <img src={editicon} width={20} height={20} />
                                 </div>
                               </div>
                             </td>
                           </tr>
-                         
+
                         </>
                       ))}
                     </tbody>

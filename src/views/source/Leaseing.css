@@ -3,7 +3,6 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   grid-auto-rows: minmax(100px, auto);
-
 }
 
 @media only screen and (max-width: 1150px) {
@@ -33,7 +32,7 @@
 }
 
 .tbbody .header {
-  background: #EFEFEF;
+  background: #efefef;
   text-transform: uppercase;
 }
 
@@ -51,7 +50,7 @@
 }
 
 .tbbody .body:hover {
-  background: #EFEFEF;
+  background: #efefef;
 }
 
 /* Apply styles to number input */
@@ -80,4 +79,8 @@ input[type="number"] {
 
 *::-webkit-scrollbar {
   display: none;
+}
+
+#checked {
+  accent-color: #152B51;
 }
